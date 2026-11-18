@@ -1366,6 +1366,14 @@
       '</div>';
   }
 
+  function setPageInert(on) {
+    Array.prototype.forEach.call(document.body.children, function (el) {
+      if (!el || el.id === 'ocr') { return; }
+      if (el.tagName === 'SCRIPT' || el.tagName === 'NOSCRIPT') { return; }
+      if (on) { el.setAttribute('inert', ''); } else { el.removeAttribute('inert'); }
+    });
+  }
+
   function openOcr(data) {
     state.ocr.data = data;
     state.ocr.stage = 0;
@@ -1377,6 +1385,7 @@
     if (camState) { camState.textContent = '촬영됨'; }
     var ocr = $('#ocr');
     ocr.hidden = false;
+    setPageInert(true);
     document.body.style.overflow = 'hidden';
     renderOcr();
     var closeBtn = $('#ocrClose');
@@ -1537,6 +1546,7 @@
     if (state.ocr.timer) { clearTimeout(state.ocr.timer); }
     var ocr = $('#ocr');
     if (ocr) { ocr.hidden = true; }
+    setPageInert(false);
     document.body.style.overflow = '';
     state.ocr.stage = 0;
   }
