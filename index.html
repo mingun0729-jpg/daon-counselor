@@ -3041,7 +3041,7 @@
         if (bar) { bar.style.width = '100%'; }
         if (cap) { cap.textContent = '접수 확인 · 접수번호 채번 중…'; }
       });
-      autoAfter(1800, 3, function () { setAutoStage(4); });
+      autoAfter(1800, 3, function () { setAutoStage(5); });
     }
     if (n >= 4) {
       var p = $('#autoPrint');
@@ -3440,6 +3440,11 @@
   function renderAgentPanels() {
     var a = document.getElementById('docAgent');
     if (a) { a.innerHTML = agentPanelInner('docs'); }
+    /* 자동 접수 시연 1단계에서는 점검 수치·누락 목록도 같이 갱신한다 */
+    if (overlayOpen('auto') && autoState.stage === 1) {
+      renderAuto();
+      return;
+    }
     var b = document.getElementById('autoAgent');
     if (b) { b.innerHTML = agentPanelInner('modal'); }
   }
@@ -3473,7 +3478,7 @@
       var cb = AGENT_STATE.onDone;
       AGENT_STATE.onDone = null;
       if (cb) { cb(); return; }
-      if (!AGENT_STATE.fromModal && !overlayOpen('auto')) { renderDocs(); }
+      if (!overlayOpen('auto')) { AGENT_STATE.changed = false; renderDocs(); }
       return;
     }
     var d = todo[i];
@@ -4288,6 +4293,12 @@
     state.form = { name: '', phone: '', addr: '', job1: '', job2: '', jobTouched: false, transport: '', transportAuto: true, aids: [], motivation: '', motivVariant: 0, motivEdited: false };
     state.motivSig = '';
     if (state.ocr.timer) { clearTimeout(state.ocr.timer); }
+    /* 서류 자동 수집 결과도 같이 비운다 */
+    AGENT_STATE.results = {};
+    AGENT_STATE.current = null;
+    AGENT_STATE.onDone = null;
+    AGENT_STATE.changed = false;
+    if (overlayOpen('auto')) { closeAuto(false); }
   }
 
   function resetAll() {

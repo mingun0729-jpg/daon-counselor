@@ -32,7 +32,8 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 | 대화 패널 `.chat` | 복지카드 시작 영역 `#cardStart` → `#chatLog` → `#chips` → `#composer` |
 | 대시보드 `.dashboard` | `#sumStrip` 요약 + 탭 3개(`#tab-jobs`, `#tab-work`, `#tab-docs`)과 패널 3개 |
 | `#ocr` | 복지카드 인식 시연 오버레이(4단계·추출값 확인·개인정보 고지) |
-| `#printArea` | 인쇄용 신청서 출력 전용 컨테이너(화면에서는 `display:none`) |
+| `#auto` | 원클릭 자동 접수 시연 오버레이(4단계·점검·패키지·전송·가상 접수증). `.ocr` 계열 클래스를 재사용하고 `auto-*`/`ag-*`/`receipt` 스타일을 쓴다 |
+| `#printArea` | 인쇄용 신청서·가상 접수증 출력 전용 컨테이너(화면에서는 `display:none`) |
 
 ### 스크립트 섹션 (IIFE 안, 주석의 번호와 대응)
 
@@ -49,6 +50,8 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 | 7. 서류 체크리스트 | `COMMON_DOCS`, `EXTRA_DOCS`, `ALWAYS_EXTRA`, `docsFor(pid)` |
 | 7-B. 복지카드 인식 | `CARD_SAMPLES`, `OCR_STEPS`, `openOcr`, `setOcrStage`, `renderOcr`, `confirmOcr`, `applyCard`, `handleCardFile`, `renderCardStart` |
 | 7-C. 신청서 4단계 | `ORG`(접수처 기관 정보: 기관명·주소·대표전화), `WIZARD_STEPS`, `TRANSPORTS`, `AIDS`, `JOB_OPTIONS`, `wizardHtml`, `step1Html`~`step4Html`, `appSheetHtml`(신청일·수신처·접수처·서류 현황 표·동의·서명란), `guideHtml`(실제 신청·접수 가이드), `todayStr`, `jurisdiction`/`submissionPlace`, `buildAppText`, `buildFormMotivation`, `printApp`, `toggleAid`, `onFieldChange` |
+| 7-D. 자동 접수 시연·메일 | `AUTO_STEPS`, `AUTO_FIELDS`, `autoState`, `autoCheck`, `openAuto`/`closeAuto`/`setAutoStage`/`renderAuto`, `issueReceipt`/`receiptInner`/`printReceipt`/`barcodeBars`, `buildMail`/`launchMailto`/`openMailApp` |
+| 7-E. 서류 자동 수집 에이전트 | `AGENT_DOC_META`, `MockDocAgentAPI`(`fetchDocument` — 실제 연동 시 `fetch()`로 교체), `fetchDocumentFromAgent`, `AGENT_STATE`, `agentPanelInner`, `renderAgentPanels`, `runDocAgent`/`agentStep` |
 | 8. 대화 렌더링 | `addMsg`, `renderChat`, `renderChips` |
 | 9. 대시보드 렌더링 | `renderSummary`, `renderJobs`, `renderWorkplaces`, `renderDocs` |
 | 10. 신청서 초안 | `buildDraft()` (자기소개 5항목 초안), `generateDraft`, `copyText` |
@@ -62,6 +65,8 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 - 수치를 바꿀 때는 **출처 연도를 함께 표기**하고, 화면 하단 고지(`.disclaimer`, `.fine`)의 "2026년 장애인일자리 사업안내 기준" 문구도 같이 갱신한다.
 - 근무지 10곳과 신청서 예시 값(성명·연락처·거주지 등)은 **가상 예시**다. 실제 기관·개인 정보로 바꾸지 않는다. 다만 **접수처 안내의 기관명·주소·대표전화**는 공개된 공식 정보(**(사)경남지체장애인연합회 진주시지회**, 경남 진주시 대신로 232번길 16, ☎ 055-755-0008)를 실제 값으로 쓰고, 코드의 `ORG` 상수에서 관리한다. 신청인 예시 값은 계속 가상 값만 쓴다.
 - 복지카드 인식은 **실제 OCR이 아니다.** 브라우저 안에서 미리 정한 `CARD_SAMPLES` 값을 단계별로 보여 주는 시연용 연출이다. 실제 OCR·서버 전송 기능을 넣는 것처럼 문구를 바꾸지 말 것.
+- 자동 접수 시연·가상 접수증·필요서류 자동 수집(`MockDocAgentAPI`)도 **실제 전송·실제 발급이 아니다.** 외부 요청 0건의 모의(Mock) 응답이며, 화면 고지(‘실제 기관으로 전송되지 않습니다’, ‘시연용 모의 API(Mock) 응답입니다’)를 지우지 않는다. 실제 연동은 `MockDocAgentAPI.fetchDocument`를 `fetch()`로 바꾸는 것으로 시작하되, 그때도 개인정보 전송 고지를 같이 바꾼다.
+- 메일 보내기는 **빈 수신자 `mailto:`만** 쓴다. 특정 개인·기관 이메일 주소를 코드에 넣지 않는다.
 
 ## 4. 수정 시 주의사항
 
@@ -71,7 +76,7 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 4. **접근성** — 키보드 포커스(`:focus-visible`), `aria-*`(탭은 `role="tab"`/`aria-selected`, 단계는 `aria-current="step"`), 스크린리더용 `.sr-only`, `prefers-reduced-motion` 대응을 유지한다.
 5. **기존 기능 보존** — 8개 일자리 사업·7개 지원제도·10개 근무지·예시 3개·대화형 상담·직접 입력 해석은 시연의 핵심이므로 삭제·축소하지 않는다.
 6. **프로토타입 고지 유지** — 화면 하단 `공모전 시연용 프로토타입입니다` 문구, 복지카드 화면과 시작 영역의 "사진은 서버로 전송되지 않습니다" 문구, 신청서 미리보기의 "제출 전 실제 양식 확인" 안내를 지우지 않는다.
-7. **인쇄** — 신청서 인쇄는 `#printArea`만 출력된다(`@media print`의 `body > *:not(#printArea)` 규칙). 새 요소를 인쇄에 넣으려면 `#printArea` 안에 생성해야 한다.
+7. **인쇄** — 신청서·가상 접수증 인쇄는 `#printArea`만 출력된다(`@media print`의 `body > *:not(#printArea)` 규칙). 새 요소를 인쇄에 넣으려면 `#printArea` 안에 생성해야 한다.
 8. **XSS 습관** — 사용자 입력은 반드시 `esc()`로 이스케이프한 뒤 `innerHTML`에 넣는다.
 9. **접근성 3모드 유지** — 새 UI를 추가하면 `body.a11y-big`(큰 글씨)와 `body.a11y-contrast`(고대비) 대응 스타일을 같은 커밋에 넣는다. 고대비에서 새 색을 쓰면 흰 배경/흰 글씨가 남지 않도록 오버라이드하고, 대비 4.5:1을 확인한다. 인쇄는 고대비 모드에서도 `#printArea`를 흑백으로 강제한다.
 10. **localStorage 키 고정** — 접근성 설정 `daon.a11y.v1`, 자동 임시저장 `daon.state.v1`. 저장값은 브라우저 밖으로 나가지 않으며 `resetAll`/`resetState`(새로 시작)에서 비운다. 저장 스키마를 바꾸면 `v`를 올리고 `restoreSaved`에서 검증한다.
