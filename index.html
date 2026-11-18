@@ -1116,7 +1116,7 @@
   var STORE_KEY = 'daon.state.v1';
   var a11y = { big: false, contrast: false, voice: false };
   var ttsSupported = (typeof window !== 'undefined') && !!window.speechSynthesis && (typeof window.SpeechSynthesisUtterance === 'function');
-  var tts = { speaking: false, lastSpoken: '' };
+  var tts = { speaking: false, lastSpoken: '', id: 0 };
   var storageOK = null;
   var savedAt = 0;
   var saveTimer = null;
@@ -1184,6 +1184,7 @@
   }
 
   function stopSpeak(silent) {
+    tts.id += 1;
     if (ttsSupported) { try { window.speechSynthesis.cancel(); } catch (e) {} }
     var was = tts.speaking;
     tts.speaking = false;
@@ -1200,6 +1201,8 @@
       return;
     }
     try { window.speechSynthesis.cancel(); } catch (e) {}
+    tts.id += 1;
+    var myId = tts.id;
     var u = new SpeechSynthesisUtterance(t.slice(0, 1500));
     u.lang = 'ko-KR';
     u.rate = 0.95;
@@ -1208,12 +1211,14 @@
       var vs = window.speechSynthesis.getVoices() || [];
       for (var i = 0; i < vs.length; i++) { if (/^ko/i.test(vs[i].lang)) { u.voice = vs[i]; break; } }
     } catch (e) {}
-    u.onstart = function () { tts.speaking = true; setSpeakUI(true); };
-    u.onend = function () { tts.speaking = false; setSpeakUI(false); };
-    u.onerror = function () { tts.speaking = false; setSpeakUI(false); };
+    u.onstart = function () { if (myId !== tts.id) { return; } tts.speaking = true; setSpeakUI(true); };
+    u.onend = function () { if (myId !== tts.id) { return; } tts.speaking = false; setSpeakUI(false); };
+    u.onerror = function () { if (myId !== tts.id) { return; } tts.speaking = false; setSpeakUI(false); };
     tts.lastSpoken = t;
+    tts.speaking = true;
+    setSpeakUI(true);
     try { window.speechSynthesis.speak(u); }
-    catch (e) { toast('음성 안내를 시작하지 못했어요. 다시 눌러 주세요.'); }
+    catch (e) { tts.speaking = false; setSpeakUI(false); toast('음성 안내를 시작하지 못했어요. 다시 눌러 주세요.'); }
   }
 
   function sevShort(v) { return v === 'severe' ? '심한 장애' : v === 'mild' ? '심하지 않은 장애' : '장애 정도 확인 전'; }
@@ -3521,7 +3526,8 @@
     if (bSpeak) { bSpeak.addEventListener('click', function () { speakScreen(); }); }
     var bStop = $('#btnStopSpeak');
     if (bStop) { bStop.addEventListener('click', function () {
-      if (bStop.getAttribute('aria-disabled') === 'true') { toast('지금 읽고 있는 안내가 없어요'); return; }
+      var live = tts.speaking || (ttsSupported && window.speechSynthesis.speaking);
+      if (!live) { toast('지금 읽고 있는 안내가 없어요'); return; }
       stopSpeak(false);
       toast('음성 안내를 멈췄어요');
     }); }
