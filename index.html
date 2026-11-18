@@ -410,7 +410,7 @@
   .auto-cta .ac-txt{flex:1 1 250px;min-width:0}
   .auto-cta .ac-txt b{display:block;font-size:14.5px;font-weight:800;color:var(--grass-900)}
   .auto-cta .ac-txt span{display:block;margin-top:3px;font-size:12.6px;line-height:1.55;color:var(--ink-soft)}
-  .auto-cta .btn{flex:0 0 auto}
+  .auto-cta .btn{flex:0 0 auto;max-width:100%;white-space:normal}
   .auto-body{display:grid;grid-template-columns:minmax(250px,330px) minmax(0,1fr);gap:18px;padding:20px;align-items:start}
   .auto-left,.auto-side{min-width:0}
   .auto-left h3,.auto-side h3{font-size:15.5px;font-weight:800;display:flex;align-items:center;gap:7px;line-height:1.35}
@@ -2678,7 +2678,7 @@
       '<button class="btn" type="button" id="btnAppPreview">미리보기로 이동</button>' +
       '<button class="btn" type="button" id="btnGoGuide">실제 접수 안내 보기</button></div>' +
       '<div class="mail-help" id="mailHelp" hidden></div>' +
-      '<p class="fhint" style="margin-top:10px">서면 접수는 신청서를 <b>인쇄</b>(또는 PDF 저장)하고 <b>신분증·복지카드</b>를 지참해 협회(' + esc(ORG.short) + ' ☎ ' + esc(ORG.tel) + ')로 방문하면 됩니다. 메일로 먼저 보낼 때는 담당자 주소만 입력해 발송하고, 원본 서류는 방문·우편으로 함께 내세요.</p>';
+      '<p class="fhint" style="margin-top:10px">서면 접수는 신청서를 <b>인쇄</b>(또는 PDF 저장)하고 <b>신분증·복지카드</b>를 지참해 협회(' + esc(ORG.short) + ' 전화 ' + esc(ORG.tel) + ')로 방문하면 됩니다. 메일로 먼저 보낼 때는 담당자 주소만 입력해 발송하고, 원본 서류는 방문·우편으로 함께 내세요.</p>';
     html += wizardActions(3);
     return html;
   }
@@ -3158,9 +3158,9 @@
       '<div class="rc-row"><b>신청 사업</b><span>' + esc(r.prog) + '</span></div>' +
       '<div class="rc-row"><b>1지망 직무</b><span>' + esc(r.job) + '</span></div>' +
       '<div class="rc-row"><b>제출 서류</b><span>필수 ' + esc(r.docs) + ' 확인' + (r.docsMiss ? ' (미확인 ' + r.docsMiss + '건 보완 필요)' : '') + ' · 동의서 ' + (r.consent ? '확인' : '미확인') + '</span></div>' +
-      '<div class="rc-row"><b>접수처</b><span>' + esc(r.org) + ' · ☎ ' + esc(r.orgTel) + '<br />' + esc(r.orgAddr) + '</span></div>' +
+      '<div class="rc-row"><b>접수처</b><span>' + esc(r.org) + ' · 전화 ' + esc(r.orgTel) + '<br />' + esc(r.orgAddr) + '</span></div>' +
       '</div>' +
-      '<p class="rc-note">※ 공모전 시연용 가상 접수증이며 실제 기관으로 전송되지 않았습니다. 실제 접수는 협회(☎ ' + esc(r.orgTel) + ')에 서류를 지참하고 방문하거나 담당자 메일로 보내 주세요.</p>' +
+      '<p class="rc-note">※ 공모전 시연용 가상 접수증이며 실제 기관으로 전송되지 않았습니다. 실제 접수는 협회(전화 ' + esc(r.orgTel) + ')에 서류를 지참하고 방문하거나 담당자 메일로 보내 주세요.</p>' +
       '<div class="rc-foot"><span class="rc-stamp">시연용 가상 접수증</span>' + barcodeBars(r.no) + '</div>';
   }
 
@@ -3272,7 +3272,7 @@
     lines.push('■ 첨부');
     lines.push('인쇄(PDF 저장)한 신청서와 구비서류를 첨부해 주세요. 원본 서류는 방문 또는 우편으로 함께 제출하겠습니다.');
     lines.push('');
-    lines.push('※ 이 메일은 공모전 시연용 프로토타입(다온 DAON)이 만든 초안입니다. 실제 제출 전에 실제 양식과 접수 방법을 협회(☎ ' + ORG.tel + ')로 확인해 주세요.');
+    lines.push('※ 이 메일은 공모전 시연용 프로토타입(다온 DAON)이 만든 초안입니다. 실제 제출 전에 실제 양식과 접수 방법을 협회(전화 ' + ORG.tel + ')로 확인해 주세요.');
     lines.push('');
     lines.push(name + ' 드림');
     var body = lines.join('\n');
@@ -3442,6 +3442,7 @@
     if (a) { a.innerHTML = agentPanelInner('docs'); }
     /* 자동 접수 시연 1단계에서는 점검 수치·누락 목록도 같이 갱신한다 */
     if (overlayOpen('auto') && autoState.stage === 1) {
+      autoState.check = autoCheck();
       renderAuto();
       return;
     }
