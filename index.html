@@ -509,11 +509,18 @@
     body{background:#fff}
     body > *:not(#printArea){display:none !important}
     #printArea{display:block !important;background:#fff}
-    #printArea .app-sheet{border:0;border-radius:0;padding:0;font-size:12.5px}
-    #printArea .app-sheet h4{font-size:17px}
-    #printArea .app-sheet table{margin-bottom:10px}
-    #printArea .app-sheet th,#printArea .app-sheet td{padding:6px 8px}
-    @page{margin:16mm 14mm}
+    #printArea .app-sheet{border:0;border-radius:0;padding:0;font-size:11.5px;line-height:1.55}
+    #printArea .app-sheet h4{font-size:16px;margin-bottom:2px}
+    #printArea .app-sheet .as-sub{font-size:10px;margin-bottom:8px}
+    #printArea .app-sheet table{margin-bottom:8px}
+    #printArea .app-sheet th,#printArea .app-sheet td{padding:4px 7px;font-size:11.5px}
+    #printArea .app-sheet th{width:88px}
+    #printArea .app-sheet .as-h{font-size:11.5px;margin:9px 0 4px}
+    #printArea .app-sheet .as-body{font-size:11.5px;line-height:1.6;padding:9px 11px}
+    #printArea .app-sheet .as-foot{font-size:10.5px;margin-top:8px}
+    #printArea .app-sheet .doc-grid{gap:2px 14px}
+    #printArea .app-sheet .doc-line{font-size:11.5px}
+    @page{margin:14mm 13mm}
   }
 </style>
 </head>
@@ -1899,9 +1906,13 @@
     var area = $('#printArea');
     if (!area) { return; }
     area.innerHTML = appSheetHtml(docs);
+    var oldTitle = document.title;
+    var nm = (state.form.name || '').trim();
+    document.title = '장애인일자리사업 참여신청서' + (nm ? '_' + nm : '');
     toast('인쇄 화면을 준비했어요');
     setTimeout(function () {
       try { window.print(); } catch (e) { toast('이 브라우저에서는 인쇄 창을 열 수 없어요'); }
+      setTimeout(function () { document.title = oldTitle; }, 900);
     }, 120);
   }
 
