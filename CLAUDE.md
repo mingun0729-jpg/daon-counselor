@@ -62,7 +62,7 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 | 7-E. 서류 자동 수집 에이전트 | `AGENT_DOC_META`, `MockDocAgentAPI`(`fetchDocument` — 실제 연동 시 `fetch()`로 교체), `fetchDocumentFromAgent`, `AGENT_STATE`, `agentPanelInner`, `renderAgentPanels`, `runDocAgent`/`agentStep` |
 | 7-F. 서류 파일 생성·미리보기·저장 | `DOC_STYLE`/`DOC_WM`(문서 공통 서식·워터마크), `DOC_FILE_META`/`DOC_TITLE`, `docFileFor`(HTML/SVG 본문 + 실제 Blob 크기, 입력값 캐시), `form1Doc`~`form3Doc`, `certSpec`/`certDoc`, `svgCardDoc`, `docFileCard`/`docPendingCard`, `fmtBytes`, `buildZip`(무압축 ZIP), `autoPkgStart`/`pkgFinish`, `openFileView`/`closeFileView`/`printDocFile`, `saveDocFile`/`savePackage` |
 | 8. 대화 렌더링 | `addMsg`, `renderChat`, `renderChips` |
-| 9. 단계 판 렌더링 | `renderSummary`, `renderJobs`, `renderWorkplaces`, `renderDocs`(= `renderDocsPrep` 3단계 + `renderFormStage` 4단계 + `renderSubmitStage` 5단계), `docsCtx`, `needHtml`, `personaButtonsHtml`, `draftBoxHtml`, `orgCardHtml`, `attachFormStage`, `updateDocProgress`, `renderAll` |
+| 9. 단계 판 렌더링 | `renderSummary`, `renderJobs`(`jobCardHtml`·`keyReason` — 카드는 핵심 근거 한 줄만 보이고 나머지는 `<details class="more">`로 접힘, 해당 없는 사업은 `.off-group`으로 접힘, 근로지원 제도는 `details.support`), `renderWorkplaces`, `renderDocs`(= `renderDocsPrep` 3단계 + `renderFormStage` 4단계 + `renderSubmitStage` 5단계), `docsCtx`, `needHtml`, `personaButtonsHtml`, `draftBoxHtml`, `orgCardHtml`, `attachFormStage`, `updateDocProgress`, `renderAll` |
 | 10. 신청서 초안 | `buildDraft()` (자기소개 5항목 초안), `generateDraft`, `copyText` |
 | 11. 직접 입력 해석 | `KEYWORDS`, `parseText`, `applyText` |
 | 12. 단계 이동·초기화·예시 | `STEP_META`, `stepIndex`, `docsProgress`, `stepAchieved`, `goStep`, `scrollToStepTop`, `renderStepBar`, `renderStepNavs`, `renderStepGuide`, `renderSubTabs`, `setSubTab`, `setTab`, `focusDashboard`, `resetState`, `resetAll`, `PERSONAS`, `applyPersona` |
@@ -93,6 +93,7 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 12. **localStorage 키 고정** — 접근성 설정 `daon.a11y.v1`(`big`·`contrast`·`voice`·`rate`), 자동 임시저장 `daon.state.v1`(내부 스키마 `v: 2` — `v:1`도 읽는다). 저장값은 브라우저 밖으로 나가지 않으며 `resetAll`/`resetState`(새로 시작)에서 비운다. 저장 스키마를 바꾸면 `v`를 올리고 `restoreSaved`에서 검증한다. 현재 단계(`step` 1~5)와 2단계 소탭(`subtab`)도 저장·복원하며, 단계 이동은 `goStep()`이 `state.step`과 pane 표시·단계 표시줄을 함께 맞춘다. `goStep()` 밖에서 pane을 직접 감추지 않는다.
 13. **음성 안내** — 외부 TTS 라이브러리를 넣지 않고 `window.speechSynthesis`만 사용한다. 미지원 브라우저에서는 토스트로 안내하고 기능을 켜진 상태로 두지 않는다.
 14. **단계별(위저드) UI 원칙** — ① 상담·복지카드 → ② 추천 일자리·근무지 → ③ 서류 준비·자동 수집 → ④ 신청서 작성 → ⑤ 원클릭 접수·접수처의 5단계를 유지하고, 한 화면에는 한 단계만 보여 준다. 새 기능은 해당 단계의 판(`#pane-N`의 렌더 함수)에 넣고, 이전/다음 버튼(`data-nav-step`, 최소 44px·큰 글씨 56px)과 상단 단계 표시줄(`.stepbtn`)을 함께 갱신한다. 조건이 아직 없을 때 2~5단계는 `needHtml()`로 예시 3개를 안내하며, 단계 이동은 항상 `goStep()`을 거친다(스크롤을 길게 내리지 않아도 처음부터 접수증까지 넘어갈 수 있어야 한다).
+15. **화면 간추리기** — 카드·안내의 긴 설명은 `<details>`(`.more`, `.off-group`, `details.support`, `details.guide-box`)로 접어 두고 첫 화면에는 핵심 한 줄만 둔다. 접기 버튼도 44px(큰 글씨 56px) 이상, 큰 글씨·고대비 스타일을 함께 넣고, 내용은 접어도 삭제하지 않는다. 목록 항목(`li`)에 `display:flex`를 주면 `<b>` 조각마다 칸이 쪼개지므로 쓰지 않는다.
 
 ## 5. Claude Code 협업 규칙
 
