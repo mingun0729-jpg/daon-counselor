@@ -308,9 +308,169 @@
   .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,16px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:999px;font-size:14.5px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:0 12px 30px rgba(0,0,0,.22);z-index:60;max-width:calc(100% - 32px);text-align:center}
   .toast.show{opacity:1;transform:translate(-50%,0)}
 
+  /* ---------- 복지카드 촬영/인식 시작 ---------- */
+  .card-start{margin:12px 14px 0;border:1px solid #D8EBDD;background:linear-gradient(180deg,#F2FBF5 0%,#FFFFFF 100%);border-radius:18px;padding:12px 13px}
+  .card-start.used{background:#F4FBF6;border-color:#CBE7D6}
+  .cs-head{display:flex;gap:9px;align-items:flex-start}
+  .cs-emoji{flex:0 0 28px;width:28px;height:28px;border-radius:10px;background:var(--mint);display:grid;place-items:center;font-size:15px;line-height:1}
+  .cs-head .cs-title{display:block;font-size:14.5px;font-weight:800;line-height:1.3}
+  .cs-head .cs-desc{display:block;font-size:12.5px;color:var(--ink-mute);line-height:1.45;margin-top:2px}
+  .cs-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+  .cs-btn{min-height:44px;padding:7px 13px;border-radius:999px;border:1.5px solid var(--line);background:#fff;color:var(--ink);font-size:13.5px;font-weight:800;line-height:1.25;display:inline-flex;align-items:center;gap:6px;transition:background .14s,border-color .14s}
+  .cs-btn:hover{background:var(--sage);border-color:#CFDCCF}
+  .cs-btn.main{background:var(--grass);border-color:var(--grass);color:#fff}
+  .cs-btn.main:hover{background:var(--grass-600);border-color:var(--grass-600)}
+  .cs-btn small{font-size:11.5px;font-weight:700;opacity:.85}
+  .cs-note{margin-top:8px;font-size:11.8px;color:var(--ink-mute);line-height:1.45}
+  .cs-note b{color:var(--grass-700);font-weight:800}
+
+  /* ---------- 복지카드 인식 시연(오버레이) ---------- */
+  .ocr[hidden]{display:none}
+  .ocr{position:fixed;inset:0;z-index:70;display:grid;place-items:center;padding:16px;background:rgba(16,31,22,.56);overflow-y:auto}
+  .ocr-sheet{width:min(1040px,100%);max-height:calc(100vh - 32px);overflow:auto;background:var(--cream);border-radius:26px;border:1px solid #DCE8DD;box-shadow:0 26px 64px rgba(0,0,0,.3)}
+  .ocr-head{display:flex;align-items:center;gap:12px;padding:15px 20px;border-bottom:1px solid var(--line);background:#fff;border-radius:26px 26px 0 0;position:sticky;top:0;z-index:3}
+  .ocr-head .ocr-ico{flex:0 0 38px;width:38px;height:38px;border-radius:13px;background:var(--mint);display:grid;place-items:center;font-size:18px}
+  .ocr-head h2{font-size:17px;font-weight:800;line-height:1.3}
+  .ocr-head .ocr-sub{display:block;font-size:12px;color:var(--ink-mute);font-weight:700;margin-top:1px}
+  .ocr-close{margin-left:auto;flex:0 0 44px;width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:#fff;color:var(--ink-soft);font-size:19px;font-weight:800;line-height:1}
+  .ocr-close:hover{background:var(--sage)}
+  .ocr-body{display:grid;grid-template-columns:minmax(250px,330px) minmax(0,1fr);gap:20px;padding:20px}
+  .ocr-cam{background:#11251A;border-radius:22px;padding:14px;display:grid;gap:10px;align-content:start}
+  .ocr-cam .cam-top{display:flex;align-items:center;justify-content:space-between;font-size:11.5px;font-weight:800;color:#CDEBD8;letter-spacing:.02em}
+  .cam-dot{width:7px;height:7px;height:7px;border-radius:50%;background:#5BE08D;box-shadow:0 0 0 3px rgba(91,224,141,.22);margin-right:5px;display:inline-block;vertical-align:middle}
+  .card-holder{position:relative;border-radius:16px;overflow:hidden;background:#0B1B12}
+  .card-holder img{display:block;width:100%;height:auto}
+  .card-holder .scanline{position:absolute;left:0;right:0;height:2px;top:8%;background:linear-gradient(90deg,rgba(57,196,111,0) 0%,#4BE08B 50%,rgba(57,196,111,0) 100%);box-shadow:0 0 14px #3FDD86;animation:scanmove 1.9s linear infinite}
+  .card-holder.scan-done .scanline{display:none}
+  @keyframes scanmove{0%{top:8%}100%{top:92%}}
+  .card-corner{position:absolute;width:22px;height:22px;border:2.5px solid #6BE79E;border-radius:4px;opacity:.9}
+  .card-corner.tl{top:10px;left:10px;border-right:0;border-bottom:0}
+  .card-corner.tr{top:10px;right:10px;border-left:0;border-bottom:0}
+  .card-corner.bl{bottom:10px;left:10px;border-right:0;border-top:0}
+  .card-corner.br{bottom:10px;right:10px;border-left:0;border-top:0}
+  .cam-cap{font-size:11.8px;color:#BEDFCB;line-height:1.5}
+  .cam-cap b{color:#fff;font-weight:800}
+  .idcard{position:relative;aspect-ratio:1.58;border-radius:14px;padding:13px;background:linear-gradient(135deg,#F7FCF8 0%,#E5F4E9 55%,#D9EEE1 100%);border:1px solid #C9E4D2;display:flex;flex-direction:column;gap:9px;overflow:hidden}
+  .idcard-top{display:flex;align-items:center;justify-content:space-between;font-size:10.5px;font-weight:800;color:var(--grass-700);letter-spacing:-.01em}
+  .idchip{width:26px;height:18px;border-radius:4px;background:linear-gradient(135deg,#E7C978,#C9A54E);box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+  .idcard-body{display:grid;grid-template-columns:66px minmax(0,1fr);gap:10px;align-items:start}
+  .idphoto{width:66px;height:80px;border-radius:7px;border:1px dashed #A9CDB6;background:repeating-linear-gradient(45deg,#EAF6EE 0 6px,#F6FBF7 6px 12px);display:grid;place-items:center;font-size:9.5px;color:#5C7C66;font-weight:700;text-align:center;line-height:1.3}
+  .idcard-fields{display:grid;gap:3px;transition:filter .3s}
+  .idcard-fields div{display:flex;gap:6px;font-size:11px;line-height:1.45;color:var(--ink)}
+  .idcard-fields b{flex:0 0 46px;color:var(--grass-700);font-weight:800;font-size:9.8px;letter-spacing:-.01em}
+  .idcard-fields span{min-width:0;font-weight:700}
+  .card-holder.masked .idcard-fields{filter:blur(3.2px);opacity:.7}
+  .idcard-foot{margin-top:auto;display:flex;align-items:flex-end;justify-content:space-between;font-size:9px;color:#4E6B57;font-weight:700}
+  .idcard-foot .idbar{width:76px;height:14px;background:repeating-linear-gradient(90deg,#2C3A31 0 1px,transparent 1px 3px,#2C3A31 3px 5px,transparent 5px 7px);opacity:.55;border-radius:2px}
+
+  .ocr-side{min-width:0}
+  .ocr-side h3{font-size:15.5px;font-weight:800;display:flex;align-items:center;gap:7px}
+  .ocr-side .lead{font-size:13px;color:var(--ink-mute);margin:4px 0 12px;line-height:1.55}
+  .ocr-steps{list-style:none;margin:0;padding:0;display:grid;gap:8px;counter-reset:ostep}
+  .ostep{display:flex;gap:11px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:16px;padding:11px 13px;opacity:.55;transition:opacity .2s,border-color .2s,background .2s}
+  .ostep.done{opacity:1;border-color:#CBE7D6;background:#F7FCF9}
+  .ostep.active{opacity:1;border-color:#8FD0A5;background:#fff;box-shadow:0 0 0 3px #E7F5EC}
+  .ostep .osn{flex:0 0 24px;width:24px;height:24px;border-radius:50%;background:#EDF2EC;color:var(--ink-mute);display:grid;place-items:center;font-size:11.5px;font-weight:800;margin-top:1px}
+  .ostep.done .osn{background:var(--grass);color:#fff}
+  .ostep.active .osn{background:var(--mint);color:var(--grass-700);box-shadow:inset 0 0 0 2px #B7E4C6}
+  .ostep .os-t{font-size:14px;font-weight:800;line-height:1.4}
+  .ostep .os-d{font-size:12.5px;color:var(--ink-mute);line-height:1.5;margin-top:2px}
+  .ostep .os-out{display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-size:11.5px;font-weight:800;color:var(--grass-700);background:var(--mint);border-radius:999px;padding:3px 9px}
+  .ostep.active .os-out{background:var(--warn-bg);color:var(--warn)}
+
+  .ocr-extract{margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 15px}
+  .ocr-extract h4{font-size:13.5px;font-weight:800;display:flex;align-items:center;gap:7px;margin-bottom:4px}
+  .ocr-extract .ex-sub{font-size:12px;color:var(--ink-mute);margin-bottom:8px}
+  .oe-row{display:grid;grid-template-columns:92px minmax(0,1fr);gap:10px;align-items:center;padding:6px 0;border-bottom:1px dashed var(--line-soft)}
+  .oe-row:last-child{border-bottom:0}
+  .oe-row>b{font-size:12.5px;color:var(--ink-mute);font-weight:800}
+  .oe-val{font-size:14.5px;font-weight:800;color:var(--ink)}
+  .oe-val .masked{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;letter-spacing:.02em;color:#4A5B51}
+  .oe-row input,.oe-row select{min-height:44px;width:100%;padding:8px 12px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:14.5px;font-weight:700;color:var(--ink);background:#FBFCFA}
+  .oe-hint{font-size:11.5px;color:var(--ink-mute);margin-top:8px}
+  .ocr-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end;margin-top:14px}
+  .ocr-privacy{display:flex;gap:8px;align-items:flex-start;padding:0 20px 18px;font-size:12.3px;color:var(--ink-mute);line-height:1.55}
+  .ocr-privacy .lock{flex:0 0 auto;font-size:13px}
+  .ocr-privacy b{color:var(--grass-700)}
+
+  /* ---------- 신청서 작성 4단계 ---------- */
+  .form-flow{margin:4px 0 24px;background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}
+  .ff-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:15px 18px;background:linear-gradient(180deg,#F6FCF8 0%,#FFFFFF 100%);border-bottom:1px solid var(--line-soft)}
+  .ff-head h3{font-size:16.5px;font-weight:800;display:flex;align-items:center;gap:7px}
+  .ff-head .ff-prog{margin-left:auto;font-size:12px;font-weight:800;color:var(--grass-700);background:var(--mint);border-radius:999px;padding:5px 12px;white-space:nowrap}
+  .ff-steps{display:flex;gap:6px;padding:11px 14px;overflow-x:auto;background:#FCFDFB;border-bottom:1px solid var(--line-soft)}
+  .wstep{min-height:44px;flex:0 0 auto;display:inline-flex;align-items:center;gap:7px;padding:8px 13px;border-radius:999px;border:1.5px solid var(--line);background:#fff;color:var(--ink-soft);font-size:13.5px;font-weight:800;line-height:1.25;white-space:nowrap;transition:background .14s,border-color .14s,color .14s}
+  .wstep:hover{border-color:#B4DCC1;background:var(--mint-2)}
+  .wstep .wn{flex:0 0 20px;width:20px;height:20px;border-radius:50%;background:#EDF2EC;color:var(--ink-mute);display:grid;place-items:center;font-size:11px;font-weight:800}
+  .wstep[aria-current="step"]{background:var(--grass);border-color:var(--grass);color:#fff}
+  .wstep[aria-current="step"] .wn{background:rgba(255,255,255,.24);color:#fff}
+  .wstep.done .wn{background:var(--ok-bg);color:var(--ok)}
+  .ff-body{padding:18px}
+  .ff-title{font-size:15.5px;font-weight:800;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .ff-lead{font-size:13.3px;color:var(--ink-mute);margin:4px 0 15px;line-height:1.6}
+  .field-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px}
+  .field{display:flex;flex-direction:column;gap:6px;min-width:0}
+  .field>label{font-size:12.5px;font-weight:800;color:var(--ink-soft)}
+  .field>label .req{color:var(--no);font-weight:800}
+  .field input,.field select,.field textarea{width:100%;min-height:46px;padding:10px 14px;border:1.5px solid var(--line);border-radius:14px;font-family:inherit;font-size:15px;font-weight:600;color:var(--ink);background:#FCFDFB}
+  .field input:focus,.field select:focus,.field textarea:focus{background:#fff;border-color:#9FD3B0}
+  .field textarea{min-height:210px;line-height:1.72;font-weight:500;resize:vertical}
+  .field .fhint{font-size:11.5px;color:var(--ink-mute);line-height:1.45}
+  .field-group{margin-top:16px}
+  .field-group>h4{font-size:13px;font-weight:800;color:var(--ink-soft);margin-bottom:8px}
+  .pick-row{display:flex;flex-wrap:wrap;gap:7px}
+  .pick{min-height:44px;display:inline-flex;align-items:center;gap:7px;padding:9px 15px;border-radius:999px;border:1.5px solid var(--line);background:#fff;color:var(--ink);font-size:14px;font-weight:700;line-height:1.3}
+  .pick:hover{border-color:#B4DCC1;background:var(--mint-2)}
+  .pick[aria-pressed="true"]{background:var(--mint);border-color:#8FD0A5;color:var(--grass-700);font-weight:800;box-shadow:inset 0 0 0 1px #B7E4C6}
+  .pick small{font-size:11.5px;font-weight:700;color:var(--ink-mute)}
+  .pick[aria-pressed="true"] small{color:var(--grass-700)}
+  .check-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(224px,1fr));gap:8px}
+  .aid{display:flex;gap:10px;align-items:flex-start;min-height:44px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px 13px;font-size:13.8px;font-weight:700;line-height:1.4;cursor:pointer;transition:background .14s,border-color .14s}
+  .aid:hover{border-color:#BFDCC8;background:var(--mint-2)}
+  .aid input{appearance:none;-webkit-appearance:none;flex:0 0 22px;width:22px;height:22px;margin:0;border:2px solid #C6D6C9;border-radius:7px;background:#fff;display:grid;place-items:center;cursor:pointer}
+  .aid input:checked{background-color:var(--grass);border-color:var(--grass);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-size:15px 15px;background-position:center;background-repeat:no-repeat}
+  .aid.checked{background:#F5FBF7;border-color:#CBE7D6}
+  .ff-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;align-items:center}
+  .ff-actions .spacer{flex:1}
+  .ff-count{font-size:12.5px;color:var(--ink-mute);font-weight:700}
+  .ff-badges{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px}
+  .ff-badge{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:800;border-radius:999px;padding:6px 12px;background:var(--ok-bg);color:var(--ok)}
+  .ff-badge.todo{background:var(--warn-bg);color:var(--warn)}
+  .miss-box{border:1px solid #EFE4C8;background:#FFFCF3;border-radius:16px;padding:13px 15px;margin-bottom:14px}
+  .miss-box h4{font-size:13.5px;font-weight:800;color:#4E3D12;margin-bottom:6px}
+  .miss-box ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+  .miss-box li{font-size:13.3px;color:#4E3D12;display:flex;gap:7px;align-items:flex-start;line-height:1.5}
+  .miss-box li .mk{flex:0 0 16px;width:16px;height:16px;border-radius:50%;background:#F3DFB4;color:#5C4409;display:grid;place-items:center;font-size:10px;font-weight:800;margin-top:2px}
+  .miss-box .ok-line{font-size:13.3px;color:var(--ok);font-weight:800}
+  .sec-title{font-size:16px;font-weight:800;margin:22px 2px 10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .sec-title .hint{font-size:12.5px;font-weight:700;color:var(--ink-mute);background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+
+  .app-sheet{background:#fff;border:1px solid #DDE5DD;border-radius:16px;padding:22px;font-size:14px;line-height:1.7;color:var(--ink)}
+  .app-sheet h4{font-size:17px;font-weight:800;text-align:center;margin-bottom:3px;letter-spacing:-.01em}
+  .app-sheet .as-sub{text-align:center;font-size:11.8px;color:var(--ink-mute);margin-bottom:16px}
+  .app-sheet table{width:100%;border-collapse:collapse;margin-bottom:12px}
+  .app-sheet th,.app-sheet td{border:1px solid #DFE7DF;padding:8px 10px;font-size:13.3px;text-align:left;vertical-align:top}
+  .app-sheet th{background:#F7FBF8;font-weight:800;width:96px;color:var(--grass-900);white-space:nowrap}
+  .app-sheet .as-h{font-size:13px;font-weight:800;color:var(--grass-700);margin:12px 0 6px}
+  .app-sheet .as-body{white-space:pre-wrap;border:1px solid #DFE7DF;border-radius:10px;padding:12px 13px;background:#FCFDFB;font-size:13.3px;line-height:1.78}
+  .app-sheet .as-foot{font-size:11.5px;color:var(--ink-mute);margin-top:12px;line-height:1.55}
+  .app-sheet .doc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:4px 14px}
+  .app-sheet .doc-line{font-size:12.8px;display:flex;gap:6px;line-height:1.55}
+  .app-sheet .doc-line .ck{font-weight:800;color:var(--ok)}
+  .app-sheet .doc-line .ck.no{color:#8A948C}
+
+  #printArea{display:none}
+
   /* ---------- responsive ---------- */
   @media (max-width: 980px){
     body{font-size:16.5px}
+    .ocr-body{grid-template-columns:1fr;gap:14px}
+    .ocr-cam{max-width:420px;margin:0 auto;width:100%}
+    .ocr{padding:10px}
+    .ocr-sheet{max-height:calc(100vh - 20px);border-radius:22px}
+    .ocr-head{border-radius:22px 22px 0 0}
+    .ff-body{padding:15px}
+    .ff-steps{padding:10px 12px}
     .layout{grid-template-columns:1fr;padding:14px;gap:16px}
     .chat{position:static;max-height:none;border-radius:22px}
     .chat-log{max-height:46vh}
@@ -334,10 +494,26 @@
     .panel-title h2{font-size:17.5px}
     .job-card .meta span{grid-template-columns:1fr;gap:1px}
   }
+  @media (max-width: 620px){
+    .oe-row{grid-template-columns:1fr;gap:4px}
+    .oe-row>b{font-size:12px}
+    .field-grid{grid-template-columns:1fr}
+    .ff-head .ff-prog{margin-left:0}
+    .app-sheet{padding:16px 14px}
+    .app-sheet th{width:82px;font-size:12.5px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .card-holder .scanline{animation:none;top:50%}
+  }
   @media print{
-    .chat,.personas,.tabs,.app-footer{display:none}
     body{background:#fff}
-    .layout{display:block;padding:0}
+    body > *:not(#printArea){display:none !important}
+    #printArea{display:block !important;background:#fff}
+    #printArea .app-sheet{border:0;border-radius:0;padding:0;font-size:12.5px}
+    #printArea .app-sheet h4{font-size:17px}
+    #printArea .app-sheet table{margin-bottom:10px}
+    #printArea .app-sheet th,#printArea .app-sheet td{padding:6px 8px}
+    @page{margin:16mm 14mm}
   }
 </style>
 </head>
@@ -400,6 +576,24 @@
       </div>
       <span class="prog" id="chatProgress">0 / 4 단계</span>
     </div>
+
+    <!-- ============ 복지카드 촬영/업로드 시작 ============ -->
+    <div class="card-start" id="cardStart">
+      <div class="cs-head">
+        <span class="cs-emoji" aria-hidden="true">📷</span>
+        <div>
+          <span class="cs-title">복지카드로 바로 시작</span>
+          <span class="cs-desc">카드를 찍으면 장애 유형·정도를 읽어 상담 조건과 신청서까지 이어 드려요.</span>
+        </div>
+      </div>
+      <div class="cs-actions">
+        <button class="cs-btn main" type="button" id="cardUpload">📷 복지카드 촬영·업로드</button>
+        <button class="cs-btn" type="button" data-sample="1">🎬 샘플 1 시연 <small>지체·심한</small></button>
+        <button class="cs-btn" type="button" data-sample="2">🎬 샘플 2 시연 <small>청각·심한</small></button>
+      </div>
+      <input id="cardFile" type="file" accept="image/*" capture="environment" class="sr-only" tabindex="-1" aria-hidden="true" />
+      <p class="cs-note">🔒 사진은 <b>서버로 전송되지 않아요</b>. 시연용 가상 인식 화면으로 진행됩니다.</p>
+    </div>
     <div class="chat-log" id="chatLog" role="log" aria-live="polite" aria-label="상담 대화 내용"></div>
     <div class="chips" id="chips" aria-label="답변 선택"></div>
     <form class="composer" id="composer" autocomplete="off">
@@ -439,6 +633,44 @@
 </footer>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- ============ 복지카드 인식 시연 오버레이 ============ -->
+<div class="ocr" id="ocr" role="dialog" aria-modal="true" aria-labelledby="ocrTitle" aria-describedby="ocrDesc" hidden>
+  <div class="ocr-sheet">
+    <div class="ocr-head">
+      <span class="ocr-ico" aria-hidden="true">📷</span>
+      <div>
+        <h2 id="ocrTitle">복지카드 인식 시연</h2>
+        <span class="ocr-sub" id="ocrDesc">촬영한 카드에서 상담에 필요한 정보만 읽어 옵니다</span>
+      </div>
+      <button class="ocr-close" type="button" id="ocrClose" aria-label="인식 화면 닫기">✕</button>
+    </div>
+    <div class="ocr-body">
+      <div class="ocr-cam">
+        <div class="cam-top"><span><span class="cam-dot" aria-hidden="true"></span>CAMERA · OCR</span><span id="camState">대기</span></div>
+        <div class="card-holder masked" id="cardHolder">
+          <div id="cardVisual"></div>
+          <span class="card-corner tl" aria-hidden="true"></span>
+          <span class="card-corner tr" aria-hidden="true"></span>
+          <span class="card-corner bl" aria-hidden="true"></span>
+          <span class="card-corner br" aria-hidden="true"></span>
+          <span class="scanline" aria-hidden="true"></span>
+        </div>
+        <p class="cam-cap">주민등록번호 뒷자리는 <b>촬영 단계에서 자동 마스킹</b>됩니다. 카드 전체가 화면에 들어오게 맞춰 주세요.</p>
+      </div>
+      <div class="ocr-side">
+        <h3><span aria-hidden="true">🧭</span>인식 단계</h3>
+        <p class="lead">① 카드 확인 → ② 정보 추출 → ③ 결과 확인 → ④ 상담·신청서 자동 입력 순서로 진행됩니다.</p>
+        <ol class="ocr-steps" id="ocrSteps" aria-live="polite"></ol>
+        <div id="ocrExtract"></div>
+        <div class="ocr-actions" id="ocrActions"></div>
+      </div>
+    </div>
+    <p class="ocr-privacy"><span class="lock" aria-hidden="true">🔒</span><span><b>사진은 서버로 전송되지 않습니다.</b> 이 화면은 공모전 시연용으로, 실제 OCR 대신 브라우저 안에서 미리 준비한 예시 값을 보여 줍니다. 이름은 가명으로 처리해요.</span></p>
+  </div>
+</div>
+
+<div id="printArea" aria-hidden="true"></div>
 
 <script>
 (function () {
@@ -507,7 +739,16 @@
     checked: {},
     draft: '',
     draftVariant: 0,
-    draftShown: false
+    draftShown: false,
+    /* 복지카드 인식 결과 · 신청서 작성 */
+    card: null,
+    formStep: 0,
+    form: {
+      name: '', phone: '', addr: '',
+      job1: '', job2: '', transport: '',
+      aids: [], motivation: '', motivVariant: 0
+    },
+    ocr: { stage: 0, timer: null, data: null }
   };
 
   function isAnswered(step) {
@@ -1019,6 +1260,642 @@
   }
 
   /* ============================================================
+     7-B. 복지카드 인식 시연 · 신청서 작성 데이터
+     ============================================================ */
+  var CARD_SAMPLES = {
+    '1': { sample: '1', source: 'sample', name: '김다온', type: 'physical', severity: 'severe', reg: '******-*******', issue: '2024. 03. 12.', org: '진주시', note: '휠체어 이용' },
+    '2': { sample: '2', source: 'sample', name: '이하늘', type: 'hearing', severity: 'severe', reg: '******-*******', issue: '2023. 09. 04.', org: '진주시', note: '수어·문자통역' }
+  };
+
+  var OCR_STEPS = [
+    { t: '카드 테두리·보안 마스킹 확인', d: '카드 네 모서리를 찾아 영역을 잡고, 주민등록번호 뒷자리를 가렸습니다.' },
+    { t: '장애유형·장애정도·성명 추출', d: '카드의 항목 칸을 나눠 글자를 읽고, 상담에 필요한 값만 남겼습니다.' },
+    { t: '추출 결과 확인·수정', d: '읽은 값이 맞는지 확인해 주세요. 틀린 칸은 직접 고칠 수 있어요.' },
+    { t: '상담 조건·신청서 자동 입력', d: '확인한 값을 상담 조건과 신청서 1단계에 채웠습니다.' }
+  ];
+
+  var WIZARD_STEPS = [
+    { short: '기본정보 확인' },
+    { short: '희망 사업·여건' },
+    { short: '자기소개 작성' },
+    { short: '서류·최종 점검' }
+  ];
+
+  var TRANSPORTS = [
+    { v: 'car', label: '자차', sub: '직접 운전' },
+    { v: 'bus', label: '대중교통', sub: '버스·택시' },
+    { v: 'special', label: '특별교통수단', sub: '두리발 등' },
+    { v: 'wheel', label: '전동휠체어·도보', sub: '가까운 근무지' },
+    { v: 'family', label: '가족·동행 지원', sub: '함께 이동' }
+  ];
+
+  var AIDS = [
+    { v: 'wheel', label: '휠체어 접근(경사로·승강기)' },
+    { v: 'assist', label: '근로지원인' },
+    { v: 'device', label: '보조공학기기' },
+    { v: 'commute', label: '출퇴근 이동 지원' },
+    { v: 'sign', label: '수어·문자통역' },
+    { v: 'desk', label: '높낮이 조절 책상·좌식 배치' },
+    { v: 'manual', label: '업무지시 문자·서면 안내' },
+    { v: 'rest', label: '휴게·근무시간 조정' }
+  ];
+  var AIDS_LABEL = {};
+  AIDS.forEach(function (a) { AIDS_LABEL[a.v] = a.label; });
+
+  var JOB_OPTIONS = [
+    '행정도우미(민원·서류 정리)',
+    '복지서비스 지원요원',
+    '사서보조(도서 배가·정리)',
+    '급식지원(배식·식기 정리)',
+    '환경정리·주차계도',
+    '읽기 쉬운 자료 감수',
+    '데이터·콘텐츠 검수',
+    '안마 서비스(자격 필요)',
+    '요양보호 보조',
+    '우편물 분류·정리'
+  ];
+  var JOB_DEFAULT = {
+    general_full: 0, general_part: 0, welfare: 2, special_massage: 7,
+    special_care: 8, edu_link: 1, standard: 0, remote: 6
+  };
+
+  function ensureJobs(force) {
+    var pid = state.selectedProgram;
+    if (!pid) { return; }
+    var idx = JOB_DEFAULT[pid] == null ? 0 : JOB_DEFAULT[pid];
+    if (force || !state.form.job1) { state.form.job1 = JOB_OPTIONS[idx]; }
+    if (force || !state.form.job2) { state.form.job2 = JOB_OPTIONS[(idx + 1) % JOB_OPTIONS.length]; }
+  }
+
+  function suggestAids() {
+    var out = [];
+    if (state.envs.has('wheelchair') || state.type === 'physical' || state.type === 'brain') { out.push('wheel'); }
+    if (state.severity === 'severe') { out.push('assist', 'device'); }
+    if (state.type === 'hearing' || state.envs.has('communication')) { out.push('sign', 'manual'); }
+    if (state.envs.has('standing')) { out.push('desk', 'rest'); }
+    if (state.envs.has('wheelchair') || state.type === 'visual') { out.push('commute'); }
+    var uniq = [];
+    out.forEach(function (v) { if (uniq.indexOf(v) === -1) { uniq.push(v); } });
+    return uniq;
+  }
+
+  function buildCardVisual(d) {
+    if (d.photo) {
+      return '<img src="' + d.photo + '" alt="업로드한 복지카드 사진 미리보기" />';
+    }
+    return '<div class="idcard" role="img" aria-label="시연용 가상 복지카드 — ' + esc(TYPE_LABEL[d.type] || '') + ' ' + esc(SEVERITY_LABEL[d.severity] || '') + ' ' + esc(d.name) + '">' +
+      '<div class="idcard-top"><span>대한민국 · 장애인등록증(복지카드)</span><span class="idchip" aria-hidden="true"></span></div>' +
+      '<div class="idcard-body"><div class="idphoto">사진<br>(가명)</div><div class="idcard-fields">' +
+      '<div><b>성명</b><span>' + esc(d.name) + '</span></div>' +
+      '<div><b>장애유형</b><span>' + esc(TYPE_LABEL[d.type] || '') + '</span></div>' +
+      '<div><b>장애정도</b><span>' + esc(SEVERITY_LABEL[d.severity] || '') + '</span></div>' +
+      '<div><b>등록번호</b><span class="masked">' + esc(d.reg) + '</span></div>' +
+      '<div><b>발급일</b><span>' + esc(d.issue) + '</span></div>' +
+      '</div></div>' +
+      '<div class="idcard-foot"><span>' + esc(d.org) + ' · 발급</span><span class="idbar" aria-hidden="true"></span></div>' +
+      '</div>';
+  }
+
+  function openOcr(data) {
+    state.ocr.data = data;
+    state.ocr.stage = 0;
+    var visual = $('#cardVisual');
+    if (visual) { visual.innerHTML = buildCardVisual(data); }
+    var holder = $('#cardHolder');
+    if (holder) { holder.classList.add('masked'); holder.classList.remove('scan-done'); }
+    var camState = $('#camState');
+    if (camState) { camState.textContent = '촬영됨'; }
+    var ocr = $('#ocr');
+    ocr.hidden = false;
+    document.body.style.overflow = 'hidden';
+    renderOcr();
+    var closeBtn = $('#ocrClose');
+    if (closeBtn) { closeBtn.focus(); }
+    if (state.ocr.timer) { clearTimeout(state.ocr.timer); }
+    state.ocr.timer = setTimeout(function () { setOcrStage(1); }, 420);
+  }
+
+  function setOcrStage(n) {
+    var ocr = $('#ocr');
+    if (!ocr || ocr.hidden) { return; }
+    state.ocr.stage = Math.max(state.ocr.stage, n);
+    if (n >= 2) {
+      var holder = $('#cardHolder');
+      if (holder) { holder.classList.remove('masked'); holder.classList.add('scan-done'); }
+      var camState = $('#camState');
+      if (camState) { camState.textContent = '인식 완료'; }
+    }
+    renderOcr();
+    if (n === 1) { state.ocr.timer = setTimeout(function () { setOcrStage(2); }, 900); }
+    if (n === 2) { state.ocr.timer = setTimeout(function () { setOcrStage(3); }, 820); }
+  }
+
+  function extractValuesHtml(d, editable) {
+    var rows = '';
+    rows += '<div class="oe-row"><b>성명</b>' + (editable
+      ? '<input id="ocrName" type="text" value="' + esc(d.name) + '" aria-label="인식된 성명(가명)" />'
+      : '<span class="oe-val">' + esc(d.name) + ' <span style="font-size:12px;color:var(--ink-mute);font-weight:700">(가명)</span></span>') + '</div>';
+    rows += '<div class="oe-row"><b>장애유형</b>' + (editable
+      ? '<select id="ocrType" aria-label="인식된 장애유형">' + typeOptions(d.type) + '</select>'
+      : '<span class="oe-val">' + esc(TYPE_LABEL[d.type] || '') + '</span>') + '</div>';
+    rows += '<div class="oe-row"><b>장애정도</b>' + (editable
+      ? '<select id="ocrSev" aria-label="인식된 장애정도">' + sevOptions(d.severity) + '</select>'
+      : '<span class="oe-val">' + esc(SEVERITY_LABEL[d.severity] || '') + '</span>') + '</div>';
+    rows += '<div class="oe-row"><b>등록번호</b><span class="oe-val"><span class="masked">' + esc(d.reg) + '</span></span></div>';
+    return rows;
+  }
+
+  function typeOptions(sel) {
+    return Object.keys(TYPE_LABEL).map(function (k) {
+      return '<option value="' + k + '"' + (k === sel ? ' selected' : '') + '>' + esc(TYPE_LABEL[k]) + '</option>';
+    }).join('');
+  }
+
+  function sevOptions(sel) {
+    return ['severe', 'mild', 'unsure'].map(function (k) {
+      return '<option value="' + k + '"' + (k === sel ? ' selected' : '') + '>' + esc(SEVERITY_LABEL[k]) + '</option>';
+    }).join('');
+  }
+
+  function renderOcr() {
+    var st = state.ocr.stage;
+    var d = state.ocr.data || CARD_SAMPLES['1'];
+    var steps = $('#ocrSteps');
+    if (steps) {
+      steps.innerHTML = OCR_STEPS.map(function (s, i) {
+        var n = i + 1;
+        var cls = st > n ? 'done' : (st === n ? 'active' : '');
+        var out = '';
+        if (st > n) { out = '<span class="os-out">✓ 완료</span>'; }
+        else if (st === n) { out = '<span class="os-out">' + (n === 3 ? '확인 필요' : '진행 중…') + '</span>'; }
+        return '<li class="ostep ' + cls + '"><span class="osn" aria-hidden="true">' + (st > n ? '✓' : n) + '</span><div><div class="os-t">' + esc(s.t) + '</div><div class="os-d">' + esc(s.d) + '</div>' + out + '</div></li>';
+      }).join('');
+    }
+
+    var ex = $('#ocrExtract');
+    if (ex) {
+      if (st < 2) {
+        ex.innerHTML = '';
+      } else if (st === 2) {
+        ex.innerHTML = '<div class="ocr-extract"><h4><span aria-hidden="true">🔍</span>읽어 온 값</h4>' +
+          '<p class="ex-sub">항목별로 나눠 읽는 중이에요.</p>' + extractValuesHtml(d, false) + '</div>';
+      } else if (st === 3) {
+        ex.innerHTML = '<div class="ocr-extract"><h4><span aria-hidden="true">✅</span>추출 결과 확인·수정</h4>' +
+          '<p class="ex-sub">카드와 다른 값이 있으면 고쳐 주세요. 여기서 고친 값이 상담과 신청서에 들어갑니다.</p>' +
+          extractValuesHtml(d, true) +
+          (d.source === 'upload' ? '<p class="oe-hint">업로드한 사진은 시연용으로 <b>지체·심한 장애</b> 예시 값을 사용했어요. 아래에서 바꿀 수 있습니다.</p>' : '') +
+          '<p class="oe-hint">🔒 인식된 값은 이 브라우저 안에서만 사용되고 저장·전송되지 않습니다.</p></div>';
+      } else {
+        ex.innerHTML = '<div class="ocr-extract"><h4><span aria-hidden="true">🎉</span>상담 조건·신청서에 넣었어요</h4>' +
+          '<p class="ex-sub">아래 값으로 사업 판별을 다시 계산했고, 신청서 1단계 기본정보를 채워 두었습니다.</p>' +
+          '<div class="oe-row"><b>장애유형</b><span class="oe-val">' + esc(TYPE_LABEL[d.type] || '') + '</span></div>' +
+          '<div class="oe-row"><b>장애정도</b><span class="oe-val">' + esc(SEVERITY_LABEL[d.severity] || '') + '</span></div>' +
+          '<div class="oe-row"><b>신청서</b><span class="oe-val">1단계 기본정보 자동 입력 완료</span></div></div>';
+      }
+    }
+
+    var act = $('#ocrActions');
+    if (act) {
+      if (st < 3) {
+        act.innerHTML = '<button class="btn" type="button" id="ocrSkip">인식 건너뛰고 직접 입력</button>';
+      } else if (st === 3) {
+        act.innerHTML = '<button class="btn" type="button" id="ocrRetry">다시 촬영</button>' +
+          '<button class="btn primary" type="button" id="ocrConfirm">이 내용으로 시작</button>';
+      } else {
+        act.innerHTML = '<button class="btn" type="button" id="ocrDone">상담 계속하기</button>' +
+          (ready() ? '<button class="btn teal" type="button" id="ocrToDocs">신청서 작성으로</button>' : '');
+      }
+    }
+
+    var skip = $('#ocrSkip');
+    if (skip) { skip.addEventListener('click', function () { closeOcr(); focusChat(); }); }
+    var retry = $('#ocrRetry');
+    if (retry) { retry.addEventListener('click', function () { closeOcr(); openFilePicker(); }); }
+    var confirm = $('#ocrConfirm');
+    if (confirm) { confirm.addEventListener('click', confirmOcr); }
+    var done = $('#ocrDone');
+    if (done) { done.addEventListener('click', function () { closeOcr(); focusChat(); }); }
+    var toDocs = $('#ocrToDocs');
+    if (toDocs) { toDocs.addEventListener('click', function () { closeOcr(); setTab('docs'); scrollToFormFlow(); }); }
+  }
+
+  function confirmOcr() {
+    var d = state.ocr.data;
+    var nameEl = $('#ocrName');
+    var typeEl = $('#ocrType');
+    var sevEl = $('#ocrSev');
+    if (nameEl && nameEl.value.trim()) { d.name = nameEl.value.trim(); }
+    if (typeEl) { d.type = typeEl.value; }
+    if (sevEl) { d.severity = sevEl.value; }
+    applyCard(d);
+    state.ocr.stage = 4;
+    renderOcr();
+    toast('복지카드 인식 결과를 상담·신청서에 넣었어요');
+    var btn = $('#ocrToDocs');
+    if (btn) { btn.focus(); }
+  }
+
+  function applyCard(d) {
+    state.card = { name: d.name, type: d.type, severity: d.severity, reg: d.reg, org: d.org, sample: d.sample || null, source: d.source || 'sample' };
+    state.severity = d.severity;
+    state.type = d.type;
+    state.form.name = d.name;
+    if (!state.form.phone) { state.form.phone = '010-1234-5678'; }
+    if (!state.form.addr) { state.form.addr = '경상남도 진주시 ○○로 12 (예시)'; }
+    var sugg = suggestAids();
+    if (!state.form.aids.length) { state.form.aids = sugg; }
+    state.form.motivation = '';
+    state.form.motivVariant = 0;
+    syncSelectedProgram();
+    ensureJobs(true);
+    if (!state.form.transport) { state.form.transport = defaultTransport(); }
+    renderCardStart();
+    renderAll();
+    renderChat();
+  }
+
+  function defaultTransport() {
+    if (state.envs.has('wheelchair')) { return 'special'; }
+    if (state.type === 'visual') { return 'bus'; }
+    return 'bus';
+  }
+
+  function closeOcr() {
+    if (state.ocr.timer) { clearTimeout(state.ocr.timer); }
+    var ocr = $('#ocr');
+    if (ocr) { ocr.hidden = true; }
+    document.body.style.overflow = '';
+    state.ocr.stage = 0;
+  }
+
+  function openFilePicker() {
+    var input = $('#cardFile');
+    if (input) { input.click(); }
+  }
+
+  function handleCardFile(file) {
+    if (!file) { return; }
+    if (!/^image\//.test(file.type || '')) { toast('이미지 파일만 올릴 수 있어요'); return; }
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      var base = CARD_SAMPLES['1'];
+      openOcr({
+        sample: null, source: 'upload', name: base.name, type: base.type, severity: base.severity,
+        reg: base.reg, issue: base.issue, org: base.org, photo: String(e.target.result)
+      });
+    };
+    reader.onerror = function () { toast('사진을 읽지 못했어요. 다시 시도해 주세요.'); };
+    reader.readAsDataURL(file);
+  }
+
+  function renderCardStart() {
+    var box = $('#cardStart');
+    if (!box) { return; }
+    var head;
+    if (state.card) {
+      box.classList.add('used');
+      head = '<div class="cs-head"><span class="cs-emoji" aria-hidden="true">✅</span><div>' +
+        '<span class="cs-title">복지카드 인식 완료</span>' +
+        '<span class="cs-desc">' + esc(TYPE_LABEL[state.card.type] || '') + ' · ' + esc(SEVERITY_LABEL[state.card.severity] || '') +
+        ' · 성명 ' + esc(state.card.name) + '(가명) — 상담 조건과 신청서 1단계에 넣었어요.</span></div></div>';
+    } else {
+      box.classList.remove('used');
+      head = '<div class="cs-head"><span class="cs-emoji" aria-hidden="true">📷</span><div>' +
+        '<span class="cs-title">복지카드로 바로 시작</span>' +
+        '<span class="cs-desc">카드를 찍으면 장애 유형·정도를 읽어 상담 조건과 신청서까지 이어 드려요.</span></div></div>';
+    }
+    var actions = '<div class="cs-actions">' +
+      '<button class="cs-btn main" type="button" id="cardUpload">📷 ' + (state.card ? '다시 촬영·업로드' : '복지카드 촬영·업로드') + '</button>' +
+      '<button class="cs-btn" type="button" data-sample="1">🎬 샘플 1 <small>지체·심한</small></button>' +
+      '<button class="cs-btn" type="button" data-sample="2">🎬 샘플 2 <small>청각·심한</small></button>' +
+      '</div>';
+    box.innerHTML = head + actions +
+      '<input id="cardFile" type="file" accept="image/*" capture="environment" class="sr-only" tabindex="-1" aria-hidden="true" />' +
+      '<p class="cs-note">🔒 사진은 <b>서버로 전송되지 않아요</b>. 시연용 가상 인식 화면으로 진행됩니다.</p>';
+  }
+
+  function focusChat() {
+    var input = $('#userInput');
+    var chat = $('.chat');
+    if (chat && chat.scrollIntoView) { chat.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    if (input) { setTimeout(function () { input.focus({ preventScroll: true }); }, 260); }
+  }
+
+  function scrollToFormFlow() {
+    var flow = $('#formFlow');
+    if (flow && flow.scrollIntoView) { flow.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    var cur = $('.wstep[aria-current="step"]');
+    if (cur) { cur.focus({ preventScroll: true }); }
+  }
+
+  function toggleAid(v, on) {
+    var i = state.form.aids.indexOf(v);
+    if (on && i === -1) { state.form.aids.push(v); }
+    if (!on && i > -1) { state.form.aids.splice(i, 1); }
+    var cb = $('#aid-' + v);
+    if (cb) {
+      var wrap = cb.closest ? cb.closest('.aid') : null;
+      if (wrap) { wrap.classList.toggle('checked', !!on); }
+    }
+  }
+
+  function onFieldChange(fld, value) {
+    if (fld === 'disType') {
+      state.type = value;
+      syncSelectedProgram();
+      renderAll();
+      renderChat();
+      return;
+    }
+    if (fld === 'disSeverity') {
+      state.severity = value;
+      syncSelectedProgram();
+      renderAll();
+      renderChat();
+      return;
+    }
+    state.form[fld] = value;
+  }
+
+  /* ============================================================
+     7-C. 신청서 작성 4단계 (탭 3 확장)
+     ============================================================ */
+  function stepDone(i) {
+    var f = state.form;
+    if (i === 0) { return !!(f.name && f.phone && f.addr); }
+    if (i === 1) { return !!(f.job1 && f.transport); }
+    if (i === 2) { return !!(f.motivation && f.motivation.trim()); }
+    if (i === 3) {
+      var docs = docsFor(state.selectedProgram);
+      return docs.length > 0 && docs.every(function (d) { return !!state.checked[state.selectedProgram + ':' + d.id]; });
+    }
+    return false;
+  }
+
+  function formField(key, label, type, value, hint, req) {
+    var id = 'form-' + key;
+    return '<div class="field"><label for="' + id + '">' + esc(label) + (req ? ' <span class="req" aria-hidden="true">*</span>' : '') + '</label>' +
+      '<input id="' + id + '" type="' + type + '" data-field="' + key + '" value="' + esc(value || '') + '" autocomplete="off" />' +
+      (hint ? '<span class="fhint">' + esc(hint) + '</span>' : '') + '</div>';
+  }
+
+  function wizardHtml(current, docs) {
+    var step = state.formStep;
+    var doneCount = 0;
+    for (var i = 0; i < WIZARD_STEPS.length; i++) { if (stepDone(i)) { doneCount += 1; } }
+    var html = '<div class="form-flow" id="formFlow">';
+    html += '<div class="ff-head"><h3><span aria-hidden="true">✍️</span>신청서 작성 4단계</h3>' +
+      '<span class="ff-prog">' + (state.card ? '복지카드 인식 연동' : '상담 조건 연동') + ' · ' + (step + 1) + '/4 단계 · 완료 ' + doneCount + '/4</span></div>';
+    html += '<div class="ff-steps" aria-label="신청서 작성 단계">';
+    WIZARD_STEPS.forEach(function (s, idx) {
+      var cls = 'wstep' + (stepDone(idx) ? ' done' : '');
+      html += '<button class="' + cls + '" type="button" data-wstep="' + idx + '" aria-current="' + (idx === step ? 'step' : 'false') + '">' +
+        '<span class="wn" aria-hidden="true">' + (stepDone(idx) ? '✓' : (idx + 1)) + '</span>' + esc(s.short) + '</button>';
+    });
+    html += '</div><div class="ff-body">';
+    if (step === 0) { html += step1Html(); }
+    else if (step === 1) { html += step2Html(current); }
+    else if (step === 2) { html += step3Html(); }
+    else { html += step4Html(docs, current); }
+    html += '</div></div>';
+    return html;
+  }
+
+  function step1Html() {
+    var f = state.form;
+    var html = '<div class="ff-title"><span aria-hidden="true">①</span>기본정보·장애정보 확인</div>' +
+      '<p class="ff-lead">' + (state.card
+        ? '복지카드에서 읽은 <b>' + esc(TYPE_LABEL[state.card.type] || '') + ' · ' + esc(SEVERITY_LABEL[state.card.severity] || '') + '</b> 값을 채워 두었어요. 연락처와 거주지만 확인해 주세요.'
+        : '상담에서 고른 조건을 기본값으로 채워 두었어요. 연락처와 거주지를 확인해 주세요.') + '</p>';
+    html += '<div class="field-grid">';
+    html += formField('name', '성명(가명)', 'text', f.name, '카드에는 실명이 있지만 시연에서는 가명으로 표시합니다.', true);
+    html += formField('phone', '연락처', 'tel', f.phone, '예시 번호를 넣어 두었어요. 실제 번호로 고쳐 주세요.', true);
+    html += formField('addr', '거주지(시·군·구)', 'text', f.addr, '가까운 근무지를 찾는 기준이 됩니다.', true);
+    html += '<div class="field"><label for="formType">장애유형</label><select id="formType" data-field="disType">' + typeOptions(state.type) + '</select></div>';
+    html += '<div class="field"><label for="formSev">장애정도</label><select id="formSev" data-field="disSeverity">' + sevOptions(state.severity) + '</select><span class="fhint">바꾸면 사업 판별이 바로 다시 계산돼요.</span></div>';
+    html += '<div class="field"><label>복지카드 등록번호</label><div class="oe-val" style="min-height:46px;display:flex;align-items:center"><span class="masked">' + esc(state.card ? state.card.reg : '******-*******') + '</span></div><span class="fhint">뒷자리는 마스킹되어 저장·전송되지 않습니다.</span></div>';
+    html += '</div>';
+    html += wizardActions(0);
+    return html;
+  }
+
+  function step2Html(current) {
+    var f = state.form;
+    var statusPill = current.status === '조건부' ? '조건부 가능' : '가능';
+    var html = '<div class="ff-title"><span aria-hidden="true">②</span>희망 사업·근로여건 선택</div>' +
+      '<p class="ff-lead">판별한 사업을 그대로 연결했어요. 1·2지망 직무와 이동 방법, 필요한 편의지원을 골라 주세요.</p>';
+    html += '<div class="notice"><span class="ico" aria-hidden="true">i</span><div><b>' + esc(current.p.name) + '</b> <span class="pill ' + current.status + '" style="margin-left:2px">' + statusPill + '</span><br>' +
+      esc(current.p.hours) + ' · ' + esc(current.p.pay) + ' · ' + esc(current.p.duty) + '</div></div>';
+    html += '<div class="field-grid">';
+    html += '<div class="field"><label for="formJob1">1지망 직무 <span class="req" aria-hidden="true">*</span></label><select id="formJob1" data-field="job1">' + jobOptionsHtml(f.job1) + '</select></div>';
+    html += '<div class="field"><label for="formJob2">2지망 직무</label><select id="formJob2" data-field="job2"><option value="">선택 안 함</option>' + jobOptionsHtml(f.job2) + '</select><span class="fhint">1지망 배치가 어려울 때 함께 검토됩니다.</span></div>';
+    html += '</div>';
+    html += '<div class="field-group"><h4>이동수단</h4><div class="pick-row" role="group" aria-label="이동수단">';
+    TRANSPORTS.forEach(function (t) {
+      html += '<button class="pick" type="button" data-transport="' + t.v + '" aria-pressed="' + (f.transport === t.v ? 'true' : 'false') + '">' + esc(t.label) + ' <small>' + esc(t.sub) + '</small></button>';
+    });
+    html += '</div></div>';
+    html += '<div class="field-group"><h4>필요한 편의지원 (여러 개 선택 가능)</h4><div class="check-grid">';
+    AIDS.forEach(function (a) {
+      var on = f.aids.indexOf(a.v) > -1;
+      html += '<label class="aid' + (on ? ' checked' : '') + '" for="aid-' + a.v + '"><input type="checkbox" id="aid-' + a.v + '" data-aid="' + a.v + '"' + (on ? ' checked' : '') + ' /><span>' + esc(a.label) + '</span></label>';
+    });
+    html += '</div><p class="fhint" style="margin-top:9px">근로지원인·보조공학기기는 사업 참여와 별도로 신청합니다. 담당자 상담 때 함께 요청하세요.</p></div>';
+    html += wizardActions(1);
+    return html;
+  }
+
+  function jobOptionsHtml(sel) {
+    return JOB_OPTIONS.map(function (j) {
+      return '<option value="' + esc(j) + '"' + (j === sel ? ' selected' : '') + '>' + esc(j) + '</option>';
+    }).join('');
+  }
+
+  function step3Html() {
+    var f = state.form;
+    var chars = (f.motivation || '').length;
+    var html = '<div class="ff-title"><span aria-hidden="true">③</span>지원동기·자기소개 작성</div>' +
+      '<p class="ff-lead">복지카드 값과 고른 근로여건을 반영해 초안을 만들었어요. 그대로 써도 되고, 본인 경험만 더해 직접 고쳐도 됩니다.</p>';
+    html += '<div class="field"><label for="formMotiv">자기소개·지원동기</label>' +
+      '<textarea id="formMotiv" data-field="motivation">' + esc(f.motivation) + '</textarea>' +
+      '<span class="fhint">본인 경험은 [ ] 안에 채워 넣으세요. 없는 경력은 지우는 편이 안전합니다. (' + chars + '자)</span></div>';
+    html += '<div class="ff-actions"><button class="btn primary" type="button" id="btnMotivGen">AI 초안 다시 만들기</button>' +
+      '<button class="btn" type="button" id="btnMotivVar">다른 표현으로</button>' +
+      '<button class="btn" type="button" id="btnMotivCopy">복사하기</button></div>';
+    html += wizardActions(2);
+    return html;
+  }
+
+  function step4Html(docs, current) {
+    var f = state.form;
+    var miss = docs.filter(function (d) { return !state.checked[state.selectedProgram + ':' + d.id]; });
+    var doneDocs = docs.length - miss.length;
+    var badges = [
+      { ok: stepDone(0), t: '기본정보 ' + (stepDone(0) ? '완료' : '미완료') },
+      { ok: stepDone(1), t: '희망 사업·여건 ' + (stepDone(1) ? '완료' : '미완료') },
+      { ok: stepDone(2), t: '자기소개 ' + (stepDone(2) ? '작성됨' : '미작성') },
+      { ok: miss.length === 0, t: '서류 ' + doneDocs + '/' + docs.length + ' 확인됨' }
+    ];
+    var html = '<div class="ff-title"><span aria-hidden="true">④</span>구비서류 체크 &amp; 제출 전 최종 점검</div>' +
+      '<p class="ff-lead">없는 서류를 한 번에 볼 수 있어요. 모두 확인하면 아래 미리보기로 신청서를 그대로 출력할 수 있습니다.</p>';
+    html += '<div class="ff-badges">' + badges.map(function (b) {
+      return '<span class="ff-badge' + (b.ok ? '' : ' todo') + '">' + (b.ok ? '✓ ' : '! ') + esc(b.t) + '</span>';
+    }).join('') + '</div>';
+    if (miss.length) {
+      html += '<div class="miss-box"><h4>아직 확인하지 않은 서류 ' + miss.length + '건</h4><ul>' + miss.map(function (d) {
+        return '<li><span class="mk" aria-hidden="true">!</span><span><b>' + esc(d.name) + '</b> — ' + esc(d.where) + '</span></li>';
+      }).join('') + '</ul></div>';
+    } else {
+      html += '<div class="miss-box" style="background:#F4FBF6;border-color:#CBE7D6"><p class="ok-line">✓ 필수 서류 ' + docs.length + '건을 모두 확인했어요. 제출할 수 있습니다.</p></div>';
+    }
+    html += '<p class="fhint" style="margin:-4px 0 12px">서류 체크는 아래 <b>구비서류 체크리스트</b>와 연결되어 있어요.</p>';
+    html += '<div class="sec-title" style="margin-top:6px"><span aria-hidden="true">📄</span>신청서 전체 미리보기<span class="hint">' + esc(current.p.name) + '</span></div>';
+    html += '<div id="appPreview">' + appSheetHtml(docs) + '</div>';
+    html += '<div class="ff-actions"><button class="btn primary" type="button" id="btnAppCopy">텍스트 복사</button>' +
+      '<button class="btn" type="button" id="btnAppPrint">인쇄용 출력</button>' +
+      '<button class="btn" type="button" id="btnAppPreview">미리보기로 이동</button></div>';
+    html += wizardActions(3);
+    return html;
+  }
+
+  function wizardActions(step) {
+    return '<div class="ff-actions">' +
+      (step > 0 ? '<button class="btn" type="button" id="wPrev">← 이전 단계</button>' : '<button class="btn" type="button" id="wReset">입력 지우기</button>') +
+      '<span class="ff-count">' + (step + 1) + ' / 4 단계</span>' +
+      '<span class="spacer"></span>' +
+      (step < 3 ? '<button class="btn primary" type="button" id="wNext">다음 단계 →</button>' : '<button class="btn teal" type="button" id="wBack1">1단계로 돌아가기</button>') +
+      '</div>';
+  }
+
+  function appSheetHtml(docs) {
+    var f = state.form;
+    var pid = state.selectedProgram || 'general_full';
+    var prog = PROGRAMS.filter(function (p) { return p.id === pid; })[0] || PROGRAMS[0];
+    var transport = (TRANSPORTS.filter(function (t) { return t.v === f.transport; })[0] || {}).label || '미선택';
+    var aids = f.aids.map(function (v) { return AIDS_LABEL[v]; }).filter(Boolean);
+    var today = '2026. 11. 18.';
+    var html = '<div class="app-sheet">';
+    html += '<h4>장애인일자리사업 참여신청서</h4>';
+    html += '<div class="as-sub">(서식 1) · 작성일 ' + today + ' · 다온(DAON) 프로토타입 미리보기 — 실제 제출 양식과 다를 수 있습니다</div>';
+    html += '<table><tbody>';
+    html += '<tr><th>성명(가명)</th><td>' + esc(f.name || '—') + '</td><th>연락처</th><td>' + esc(f.phone || '—') + '</td></tr>';
+    html += '<tr><th>거주지</th><td colspan="3">' + esc(f.addr || '—') + '</td></tr>';
+    html += '<tr><th>장애유형</th><td>' + esc(TYPE_LABEL[state.type] || '—') + '</td><th>장애정도</th><td>' + esc(SEVERITY_LABEL[state.severity] || '—') + '</td></tr>';
+    html += '<tr><th>복지카드</th><td colspan="3">등록번호 <span class="masked">' + esc(state.card ? state.card.reg : '******-*******') + '</span> (뒷자리 마스킹 · ' + (state.card ? '카드 인식값' : '미인식') + ')</td></tr>';
+    html += '</tbody></table>';
+    html += '<div class="as-h">■ 1. 희망 사업·근로여건</div>';
+    html += '<table><tbody>';
+    html += '<tr><th>희망 사업</th><td>' + esc(prog.name) + ' — ' + esc(prog.hours) + ', ' + esc(prog.pay) + '</td></tr>';
+    html += '<tr><th>1지망 직무</th><td>' + esc(f.job1 || '—') + '</td></tr>';
+    html += '<tr><th>2지망 직무</th><td>' + esc(f.job2 || '선택 안 함') + '</td></tr>';
+    html += '<tr><th>이동수단</th><td>' + esc(transport) + '</td></tr>';
+    html += '<tr><th>필요 편의지원</th><td>' + esc(aids.length ? aids.join(', ') : '없음') + '</td></tr>';
+    html += '</tbody></table>';
+    html += '<div class="as-h">■ 2. 자기소개 및 지원동기</div>';
+    html += '<div class="as-body">' + (f.motivation && f.motivation.trim() ? esc(f.motivation) : '아직 작성하지 않았어요. 3단계에서 AI 초안을 만들 수 있습니다.') + '</div>';
+    html += '<div class="as-h">■ 3. 구비서류 확인 (' + docs.filter(function (d) { return !!state.checked[state.selectedProgram + ':' + d.id]; }).length + ' / ' + docs.length + ')</div>';
+    html += '<div class="doc-grid">' + docs.map(function (d) {
+      var on = !!state.checked[state.selectedProgram + ':' + d.id];
+      return '<div class="doc-line"><span class="ck' + (on ? '' : ' no') + '" aria-hidden="true">' + (on ? '☑' : '☐') + '</span><span>' + esc(d.name) + '</span></div>';
+    }).join('') + '</div>';
+    html += '<p class="as-foot">※ 이 문서는 공모전 시연용으로 다온(DAON) 프로토타입이 만든 초안입니다. 실제 제출은 거주지 시·군·구청·수행기관 양식과 안내를 따르고, 본인 경력·계좌·연락처는 제출 전에 직접 확인해 주세요.</p>';
+    html += '</div>';
+    return html;
+  }
+
+  function buildAppText() {
+    var f = state.form;
+    var pid = state.selectedProgram || 'general_full';
+    var prog = PROGRAMS.filter(function (p) { return p.id === pid; })[0] || PROGRAMS[0];
+    var docs = docsFor(pid);
+    var transport = (TRANSPORTS.filter(function (t) { return t.v === f.transport; })[0] || {}).label || '미선택';
+    var aids = f.aids.map(function (v) { return AIDS_LABEL[v]; }).filter(Boolean);
+    var lines = [];
+    lines.push('장애인일자리사업 참여신청서 (서식 1) — 작성 초안');
+    lines.push('작성일: 2026. 11. 18. · 다온(DAON) 프로토타입으로 작성');
+    lines.push('');
+    lines.push('■ 기본정보');
+    lines.push('성명(가명): ' + (f.name || ''));
+    lines.push('연락처: ' + (f.phone || ''));
+    lines.push('거주지: ' + (f.addr || ''));
+    lines.push('장애유형: ' + (TYPE_LABEL[state.type] || ''));
+    lines.push('장애정도: ' + (SEVERITY_LABEL[state.severity] || ''));
+    lines.push('복지카드 등록번호: ' + (state.card ? state.card.reg : '******-*******') + ' (뒷자리 마스킹)');
+    lines.push('');
+    lines.push('■ 희망 사업·근로여건');
+    lines.push('희망 사업: ' + prog.name + ' — ' + prog.hours + ', ' + prog.pay);
+    lines.push('1지망 직무: ' + (f.job1 || ''));
+    lines.push('2지망 직무: ' + (f.job2 || '선택 안 함'));
+    lines.push('이동수단: ' + transport);
+    lines.push('필요 편의지원: ' + (aids.length ? aids.join(', ') : '없음'));
+    lines.push('');
+    lines.push('■ 자기소개 및 지원동기');
+    lines.push(f.motivation && f.motivation.trim() ? f.motivation : '(미작성)');
+    lines.push('');
+    lines.push('■ 구비서류 확인');
+    docs.forEach(function (d) {
+      var on = !!state.checked[pid + ':' + d.id];
+      lines.push((on ? '[✓] ' : '[ ] ') + d.name + ' — ' + d.where);
+    });
+    lines.push('');
+    lines.push('※ 공모전 시연용 초안입니다. 제출 전 실제 양식·본인 정보로 확인해 주세요.');
+    return lines.join('\n');
+  }
+
+  function buildFormMotivation(variant) {
+    var s = state;
+    var v = variant || 0;
+    var pid = state.selectedProgram || 'general_full';
+    var prog = PROGRAMS.filter(function (p) { return p.id === pid; })[0] || PROGRAMS[0];
+    var typeName = TYPE_LABEL[s.type] || '장애';
+    var sevInline = s.severity === 'severe' ? '장애 정도가 심한' : s.severity === 'mild' ? '장애 정도가 심하지 않은' : '장애인등록증을 가진';
+    var typeSentence;
+    if (s.type === 'physical' && !s.envs.has('wheelchair')) {
+      typeSentence = pick([
+        '오래 서 있거나 무거운 것을 드는 일은 어렵지만, 앉아서 하는 일은 무리 없이 해낼 수 있습니다.',
+        '계단을 오르내리는 일은 피하고 싶고, 앉아서 하는 일이라면 오래 집중해서 할 수 있습니다.'
+      ], v);
+    } else {
+      typeSentence = pick(TYPE_SENTENCE[s.type] || TYPE_SENTENCE.other, v);
+    }
+    var envSentences = [];
+    if (s.envs.has('wheelchair')) { envSentences.push('출퇴근과 사무실 안을 이동할 때 경사로와 승강기가 꼭 필요합니다.'); }
+    if (s.envs.has('standing')) { envSentences.push('서서 오래 일하는 자리보다 앉아서 하는 자리가 맞습니다.'); }
+    if (s.envs.has('simple')) { envSentences.push('여러 가지를 동시에 하기보다 정해진 일을 순서대로 할 때 실수가 적습니다.'); }
+    if (s.envs.has('communication') && s.type !== 'hearing') { envSentences.push('업무 지시를 글로 받거나 통역의 도움을 받으면 정확하게 해낼 수 있습니다.'); }
+    var transport = (TRANSPORTS.filter(function (t) { return t.v === state.form.transport; })[0] || {}).label || '대중교통';
+    var aidNames = state.form.aids.map(function (x) { return AIDS_LABEL[x]; }).filter(Boolean);
+    var strength = s.envs.has('simple')
+      ? pick(['한 가지 일을 반복해서 정확하게 해내는 데 익숙합니다.', '맡은 일을 순서대로 끝까지 해 두는 편입니다.'], v)
+      : pick(['배운 일은 메모해 두고 같은 방식으로 해내는 편입니다.', '모르는 것은 먼저 물어보고 확인한 뒤에 움직입니다.'], v);
+    var closing = pick([
+      '주어진 시간 동안 성실하게 일하고, 함께 일하는 분들이 불편하지 않도록 먼저 물어보고 움직이겠습니다. 기회를 주시면 오래 다니며 맡은 일을 해내겠습니다.',
+      '처음에는 느릴 수 있지만 익숙해질 때까지 꾸준히 하겠습니다. 작은 일도 소홀히 하지 않고 끝까지 해내는 사람이 되겠습니다.',
+      '할 수 있는 일과 어려운 일을 숨기지 않고 담당자와 함께 정해 가며 오래 일하고 싶습니다. 잘 부탁드립니다.'
+    ], v);
+    var out = [];
+    out.push('안녕하세요. 저는 ' + sevInline + ' ' + typeName + '인입니다. ' + typeSentence);
+    out.push('지금은 ' + (ACTIVITY[s.type] || ACTIVITY.other) + ' 지냅니다. ' + strength);
+    out.push('‘' + prog.name + '’ 사업에 지원하게 된 이유는 ' + (WHY[pid] || WHY.general_part) + ' 희망하는 일은 ' + (state.form.job1 || '사무보조') + '입니다. ' +
+      (envSentences.length ? envSentences.join(' ') : '특별히 요청할 환경은 없습니다.'));
+    out.push('출퇴근은 ' + transport + '을(를) 이용할 수 있습니다. ' +
+      (aidNames.length ? '일할 때 ' + aidNames.join(', ') + '의 도움을 받으면 더 안정적으로 해낼 수 있습니다.' : '필요한 지원은 담당자와 상의해 정하고 싶습니다.'));
+    out.push(closing);
+    return out.join('\n\n');
+  }
+
+  function printApp() {
+    var docs = docsFor(state.selectedProgram);
+    var area = $('#printArea');
+    if (!area) { return; }
+    area.innerHTML = appSheetHtml(docs);
+    toast('인쇄 화면을 준비했어요');
+    setTimeout(function () {
+      try { window.print(); } catch (e) { toast('이 브라우저에서는 인쇄 창을 열 수 없어요'); }
+    }, 120);
+  }
+
+  /* ============================================================
      8. 대화 렌더링
      ============================================================ */
   var GREETING = '안녕하세요! 저는 <b>다온</b>, 장애인 일자리 상담을 도와드리는 AI 카운셀러예요. 복잡한 자격 기준과 서류를 대신 정리해 드릴게요.';
@@ -1066,6 +1943,9 @@
     var log = $('#chatLog');
     log.innerHTML = '';
     addMsg('bot', GREETING);
+    if (state.card) {
+      addMsg('bot', '📷 아까 복지카드에서 <b>' + esc(TYPE_LABEL[state.card.type] || '') + ' · ' + esc(SEVERITY_LABEL[state.card.severity] || '') + '</b>을(를) 읽었어요. 성명은 가명(' + esc(state.card.name) + ')으로 처리했고, 신청서 1단계에도 채워 두었습니다.');
+    }
     var pend = nextUnanswered();
     for (var i = 0; i < STEPS.length; i++) {
       if (i < pend) {
@@ -1198,7 +2078,10 @@
       { lab: '희망 근무', val: WORK_LABEL[state.workType] },
       { lab: '환경', val: state.envAnswered ? (state.envs.size ? Array.from(state.envs).map(function (v) { return ENV_LABEL[v].split('(')[0].trim(); }).join(' · ') : '요구 없음') : null }
     ];
-    el.innerHTML = items.map(function (it) {
+    var cardChip = state.card
+      ? '<span class="sum-chip">📷 복지카드 <b>' + esc(TYPE_LABEL[state.card.type] || '') + ' · ' + esc((SEVERITY_LABEL[state.card.severity] || '').split('(')[0].trim()) + '</b></span>'
+      : '';
+    el.innerHTML = cardChip + items.map(function (it) {
       if (!it.val) { return '<span class="sum-chip empty">' + esc(it.lab) + ' <b>미선택</b></span>'; }
       return '<span class="sum-chip">' + esc(it.lab) + ' <b>' + esc(it.val) + '</b></span>';
     }).join('');
@@ -1320,20 +2203,32 @@
     if (!state.selectedProgram) { state.selectedProgram = options[0].p.id; }
     var current = options.filter(function (x) { return x.p.id === state.selectedProgram; })[0] || options[0];
     state.selectedProgram = current.p.id;
+
+    ensureJobs(false);
+    if (!state.form.transport) { state.form.transport = defaultTransport(); }
+    if (!state.form.name && state.card) { state.form.name = state.card.name; }
+    if (state.formStep < 0 || state.formStep > 3) { state.formStep = 0; }
+    if (state.formStep === 2 && !state.form.motivation) { state.form.motivation = buildFormMotivation(0); }
+
     var docs = docsFor(current.p.id);
     var checkedCount = docs.filter(function (d) { return state.checked[state.selectedProgram + ':' + d.id]; }).length;
     $('#count-docs').textContent = checkedCount + '/' + docs.length;
 
-    var html = '<div class="panel-title"><h2><span class="em" aria-hidden="true">📋</span>서류 체크리스트 &amp; 신청서 초안</h2><span class="hint">신청할 사업을 고르면 서류가 바뀝니다</span></div>';
+    var html = '<div class="panel-title"><h2><span class="em" aria-hidden="true">📋</span>서류·신청서 작성</h2><span class="hint">복지카드 → 판별 → 신청서까지 한 번에</span></div>';
     html += '<div class="docs-toolbar"><label for="programSelect">신청할 사업</label><select id="programSelect">' +
       options.map(function (x) {
         var label = x.p.name + (x.status === '조건부' ? ' (조건부 가능)' : ' (가능)');
         return '<option value="' + esc(x.p.id) + '"' + (x.p.id === state.selectedProgram ? ' selected' : '') + '>' + esc(label) + '</option>';
       }).join('') + '</select></div>';
 
-    html += '<div class="bar-label">준비 ' + checkedCount + ' / ' + docs.length + ' — ' + esc(current.p.name) + '</div>';
+    html += '<div class="bar-label">서류 준비 ' + checkedCount + ' / ' + docs.length + ' — ' + esc(current.p.name) + '</div>';
     html += '<div class="bar-wrap"><div class="bar" id="docBar" style="width:' + (docs.length ? Math.round(checkedCount / docs.length * 100) : 0) + '%"></div></div>';
 
+    /* --- 신청서 작성 4단계 --- */
+    html += wizardHtml(current, docs);
+
+    /* --- 구비서류 체크리스트 --- */
+    html += '<div class="sec-title" id="docCheck"><span aria-hidden="true">📁</span>구비서류 체크리스트<span class="hint">발급처까지 적어 두었어요</span></div>';
     html += '<ul class="doc-list" id="docList">';
     docs.forEach(function (d) {
       var key = state.selectedProgram + ':' + d.id;
@@ -1345,7 +2240,8 @@
     });
     html += '</ul>';
 
-    html += '<div class="draft-box"><h3><span aria-hidden="true">✍️</span>자기소개·지원동기 초안</h3>' +
+    /* --- 기존 5항목 초안 --- */
+    html += '<div class="draft-box"><h3><span aria-hidden="true">✍️</span>자기소개·지원동기 5항목 초안</h3>' +
       '<p class="lead">선택한 사업·장애 유형·근무 조건을 반영해 문장을 만들어 드려요. 복사해서 신청서에 붙이고, 경력 부분만 고치면 됩니다.</p>' +
       '<div class="draft-actions"><button class="btn primary" type="button" id="btnGenerate">초안 만들기</button>' +
       '<button class="btn" type="button" id="btnVariant"' + (state.draftShown ? '' : ' disabled') + '>다른 표현으로</button>' +
@@ -1358,6 +2254,10 @@
       state.selectedProgram = e.target.value;
       state.draftShown = false;
       state.draft = '';
+      state.form.job1 = '';
+      state.form.job2 = '';
+      state.form.motivation = '';
+      ensureJobs(false);
       renderDocs();
     });
     $('#btnGenerate').addEventListener('click', function () { generateDraft(); });
@@ -1366,6 +2266,70 @@
       if (!state.draft) { toast('먼저 초안을 만들어 주세요'); return; }
       copyText(state.draft);
     });
+
+    /* --- 4단계 위저드 이벤트 --- */
+    $$('.wstep', body).forEach(function (btn, idx) {
+      btn.addEventListener('click', function () {
+        state.formStep = idx;
+        if (idx === 2 && !state.form.motivation) { state.form.motivation = buildFormMotivation(0); }
+        renderDocs();
+        scrollToFormFlow();
+      });
+    });
+    var prev = $('#wPrev');
+    if (prev) { prev.addEventListener('click', function () { state.formStep = Math.max(0, state.formStep - 1); renderDocs(); scrollToFormFlow(); }); }
+    var next = $('#wNext');
+    if (next) { next.addEventListener('click', function () {
+      state.formStep = Math.min(3, state.formStep + 1);
+      if (state.formStep === 2 && !state.form.motivation) { state.form.motivation = buildFormMotivation(0); }
+      renderDocs();
+      scrollToFormFlow();
+    }); }
+    var back1 = $('#wBack1');
+    if (back1) { back1.addEventListener('click', function () { state.formStep = 0; renderDocs(); scrollToFormFlow(); }); }
+    var wreset = $('#wReset');
+    if (wreset) { wreset.addEventListener('click', function () {
+      state.form.phone = '';
+      state.form.addr = '';
+      state.form.motivation = '';
+      state.form.aids = [];
+      state.form.transport = '';
+      state.form.name = state.card ? state.card.name : '';
+      renderDocs();
+      toast('입력한 내용을 지웠어요. 다시 채워 주세요.');
+    }); }
+    var motivGen = $('#btnMotivGen');
+    if (motivGen) { motivGen.addEventListener('click', function () {
+      state.form.motivVariant = 0;
+      state.form.motivation = buildFormMotivation(0);
+      renderDocs();
+      var ta = $('#formMotiv');
+      if (ta) { ta.focus(); }
+      toast('조건에 맞춰 초안을 다시 만들었어요');
+    }); }
+    var motivVar = $('#btnMotivVar');
+    if (motivVar) { motivVar.addEventListener('click', function () {
+      state.form.motivVariant += 1;
+      state.form.motivation = buildFormMotivation(state.form.motivVariant);
+      renderDocs();
+      var ta = $('#formMotiv');
+      if (ta) { ta.focus(); }
+      toast('다른 표현으로 다시 썼어요');
+    }); }
+    var motivCopy = $('#btnMotivCopy');
+    if (motivCopy) { motivCopy.addEventListener('click', function () {
+      if (!state.form.motivation) { toast('먼저 초안을 만들어 주세요'); return; }
+      copyText(state.form.motivation);
+    }); }
+    var appCopy = $('#btnAppCopy');
+    if (appCopy) { appCopy.addEventListener('click', function () { copyText(buildAppText()); }); }
+    var appPrint = $('#btnAppPrint');
+    if (appPrint) { appPrint.addEventListener('click', printApp); }
+    var appPrev = $('#btnAppPreview');
+    if (appPrev) { appPrev.addEventListener('click', function () {
+      var el = $('#appPreview');
+      if (el && el.scrollIntoView) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    }); }
   }
 
   function updateDocProgress() {
@@ -1378,7 +2342,7 @@
     var lab = $('.bar-label');
     if (lab) {
       var name = (PROGRAMS.filter(function (p) { return p.id === state.selectedProgram; })[0] || {}).name || '';
-      lab.textContent = '준비 ' + checkedCount + ' / ' + docs.length + ' — ' + name;
+      lab.textContent = '서류 준비 ' + checkedCount + ' / ' + docs.length + ' — ' + name;
     }
   }
 
@@ -1663,10 +2627,16 @@
     state.draft = '';
     state.draftShown = false;
     state.draftVariant = 0;
+    state.card = null;
+    state.formStep = 0;
+    state.form = { name: '', phone: '', addr: '', job1: '', job2: '', transport: '', aids: [], motivation: '', motivVariant: 0 };
+    if (state.ocr.timer) { clearTimeout(state.ocr.timer); }
   }
 
   function resetAll() {
     resetState();
+    closeOcr();
+    renderCardStart();
     setTab('jobs');
     renderAll();
     renderChat();
@@ -1682,12 +2652,20 @@
   function applyPersona(i) {
     var p = PERSONAS[i];
     resetState();
+    closeOcr();
     state.severity = p.severity;
     state.type = p.type;
     state.workType = p.workType;
     state.envs = new Set(p.envs);
     state.envAnswered = true;
     syncSelectedProgram();
+    ensureJobs(true);
+    state.form.name = '김다온';
+    state.form.phone = '010-1234-5678';
+    state.form.addr = '경상남도 진주시 ○○로 12 (예시)';
+    state.form.aids = suggestAids();
+    state.form.transport = defaultTransport();
+    renderCardStart();
     setTab('jobs');
     renderAll();
     renderChat();
@@ -1721,13 +2699,68 @@
 
     var panelDocs = $('#panel-docs');
     panelDocs.addEventListener('change', function (e) {
-      var cb = e.target;
-      if (!cb || cb.type !== 'checkbox' || !cb.getAttribute('data-doc')) { return; }
-      var key = state.selectedProgram + ':' + cb.getAttribute('data-doc');
-      if (cb.checked) { state.checked[key] = true; } else { delete state.checked[key]; }
-      var item = cb.closest('.doc-item');
-      if (item) { item.classList.toggle('done', cb.checked); }
-      updateDocProgress();
+      var t = e.target;
+      if (!t) { return; }
+      if (t.getAttribute && t.getAttribute('data-doc')) {
+        var key = state.selectedProgram + ':' + t.getAttribute('data-doc');
+        if (t.checked) { state.checked[key] = true; } else { delete state.checked[key]; }
+        var item = t.closest ? t.closest('.doc-item') : null;
+        if (item) { item.classList.toggle('done', t.checked); }
+        updateDocProgress();
+        if (state.formStep === 3) { renderDocs(); }
+        return;
+      }
+      var aid = t.getAttribute ? t.getAttribute('data-aid') : null;
+      if (aid) { toggleAid(aid, t.checked); return; }
+      var fld = t.getAttribute ? t.getAttribute('data-field') : null;
+      if (fld) { onFieldChange(fld, t.value); }
+    });
+    panelDocs.addEventListener('input', function (e) {
+      var t = e.target;
+      if (!t || !t.getAttribute) { return; }
+      var fld = t.getAttribute('data-field');
+      if (!fld) { return; }
+      if (fld === 'disType' || fld === 'disSeverity') { return; }
+      state.form[fld] = t.value;
+    });
+    panelDocs.addEventListener('click', function (e) {
+      var t = e.target;
+      if (!t || !t.closest) { return; }
+      var pickBtn = t.closest('[data-transport]');
+      if (!pickBtn) { return; }
+      state.form.transport = pickBtn.getAttribute('data-transport');
+      $$('[data-transport]', panelDocs).forEach(function (b) {
+        b.setAttribute('aria-pressed', b === pickBtn ? 'true' : 'false');
+      });
+    });
+
+    /* --- 복지카드 촬영·업로드 · 샘플 시연 --- */
+    var cardStart = $('#cardStart');
+    cardStart.addEventListener('click', function (e) {
+      var t = e.target;
+      if (!t) { return; }
+      if (t.id === 'cardUpload') { openFilePicker(); return; }
+      var sampleBtn = t.closest ? t.closest('[data-sample]') : null;
+      if (sampleBtn) {
+        var k = sampleBtn.getAttribute('data-sample');
+        openOcr(JSON.parse(JSON.stringify(CARD_SAMPLES[k] || CARD_SAMPLES['1'])));
+      }
+    });
+    cardStart.addEventListener('change', function (e) {
+      var t = e.target;
+      if (t && t.id === 'cardFile') {
+        handleCardFile(t.files && t.files[0]);
+        t.value = '';
+      }
+    });
+    $('#ocrClose').addEventListener('click', closeOcr);
+    $('#ocr').addEventListener('click', function (e) {
+      if (e.target === this) { closeOcr(); }
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape' && e.key !== 'Esc') { return; }
+      var ocr = $('#ocr');
+      if (ocr && !ocr.hidden) { closeOcr(); }
     });
 
     $('#composer').addEventListener('submit', function (e) {
@@ -1745,6 +2778,7 @@
       }
     });
 
+    renderCardStart();
     renderAll();
     renderChat();
     setTab('jobs');
