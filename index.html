@@ -1,0 +1,1764 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="light" />
+<meta name="theme-color" content="#F7F8F5" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' rx='12' fill='%23EAF6EE'/%3E%3Crect x='10' y='12' width='28' height='13' rx='6.5' fill='%232E9E5B'/%3E%3Crect x='13' y='19' width='9' height='19' rx='4.5' fill='%232E9E5B'/%3E%3Crect x='26' y='19' width='9' height='19' rx='4.5' fill='%232E9E5B'/%3E%3Ccircle cx='20' cy='18' r='2.4' fill='%23ffffff'/%3E%3Ccircle cx='28' cy='18' r='2.4' fill='%23ffffff'/%3E%3C/svg%3E" />
+<title>다온(DAON) · 장애인 일자리 맞춤형 AI 카운셀러</title>
+<style>
+  /* ============================================================
+     다온(DAON) × 피클(Pickle) 스타일 디자인
+     - 웜화이트 배경 + 피클 잔디색 포인트 + 둥근 카드/알약형 UI
+     ============================================================ */
+  :root{
+    --bg:#F7F8F5;
+    --cream:#FAFAF7;
+    --surface:#FFFFFF;
+    --mint:#EAF6EE;
+    --mint-2:#F1F8F3;
+    --sage:#EDF2EC;
+    --grass:#25854B;        /* 버튼·말풍선 채움 — 흰 글씨 4.6:1 */
+    --grass-600:#1F7444;     /* hover 채움 */
+    --grass-700:#1B6438;     /* 흰/민트 배경 위 텍스트 6:1 이상 */
+    --grass-900:#11462A;
+    --ink:#1C241E;
+    --ink-soft:#3F4E44;
+    --ink-mute:#5C6B62;
+    --line:#E2E8E1;
+    --line-soft:#EDF1EC;
+    --ok:#17683C;
+    --ok-bg:#E4F5EA;
+    --warn:#7A4E00;
+    --warn-bg:#FDF1DA;
+    --no:#9C2B26;
+    --no-bg:#FBE9E8;
+    --info:#2F5D46;
+    --info-bg:#EAF1EC;
+    --focus:#1A6B3E;
+    --radius:20px;
+    --radius-sm:16px;
+    --shadow:0 1px 2px rgba(28,36,30,.04), 0 10px 26px rgba(28,36,30,.06);
+    --shadow-sm:0 1px 2px rgba(28,36,30,.05), 0 4px 12px rgba(28,36,30,.05);
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","맑은 고딕",sans-serif;
+    font-size:17px;
+    line-height:1.62;
+    word-break:keep-all;
+    overflow-wrap:anywhere;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,h4{margin:0;letter-spacing:-.02em}
+  p{margin:0}
+  button{font-family:inherit;font-size:inherit;cursor:pointer}
+  :focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:12px}
+  .skip-link{position:absolute;left:10px;top:-64px;background:#fff;color:var(--grass-700);padding:11px 18px;border-radius:999px;z-index:50;box-shadow:var(--shadow);text-decoration:none;font-weight:800;font-size:14.5px;border:1.5px solid #CFE6D7}
+  .skip-link:focus{top:10px}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  /* ---------- header ---------- */
+  .app-header{
+    background:
+      radial-gradient(120% 170% at 94% -30%, #DDF2E4 0%, rgba(221,242,228,0) 58%),
+      radial-gradient(90% 130% at -6% -20%, #F2F9F1 0%, rgba(242,249,241,0) 62%),
+      linear-gradient(180deg,#FCFDFA 0%,#F3F7F2 100%);
+    border-bottom:1px solid var(--line);
+    padding:26px 20px 22px;
+  }
+  .app-header .inner{max-width:1280px;margin:0 auto}
+  .brandline{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .logo{
+    flex:0 0 auto;width:54px;height:54px;border-radius:18px;background:#fff;
+    border:1px solid #DBEADD;box-shadow:var(--shadow-sm);display:grid;place-items:center;padding:9px;
+  }
+  .logo svg,.who-avatar svg,.msg .avatar svg{width:100%;height:100%;display:block}
+  h1{font-size:clamp(21px,2.4vw,26px);line-height:1.22;font-weight:800;color:var(--ink)}
+  h1 small{display:block;font-size:14px;font-weight:600;color:var(--ink-mute);letter-spacing:0;margin-top:4px}
+  .hdr-badge{
+    margin-left:auto;display:inline-flex;align-items:center;gap:7px;background:#fff;border:1px solid #D8E9DC;
+    color:var(--grass-700);border-radius:999px;padding:7px 14px;font-size:12.5px;font-weight:800;
+    box-shadow:var(--shadow-sm);white-space:nowrap;
+  }
+  .hdr-dot{width:8px;height:8px;border-radius:50%;background:var(--grass);box-shadow:0 0 0 3px #DCF1E3}
+  .tagline{margin-top:14px;font-size:15.5px;color:var(--ink-soft);max-width:780px}
+  .tagline b{color:var(--grass-700);font-weight:800}
+  .persona-title{margin-top:20px;font-size:13px;font-weight:800;color:var(--grass-700);letter-spacing:.01em;display:flex;align-items:center;gap:6px}
+  .personas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:9px}
+  .persona{
+    display:flex;gap:11px;align-items:flex-start;text-align:left;background:#fff;border:1.5px solid var(--line);
+    color:var(--ink);border-radius:18px;padding:13px 15px;min-height:66px;
+    transition:box-shadow .16s,transform .16s,border-color .16s;box-shadow:var(--shadow-sm);
+  }
+  .persona:hover{border-color:#B4DCC1;transform:translateY(-2px);box-shadow:var(--shadow)}
+  .persona:active{transform:translateY(0) scale(.995)}
+  .persona .num{flex:0 0 26px;height:26px;border-radius:50%;background:var(--mint);color:var(--grass-700);display:grid;place-items:center;font-weight:800;font-size:13px;margin-top:1px;transition:background .16s,color .16s}
+  .persona:hover .num{background:var(--grass);color:#fff}
+  .persona b{display:block;font-size:15px;line-height:1.35;font-weight:800}
+  .persona span.desc{display:block;font-size:13px;color:var(--ink-mute);line-height:1.45;margin-top:2px}
+
+  /* ---------- layout ---------- */
+  .layout{max-width:1280px;margin:0 auto;padding:20px;display:grid;grid-template-columns:minmax(320px,392px) minmax(0,1fr);gap:20px;align-items:start}
+  .card-surface{background:var(--surface);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow)}
+
+  /* ---------- chat ---------- */
+  .chat{position:sticky;top:14px;max-height:calc(100vh - 28px);display:flex;flex-direction:column;overflow:hidden}
+  .chat-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;border-bottom:1px solid var(--line-soft);background:linear-gradient(180deg,#fff 0%,#FCFDFB 100%)}
+  .chat-head .who{display:flex;align-items:center;gap:10px;min-width:0}
+  .who-avatar{flex:0 0 36px;width:36px;height:36px;border-radius:13px;background:var(--mint);display:grid;place-items:center;padding:7px}
+  .who-text b{display:block;font-size:15px;line-height:1.25;font-weight:800}
+  .who-sub{display:block;font-size:11.5px;color:var(--ink-mute);font-weight:700;margin-top:1px}
+  .chat-head .prog{font-size:12.5px;color:var(--grass-700);font-weight:800;background:var(--mint);border-radius:999px;padding:5px 11px;white-space:nowrap}
+  .chat-log{flex:1;min-height:240px;max-height:50vh;overflow-y:auto;padding:16px;background:var(--cream);scroll-behavior:smooth}
+  .chat-log::-webkit-scrollbar,.chips::-webkit-scrollbar{width:8px}
+  .chat-log::-webkit-scrollbar-thumb,.chips::-webkit-scrollbar-thumb{background:#DDE6DD;border-radius:999px}
+  .msg{display:flex;gap:9px;margin-bottom:12px;align-items:flex-start}
+  .msg .avatar{flex:0 0 30px;width:30px;height:30px;border-radius:11px;background:var(--mint);display:grid;place-items:center;padding:5px;margin-top:2px}
+  .msg .bubble{background:#F1F6F2;border:1px solid #E4EDE5;border-radius:18px 18px 18px 6px;padding:11px 15px;max-width:min(86%,620px);font-size:15.5px;color:var(--ink);line-height:1.6;animation:pop .22s ease-out}
+  .msg .bubble b{font-weight:800}
+  .msg.user{flex-direction:row-reverse}
+  .msg.user .bubble{background:var(--grass);border-color:var(--grass);color:#fff;border-radius:18px 18px 6px 18px}
+  .msg.user .bubble b{color:#fff}
+  .msg.user .avatar{display:none}
+  @keyframes pop{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){
+    .msg .bubble{animation:none}
+    .persona,.chip,.btn,.tab{transition:none}
+  }
+
+  .chips{border-top:1px solid var(--line-soft);padding:12px 16px 10px;display:flex;flex-wrap:wrap;gap:8px;max-height:38vh;overflow-y:auto;background:#fff}
+  .chip{
+    display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:44px;justify-content:center;
+    padding:9px 16px;border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;
+    font-size:15px;font-weight:700;line-height:1.35;
+    transition:background .14s,border-color .14s,color .14s,transform .14s;
+  }
+  .chip:hover{border-color:#B4DCC1;background:var(--mint-2)}
+  .chip:active{transform:scale(.98)}
+  .chip .chip-label{display:block}
+  .chip .chip-sub{font-size:12.5px;font-weight:600;color:var(--ink-mute);line-height:1.3}
+  .chip[aria-pressed="true"]{background:var(--grass);border-color:var(--grass);color:#fff}
+  .chip[aria-pressed="true"] .chip-sub{color:#FFFFFF}
+  .chip.primary{background:var(--grass);border-color:var(--grass);color:#fff;font-weight:800}
+  .chip.primary:hover{background:var(--grass-600);border-color:var(--grass-600)}
+  .chip.ghost{background:#fff;color:var(--ink-soft);border-color:var(--line)}
+  .chip.ghost:hover{background:var(--sage);border-color:#CFDCCF}
+  .composer{display:flex;gap:8px;padding:0 14px 14px;background:#fff}
+  .composer input{
+    flex:1;min-width:0;min-height:46px;padding:10px 18px;border:1.5px solid var(--line);border-radius:999px;
+    font-size:15.5px;font-family:inherit;color:var(--ink);background:#FAFBF8;transition:background .14s,border-color .14s;
+  }
+  .composer input::placeholder{color:#6B7A70}
+  .composer input:focus{background:#fff;border-color:#9FD3B0}
+  .composer button{min-height:46px;padding:0 20px;border:0;border-radius:999px;background:var(--grass);color:#fff;font-weight:800;font-size:15px;white-space:nowrap;transition:background .14s}
+  .composer button:hover{background:var(--grass-600)}
+
+  /* ---------- dashboard ---------- */
+  .dashboard{min-width:0}
+  .sum-strip{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+  .sum-chip{display:inline-flex;gap:6px;align-items:baseline;background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-size:13.5px;color:var(--ink-mute);box-shadow:var(--shadow-sm)}
+  .sum-chip b{color:var(--ink);font-weight:800}
+  .sum-chip.empty{border-style:dashed;background:transparent;box-shadow:none}
+
+  .tabs{display:flex;gap:4px;background:#EDF2EC;padding:5px;border-radius:999px;margin-bottom:16px;overflow-x:auto}
+  .tab{flex:1 1 0;min-width:132px;min-height:46px;display:flex;align-items:center;justify-content:center;gap:7px;border:0;background:transparent;color:var(--ink-soft);border-radius:999px;font-size:15px;font-weight:800;letter-spacing:-.01em;padding:8px 12px;transition:background .15s,color .15s,box-shadow .15s}
+  .tab:hover{background:rgba(255,255,255,.65);color:var(--ink)}
+  .tab[aria-selected="true"]{background:#fff;color:var(--grass-700);box-shadow:0 2px 8px rgba(28,36,30,.09)}
+  .tab .tab-label{white-space:nowrap}
+  .tab .tab-count{font-size:12px;font-weight:800;background:#E1E9E1;color:var(--ink-soft);border-radius:999px;padding:1px 8px}
+  .tab[aria-selected="true"] .tab-count{background:var(--mint);color:var(--grass-700)}
+  .panel[hidden]{display:none}
+
+  .panel-title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:2px 2px 12px;flex-wrap:wrap}
+  .panel-title h2{font-size:19px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .panel-title .em{font-size:18px;line-height:1}
+  .panel-title .hint{font-size:13px;color:var(--ink-mute);font-weight:700;background:#fff;border:1px solid var(--line);padding:4px 11px;border-radius:999px}
+
+  .notice{display:flex;gap:11px;background:#F0F8F2;border:1px solid #D8EBDE;border-radius:18px;padding:14px 16px;margin-bottom:16px;font-size:14.5px;color:var(--ink-soft);line-height:1.62}
+  .notice .ico{flex:0 0 24px;width:24px;height:24px;border-radius:50%;background:var(--grass);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;font-style:normal;margin-top:1px}
+  .notice b{color:var(--grass-900)}
+
+  .placeholder{background:#fff;border:1.5px dashed #D3E0D3;border-radius:24px;padding:28px 22px;text-align:center;color:var(--ink-soft)}
+  .ph-art{width:58px;height:58px;margin:0 auto 12px;border-radius:20px;background:var(--mint);display:grid;place-items:center;padding:11px}
+  .ph-art svg{width:100%;height:100%;display:block}
+  .placeholder h3{font-size:17px;font-weight:800;color:var(--ink);margin-bottom:6px}
+  .placeholder ol{margin:16px auto 0;padding:0;list-style:none;max-width:340px;text-align:left;display:grid;gap:8px}
+  .placeholder li{display:flex;gap:10px;align-items:center;font-size:14.5px}
+  .placeholder li .mark{width:22px;height:22px;border-radius:50%;border:2px solid #C9D8CB;display:grid;place-items:center;font-size:12px;color:#fff;flex:0 0 22px}
+  .placeholder li.done .mark{background:var(--grass);border-color:var(--grass)}
+  .placeholder li.done{color:var(--ink);font-weight:700}
+
+  .job-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(276px,1fr));gap:12px}
+  .job-card{background:#fff;border:1px solid var(--line);border-left:4px solid #D5DED4;border-radius:18px;padding:16px 16px 15px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:9px}
+  .job-card.s-가능{border-left-color:var(--grass)}
+  .job-card.s-조건부{border-left-color:#E0A73A}
+  .job-card.s-불가{border-left-color:#D7DEDA;background:#FCFCFB}
+  .job-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .pill{font-size:12.5px;font-weight:800;border-radius:999px;padding:4px 11px;letter-spacing:.01em;display:inline-flex;align-items:center;gap:5px}
+  .pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;flex:0 0 6px}
+  .pill.가능{background:var(--ok-bg);color:var(--ok)}
+  .pill.조건부{background:var(--warn-bg);color:var(--warn)}
+  .pill.불가{background:#EDF0EC;color:#54635A}
+  .fav{font-size:12px;font-weight:800;color:var(--grass-700);background:var(--mint);border-radius:999px;padding:4px 10px}
+  .job-card h3{font-size:16.5px;line-height:1.35;font-weight:800}
+  .job-card .meta{font-size:13.8px;color:var(--ink-soft);display:grid;gap:0}
+  .job-card .meta span{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:baseline;padding:6px 0;border-bottom:1px dashed var(--line-soft)}
+  .job-card .meta span:last-child{border-bottom:0}
+  .job-card .meta b{color:var(--ink-mute);font-weight:700;font-size:12.5px;letter-spacing:.01em}
+  .job-card .duty{font-size:14px;color:var(--ink-soft)}
+  .reasons{list-style:none;margin:2px 0 0;padding:10px 0 0;display:grid;gap:7px;border-top:1px solid var(--line-soft)}
+  .reasons li{display:flex;gap:8px;font-size:13.8px;line-height:1.55;color:var(--ink-soft)}
+  .reasons li .mk{flex:0 0 18px;width:18px;height:18px;border-radius:50%;font-size:11px;font-weight:800;display:grid;place-items:center;margin-top:2px}
+  .reasons li.ok .mk{background:var(--ok-bg);color:var(--ok)}
+  .reasons li.check .mk{background:var(--warn-bg);color:var(--warn)}
+  .reasons li.no .mk{background:var(--no-bg);color:var(--no)}
+  .reasons li.info .mk{background:var(--sage);color:#4B5C50}
+  .reasons li.no{color:var(--no)}
+
+  .subhead{margin:24px 2px 10px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+  .subhead h3{font-size:17px;font-weight:800;display:flex;align-items:center;gap:7px}
+  .subhead span{font-size:13px;color:var(--ink-mute)}
+  .support-list{display:grid;gap:10px}
+  .support{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 16px;box-shadow:var(--shadow-sm)}
+  .support .badge{flex:0 0 auto;font-size:12px;font-weight:800;border-radius:999px;padding:4px 11px;margin-top:2px;white-space:nowrap}
+  .badge.추천{background:var(--mint);color:var(--grass-700)}
+  .badge.확인{background:var(--warn-bg);color:var(--warn)}
+  .badge.해당없음{background:#EDF0EC;color:#54635A}
+  .badge.안내{background:var(--info-bg);color:var(--info)}
+  .support .body{min-width:0}
+  .support h4{font-size:15px;font-weight:800}
+  .support .org{font-size:12.5px;color:var(--ink-mute);margin-top:2px}
+  .support p{font-size:14px;color:var(--ink-soft);margin-top:5px}
+
+  .fine{font-size:12.5px;color:var(--ink-mute);margin-top:16px;line-height:1.6}
+
+  /* workplaces */
+  .wp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+  .wp{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:8px}
+  .wp.match-good{border-color:#BFE3CC;background:linear-gradient(180deg,#FFFFFF 0%,#F6FCF8 100%)}
+  .wp.match-bad{background:#FCFCFB;color:var(--ink-soft)}
+  .wp-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+  .wp h3{font-size:16px;line-height:1.35;font-weight:800}
+  .wp .kind{font-size:12px;font-weight:800;color:var(--grass-700);background:var(--mint);border-radius:999px;padding:4px 11px;white-space:nowrap}
+  .wp .duty{font-size:14px;color:var(--ink-soft)}
+  .badges{display:flex;flex-wrap:wrap;gap:6px}
+  .tbadge{font-size:12px;font-weight:700;border-radius:999px;padding:4px 10px;background:#F0F4EF;color:#3C5747}
+  .tbadge.warn{background:var(--warn-bg);color:var(--warn)}
+  .matchline{font-size:13.5px;display:flex;gap:8px;align-items:flex-start;margin-top:2px;border-top:1px dashed var(--line-soft);padding-top:10px}
+  .matchline .lab{font-weight:800;font-size:12px;border-radius:999px;padding:3px 10px;white-space:nowrap}
+  .matchline.good .lab{background:var(--ok-bg);color:var(--ok)}
+  .matchline.check .lab{background:var(--warn-bg);color:var(--warn)}
+  .matchline.bad .lab{background:var(--no-bg);color:var(--no)}
+  .matchline p{color:var(--ink-soft)}
+
+  /* docs */
+  .docs-toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
+  .docs-toolbar label{font-size:14px;font-weight:800;color:var(--ink-soft)}
+  .docs-toolbar select{min-height:44px;padding:8px 14px;border:1.5px solid var(--line);border-radius:999px;font-family:inherit;font-size:15px;font-weight:700;color:var(--ink);background:#fff;max-width:100%;box-shadow:var(--shadow-sm)}
+  .bar-wrap{height:10px;background:#E9EFE8;border-radius:999px;overflow:hidden;margin:2px 0 16px}
+  .bar{height:100%;width:0%;background:linear-gradient(90deg,var(--grass) 0%,#4CBE7C 100%);border-radius:999px;transition:width .28s ease}
+  .bar-label{font-size:13.5px;color:var(--ink-mute);margin-bottom:8px;font-weight:700}
+  .doc-list{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+  .doc-item{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid var(--line);border-radius:var(--radius-sm);padding:13px 15px;box-shadow:var(--shadow-sm);transition:background .15s,border-color .15s}
+  .doc-item input[type="checkbox"]{
+    appearance:none;-webkit-appearance:none;flex:0 0 24px;width:24px;height:24px;margin:1px 0 0;
+    border:2px solid #C6D6C9;border-radius:8px;background:#fff;display:grid;place-items:center;
+    cursor:pointer;transition:background .14s,border-color .14s;
+  }
+  .doc-item input[type="checkbox"]:hover{border-color:#9FD3B0}
+  .doc-item input[type="checkbox"]:checked{
+    background-color:var(--grass);border-color:var(--grass);
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='%23ffffff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-size:16px 16px;background-position:center;background-repeat:no-repeat;
+  }
+  .doc-item label{display:block;cursor:pointer;min-width:0}
+  .doc-item .name{display:block;font-size:15px;font-weight:700;line-height:1.45}
+  .doc-item .where{display:block;font-size:12.8px;color:var(--ink-mute);margin-top:3px}
+  .doc-item .note{display:block;font-size:12.5px;color:var(--warn);margin-top:3px}
+  .doc-item.done{background:#F4FBF6;border-color:#CBE7D6}
+  .doc-item.done .name{text-decoration:line-through;color:var(--ink-mute)}
+
+  .draft-box{margin-top:22px;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+  .draft-box h3{font-size:17px;font-weight:800;display:flex;align-items:center;gap:8px}
+  .draft-box .lead{font-size:14px;color:var(--ink-soft);margin-top:5px}
+  .draft-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .btn{min-height:46px;padding:10px 20px;border-radius:999px;border:1.5px solid var(--line);background:#fff;color:var(--ink);font-weight:800;font-size:15px;transition:background .14s,border-color .14s,transform .14s}
+  .btn:hover{background:var(--sage);border-color:#CFDCCF}
+  .btn:active{transform:scale(.99)}
+  .btn.primary{background:var(--grass);border-color:var(--grass);color:#fff}
+  .btn.primary:hover{background:var(--grass-600);border-color:var(--grass-600)}
+  .btn.teal{background:var(--grass-700);border-color:var(--grass-700);color:#fff}
+  .btn.teal:hover{background:var(--grass-900);border-color:var(--grass-900)}
+  .btn[disabled]{opacity:.45;cursor:not-allowed}
+  .draft{white-space:pre-wrap;background:#F8FAF6;border:1px solid var(--line);border-radius:16px;padding:18px;font-size:14.5px;line-height:1.8;color:var(--ink);margin-top:14px;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif}
+  .draft[hidden]{display:none}
+
+  /* footer */
+  .app-footer{max-width:1280px;margin:8px auto 30px;padding:0 20px}
+  .disclaimer{background:#FFFCF3;border:1px solid #EFE4C8;border-radius:18px;padding:15px 17px;font-size:13.5px;color:#4E3D12;line-height:1.65}
+  .disclaimer b{color:#33270A}
+  .credit{margin-top:12px;font-size:12.5px;color:var(--ink-mute);text-align:right}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,16px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:999px;font-size:14.5px;font-weight:700;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;box-shadow:0 12px 30px rgba(0,0,0,.22);z-index:60;max-width:calc(100% - 32px);text-align:center}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 980px){
+    body{font-size:16.5px}
+    .layout{grid-template-columns:1fr;padding:14px;gap:16px}
+    .chat{position:static;max-height:none;border-radius:22px}
+    .chat-log{max-height:46vh}
+    .app-header{padding:20px 16px 18px}
+    .hdr-badge{margin-left:0}
+    .job-grid,.wp-grid{grid-template-columns:1fr}
+    .tab{font-size:14px;min-width:0;padding:8px 8px}
+    .tab .tab-count{display:none}
+    .chat-head .prog{font-size:12px}
+  }
+  @media (max-width: 700px){
+    .personas{grid-template-columns:1fr}
+  }
+  @media (max-width: 560px){
+    .hdr-badge{display:none}
+    .tab{font-size:13.5px;padding:8px 6px;gap:4px}
+    .tab .tab-num{display:none}
+  }
+  @media (max-width: 420px){
+    .chip{font-size:14.5px;padding:9px 14px}
+    .panel-title h2{font-size:17.5px}
+    .job-card .meta span{grid-template-columns:1fr;gap:1px}
+  }
+  @media print{
+    .chat,.personas,.tabs,.app-footer{display:none}
+    body{background:#fff}
+    .layout{display:block;padding:0}
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#dash">분석 결과로 바로 가기</a>
+
+<header class="app-header">
+  <div class="inner">
+    <div class="brandline">
+      <span class="logo" aria-hidden="true">
+        <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" role="presentation">
+          <rect x="8" y="8.5" width="32" height="14" rx="7" fill="#2E9E5B"/>
+          <rect x="12" y="16" width="10" height="25.5" rx="5" fill="#2E9E5B"/>
+          <rect x="26" y="16" width="10" height="25.5" rx="5" fill="#2E9E5B"/>
+          <circle cx="19.4" cy="15.4" r="2.7" fill="#FFFFFF"/>
+          <circle cx="28.6" cy="15.4" r="2.7" fill="#FFFFFF"/>
+          <circle cx="20" cy="15.9" r="1.3" fill="#16572F"/>
+          <circle cx="29.2" cy="15.9" r="1.3" fill="#16572F"/>
+        </svg>
+      </span>
+      <h1>다온(DAON) <small>장애인 일자리 맞춤형 AI 카운셀러</small></h1>
+      <span class="hdr-badge"><span class="hdr-dot" aria-hidden="true"></span>AI 상담 가능</span>
+    </div>
+    <p class="tagline">몇 번의 선택만으로 <b>신청할 수 있는 일자리·지원제도</b>를 판별하고, <b>맞는 근무지와 준비 서류, 신청서 초안</b>까지 한 번에 정리해 드려요.</p>
+    <p class="persona-title"><span aria-hidden="true">✨</span>시연용 예시 — 버튼 한 번으로 상담이 끝까지 진행됩니다</p>
+    <div class="personas" id="personas">
+      <button class="persona" type="button" data-persona="0">
+        <span class="num" aria-hidden="true">1</span>
+        <span><b>지체 · 심한 장애</b><span class="desc">휠체어 이용 · 주 14시간 희망</span></span>
+      </button>
+      <button class="persona" type="button" data-persona="1">
+        <span class="num" aria-hidden="true">2</span>
+        <span><b>지체 · 심하지 않은 장애</b><span class="desc">전일제 사무 희망 · 서서 일하기 어려움</span></span>
+      </button>
+      <button class="persona" type="button" data-persona="2">
+        <span class="num" aria-hidden="true">3</span>
+        <span><b>청각 · 심한 장애</b><span class="desc">수어·문자통역 필요 · 주 20시간</span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="layout">
+  <!-- ============ 대화 패널 ============ -->
+  <section class="chat card-surface" aria-label="AI 카운셀러 상담">
+    <div class="chat-head">
+      <div class="who">
+        <span class="who-avatar" aria-hidden="true">
+          <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" role="presentation">
+            <rect x="8" y="8.5" width="32" height="14" rx="7" fill="#2E9E5B"/>
+            <rect x="12" y="16" width="10" height="25.5" rx="5" fill="#2E9E5B"/>
+            <rect x="26" y="16" width="10" height="25.5" rx="5" fill="#2E9E5B"/>
+            <circle cx="19.4" cy="15.4" r="2.7" fill="#FFFFFF"/>
+            <circle cx="28.6" cy="15.4" r="2.7" fill="#FFFFFF"/>
+            <circle cx="20" cy="15.9" r="1.3" fill="#16572F"/>
+            <circle cx="29.2" cy="15.9" r="1.3" fill="#16572F"/>
+          </svg>
+        </span>
+        <span class="who-text"><b>다온 상담</b><span class="who-sub">장애인 일자리 AI 카운셀러</span></span>
+      </div>
+      <span class="prog" id="chatProgress">0 / 4 단계</span>
+    </div>
+    <div class="chat-log" id="chatLog" role="log" aria-live="polite" aria-label="상담 대화 내용"></div>
+    <div class="chips" id="chips" aria-label="답변 선택"></div>
+    <form class="composer" id="composer" autocomplete="off">
+      <label class="sr-only" for="userInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">직접 입력</label>
+      <input id="userInput" type="text" placeholder="직접 입력해도 돼요 (예: 휠체어로 다닐 수 있는 사무 일)" />
+      <button type="submit" aria-label="입력한 내용 보내기">보내기</button>
+    </form>
+  </section>
+
+  <!-- ============ 대시보드 ============ -->
+  <section class="dashboard" id="dash" aria-label="실시간 분석 결과">
+    <div class="sum-strip" id="sumStrip" aria-label="선택한 조건"></div>
+
+    <div class="tabs" role="tablist" aria-label="분석 결과 탭">
+      <button class="tab" type="button" role="tab" id="tab-jobs" aria-selected="true" aria-controls="panel-jobs" data-tab="jobs"><span class="tab-num" aria-hidden="true">①</span> <span class="tab-label">일자리·지원제도</span> <span class="tab-count" id="count-jobs">0</span></button>
+      <button class="tab" type="button" role="tab" id="tab-work" aria-selected="false" aria-controls="panel-work" data-tab="work" tabindex="-1"><span class="tab-num" aria-hidden="true">②</span> <span class="tab-label">맞춤 근무지</span> <span class="tab-count" id="count-work">0</span></button>
+      <button class="tab" type="button" role="tab" id="tab-docs" aria-selected="false" aria-controls="panel-docs" data-tab="docs" tabindex="-1"><span class="tab-num" aria-hidden="true">③</span> <span class="tab-label">서류·신청서</span> <span class="tab-count" id="count-docs">0</span></button>
+    </div>
+
+    <div class="panel" id="panel-jobs" role="tabpanel" aria-labelledby="tab-jobs" tabindex="0">
+      <div id="jobsBody"></div>
+    </div>
+    <div class="panel" id="panel-work" role="tabpanel" aria-labelledby="tab-work" tabindex="0" hidden>
+      <div id="workBody"></div>
+    </div>
+    <div class="panel" id="panel-docs" role="tabpanel" aria-labelledby="tab-docs" tabindex="0" hidden>
+      <div id="docsBody"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="app-footer">
+  <div class="disclaimer">
+    <b>공모전 시연용 프로토타입입니다.</b> 실제 자격 기준·모집 인원·급여·마감은 거주지 시·군·구청 공고와 한국장애인고용공단·한국장애인개발원 안내를 따릅니다. 화면의 근무지 예시는 매칭 원리를 보여 주기 위한 가상 사례이며, 수치는 2026년 장애인일자리 사업안내(보건복지부) 기준입니다.
+  </div>
+  <p class="credit">다온(DAON) — 진주시지체장애인협회 일자리 업무 현장 경험에서 출발한 프로토타입</p>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ============================================================
+     0. 공통 유틸
+     ============================================================ */
+  function $(sel, root) { return (root || document).querySelector(sel); }
+  function $$(sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); }
+  function esc(t) {
+    return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  var toastTimer = null;
+  function toast(msg) {
+    var el = $('#toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    if (toastTimer) { clearTimeout(toastTimer); }
+    toastTimer = setTimeout(function () { el.classList.remove('show'); }, 2200);
+  }
+
+  /* ============================================================
+     1. 조건 라벨
+     ============================================================ */
+  var SEVERITY_LABEL = {
+    severe: '심한 장애(기존 1~3급)',
+    mild: '심하지 않은 장애(기존 4~6급)',
+    unsure: '장애 정도 확인 전'
+  };
+  var TYPE_LABEL = {
+    physical: '지체장애',
+    brain: '뇌병변장애',
+    visual: '시각장애',
+    hearing: '청각·언어장애',
+    developmental: '발달·정신장애',
+    other: '기타 장애'
+  };
+  var WORK_LABEL = {
+    full: '전일제(주 40시간)',
+    part: '시간제(주 20시간)',
+    welfare: '복지형·참여형(주 14시간 내외)',
+    remote: '재택·유연근무'
+  };
+  var ENV_LABEL = {
+    wheelchair: '휠체어 접근(경사로·승강기) 필수',
+    standing: '장시간 서있기 어려움',
+    simple: '단순·반복 사무 선호',
+    communication: '수어·문자통역 등 의사소통 지원 필요'
+  };
+
+  /* ============================================================
+     2. 상태
+     ============================================================ */
+  var state = {
+    severity: null,
+    type: null,
+    workType: null,
+    envs: new Set(),
+    envAnswered: false,
+    pendingEnvs: new Set(),
+    tab: 'jobs',
+    selectedProgram: null,
+    checked: {},
+    draft: '',
+    draftVariant: 0,
+    draftShown: false
+  };
+
+  function isAnswered(step) {
+    if (step.multi) { return state.envAnswered; }
+    return !!state[step.key];
+  }
+  function nextUnanswered() {
+    for (var i = 0; i < STEPS.length; i++) {
+      if (!isAnswered(STEPS[i])) { return i; }
+    }
+    return STEPS.length;
+  }
+  function isComplete() { return nextUnanswered() === STEPS.length; }
+  function ready() { return !!(state.severity && state.type && state.workType); }
+
+  /* ============================================================
+     3. 질문 정의
+     ============================================================ */
+  var STEPS = [
+    {
+      key: 'severity',
+      bot: '안녕하세요, 다온이에요. 몇 가지만 여쭤볼게요. 먼저 <b>장애 정도</b>를 알려주세요. 복지카드(장애인등록증)에 적힌 정도예요.',
+      options: [
+        { v: 'severe', label: '심한 장애', sub: '기존 1~3급' },
+        { v: 'mild', label: '심하지 않은 장애', sub: '기존 4~6급' },
+        { v: 'unsure', label: '잘 모르겠어요', sub: '카드 확인 전' }
+      ]
+    },
+    {
+      key: 'type',
+      bot: '장애 유형은 어떻게 되세요?',
+      options: [
+        { v: 'physical', label: '지체장애' },
+        { v: 'brain', label: '뇌병변장애' },
+        { v: 'visual', label: '시각장애' },
+        { v: 'hearing', label: '청각·언어장애' },
+        { v: 'developmental', label: '발달·정신장애' },
+        { v: 'other', label: '기타' }
+      ]
+    },
+    {
+      key: 'workType',
+      bot: '일은 <b>얼마나, 어떻게</b> 하고 싶으세요?',
+      options: [
+        { v: 'full', label: '전일제', sub: '주 40시간' },
+        { v: 'part', label: '시간제', sub: '주 20시간' },
+        { v: 'welfare', label: '복지형·참여형', sub: '주 14시간 내외' },
+        { v: 'remote', label: '재택·유연근무', sub: '집에서 / 시간 조정' }
+      ]
+    },
+    {
+      key: 'envs',
+      multi: true,
+      bot: '마지막이에요. 일할 때 <b>꼭 필요한 환경</b>을 모두 골라 주세요. 여러 개를 고를 수 있어요.',
+      options: [
+        { v: 'wheelchair', label: '휠체어 접근', sub: '경사로·승강기 필수' },
+        { v: 'standing', label: '장시간 서있기 어려움', sub: '앉아서 하는 일 선호' },
+        { v: 'simple', label: '단순·반복 사무 선호', sub: '여러 일 동시에 어려움' },
+        { v: 'communication', label: '의사소통 지원 필요', sub: '수어·문자통역' }
+      ]
+    }
+  ];
+
+  /* ============================================================
+     4. 판별 규칙
+     kind: ok(충족) / check(확인 필요) / no(제한) / info(참고)
+     ============================================================ */
+  function baseReason() {
+    return { k: 'ok', t: '만 18세 이상 장애인복지법상 등록된 미취업 장애인이면 신청할 수 있습니다. 장애 정도·유형만으로 자격이 갈리지 않습니다.' };
+  }
+  function unsureNote(s) {
+    return s.severity === 'unsure'
+      ? [{ k: 'info', t: '장애 정도가 확인되면 선발 우선순위(심한 장애 가점)와 지원 제도를 다시 계산해 드릴게요.' }]
+      : [];
+  }
+  function envInfo(s) {
+    var out = [];
+    if (s.envs.has('wheelchair')) {
+      out.push({ k: 'info', t: '휠체어 이동이 가능한지는 근무지 동선(경사로·승강기·화장실)에서 갈립니다. 배치 전에 꼭 확인하세요.' });
+    }
+    if (s.envs.has('standing')) {
+      out.push({ k: 'info', t: '장시간 서 있기 어려우면 앉아서 하는 사무·사서보조·재택 직무가 안전합니다.' });
+    }
+    if (s.envs.has('communication')) {
+      out.push({ k: 'info', t: '업무 지시를 서면·문자로 받을 수 있는지가 첫 상담에서 확인할 핵심입니다.' });
+    }
+    return out;
+  }
+
+  function ruleGeneralFull(s) {
+    var r = [baseReason()];
+    r.push({ k: 'info', t: '주 40시간(12월은 37.5시간), 월 2,156,880원(12월 2,022,720원, 세전).' });
+    if (s.workType === 'full') {
+      r.push({ k: 'ok', t: '희망 근무형태가 전일제라 근무시간이 그대로 맞습니다.' });
+    } else if (s.workType === 'part') {
+      r.push({ k: 'check', t: '희망하신 주 20시간보다 두 배 긴 주 40시간 근무입니다. 같은 사업의 시간제를 함께 보세요.' });
+    } else if (s.workType === 'welfare') {
+      r.push({ k: 'check', t: '주 14시간 희망보다 세 배 가까이 긴 근무입니다. 무리가 예상되면 복지일자리(참여형)가 맞습니다.' });
+    } else if (s.workType === 'remote') {
+      r.push({ k: 'check', t: '행정·복지 지원 업무는 대부분 출근 근무입니다. 재택 전환은 기관 협의가 필요합니다.' });
+    }
+    if (s.severity === 'severe') {
+      r.push({ k: 'check', t: '심한 장애도 참여할 수 있지만 전일제는 체력 부담이 큽니다. 근로지원인·보조공학기기를 함께 신청하세요.' });
+    }
+    if (s.envs.has('standing')) {
+      r.push({ k: 'ok', t: '행정·사무 중심이라 장시간 서서 일하는 부담이 적습니다.' });
+    }
+    if (s.envs.has('simple')) {
+      r.push({ k: 'ok', t: '서류 정리·안내문 발송처럼 단순 반복 사무가 많은 직무입니다.' });
+    }
+    if (s.envs.has('communication')) {
+      r.push({ k: 'check', t: '민원 응대가 포함될 수 있어 문자 안내·서면 지시 등 의사소통 지원을 미리 요청하세요.' });
+    }
+    if (s.envs.has('wheelchair')) {
+      r.push({ k: 'info', t: '주민센터·복지관은 승강기와 경사로가 대부분 있으나, 실제 배치 건물을 확인해야 합니다.' });
+    }
+    return r.concat(unsureNote(s));
+  }
+
+  function ruleGeneralPart(s) {
+    var r = [baseReason()];
+    r.push({ k: 'info', t: '주 20시간(12월 19시간), 월 1,078,440원(세전). 1일 4시간 이상 근무합니다.' });
+    if (s.workType === 'part') {
+      r.push({ k: 'ok', t: '희망 시간(주 20시간)과 정확히 맞습니다.' });
+    } else if (s.workType === 'full') {
+      r.push({ k: 'check', t: '희망하신 주 40시간의 절반이라 소득이 줄어듭니다. 전일제와 함께 비교해 보세요.' });
+    } else if (s.workType === 'welfare') {
+      r.push({ k: 'check', t: '주 14시간 희망보다 조금 깁니다. 하루 4시간 근무가 가능한지 확인하세요.' });
+    } else if (s.workType === 'remote') {
+      r.push({ k: 'check', t: '출근 근무가 원칙입니다. 재택은 별도 직무에서 찾아야 합니다.' });
+    }
+    if (s.severity === 'severe') {
+      r.push({ k: 'info', t: '심한 장애도 참여할 수 있습니다. 하루 4시간이라 전일제보다 부담이 적고, 근로지원인을 함께 신청하면 더 안정적입니다.' });
+    }
+    if (s.envs.has('standing')) {
+      r.push({ k: 'ok', t: '주로 앉아서 하는 사무 지원 업무입니다.' });
+    }
+    if (s.envs.has('wheelchair')) {
+      r.push({ k: 'info', t: '근무지 건물의 승강기·화장실 동선을 배치 전에 확인하세요.' });
+    }
+    return r.concat(unsureNote(s));
+  }
+
+  function ruleWelfare(s) {
+    var r = [baseReason()];
+    r.push({ k: 'info', t: '주 14시간 이내(월 56시간), 월 577,920원(세전). 2026년에는 50개 맞춤 직무로 운영됩니다.' });
+    if (s.workType === 'welfare') {
+      r.push({ k: 'ok', t: '희망하신 주 14시간 내외와 정확히 맞습니다.' });
+    } else if (s.workType === 'full') {
+      r.push({ k: 'check', t: '최대 주 14시간이라 전일제 희망과 소득 차이가 큽니다.' });
+    } else if (s.workType === 'part') {
+      r.push({ k: 'check', t: '주 20시간보다 짧습니다. 소득보다 지속 가능성을 우선하면 좋은 선택입니다.' });
+    } else if (s.workType === 'remote') {
+      r.push({ k: 'check', t: '대부분 현장 근무입니다. 다만 2026년 신규 직무에 재택형(자료 감수·모니터링)이 있습니다.' });
+    }
+    if (s.severity === 'severe') {
+      r.push({ k: 'ok', t: '2026년 확대된 복지일자리 1,600개는 심한 장애인 대상으로 운영되어 기회가 늘었습니다.' });
+    }
+    if (s.type === 'developmental') {
+      r.push({ k: 'ok', t: '복지일자리는 발달장애인 맞춤 직무(사서보조·환경정리·급식지원 등)가 많은 유형입니다.' });
+    }
+    if (s.envs.has('wheelchair')) {
+      r.push({ k: 'info', t: '실내 사무·사서보조·자료 감수는 가능하지만, 환경정비·주차계도는 이동 부담이 큽니다.' });
+    }
+    if (s.envs.has('simple')) {
+      r.push({ k: 'ok', t: '정해진 순서를 반복하는 직무가 많아 단순·반복 선호와 잘 맞습니다.' });
+    }
+    return r.concat(unsureNote(s));
+  }
+
+  function ruleMassage(s) {
+    var r = [];
+    r.push({ k: 'info', t: '주 25시간, 월 1,351,920원(세전). 노인복지관·경로당 등에서 안마 서비스를 제공합니다.' });
+    if (s.type === 'visual') {
+      r.push({ k: 'check', t: '시각장애는 대상이지만, 안마사 자격증과 전년도 이후 보수교육 이수 확인이 필요합니다.' });
+      if (!s.envs.has('communication')) {
+        r.push({ k: 'ok', t: '직무 특성상 이동은 동행 지원과 함께 이뤄집니다.' });
+      }
+    } else {
+      r.push({ k: 'no', t: '안마사 자격을 가진 미취업 시각장애인만 참여할 수 있어 이 유형은 해당되지 않습니다.' });
+    }
+    if (s.workType === 'full') {
+      r.push({ k: 'info', t: '주 25시간이라 전일제(주 40시간)보다 짧습니다.' });
+    }
+    return r.concat(unsureNote(s));
+  }
+
+  function ruleCare(s) {
+    var r = [];
+    r.push({ k: 'info', t: '주 25시간(1일 5시간), 월 1,351,920원(세전). 노인요양시설·재가기관에서 요양보호사 업무를 보조합니다.' });
+    if (s.type === 'developmental') {
+      r.push({ k: 'check', t: '지적장애 또는 자폐성장애가 대상입니다. 정신장애만 있는 경우는 해당되지 않으니 등록 유형을 확인하세요.' });
+      r.push({ k: 'ok', t: '식사·이동 돕기처럼 순서가 정해진 보조 업무라 반복 선호와 맞습니다.' });
+    } else {
+      r.push({ k: 'no', t: '지적·자폐성 장애인만 참여할 수 있는 특화형 일자리라 이 유형은 해당되지 않습니다.' });
+    }
+    if (s.workType === 'full') {
+      r.push({ k: 'info', t: '주 25시간이라 전일제 희망과는 차이가 있습니다.' });
+    }
+    if (s.envs.has('standing') && s.type === 'developmental') {
+      r.push({ k: 'check', t: '이동·식사 보조는 서서 움직이는 시간이 있습니다. 하루 5시간 견딜 수 있는지 상담하세요.' });
+    }
+    return r.concat(unsureNote(s));
+  }
+
+  function ruleEduLink(s) {
+    var r = [];
+    r.push({ k: 'check', t: '특수교육 전공과 재학생(고3은 실습 가능 시점부터)만 참여할 수 있습니다. 해당 여부를 확인하세요.' });
+    r.push({ k: 'info', t: '주 14시간 이내, 월 577,920원 안팎(세전)으로 운영됩니다.' });
+    if (s.workType === 'welfare') {
+      r.push({ k: 'ok', t: '희망하신 주 14시간 내외와 맞습니다.' });
+    }
+    return r.concat(unsureNote(s));
+  }
+
+  function ruleStandard(s) {
+    var r = [];
+    r.push({ k: 'check', t: '사업체별 채용 공고와 직무에 따라 조건이 다릅니다. 한국장애인고용공단 알선으로 확인합니다.' });
+    r.push({ k: 'ok', t: '장애 정도·유형 제한이 없고, 최저임금 이상과 4대 보험을 보장합니다.' });
+    r.push({ k: 'info', t: '표준사업장은 무장애 작업환경과 편의시설을 갖춘 곳으로, 휠체어 근무 사례가 많습니다.' });
+    if (s.workType === 'welfare') {
+      r.push({ k: 'check', t: '대부분 전일제라 주 14시간 희망과는 맞지 않습니다.' });
+    }
+    if (s.envs.has('communication')) {
+      r.push({ k: 'check', t: '채용 전에 수어통역·문자 안내 제공 여부를 사업체에 확인하세요.' });
+    }
+    return r.concat(unsureNote(s));
+  }
+
+  function ruleRemote(s) {
+    var r = [];
+    r.push({ k: 'info', t: '재택·유연근무 직무(자료 감수, 데이터 검수, 콘텐츠 정리 등)로 근무시간은 계약에 따라 다릅니다.' });
+    if (s.workType === 'remote') {
+      r.push({ k: 'ok', t: '희망 근무형태(재택·유연근무)와 일치합니다.' });
+    } else {
+      r.push({ k: 'check', t: '희망하신 근무형태와 다릅니다. 재택 직무는 주로 계약형이라 소득이 일정하지 않습니다.' });
+    }
+    if (s.envs.has('wheelchair')) {
+      r.push({ k: 'ok', t: '출퇴근 이동이 없어 접근성 문제에서 자유롭습니다.' });
+    }
+    if (s.envs.has('standing')) {
+      r.push({ k: 'ok', t: '집에서 앉아 하는 일이라 자세 부담을 스스로 조절할 수 있습니다.' });
+    }
+    if (s.envs.has('communication')) {
+      r.push({ k: 'ok', t: '업무를 글로 주고받아 의사소통 부담이 적습니다.' });
+    }
+    return r.concat(unsureNote(s));
+  }
+
+  function statusOf(reasons) {
+    var hasNo = false, hasCheck = false;
+    for (var i = 0; i < reasons.length; i++) {
+      if (reasons[i].k === 'no') { hasNo = true; }
+      if (reasons[i].k === 'check') { hasCheck = true; }
+    }
+    if (hasNo) { return '불가'; }
+    if (hasCheck) { return '조건부'; }
+    return '가능';
+  }
+
+  var PROGRAMS = [
+    {
+      id: 'general_full', name: '일반형 일자리 · 전일제',
+      org: '시·군·구청, 읍·면·동 주민센터, 복지시설',
+      hours: '주 40시간 (12월 37.5시간)', pay: '월 2,156,880원 (12월 2,022,720원)',
+      duty: '행정도우미·복지서비스 지원요원 — 민원 서류 정리, 안내문 발송, 복지 업무 보조',
+      rule: ruleGeneralFull
+    },
+    {
+      id: 'general_part', name: '일반형 일자리 · 시간제',
+      org: '시·군·구청, 주민센터, 복지시설',
+      hours: '주 20시간 (1일 4시간 이상)', pay: '월 1,078,440원',
+      duty: '행정도우미 — 서류 정리, 전화·방문 안내 보조, 사무 지원',
+      rule: ruleGeneralPart
+    },
+    {
+      id: 'welfare', name: '복지일자리 · 참여형',
+      org: '관공서, 도서관, 우체국, 복지시설, 학교 등',
+      hours: '주 14시간 이내 (월 56시간)', pay: '월 577,920원',
+      duty: '사서보조·환경정리·급식지원·읽기 쉬운 자료 감수 등 50개 맞춤 직무',
+      rule: ruleWelfare
+    },
+    {
+      id: 'special_massage', name: '특화형 · 시각장애인 안마사 파견',
+      org: '노인복지관, 경로당, 주·야간보호소',
+      hours: '주 25시간', pay: '월 1,351,920원',
+      duty: '어르신 대상 전문 안마 서비스 제공',
+      rule: ruleMassage
+    },
+    {
+      id: 'special_care', name: '특화형 · 발달장애인 요양보호사 보조',
+      org: '노인요양시설, 재가 방문요양 기관',
+      hours: '주 25시간 (1일 5시간)', pay: '월 1,351,920원',
+      duty: '식사·이동 돕기, 주변 정리 등 요양보호사 업무 보조',
+      rule: ruleCare
+    },
+    {
+      id: 'edu_link', name: '복지일자리 · 특수교육 연계형',
+      org: '특수교육 기관과 연계된 사업장',
+      hours: '주 14시간 이내', pay: '월 577,920원 안팎',
+      duty: '전공과 교육과정과 연계한 현장 직업경험',
+      rule: ruleEduLink
+    },
+    {
+      id: 'standard', name: '장애인 표준사업장 · 일반 사업체 취업',
+      org: '한국장애인고용공단 알선, 표준사업장',
+      hours: '사업체별 (대부분 전일제)', pay: '최저임금 이상 · 4대 보험',
+      duty: '사무보조, 생산·포장, 고객 응대 등 사업체 직무',
+      rule: ruleStandard
+    },
+    {
+      id: 'remote', name: '재택·유연근무 직무',
+      org: '민간 위탁기관, 재택근무 지원사업',
+      hours: '계약별 (주 10~20시간 많음)', pay: '직무·계약별',
+      duty: '자료 감수, 데이터 검수, 콘텐츠 정리, 온라인 고객 응대',
+      rule: ruleRemote
+    }
+  ];
+
+  function analyze() {
+    var out = [];
+    for (var i = 0; i < PROGRAMS.length; i++) {
+      var p = PROGRAMS[i];
+      var reasons = p.rule(state);
+      out.push({ p: p, reasons: reasons, status: statusOf(reasons) });
+    }
+    var order = { '가능': 0, '조건부': 1, '불가': 2 };
+    out.forEach(function (item, idx) { item.idx = idx; });
+    out.sort(function (a, b) {
+      if (order[a.status] !== order[b.status]) { return order[a.status] - order[b.status]; }
+      return a.idx - b.idx;
+    });
+    return out;
+  }
+
+  /* ============================================================
+     5. 근로지원 제도
+     ============================================================ */
+  function buildSupports(s) {
+    var list = [];
+    var sev = s.severity;
+
+    if (sev === 'severe' && ['physical', 'brain', 'visual', 'hearing'].indexOf(s.type) > -1) {
+      list.push({ badge: '추천', name: '근로지원인 서비스', org: '한국장애인고용공단 (사업주·근로자 신청)',
+        why: '혼자 하기 어려운 업무(이동·서류 작성·의사소통)를 근로지원인이 도와드립니다. 배치 전에 신청하면 첫 출근부터 도움을 받을 수 있습니다.' });
+    } else if (sev === 'severe') {
+      list.push({ badge: '확인', name: '근로지원인 · 직무지도원', org: '한국장애인고용공단 / 직업재활시설',
+        why: '발달장애는 근로지원인보다 현장 훈련을 해 주는 직무지도원이 먼저 맞는 경우가 많습니다. 담당자와 상담해 보세요.' });
+    } else {
+      list.push({ badge: '확인', name: '근로지원인 서비스', org: '한국장애인고용공단',
+        why: '근로지원인은 주로 심한(중증) 장애인에게 지원됩니다. 장애 정도가 확인되면 대상 여부를 다시 계산해 드려요.' });
+    }
+
+    var aids = {
+      physical: '높낮이 조절 책상, 휠체어 팔받침, 목소리 입력기처럼 작업 자세를 지켜 주는 기기를 지원합니다.',
+      brain: '특수키보드, 마우스 대체 장치, 의사소통 보조기기(AAC)를 지원합니다.',
+      visual: '화면읽기 프로그램, 점자정보단말기, 확대독서기를 지원합니다.',
+      hearing: '문자통역 앱, 영상전화, 호출 알림 기기를 지원합니다.',
+      developmental: '그림 일정표, 쉬운 글 안내판, 음성 안내 기기를 지원합니다.',
+      other: '직무에 필요한 보조기기를 상담 후 지원합니다.'
+    };
+    list.push({ badge: '추천', name: '보조공학기기 지원', org: '한국장애인고용공단 고용지원',
+      why: (aids[s.type] || aids.other) + ' 본인과 사업주 모두 신청할 수 있습니다.' });
+
+    list.push({
+      badge: (s.envs.has('wheelchair') || s.type === 'visual') ? '추천' : '확인',
+      name: '출퇴근 이동 지원', org: '거주지 지자체 · 근무지',
+      why: '특별교통수단(예: 두리발) 이용 등록, 장애인 출퇴근 비용 지원, 통근 차량 운영 여부를 근무지와 함께 확인하세요.'
+    });
+
+    if (s.type === 'hearing') {
+      list.push({ badge: '추천', name: '수어통역 · 문자통역', org: '한국농아인협회 지역 수어통역센터 / 고용공단',
+        why: '면접과 첫 근무에 수어통역사를 배치할 수 있습니다. 업무 지시는 문자·메모로 받는 것이 안전합니다.' });
+    } else {
+      list.push({ badge: '해당 없음', name: '수어통역 · 문자통역', org: '지역 수어통역센터',
+        why: '청각·언어장애가 아닌 경우에는 필요하지 않습니다. 동료가 청각장애인이라면 사업장 지원으로 안내할 수 있습니다.' });
+    }
+
+    if (s.type === 'developmental') {
+      list.push({ badge: '추천', name: '발달장애인 직무개발 · 현장훈련', org: '한국장애인개발원, 직업재활시설',
+        why: '직무를 잘게 나눠 익히는 훈련과 취업 후 적응 지원을 받을 수 있습니다.' });
+    }
+
+    list.push({ badge: '안내', name: '장애인 고용장려금 (사업주)', org: '한국장애인고용공단',
+      why: '사업주가 신청하면 인건비 일부를 지원받습니다. 채용을 설득할 때 함께 이야기하면 도움이 됩니다.' });
+
+    list.push({ badge: '확인', name: '국민취업지원제도 · 취업 지원', org: '고용센터',
+      why: '장애인일자리와 별도로 구직촉진수당·취업 알선을 받을 수 있는지 확인해 보세요. 중복 참여 제한이 있습니다.' });
+
+    return list;
+  }
+
+  /* ============================================================
+     6. 근무지 예시
+     ============================================================ */
+  var TAG_LABEL = {
+    ramp: '경사로', elevator: '승강기', toilet: '장애인 화장실', seated: '좌식·사무중심',
+    remote: '재택가능', sign: '수어·문자 안내', quiet: '정숙한 환경',
+    standing: '서서 하는 일', outdoor: '실외 이동', noise: '소음 있음'
+  };
+  var WARN_TAGS = { standing: true, outdoor: true, noise: true };
+
+  var WORKPLACES = [
+    { name: '진주시청 민원실 행정도우미', kind: '일반형', duty: '민원 서류 접수·정리, 안내문 발송', hours: '주 40 / 20시간', tags: ['ramp', 'elevator', 'toilet', 'seated', 'quiet'], note: '관공서 대표 근무지' },
+    { name: '진주시지체장애인협회 사무보조', kind: '일반형', duty: '회원 관리 보조, 문서 정리, 행사 준비', hours: '주 20시간', tags: ['ramp', 'elevator', 'toilet', 'seated'], note: '장애인 단체 사무실' },
+    { name: '진주시립도서관 사서보조', kind: '복지일자리', duty: '도서 배가·정리, 이용 안내', hours: '주 14시간', tags: ['ramp', 'elevator', 'toilet', 'standing', 'quiet'], note: '배가 업무는 서서 하기도 함' },
+    { name: '읍·면·동 주민센터 환경정비·주차계도', kind: '복지일자리', duty: '장애인전용주차구역 계도, 청사 주변 정비', hours: '주 14시간', tags: ['outdoor', 'standing'], note: '실외 이동이 많은 직무' },
+    { name: '읽기 쉬운 자료 감수 (재택)', kind: '복지일자리', duty: '관공서 안내문을 쉬운 말로 고치기', hours: '주 14시간 이내', tags: ['remote', 'seated', 'quiet'], note: '2026년 신규 직무' },
+    { name: '재택 데이터·콘텐츠 검수', kind: '민간·재택', duty: '이미지 분류, 문장 검수, 목록 정리', hours: '계약별 (주 10~20시간)', tags: ['remote', 'seated'], note: '계약형 재택 직무' },
+    { name: '장애인 표준사업장 사무보조', kind: '표준사업장', duty: '문서 작성 보조, 우편물 정리', hours: '주 40시간(협의)', tags: ['ramp', 'elevator', 'toilet', 'seated', 'sign'], note: '무장애 작업환경' },
+    { name: '우체국 우편물 분류 보조', kind: '복지일자리', duty: '우편물 분류·정리', hours: '주 14시간', tags: ['standing', 'toilet'], note: '서서 하는 작업' },
+    { name: '노인복지관 급식지원', kind: '복지일자리', duty: '배식·식기 정리 돕기', hours: '주 14시간', tags: ['elevator', 'toilet', 'standing'], note: '급식 시간대 집중' },
+    { name: '어린이집 보육도우미', kind: '복지일자리', duty: '놀이·간식 돕기, 교실 정리', hours: '주 14시간', tags: ['standing', 'noise'], note: '소음이 있는 환경' }
+  ];
+
+  function matchWorkplace(wp, envs) {
+    var out = [];
+    var has = function (t) { return wp.tags.indexOf(t) > -1; };
+    if (envs.has('wheelchair')) {
+      if (has('ramp') && has('elevator') && has('toilet')) {
+        out.push({ k: 'ok', t: '경사로·승강기·장애인 화장실이 모두 있어 휠체어로 이동할 수 있습니다.' });
+      } else {
+        out.push({ k: 'no', t: '경사로·승강기·장애인 화장실 중 빠진 것이 있어 휠체어 이동이 어렵습니다.' });
+      }
+    }
+    if (envs.has('standing')) {
+      if (has('seated')) {
+        out.push({ k: 'ok', t: '앉아서 하는 사무 중심이라 오래 서 있지 않아도 됩니다.' });
+      } else if (has('standing')) {
+        out.push({ k: 'no', t: '서서 하는 일이 많아 장시간 서 있기 어려운 경우 무리입니다.' });
+      } else {
+        out.push({ k: 'check', t: '서는 시간이 얼마나 되는지 근무지에 확인하세요.' });
+      }
+    }
+    if (envs.has('simple')) {
+      if (has('seated') || has('quiet')) {
+        out.push({ k: 'ok', t: '정해진 순서로 반복하는 단순 업무가 많습니다.' });
+      } else {
+        out.push({ k: 'check', t: '업무가 여러 가지로 바뀌는지 확인하세요.' });
+      }
+    }
+    if (envs.has('communication')) {
+      if (has('sign')) {
+        out.push({ k: 'ok', t: '수어·문자 안내가 가능한 동료가 있는 곳입니다.' });
+      } else if (has('remote')) {
+        out.push({ k: 'ok', t: '대화 없이 글로 주고받는 업무라 의사소통 부담이 적습니다.' });
+      } else {
+        out.push({ k: 'check', t: '업무 지시를 문자·서면으로 받을 수 있는지 확인하세요.' });
+      }
+    }
+    var status = 'none';
+    if (out.some(function (r) { return r.k === 'no'; })) { status = 'bad'; }
+    else if (out.some(function (r) { return r.k === 'check'; })) { status = 'check'; }
+    else if (out.length) { status = 'good'; }
+    return { status: status, reasons: out };
+  }
+
+  function scoredWorkplaces() {
+    var rows = WORKPLACES.map(function (wp, i) {
+      var m = matchWorkplace(wp, state.envs);
+      return { wp: wp, m: m, idx: i };
+    });
+    var order = { good: 0, check: 1, none: 2, bad: 3 };
+    rows.sort(function (a, b) {
+      if (order[a.m.status] !== order[b.m.status]) { return order[a.m.status] - order[b.m.status]; }
+      return a.idx - b.idx;
+    });
+    return rows;
+  }
+
+  /* ============================================================
+     7. 서류 체크리스트
+     ============================================================ */
+  var COMMON_DOCS = [
+    { id: 'form1', name: '참여신청서 (서식 1)', where: '시·군·구청·수행기관 비치, 정부24', note: '희망 직무를 반드시 적어야 합니다.' },
+    { id: 'form2', name: '참여자 정보 확인서 (서식 2)', where: '수행기관 비치' },
+    { id: 'form3', name: '개인정보 수집·이용 및 제3자 제공 동의서 (서식 3)', where: '수행기관 비치' },
+    { id: 'id', name: '신분증 사본', where: '본인' },
+    { id: 'disability', name: '장애인증명서 또는 복지카드(장애인등록증) 사본', where: '정부24, 주민센터' },
+    { id: 'resident', name: '주민등록등본', where: '정부24, 주민센터', note: '최근 발급분(보통 1개월 이내)' },
+    { id: 'insurance', name: '건강보험 자격득실확인서', where: '국민건강보험공단 (The건강보험 앱·홈페이지)', note: '미취업(직장가입 아님) 확인용 — 직장가입자는 신청 제한' },
+    { id: 'bank', name: '통장 사본 (급여 계좌)', where: '본인' }
+  ];
+  var EXTRA_DOCS = {
+    general_full: [{ id: 'cert', name: '(해당) 자격증 사본 — 컴퓨터활용능력·ITQ·사회복지사 등', where: '본인 보관', note: '있으면 직무 배치에 유리합니다.' }],
+    general_part: [{ id: 'cert', name: '(해당) 자격증 사본 — 컴퓨터활용능력·ITQ·사회복지사 등', where: '본인 보관', note: '있으면 직무 배치에 유리합니다.' }],
+    welfare: [{ id: 'jobmemo', name: '(해당) 희망 직무 경험 메모', where: '자유 양식', note: '복지일자리는 희망 직무를 함께 적습니다.' }],
+    special_massage: [
+      { id: 'massage', name: '안마사 자격증 사본', where: '보건소, 대한안마사협회' },
+      { id: 'edu', name: '보수교육 이수 확인서 (전년도 이후)', where: '대한안마사협회' }
+    ],
+    special_care: [{ id: 'care_edu', name: '(해당) 요양보호 관련 교육 이수 확인서', where: '교육기관' }],
+    edu_link: [{ id: 'enroll', name: '재학증명서 (전공과)', where: '재학 중인 학교' }],
+    standard: [
+      { id: 'resume', name: '이력서·자기소개서', where: '자유 양식 / 워크넷 이력서' },
+      { id: 'career', name: '(해당) 경력증명서', where: '이전 근무지' }
+    ],
+    remote: [{ id: 'portfolio', name: '(해당) 포트폴리오·작업 이력 메모', where: '자유 양식' }]
+  };
+  var ALWAYS_EXTRA = [
+    { id: 'otherjob', name: '(해당) 다른 근로 종료 증빙 (근로계약서 등)', where: '본인', note: '사업 시작 전 종료를 증명하면 신청할 수 있습니다.' },
+    { id: 'basic', name: '(해당) 수급자 증명서', where: '주민센터, 복지로', note: '기초생활수급자는 반복참여 제한 예외입니다.' }
+  ];
+
+  function docsFor(pid) {
+    var list = COMMON_DOCS.slice();
+    var extra = EXTRA_DOCS[pid] || [];
+    return list.concat(extra).concat(ALWAYS_EXTRA);
+  }
+
+  /* ============================================================
+     8. 대화 렌더링
+     ============================================================ */
+  var GREETING = '안녕하세요! 저는 <b>다온</b>, 장애인 일자리 상담을 도와드리는 AI 카운셀러예요. 복잡한 자격 기준과 서류를 대신 정리해 드릴게요.';
+
+  /* 피클 스타일 캐릭터(눈 두 개가 달린 둥근 ㅍ) — 아바타·빈 화면 일러스트 공용 */
+  var PICKLE_SVG = '<svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" role="presentation">' +
+    '<rect x="8" y="8.5" width="32" height="14" rx="7" fill="#2E9E5B"/>' +
+    '<rect x="12" y="16" width="10" height="25.5" rx="5" fill="#2E9E5B"/>' +
+    '<rect x="26" y="16" width="10" height="25.5" rx="5" fill="#2E9E5B"/>' +
+    '<circle cx="19.4" cy="15.4" r="2.7" fill="#FFFFFF"/>' +
+    '<circle cx="28.6" cy="15.4" r="2.7" fill="#FFFFFF"/>' +
+    '<circle cx="20" cy="15.9" r="1.3" fill="#16572F"/>' +
+    '<circle cx="29.2" cy="15.9" r="1.3" fill="#16572F"/>' +
+    '</svg>';
+
+  function addMsg(who, html) {
+    var log = $('#chatLog');
+    var wrap = document.createElement('div');
+    wrap.className = 'msg ' + who;
+    if (who === 'bot') {
+      var av = document.createElement('span');
+      av.className = 'avatar';
+      av.setAttribute('aria-hidden', 'true');
+      av.innerHTML = PICKLE_SVG;
+      wrap.appendChild(av);
+    }
+    var b = document.createElement('div');
+    b.className = 'bubble';
+    b.innerHTML = html;
+    wrap.appendChild(b);
+    log.appendChild(wrap);
+  }
+
+  function answerLabel(step) {
+    if (step.multi) {
+      if (!state.envs.size) { return '해당 없음'; }
+      return Array.from(state.envs).map(function (v) { return ENV_LABEL[v]; }).join(' · ');
+    }
+    var opt = step.options.filter(function (o) { return o.v === state[step.key]; })[0];
+    if (!opt) { return ''; }
+    return opt.sub ? opt.label + ' (' + opt.sub + ')' : opt.label;
+  }
+
+  function renderChat() {
+    var log = $('#chatLog');
+    log.innerHTML = '';
+    addMsg('bot', GREETING);
+    var pend = nextUnanswered();
+    for (var i = 0; i < STEPS.length; i++) {
+      if (i < pend) {
+        addMsg('bot', STEPS[i].bot);
+        addMsg('user', esc(answerLabel(STEPS[i])));
+      } else if (i === pend) {
+        addMsg('bot', STEPS[i].bot);
+      }
+    }
+    if (pend === STEPS.length) {
+      addMsg('bot', closingMessage());
+    }
+    log.scrollTop = log.scrollHeight;
+    $('#chatProgress').textContent = Math.min(pend, 4) + ' / 4 단계';
+    renderChips(pend);
+  }
+
+  function closingMessage() {
+    var parts = [];
+    parts.push(SEVERITY_LABEL[state.severity] || '장애 정도 미선택');
+    parts.push(TYPE_LABEL[state.type] || '유형 미선택');
+    parts.push(WORK_LABEL[state.workType] || '근무형태 미선택');
+    var env = state.envs.size
+      ? Array.from(state.envs).map(function (v) { return ENV_LABEL[v]; }).join(', ')
+      : '특별한 환경 요구 없음';
+    var best = analyze().filter(function (x) { return x.status !== '불가'; })[0];
+    var tail = best
+      ? ' 지금 조건에서는 <b>' + esc(best.p.name) + '</b> 사업이 가장 잘 맞아요.'
+      : ' 지금 조건에서는 바로 맞는 사업이 보이지 않아요. 담당자 상담을 권해 드립니다.';
+    return '정리했어요. ' + esc(parts.join(' · ')) + '<br>환경: ' + esc(env) + '.' + tail +
+      ' 오른쪽(모바일에서는 아래)에 사업 판별, 맞춤 근무지, 준비 서류를 정리해 두었습니다. 조건을 바꾸면 바로 다시 계산돼요.';
+  }
+
+  function makeChip(label, sub, pressed, onClick) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'chip';
+    if (sub) { b.setAttribute('aria-pressed', pressed ? 'true' : 'false'); }
+    var l = document.createElement('span');
+    l.className = 'chip-label';
+    l.textContent = label;
+    b.appendChild(l);
+    if (sub) {
+      var s = document.createElement('span');
+      s.className = 'chip-sub';
+      s.textContent = sub;
+      b.appendChild(s);
+    }
+    b.addEventListener('click', onClick);
+    return b;
+  }
+
+  function renderChips(pend) {
+    var box = $('#chips');
+    box.innerHTML = '';
+    if (pend >= STEPS.length) {
+      var reset = makeChip('조건 다시 고르기', '', false, function () { resetAll(); });
+      reset.className = 'chip ghost';
+      box.appendChild(reset);
+      var jump = makeChip('결과 자세히 보기', '', false, function () { focusDashboard(); });
+      jump.className = 'chip primary';
+      box.appendChild(jump);
+      return;
+    }
+    var step = STEPS[pend];
+    if (step.multi) {
+      var none = makeChip('해당 없음', '조건 없이 보기', false, function () {
+        state.pendingEnvs.clear();
+        $$('.chip[aria-pressed]', box).forEach(function (c) { c.setAttribute('aria-pressed', 'false'); });
+        none.setAttribute('aria-pressed', 'true');
+      });
+      step.options.forEach(function (o) {
+        var on = state.pendingEnvs.has(o.v);
+        var chip = makeChip(o.label, o.sub, on, function () {
+          if (state.pendingEnvs.has(o.v)) { state.pendingEnvs.delete(o.v); }
+          else { state.pendingEnvs.add(o.v); }
+          var nowOn = state.pendingEnvs.has(o.v);
+          chip.setAttribute('aria-pressed', nowOn ? 'true' : 'false');
+          if (nowOn) { none.setAttribute('aria-pressed', 'false'); }
+        });
+        chip.setAttribute('aria-pressed', on ? 'true' : 'false');
+        box.appendChild(chip);
+      });
+      box.appendChild(none);
+      var done = makeChip('선택 완료', '', false, function () { commitEnvs(); });
+      done.className = 'chip primary';
+      box.appendChild(done);
+      return;
+    }
+    step.options.forEach(function (o) {
+      box.appendChild(makeChip(o.label, o.sub || '', false, function () { answerSingle(pend, o.v); }));
+    });
+  }
+
+  function answerSingle(stepIndex, value) {
+    var step = STEPS[stepIndex];
+    state[step.key] = value;
+    state.draftShown = false;
+    afterAnswer();
+  }
+
+  function commitEnvs() {
+    state.envs = new Set(state.pendingEnvs);
+    state.envAnswered = true;
+    state.draftShown = false;
+    afterAnswer();
+  }
+
+  function afterAnswer() {
+    syncSelectedProgram();
+    renderAll();
+    renderChat();
+  }
+
+  function syncSelectedProgram() {
+    var rows = analyze().filter(function (x) { return x.status !== '불가'; });
+    if (!rows.length) { state.selectedProgram = null; return; }
+    var keep = rows.filter(function (x) { return x.p.id === state.selectedProgram; })[0];
+    if (!keep) { state.selectedProgram = rows[0].p.id; }
+  }
+
+  /* ============================================================
+     9. 대시보드 렌더링
+     ============================================================ */
+  function renderSummary() {
+    var el = $('#sumStrip');
+    var items = [
+      { lab: '장애 정도', val: SEVERITY_LABEL[state.severity] },
+      { lab: '장애 유형', val: TYPE_LABEL[state.type] },
+      { lab: '희망 근무', val: WORK_LABEL[state.workType] },
+      { lab: '환경', val: state.envAnswered ? (state.envs.size ? Array.from(state.envs).map(function (v) { return ENV_LABEL[v].split('(')[0].trim(); }).join(' · ') : '요구 없음') : null }
+    ];
+    el.innerHTML = items.map(function (it) {
+      if (!it.val) { return '<span class="sum-chip empty">' + esc(it.lab) + ' <b>미선택</b></span>'; }
+      return '<span class="sum-chip">' + esc(it.lab) + ' <b>' + esc(it.val) + '</b></span>';
+    }).join('');
+  }
+
+  function placeholderHtml() {
+    var names = ['장애 정도', '장애 유형', '희망 근무형태', '근로환경 조건'];
+    var done = [!!state.severity, !!state.type, !!state.workType, state.envAnswered];
+    return '<div class="placeholder"><div class="ph-art" aria-hidden="true">' + PICKLE_SVG + '</div><h3>조건을 고르면 바로 판별해 드려요</h3>' +
+      '<p>왼쪽 상담에서 네 가지만 답하면 아래에 결과가 채워집니다.</p><ol>' +
+      names.map(function (n, i) {
+        return '<li class="' + (done[i] ? 'done' : '') + '"><span class="mark" aria-hidden="true">' + (done[i] ? '✓' : '') + '</span>' + n + '</li>';
+      }).join('') + '</ol></div>';
+  }
+
+  function renderJobs() {
+    var body = $('#jobsBody');
+    if (!ready()) {
+      body.innerHTML = placeholderHtml();
+      $('#count-jobs').textContent = '0';
+      return;
+    }
+    var rows = analyze();
+    var okCount = rows.filter(function (x) { return x.status !== '불가'; }).length;
+    $('#count-jobs').textContent = String(okCount);
+
+    var firstOk = rows.filter(function (x) { return x.status === '가능'; })[0];
+    var html = '';
+    html += '<div class="notice"><span class="ico" aria-hidden="true">i</span><div><b>장애 정도는 참여 자격을 가르지 않습니다.</b> 2026년 기준 일반형·복지일자리는 만 18세 이상 등록 미취업 장애인이면 신청할 수 있고, 장애 정도는 <b>선발 우선순위</b>(심한 장애 가점, 복지일자리 확대)와 <b>지원 제도</b>에서 갈립니다. 그래서 실제로는 근무시간·직무 적합성·근로환경이 더 크게 작용합니다.</div></div>';
+
+    html += '<div class="panel-title"><h2><span class="em" aria-hidden="true">💼</span>일자리·지원제도 판별</h2><span class="hint">신청 가능 ' + okCount + '개 · 해당 없음 ' + (rows.length - okCount) + '개</span></div>';
+    html += '<div class="job-grid">';
+    rows.forEach(function (row) {
+      var p = row.p;
+      var isFav = firstOk && row.p.id === firstOk.p.id;
+      html += '<article class="job-card s-' + row.status + '">';
+      html += '<div class="job-top"><span class="pill ' + row.status + '">' + (row.status === '가능' ? '가능' : row.status === '조건부' ? '조건부 가능' : '해당 없음') + '</span>' + (isFav ? '<span class="fav">가장 잘 맞아요</span>' : '') + '</div>';
+      html += '<h3>' + esc(p.name) + '</h3>';
+      html += '<div class="meta"><span><b>근무시간</b> ' + esc(p.hours) + '</span><span><b>보수</b> ' + esc(p.pay) + '</span></div>';
+      html += '<p class="duty">' + esc(p.duty) + '</p>';
+      html += '<p class="meta"><span><b>근무지</b> ' + esc(p.org) + '</span></p>';
+      html += '<ul class="reasons">';
+      row.reasons.forEach(function (r) {
+        var mk = r.k === 'ok' ? '✓' : r.k === 'check' ? '!' : r.k === 'no' ? '×' : '·';
+        var sr = r.k === 'ok' ? '충족' : r.k === 'check' ? '확인 필요' : r.k === 'no' ? '제한' : '참고';
+        html += '<li class="' + r.k + '"><span class="mk" aria-hidden="true">' + mk + '</span><span><span class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">' + sr + ': </span>' + esc(r.t) + '</span></li>';
+      });
+      html += '</ul></article>';
+    });
+    html += '</div>';
+
+    html += '<div class="subhead"><h3><span aria-hidden="true">🤝</span>함께 받을 수 있는 근로지원 제도</h3><span>사업 참여와 별도로 신청하는 지원입니다</span></div>';
+    html += '<div class="support-list">';
+    buildSupports(state).forEach(function (sp) {
+      html += '<div class="support"><span class="badge ' + sp.badge.replace(' ', '') + '">' + esc(sp.badge) + '</span><div class="body">' +
+        '<h4>' + esc(sp.name) + '</h4><div class="org">' + esc(sp.org) + '</div><p>' + esc(sp.why) + '</p></div></div>';
+    });
+    html += '</div>';
+
+    html += '<p class="fine">※ 수치는 2026년 장애인일자리 사업안내(보건복지부) 기준의 세전 금액이며, 12월은 근무시간이 줄어 급여가 달라집니다. 실제 모집 인원·선발 기준·마감은 거주지 시·군·구청 공고를 확인하세요.</p>';
+
+    body.innerHTML = html;
+  }
+
+  function renderWorkplaces() {
+    var body = $('#workBody');
+    if (!ready()) {
+      body.innerHTML = placeholderHtml();
+      $('#count-work').textContent = '0';
+      return;
+    }
+    var rows = scoredWorkplaces();
+    var goodCount = rows.filter(function (r) { return r.m.status === 'good'; }).length;
+    $('#count-work').textContent = String(goodCount);
+
+    var html = '<div class="panel-title"><h2><span class="em" aria-hidden="true">🧭</span>맞춤 근로환경 일터 예시</h2><span class="hint">' +
+      (state.envs.size ? '선택한 환경 조건에 맞춰 정렬했어요' : '환경 조건을 고르면 접근성 기준으로 정렬합니다') + '</span></div>';
+
+    if (!state.envs.size) {
+      html += '<div class="notice"><span class="ico" aria-hidden="true">i</span><div>아직 근로환경 조건을 고르지 않았어요. <b>휠체어 접근</b>, <b>장시간 서있기 어려움</b> 등을 고르면 갈 수 있는 곳과 아닌 곳이 나뉩니다.</div></div>';
+    } else {
+      html += '<div class="notice"><span class="ico" aria-hidden="true">i</span><div>같은 사업이라도 근무지 건물에 따라 결과가 달라집니다. <b>배지</b>는 근무지 환경을, <b>판정</b>은 선택하신 조건과의 일치 여부를 보여 줍니다.</div></div>';
+    }
+
+    html += '<div class="wp-grid">';
+    rows.forEach(function (row) {
+      var wp = row.wp;
+      var st = row.m.status;
+      var label = st === 'good' ? '잘 맞음' : st === 'check' ? '확인 필요' : st === 'bad' ? '맞지 않음' : '조건 미선택';
+      html += '<article class="wp match-' + (st === 'good' ? 'good' : st === 'bad' ? 'bad' : 'check') + '">';
+      html += '<div class="wp-top"><h3>' + esc(wp.name) + '</h3><span class="kind">' + esc(wp.kind) + '</span></div>';
+      html += '<p class="duty">' + esc(wp.duty) + '</p>';
+      html += '<p class="meta" style="font-size:13px;color:var(--ink-mute)">' + esc(wp.hours) + ' · ' + esc(wp.note) + '</p>';
+      html += '<div class="badges">' + wp.tags.map(function (t) {
+        return '<span class="tbadge' + (WARN_TAGS[t] ? ' warn' : '') + '">' + esc(TAG_LABEL[t] || t) + '</span>';
+      }).join('') + '</div>';
+      html += '<div class="matchline ' + (st === 'good' ? 'good' : st === 'bad' ? 'bad' : st === 'check' ? 'check' : 'check') + '"><span class="lab">' + label + '</span><p>' +
+        (row.m.reasons.length ? esc(row.m.reasons.map(function (r) { return r.t; }).join(' ')) : '근로환경 조건을 고르면 이 일터가 맞는지 계산해 드려요.') + '</p></div>';
+      html += '</article>';
+    });
+    html += '</div>';
+    html += '<p class="fine">※ 근무지 이름과 환경 정보는 매칭 방식을 보여 주기 위한 예시입니다. 실제 배치는 시·군·구청과 수행기관이 정하며, 방문 전에 건물 동선을 확인하는 것이 좋습니다.</p>';
+    body.innerHTML = html;
+  }
+
+  function renderDocs() {
+    var body = $('#docsBody');
+    if (!ready()) {
+      body.innerHTML = placeholderHtml();
+      $('#count-docs').textContent = '0';
+      return;
+    }
+    var options = analyze().filter(function (x) { return x.status !== '불가'; });
+    if (!options.length) {
+      body.innerHTML = '<div class="placeholder"><h3>지금 조건에 맞는 사업이 보이지 않아요</h3><p>왼쪽 상담에서 근무시간을 바꾸거나, 거주지 시·군·구청 담당자와 상담해 보세요.</p></div>';
+      $('#count-docs').textContent = '0';
+      return;
+    }
+    if (!state.selectedProgram) { state.selectedProgram = options[0].p.id; }
+    var current = options.filter(function (x) { return x.p.id === state.selectedProgram; })[0] || options[0];
+    state.selectedProgram = current.p.id;
+    var docs = docsFor(current.p.id);
+    var checkedCount = docs.filter(function (d) { return state.checked[state.selectedProgram + ':' + d.id]; }).length;
+    $('#count-docs').textContent = checkedCount + '/' + docs.length;
+
+    var html = '<div class="panel-title"><h2><span class="em" aria-hidden="true">📋</span>서류 체크리스트 &amp; 신청서 초안</h2><span class="hint">신청할 사업을 고르면 서류가 바뀝니다</span></div>';
+    html += '<div class="docs-toolbar"><label for="programSelect">신청할 사업</label><select id="programSelect">' +
+      options.map(function (x) {
+        var label = x.p.name + (x.status === '조건부' ? ' (조건부 가능)' : ' (가능)');
+        return '<option value="' + esc(x.p.id) + '"' + (x.p.id === state.selectedProgram ? ' selected' : '') + '>' + esc(label) + '</option>';
+      }).join('') + '</select></div>';
+
+    html += '<div class="bar-label">준비 ' + checkedCount + ' / ' + docs.length + ' — ' + esc(current.p.name) + '</div>';
+    html += '<div class="bar-wrap"><div class="bar" id="docBar" style="width:' + (docs.length ? Math.round(checkedCount / docs.length * 100) : 0) + '%"></div></div>';
+
+    html += '<ul class="doc-list" id="docList">';
+    docs.forEach(function (d) {
+      var key = state.selectedProgram + ':' + d.id;
+      var on = !!state.checked[key];
+      html += '<li class="doc-item' + (on ? ' done' : '') + '"><input type="checkbox" id="doc-' + esc(d.id) + '" data-doc="' + esc(d.id) + '"' + (on ? ' checked' : '') + '>' +
+        '<label for="doc-' + esc(d.id) + '"><span class="name">' + esc(d.name) + '</span>' +
+        '<span class="where">발급처: ' + esc(d.where) + '</span>' +
+        (d.note ? '<span class="note">· ' + esc(d.note) + '</span>' : '') + '</label></li>';
+    });
+    html += '</ul>';
+
+    html += '<div class="draft-box"><h3><span aria-hidden="true">✍️</span>자기소개·지원동기 초안</h3>' +
+      '<p class="lead">선택한 사업·장애 유형·근무 조건을 반영해 문장을 만들어 드려요. 복사해서 신청서에 붙이고, 경력 부분만 고치면 됩니다.</p>' +
+      '<div class="draft-actions"><button class="btn primary" type="button" id="btnGenerate">초안 만들기</button>' +
+      '<button class="btn" type="button" id="btnVariant"' + (state.draftShown ? '' : ' disabled') + '>다른 표현으로</button>' +
+      '<button class="btn teal" type="button" id="btnCopy"' + (state.draftShown ? '' : ' disabled') + '>복사하기</button></div>' +
+      '<div class="draft" id="draftOut"' + (state.draftShown ? '' : ' hidden') + '>' + esc(state.draft) + '</div></div>';
+
+    body.innerHTML = html;
+
+    $('#programSelect').addEventListener('change', function (e) {
+      state.selectedProgram = e.target.value;
+      state.draftShown = false;
+      state.draft = '';
+      renderDocs();
+    });
+    $('#btnGenerate').addEventListener('click', function () { generateDraft(); });
+    $('#btnVariant').addEventListener('click', function () { state.draftVariant += 1; generateDraft(); });
+    $('#btnCopy').addEventListener('click', function () {
+      if (!state.draft) { toast('먼저 초안을 만들어 주세요'); return; }
+      copyText(state.draft);
+    });
+  }
+
+  function updateDocProgress() {
+    if (!state.selectedProgram) { return; }
+    var docs = docsFor(state.selectedProgram);
+    var checkedCount = docs.filter(function (d) { return state.checked[state.selectedProgram + ':' + d.id]; }).length;
+    $('#count-docs').textContent = checkedCount + '/' + docs.length;
+    var bar = $('#docBar');
+    if (bar) { bar.style.width = (docs.length ? Math.round(checkedCount / docs.length * 100) : 0) + '%'; }
+    var lab = $('.bar-label');
+    if (lab) {
+      var name = (PROGRAMS.filter(function (p) { return p.id === state.selectedProgram; })[0] || {}).name || '';
+      lab.textContent = '준비 ' + checkedCount + ' / ' + docs.length + ' — ' + name;
+    }
+  }
+
+  function renderAll() {
+    renderSummary();
+    renderJobs();
+    renderWorkplaces();
+    renderDocs();
+  }
+
+  /* ============================================================
+     10. 신청서 초안
+     ============================================================ */
+  function pick(arr, i) { return arr[((i % arr.length) + arr.length) % arr.length]; }
+
+  var TYPE_SENTENCE = {
+    physical: [
+      '이동할 때는 휠체어를 이용하고, 오래 서 있거나 무거운 것을 드는 일은 어렵습니다.',
+      '오래 서 있거나 무거운 것을 드는 일은 어렵지만, 앉아서 하는 일은 무리 없이 해낼 수 있습니다.'
+    ],
+    brain: [
+      '손의 움직임과 말하기에 조금 어려움이 있습니다. 글로 주고받거나 시간을 두고 이야기하면 충분히 소통할 수 있습니다.',
+      '몸의 한쪽을 쓰는 일이 느린 편입니다. 속도보다 정확하게 하는 일에 강점이 있습니다.'
+    ],
+    visual: [
+      '화면읽기 프로그램과 확대 기능을 함께 쓰고 있습니다. 글로 된 안내보다 음성 안내가 있을 때 더 정확하게 일합니다.',
+      '점자와 음성 안내를 이용합니다. 손으로 만져 확인하는 일은 오히려 익숙합니다.'
+    ],
+    hearing: [
+      '말소리 대신 글로 주고받는 대화가 편합니다. 수어통역과 문자 안내를 함께 쓰면 업무를 정확히 이해할 수 있습니다.',
+      '회의 내용은 문자로 받는 것이 좋습니다. 눈으로 확인하는 일은 빠르게 해냅니다.'
+    ],
+    developmental: [
+      '처음 배울 때 순서를 나눠 천천히 익히면, 익숙해진 뒤에는 같은 일을 꾸준히 해냅니다.',
+      '여러 일을 동시에 하기보다 하나씩 끝내는 편이 잘 맞습니다. 맡은 일은 끝까지 하려고 합니다.'
+    ],
+    other: [
+      '일하는 데 몇 가지 도움이 필요하지만, 할 수 있는 일의 범위를 함께 정하면 충분히 일할 수 있습니다.',
+      '무리한 동작은 피해야 하지만, 앉아서 하는 일은 꾸준히 해낼 수 있습니다.'
+    ]
+  };
+  var ACTIVITY = {
+    physical: '집 근처에서 가볍게 운동하며',
+    brain: '컴퓨터로 글을 정리하는 연습을 하며',
+    visual: '라디오와 화면읽기 프로그램으로 책을 들으며',
+    hearing: '글쓰기와 손으로 하는 일을 하며',
+    developmental: '정해진 시간에 규칙적으로 생활하며',
+    other: '동네 이웃과 왕래하며'
+  };
+  var WHY = {
+    general_full: '하루 종일 일하는 만큼 소득이 안정되고, 행정 업무를 익히면 나중에 다른 일로 옮겨 갈 때도 도움이 된다고 들었습니다.',
+    general_part: '주 20시간이라 체력 부담을 줄이면서 꾸준히 다닐 수 있고, 남는 시간에 건강 관리도 함께 할 수 있습니다.',
+    welfare: '주 14시간 안에서 무리하지 않고 오래 다닐 수 있다는 점이 저에게 가장 맞았습니다.',
+    special_massage: '안마사 자격을 살려 어르신께 도움을 드릴 수 있다는 점이 보람 있을 것 같습니다.',
+    special_care: '요양보호사 선생님을 도와 어르신을 챙기는 일을 배우고 싶습니다.',
+    edu_link: '학교에서 배운 것을 실제 일터에서 써 보고 싶습니다.',
+    standard: '같은 일을 오래 하면서 기술을 익히고 싶습니다.',
+    remote: '집에서 할 수 있는 일로 꾸준히 소득을 만들고 싶습니다.'
+  };
+  var DUTY_WISH = {
+    general_full: '행정도우미로 서류를 정리하고 방문하는 분께 안내하는 일을 하고 싶습니다.',
+    general_part: '사무보조로 서류를 정리하고 전화·방문 안내를 돕는 일을 하고 싶습니다.',
+    welfare: '도서관 사서보조나 자료 정리처럼 정해진 순서로 하는 일을 하고 싶습니다.',
+    special_massage: '경로당과 복지관을 찾아 어르신께 안마 서비스를 제공하고 싶습니다.',
+    special_care: '요양보호사 선생님을 도와 식사와 이동을 돕는 일을 하고 싶습니다.',
+    edu_link: '전공과에서 배운 직무를 현장에서 직접 해 보고 싶습니다.',
+    standard: '사무보조나 포장처럼 손에 익으면 꾸준히 할 수 있는 일을 하고 싶습니다.',
+    remote: '자료를 검수하고 정리하는 재택 업무를 하고 싶습니다.'
+  };
+
+  function buildDraft() {
+    var s = state;
+    var pid = state.selectedProgram || 'general_full';
+    var prog = PROGRAMS.filter(function (p) { return p.id === pid; })[0] || PROGRAMS[0];
+    var v = state.draftVariant;
+
+    var sevInline = s.severity === 'severe' ? '장애 정도가 심한' : s.severity === 'mild' ? '장애 정도가 심하지 않은' : '장애인등록증을 가진';
+    var typeName = TYPE_LABEL[s.type] || '장애';
+    var typeSentence;
+    if (s.type === 'physical' && !s.envs.has('wheelchair')) {
+      typeSentence = pick([
+        '오래 서 있거나 무거운 것을 드는 일은 어렵지만, 앉아서 하는 일은 무리 없이 해낼 수 있습니다.',
+        '계단을 오르내리는 일은 피하고 싶고, 앉아서 하는 일이라면 오래 집중해서 할 수 있습니다.'
+      ], v);
+    } else {
+      typeSentence = pick(TYPE_SENTENCE[s.type] || TYPE_SENTENCE.other, v);
+    }
+
+    var envSentences = [];
+    if (s.envs.has('wheelchair')) { envSentences.push('출퇴근과 사무실 안을 이동할 때 경사로와 승강기가 꼭 필요합니다.'); }
+    if (s.envs.has('standing')) { envSentences.push('서서 오래 일하는 자리보다 앉아서 하는 자리가 맞습니다.'); }
+    if (s.envs.has('simple')) { envSentences.push('여러 가지를 동시에 하기보다 정해진 일을 순서대로 할 때 실수가 적습니다.'); }
+    if (s.envs.has('communication') && s.type !== 'hearing') { envSentences.push('업무 지시를 글로 받거나 통역의 도움을 받으면 정확하게 해낼 수 있습니다.'); }
+
+    var strength = s.envs.has('simple')
+      ? pick(['한 가지 일을 반복해서 정확하게 해내는 데 익숙합니다.', '맡은 일을 순서대로 끝까지 해 두는 편입니다.'], v)
+      : pick(['배운 일은 메모해 두고 같은 방식으로 해내는 편입니다.', '모르는 것은 먼저 물어보고 확인한 뒤에 움직입니다.'], v);
+
+    var envLine = envSentences.length ? envSentences.join(' ') : '특별히 요청할 환경은 없습니다.';
+
+    var dutyLine = DUTY_WISH[pid] || DUTY_WISH.general_part;
+
+    var supportLine;
+    if (s.envs.has('wheelchair')) {
+      supportLine = '출퇴근 차량과 사무실 동선(경사로·승강기)을 미리 안내받으면 좋겠습니다. 필요하면 보조공학기기 지원도 함께 신청하고 싶습니다.';
+    } else if (s.envs.has('communication')) {
+      supportLine = '업무 지시를 글로 받을 수 있게 해 주시고, 첫 근무에는 통역을 함께 배치해 주시면 정확히 익힐 수 있습니다.';
+    } else if (s.envs.has('standing')) {
+      supportLine = '앉아서 할 수 있는 업무를 중심으로 배치해 주시고, 서서 하는 일이 있을 때는 쉬는 시간을 함께 정해 주시면 좋겠습니다.';
+    } else {
+      supportLine = '처음 배치될 때 업무 순서를 한 번만 자세히 알려 주시면 좋겠습니다.';
+    }
+
+    var closing = pick([
+      '주어진 시간 동안 성실하게 일하고, 함께 일하는 분들이 불편하지 않도록 먼저 물어보고 움직이겠습니다. 기회를 주시면 오래 다니며 맡은 일을 해내겠습니다.',
+      '처음에는 느릴 수 있지만 익숙해질 때까지 꾸준히 하겠습니다. 작은 일도 소홀히 하지 않고 끝까지 해내는 사람이 되겠습니다.',
+      '할 수 있는 일과 어려운 일을 숨기지 않고 담당자와 함께 정해 가며 오래 일하고 싶습니다. 잘 부탁드립니다.'
+    ], v);
+
+    var lines = [];
+    lines.push('장애인일자리사업 참여신청서 – 자기소개 및 지원동기 (초안)');
+    lines.push('');
+    lines.push('■ 희망 사업: ' + prog.name + ' — ' + prog.hours + ', ' + prog.pay);
+    lines.push('■ 희망 근무지: 경상남도 진주시 (거주지 인근)');
+    lines.push('■ 장애 정도·유형: ' + (SEVERITY_LABEL[s.severity] || '장애인등록증 소지') + ' / ' + typeName);
+    lines.push('■ 희망 근무 형태: ' + (WORK_LABEL[s.workType] || '협의'));
+    lines.push('■ 근로환경 조건: ' + (s.envs.size ? Array.from(s.envs).map(function (x) { return ENV_LABEL[x]; }).join(', ') : '특별한 요청 없음'));
+    lines.push('');
+    lines.push('1. 자기소개');
+    lines.push('저는 ' + sevInline + ' ' + typeName + '인입니다. ' + typeSentence + ' ' + envLine +
+      ' 지금은 ' + (ACTIVITY[s.type] || ACTIVITY.other) + ' 지냅니다. ' + strength);
+    lines.push('');
+    lines.push('2. 지원동기');
+    lines.push('일자리 사업을 알아보던 중 ‘' + prog.name + '’ 사업을 알게 되었습니다. ' +
+      (WHY[pid] || WHY.general_part) + ' 제가 할 수 있는 일과 근무 조건이 맞아 지원하게 되었습니다.');
+    lines.push('');
+    lines.push('3. 하고 싶은 일과 강점');
+    lines.push(dutyLine + ' ' + pick([
+      '처음에는 배우는 시간이 조금 필요하지만, 익숙해지면 같은 일을 정확하게 반복해서 해낼 수 있습니다.',
+      '한 번 익힌 일은 순서를 외워 두고 스스로 확인하며 처리합니다. 실수를 줄이는 데 신경을 씁니다.'
+    ], v) + (s.envs.has('simple') ? ' 복잡한 판단이 필요한 일보다 정해진 일을 맡으면 더 안정적으로 해낼 수 있습니다.' : ''));
+    lines.push('');
+    lines.push('4. 근무를 위해 필요한 지원');
+    lines.push(supportLine);
+    lines.push('');
+    lines.push('5. 마무리');
+    lines.push(closing);
+    lines.push('');
+    lines.push('※ 이 글은 프로토타입이 만든 초안입니다. 실제 제출 전에 본인의 경력·활동([          ])을 채우고, 사실과 다른 내용이 없는지 확인해 주세요.');
+    return lines.join('\n');
+  }
+
+  function generateDraft() {
+    state.draft = buildDraft();
+    state.draftShown = true;
+    var out = $('#draftOut');
+    if (out) { out.textContent = state.draft; out.hidden = false; }
+    var b1 = $('#btnCopy');
+    var b2 = $('#btnVariant');
+    if (b1) { b1.disabled = false; }
+    if (b2) { b2.disabled = false; }
+    toast('초안을 만들었어요');
+  }
+
+  function copyText(text) {
+    var done = function () { toast('복사했어요. 신청서에 붙여 넣으세요.'); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(fallback);
+    } else {
+      fallback();
+    }
+    function fallback() {
+      try {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', 'readonly');
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        var ok = document.execCommand('copy');
+        document.body.removeChild(ta);
+        if (ok) { done(); } else { toast('복사가 막혀 있어요. 초안을 직접 선택해 복사해 주세요.'); }
+      } catch (e) {
+        toast('복사가 막혀 있어요. 초안을 직접 선택해 복사해 주세요.');
+      }
+    }
+  }
+
+  /* ============================================================
+     11. 직접 입력 해석
+     ============================================================ */
+  var KEYWORDS = [
+    { re: /(심한|중증|1급|2급|3급|많이 불편)/, key: 'severity', v: 'severe' },
+    { re: /(심하지|경증|4급|5급|6급|가벼운)/, key: 'severity', v: 'mild' },
+    { re: /지체/, key: 'type', v: 'physical' },
+    { re: /뇌병변|뇌성/, key: 'type', v: 'brain' },
+    { re: /시각|맹인|저시력|앞이 안/, key: 'type', v: 'visual' },
+    { re: /청각|난청|농아|언어|말을 못|귀가/, key: 'type', v: 'hearing' },
+    { re: /발달|자폐|지적|정신/, key: 'type', v: 'developmental' },
+    { re: /전일|풀타임|40시간|하루 종일|꼬박/, key: 'workType', v: 'full' },
+    { re: /시간제|파트|20시간|반나절/, key: 'workType', v: 'part' },
+    { re: /14시간|복지형|참여형|짧게|조금만/, key: 'workType', v: 'welfare' },
+    { re: /재택|집에서|유연|자택/, key: 'workType', v: 'remote' },
+    { re: /휠체어|경사로|승강기|엘리베이터|계단/, key: 'env', v: 'wheelchair' },
+    { re: /서서|서 있|오래 서|체력|피곤|힘들/, key: 'env', v: 'standing' },
+    { re: /단순|반복|사무|정리/, key: 'env', v: 'simple' },
+    { re: /수어|통역|문자|글자|의사소통/, key: 'env', v: 'communication' }
+  ];
+
+  function parseText(text) {
+    var found = { severity: null, type: null, workType: null, envs: [] };
+    KEYWORDS.forEach(function (k) {
+      if (!k.re.test(text)) { return; }
+      if (k.key === 'env') {
+        if (found.envs.indexOf(k.v) === -1) { found.envs.push(k.v); }
+      } else if (!found[k.key]) {
+        found[k.key] = k.v;
+      }
+    });
+    return found;
+  }
+
+  function applyText(text) {
+    var f = parseText(text);
+    var applied = [];
+    if (f.severity) { state.severity = f.severity; applied.push('장애 정도 ' + SEVERITY_LABEL[f.severity]); }
+    if (f.type) { state.type = f.type; applied.push('유형 ' + TYPE_LABEL[f.type]); }
+    if (f.workType) { state.workType = f.workType; applied.push('근무 ' + WORK_LABEL[f.workType]); }
+    if (f.envs.length) {
+      f.envs.forEach(function (v) { state.envs.add(v); });
+      state.envAnswered = true;
+      applied.push('환경 ' + f.envs.map(function (v) { return ENV_LABEL[v]; }).join(', '));
+    }
+    if (!applied.length) { return false; }
+
+    syncSelectedProgram();
+    renderAll();
+    renderChat();
+    addMsg('user', esc(text));
+    addMsg('bot', '말씀하신 내용을 조건에 넣었어요 — ' + esc(applied.join(' · ')) + '. ' +
+      (isComplete() ? '결과를 다시 계산했으니 분석 화면을 봐 주세요.' : '이어서 몇 가지만 더 여쭤볼게요.'));
+    var log = $('#chatLog');
+    log.scrollTop = log.scrollHeight;
+    return true;
+  }
+
+  /* ============================================================
+     12. 탭 · 초기화 · 예시
+     ============================================================ */
+  function setTab(name) {
+    state.tab = name;
+    $$('.tab').forEach(function (t) {
+      var on = t.getAttribute('data-tab') === name;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.tabIndex = on ? 0 : -1;
+    });
+    ['jobs', 'work', 'docs'].forEach(function (k) {
+      var panel = $('#panel-' + k);
+      if (panel) { panel.hidden = (k !== name); }
+    });
+  }
+
+  function focusDashboard() {
+    var dash = $('#dash');
+    if (dash && dash.scrollIntoView) {
+      dash.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    var first = $('#tab-jobs');
+    if (first) { first.focus({ preventScroll: true }); }
+  }
+
+  function resetState() {
+    state.severity = null;
+    state.type = null;
+    state.workType = null;
+    state.envs = new Set();
+    state.pendingEnvs = new Set();
+    state.envAnswered = false;
+    state.selectedProgram = null;
+    state.checked = {};
+    state.draft = '';
+    state.draftShown = false;
+    state.draftVariant = 0;
+  }
+
+  function resetAll() {
+    resetState();
+    setTab('jobs');
+    renderAll();
+    renderChat();
+    toast('처음부터 다시 시작합니다');
+  }
+
+  var PERSONAS = [
+    { severity: 'severe', type: 'physical', workType: 'welfare', envs: ['wheelchair', 'standing'] },
+    { severity: 'mild', type: 'physical', workType: 'full', envs: ['standing', 'simple'] },
+    { severity: 'severe', type: 'hearing', workType: 'part', envs: ['communication', 'standing'] }
+  ];
+
+  function applyPersona(i) {
+    var p = PERSONAS[i];
+    resetState();
+    state.severity = p.severity;
+    state.type = p.type;
+    state.workType = p.workType;
+    state.envs = new Set(p.envs);
+    state.envAnswered = true;
+    syncSelectedProgram();
+    setTab('jobs');
+    renderAll();
+    renderChat();
+    toast('예시 ' + (i + 1) + '번 조건으로 상담을 마쳤어요');
+  }
+
+  /* ============================================================
+     13. 이벤트 연결 · 시작
+     ============================================================ */
+  function init() {
+    document.getElementById('personas').addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('.persona') : null;
+      if (!btn) { return; }
+      var idx = parseInt(btn.getAttribute('data-persona'), 10);
+      if (!isNaN(idx)) { applyPersona(idx); }
+    });
+
+    $$('.tab').forEach(function (t) {
+      t.addEventListener('click', function () { setTab(t.getAttribute('data-tab')); });
+      t.addEventListener('keydown', function (e) {
+        var keys = { ArrowRight: 1, ArrowLeft: -1 };
+        if (!(e.key in keys)) { return; }
+        e.preventDefault();
+        var tabs = $$('.tab');
+        var i = tabs.indexOf(t);
+        var next = tabs[(i + keys[e.key] + tabs.length) % tabs.length];
+        setTab(next.getAttribute('data-tab'));
+        next.focus();
+      });
+    });
+
+    var panelDocs = $('#panel-docs');
+    panelDocs.addEventListener('change', function (e) {
+      var cb = e.target;
+      if (!cb || cb.type !== 'checkbox' || !cb.getAttribute('data-doc')) { return; }
+      var key = state.selectedProgram + ':' + cb.getAttribute('data-doc');
+      if (cb.checked) { state.checked[key] = true; } else { delete state.checked[key]; }
+      var item = cb.closest('.doc-item');
+      if (item) { item.classList.toggle('done', cb.checked); }
+      updateDocProgress();
+    });
+
+    $('#composer').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var input = $('#userInput');
+      var text = (input.value || '').trim();
+      if (!text) { return; }
+      input.value = '';
+      var ok = applyText(text);
+      if (!ok) {
+        addMsg('user', esc(text));
+        addMsg('bot', '조건으로 알아듣지 못했어요. 아래 버튼에서 골라 주시면 바로 반영할게요.');
+        var log = $('#chatLog');
+        log.scrollTop = log.scrollHeight;
+      }
+    });
+
+    renderAll();
+    renderChat();
+    setTab('jobs');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+<noscript>
+  <p style="padding:20px;background:#fff8e8;color:#5c4409">이 프로토타입은 자바스크립트가 필요합니다. 브라우저에서 자바스크립트를 켜고 다시 열어 주세요.</p>
+</noscript>
+</body>
+</html>
