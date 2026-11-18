@@ -1372,6 +1372,9 @@
   .pane-lead b{color:var(--ink-soft)}
 
   .stepnav{display:flex;align-items:center;gap:10px;margin:20px 0 8px;flex-wrap:wrap}
+  #stepNavTop{scroll-margin-top:104px}
+  body.a11y-big #stepNavTop{scroll-margin-top:124px}
+  @media (max-width:700px){ #stepNavTop{scroll-margin-top:84px} body.a11y-big #stepNavTop{scroll-margin-top:96px} }
   .stepnav .snav-pos{flex:1 1 auto;text-align:center;font-size:13px;font-weight:800;color:var(--ink-mute);order:2}
   .stepnav .btn{min-height:52px;font-size:16px;flex:0 1 auto;max-width:100%;order:1;white-space:normal;text-align:left}
   .stepnav .btn.snav-next{order:3;text-align:center;font-weight:800;min-width:min(100%,280px)}
@@ -5807,10 +5810,10 @@
   function renderStepNavs() {
     var n = state.step;
     var prevHtml = n > 1
-      ? '<button class="btn snav-prev" type="button" data-nav-step="' + (n - 1) + '">← ' + esc(STEP_META[n - 1].t) + '</button>'
+      ? '<button class="btn snav-prev" type="button" data-nav-step="' + (n - 1) + '" aria-label="이전 단계: ' + esc(STEP_META[n - 1].t) + '">← 이전 단계</button>'
       : '<span class="snav-ghost" aria-hidden="true"></span>';
     var nextStep = n < 5 ? n + 1 : 1;
-    var nextLabel = n < 5 ? esc(STEP_META[n + 1].t) + ' →' : '1단계로 돌아가기';
+    var nextLabel = n < 5 ? '다음 단계 · ' + esc(STEP_META[n + 1].t) + ' →' : '1단계로 돌아가기';
     var html = prevHtml +
       '<span class="snav-pos" aria-hidden="true">' + n + ' / 5</span>' +
       '<button class="btn primary snav-next" type="button" data-nav-step="' + nextStep + '">' + nextLabel + '</button>';
@@ -5863,9 +5866,9 @@
   }
 
   function scrollToStepTop() {
-    var bar = $('#stepBar');
-    if (bar && bar.scrollIntoView) {
-      bar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    var nav = $('#stepNavTop');
+    if (nav && nav.scrollIntoView) {
+      nav.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else if (window.scrollTo) {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
