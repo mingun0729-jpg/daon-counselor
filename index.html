@@ -2552,7 +2552,7 @@
     html += '<p class="as-oath">본인은 위 기재 사항이 사실과 같음을 확인하며, 장애인일자리사업 참여를 신청합니다.</p>';
     html += '<div class="as-sign"><span class="d">' + esc(today) + '</span><span class="n">신청인 <b>' + esc(f.name || '—') + '</b><span class="line">(서명 또는 인)</span></span></div>';
     html += '<p class="as-to-foot">' + esc(ORG.name) + ' 귀하</p>';
-    html += '<p class="as-foot">※ 이 문서는 공모전 시연용으로 다온(DAON) 프로토타입이 만든 초안입니다. 실제 제출은 ' + esc(ORG_LINE) + '(☎ ' + esc(ORG.tel) + ') 담당자에게 문의해 해당 사업의 실제 양식과 안내를 확인한 뒤 진행하고, 본인 경력·계좌·연락처는 제출 전에 직접 확인해 주세요. (서명은 인쇄 후 직접 하세요.)</p>';
+    html += '<p class="as-foot">※ 이 문서는 공모전 시연용으로 다온(DAON) 프로토타입이 만든 초안입니다. 실제 제출은 ' + esc(ORG.name) + ' 담당자(☎ ' + esc(ORG.tel) + ')에게 문의해 해당 사업의 실제 양식과 안내를 확인한 뒤 진행하고, 본인 경력·계좌·연락처는 제출 전에 직접 확인해 주세요. (서명은 인쇄 후 직접 하세요.)</p>';
     html += '</div>';
     return html;
   }
@@ -2579,9 +2579,9 @@
     var city = jurisdiction();
     var mine;
     if (!city) {
-      mine = '<b>진주시</b> 기준 기본 접수처는 <b>' + esc(ORG_LINE) + '</b>(' + esc(ORG.addr) + ' · ☎ ' + esc(ORG.tel) + ')입니다. 신청서 1단계에 거주지를 적으면 그 지역 기준 접수처를 여기에 다시 보여 드려요.';
+      mine = '<b>진주시</b> 기준 기본 접수처는 <b>' + esc(ORG.name) + '</b> — ' + esc(ORG.short) + ', ' + esc(ORG.addr) + ', ☎ ' + esc(ORG.tel) + '입니다. 신청서 1단계에 거주지를 적으면 그 지역 기준 접수처를 여기에 다시 보여 드려요.';
     } else if (city === '진주시') {
-      mine = '입력하신 거주지가 <b>진주시</b>라서 기본 접수처는 <b>' + esc(ORG_LINE) + '</b>(☎ ' + esc(ORG.tel) + ')입니다. 다만 일반형·시간제처럼 진주시가 직접 접수하는 사업은 주소지 <b>읍·면·동 행정복지센터</b>로 내야 해요.';
+      mine = '입력하신 거주지가 <b>진주시</b>라서 기본 접수처는 <b>' + esc(ORG.name) + '</b>(' + esc(ORG.short) + ' · ☎ ' + esc(ORG.tel) + ')입니다. 다만 일반형·시간제처럼 진주시가 직접 접수하는 사업은 주소지 <b>읍·면·동 행정복지센터</b>로 내야 해요.';
     } else {
       mine = '입력하신 거주지(' + esc(city) + ') 기준으로는 <b>' + esc(city) + '청 장애인일자리 담당부서</b>와 주소지 <b>읍·면·동 행정복지센터</b>에 문의·접수하세요. 아래 접수처·전화번호는 진주시 기준입니다.';
     }
