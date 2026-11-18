@@ -405,6 +405,85 @@
   .ocr-privacy .lock{flex:0 0 auto;font-size:13px}
   .ocr-privacy b{color:var(--grass-700)}
 
+  /* ---------- 원클릭 자동 접수 시연 · 메일로 보내기 ---------- */
+  .auto-cta{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:18px 0 2px;padding:15px 16px;border-radius:18px;border:1px solid #CFE6D7;background:linear-gradient(180deg,#F5FBF7 0%,#EAF6EE 100%)}
+  .auto-cta .ac-txt{flex:1 1 250px;min-width:0}
+  .auto-cta .ac-txt b{display:block;font-size:14.5px;font-weight:800;color:var(--grass-900)}
+  .auto-cta .ac-txt span{display:block;margin-top:3px;font-size:12.6px;line-height:1.55;color:var(--ink-soft)}
+  .auto-cta .btn{flex:0 0 auto}
+  .auto-body{display:grid;grid-template-columns:minmax(250px,330px) minmax(0,1fr);gap:18px;padding:20px;align-items:start}
+  .auto-left,.auto-side{min-width:0}
+  .auto-left h3,.auto-side h3{font-size:15.5px;font-weight:800;display:flex;align-items:center;gap:7px;line-height:1.35}
+  .auto-left .lead,.auto-side .lead{font-size:13px;color:var(--ink-mute);margin:4px 0 12px;line-height:1.55}
+  .auto-small{font-size:11.8px;color:var(--ink-mute);line-height:1.5;margin-top:9px}
+  .ac-kpis{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+  .ac-kpi{flex:1 1 118px;min-width:108px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px}
+  .ac-kpi b{display:block;font-size:19px;font-weight:800;letter-spacing:-.02em;color:var(--grass-700);line-height:1.2}
+  .ac-kpi span{display:block;font-size:11.8px;font-weight:700;color:var(--ink-mute);margin-top:2px}
+  .ac-kpi.todo{border-color:#EFE4C8;background:#FFFCF3}
+  .ac-kpi.todo b{color:var(--warn)}
+  .pkg-box{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 15px}
+  .pkg-box+.pkg-box{margin-top:10px}
+  .pkg-box h4{font-size:13.5px;font-weight:800;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+  .pkg-list{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+  .pkg-list li{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.5;color:var(--ink-soft)}
+  .pkg-list li .fi{flex:0 0 16px;text-align:center;font-size:12px;color:var(--grass-700)}
+  .pkg-list li b{font-weight:800;color:var(--ink)}
+  .xfer{display:grid}
+  .xfer-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;font-size:12.8px;padding:7px 0;border-bottom:1px dashed var(--line-soft);color:var(--ink-mute)}
+  .xfer-row:last-of-type{border-bottom:0}
+  .xfer-row b{font-weight:800;color:var(--ink);text-align:right;overflow-wrap:anywhere}
+  .xfer-bar{height:9px;border-radius:999px;background:#E7EFE9;overflow:hidden;margin:10px 0 6px}
+  .xfer-bar i{display:block;height:100%;width:8%;background:var(--grass);border-radius:999px;transition:width .4s ease}
+  .xfer-cap{font-size:12px;font-weight:800;color:var(--grass-700)}
+  .receipt{background:#fff;border:1px solid #CFE6D7;border-radius:18px;padding:16px 16px 14px;box-shadow:var(--shadow-sm)}
+  .receipt .rc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;border-bottom:1.5px dashed #D5E3D8;padding-bottom:10px}
+  .receipt .rc-top h4{font-size:14.5px;font-weight:800;line-height:1.4}
+  .receipt .rc-org{display:block;font-size:11.5px;font-weight:700;color:var(--ink-mute);margin-top:2px}
+  .receipt .rc-tag{flex:0 0 auto;font-size:11px;font-weight:800;color:var(--grass-700);background:var(--mint);border-radius:999px;padding:4px 10px;white-space:nowrap}
+  .receipt .rc-no{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:19px;font-weight:800;letter-spacing:.04em;color:var(--grass-900);margin:11px 0 8px;overflow-wrap:anywhere}
+  .rc-rows{display:grid}
+  .rc-row{display:grid;grid-template-columns:86px minmax(0,1fr);gap:9px;font-size:12.8px;padding:5px 0;border-bottom:1px solid var(--line-soft)}
+  .rc-row:last-child{border-bottom:0}
+  .rc-row b{font-size:12.2px;font-weight:800;color:var(--ink-mute)}
+  .rc-row span{font-weight:700;color:var(--ink);overflow-wrap:anywhere}
+  .receipt .rc-note{margin-top:11px;font-size:11.8px;line-height:1.5;color:#6A4A08;background:var(--warn-bg);border-radius:12px;padding:9px 11px}
+  .receipt .rc-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;padding-top:10px;border-top:1.5px dashed #D5E3D8}
+  .receipt .rc-stamp{font-size:11.5px;font-weight:800;color:#8A2B23;border:1.5px dashed #D9A9A4;border-radius:10px;padding:5px 9px;transform:rotate(-4deg)}
+  .receipt .rc-code{display:flex;align-items:flex-end;gap:2px;height:26px}
+  .receipt .rc-code i{display:block;width:2px;background:#37443B;border-radius:1px}
+  .mail-help{margin-top:10px;border:1px solid #CFE6D7;background:#F6FBF7;border-radius:16px;padding:13px 14px}
+  .mail-help h4{font-size:13px;font-weight:800;display:flex;align-items:center;gap:6px}
+  .mail-help .mh-sub{font-size:12.2px;color:var(--ink-mute);line-height:1.55;margin-top:4px}
+  .mail-help .mh-line{font-size:12.4px;color:var(--ink-soft);line-height:1.55;margin-top:7px;overflow-wrap:anywhere}
+  .mail-help .mh-line b{color:var(--ink)}
+  .mail-help .mh-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .mail-help .mh-prev{margin-top:8px;font-size:12px;line-height:1.6;color:var(--ink-soft);background:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 11px;max-height:160px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere}
+
+  /* ---------- 필요서류 자동 수집 에이전트 (시연 Mock API) ---------- */
+  .agent-box{margin:14px 0;background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 15px}
+  .ag-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .ag-head h4{font-size:13.8px;font-weight:800;display:flex;align-items:center;gap:6px;line-height:1.4}
+  .ag-count{margin-left:auto;font-size:11.8px;font-weight:800;color:var(--grass-700);background:var(--mint);border-radius:999px;padding:3px 10px;white-space:nowrap}
+  .ag-badge{font-size:10.5px;font-weight:800;letter-spacing:.02em;color:#1F4E8C;background:#E7F0FB;border:1px solid #C6DAF3;border-radius:999px;padding:2px 8px;white-space:nowrap}
+  .ag-lead{font-size:12.2px;color:var(--ink-mute);line-height:1.55;margin-top:6px}
+  .ag-list{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px}
+  .ag-item{display:flex;gap:9px;align-items:flex-start;background:#FCFDFB;border:1px solid var(--line);border-radius:12px;padding:8px 10px;min-height:44px}
+  .ag-item .ag-ico{flex:0 0 22px;width:22px;height:22px;border-radius:50%;background:#EDF2EC;color:var(--ink-mute);display:grid;place-items:center;font-size:11.5px;font-weight:800;margin-top:1px}
+  .ag-item.done .ag-ico{background:var(--ok-bg);color:var(--ok)}
+  .ag-item.run .ag-ico{background:var(--mint);color:var(--grass-700)}
+  .ag-item.fail .ag-ico{background:var(--no-bg);color:var(--no)}
+  .ag-main{min-width:0;flex:1 1 auto}
+  .ag-t{font-size:13.2px;font-weight:800;line-height:1.4;display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+  .ag-st{font-size:10.8px;font-weight:800;border-radius:999px;padding:2px 8px;background:#EDF2EC;color:var(--ink-mute);white-space:nowrap}
+  .ag-st.ok{background:var(--ok-bg);color:var(--ok)}
+  .ag-st.run{background:var(--mint);color:var(--grass-700)}
+  .ag-st.fail{background:var(--no-bg);color:var(--no)}
+  .ag-m{font-size:11.6px;color:var(--ink-mute);line-height:1.5;margin-top:2px;overflow-wrap:anywhere}
+  .ag-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
+  .ag-note{font-size:11.5px;color:var(--ink-mute);line-height:1.5;margin-top:9px}
+  .ag-note b{color:var(--warn)}
+
   /* ---------- 신청서 작성 4단계 ---------- */
   .form-flow{margin:4px 0 24px;background:#fff;border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}
   .ff-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:15px 18px;background:linear-gradient(180deg,#F6FCF8 0%,#FFFFFF 100%);border-bottom:1px solid var(--line-soft)}
@@ -595,6 +674,16 @@
   body.a11y-big .ostep .os-t{font-size:16px}
   body.a11y-big .ostep .os-d{font-size:14px}
   body.a11y-big .oe-val{font-size:16px}
+  body.a11y-big .auto-cta .ac-txt b{font-size:16.5px}
+  body.a11y-big .auto-cta .ac-txt span,body.a11y-big .auto-left .lead,body.a11y-big .auto-side .lead{font-size:14.6px}
+  body.a11y-big .ac-kpi b{font-size:21px}
+  body.a11y-big .ac-kpi span,body.a11y-big .xfer-row,body.a11y-big .rc-row,body.a11y-big .pkg-list li{font-size:14.6px}
+  body.a11y-big .rc-row b{font-size:13.8px}
+  body.a11y-big .receipt .rc-no{font-size:21px}
+  body.a11y-big .receipt .rc-note,body.a11y-big .auto-small,body.a11y-big .mail-help .mh-sub{font-size:13.6px}
+  body.a11y-big .ag-head h4{font-size:15px}
+  body.a11y-big .ag-t{font-size:15px}
+  body.a11y-big .ag-m,body.a11y-big .ag-lead,body.a11y-big .ag-note{font-size:13.8px}
 
   /* ---------- 접근성: 고대비(다크) ---------- */
   body.a11y-contrast{
@@ -830,6 +919,55 @@
   body.a11y-contrast .idcard-fields b{color:#8FE9B2}
   body.a11y-contrast .idphoto{background:repeating-linear-gradient(45deg,#152C1E 0 6px,#1B3626 6px 12px);border-color:#3E5145;color:#BCCDBF}
   body.a11y-contrast .idcard-foot{color:#BCCDBF}
+  body.a11y-contrast .auto-cta{background:#12271A;border-color:#3E8A58}
+  body.a11y-contrast .auto-cta .ac-txt b{color:#A9F2C7}
+  body.a11y-contrast .auto-cta .ac-txt span{color:#D7E6DB}
+  body.a11y-contrast .auto-left .lead,body.a11y-contrast .auto-side .lead,body.a11y-contrast .auto-small{color:#BCCDBF}
+  body.a11y-contrast .ac-kpi{background:#121814;border-color:#3E5145}
+  body.a11y-contrast .ac-kpi b{color:#A9F2C7}
+  body.a11y-contrast .ac-kpi span{color:#BCCDBF}
+  body.a11y-contrast .ac-kpi.todo{background:#241C07;border-color:#6B5520}
+  body.a11y-contrast .ac-kpi.todo b{color:#FFD98A}
+  body.a11y-contrast .pkg-box{background:#121814;border-color:#3E5145}
+  body.a11y-contrast .pkg-list li{color:#E2EDE5}
+  body.a11y-contrast .pkg-list li b{color:#FFFFFF}
+  body.a11y-contrast .pkg-list li .fi{color:#A9F2C7}
+  body.a11y-contrast .xfer-row{color:#BCCDBF;border-bottom-color:#2A3A30}
+  body.a11y-contrast .xfer-row b{color:#FFFFFF}
+  body.a11y-contrast .xfer-bar{background:#1E2B23}
+  body.a11y-contrast .xfer-bar i{background:#43B978}
+  body.a11y-contrast .xfer-cap{color:#A9F2C7}
+  body.a11y-contrast .receipt{background:#121814;border-color:#3E8A58}
+  body.a11y-contrast .receipt .rc-top{border-bottom-color:#2A3A30}
+  body.a11y-contrast .receipt .rc-org{color:#BCCDBF}
+  body.a11y-contrast .receipt .rc-tag{background:#152C1E;color:#A9F2C7}
+  body.a11y-contrast .receipt .rc-no{color:#A9F2C7}
+  body.a11y-contrast .rc-row{border-bottom-color:#2A3A30}
+  body.a11y-contrast .rc-row b{color:#BCCDBF}
+  body.a11y-contrast .rc-row span{color:#FFFFFF}
+  body.a11y-contrast .receipt .rc-note{background:#3A2C08;color:#FFD98A}
+  body.a11y-contrast .receipt .rc-foot{border-top-color:#2A3A30}
+  body.a11y-contrast .receipt .rc-stamp{color:#FFC4BE;border-color:#8E4A45}
+  body.a11y-contrast .receipt .rc-code i{background:#D7E6DB}
+  body.a11y-contrast .mail-help{background:#121814;border-color:#3E8A58}
+  body.a11y-contrast .mail-help .mh-sub,body.a11y-contrast .mail-help .mh-line{color:#D7E6DB}
+  body.a11y-contrast .mail-help .mh-line b{color:#FFFFFF}
+  body.a11y-contrast .mail-help .mh-prev{background:#0F1712;border-color:#4C6254;color:#E2EDE5}
+  body.a11y-contrast .agent-box{background:#121814;border-color:#3E5145}
+  body.a11y-contrast .ag-badge{background:#152C3E;border-color:#2F5D7C;color:#9CD2FF}
+  body.a11y-contrast .ag-count{background:#152C1E;color:#A9F2C7}
+  body.a11y-contrast .ag-lead,body.a11y-contrast .ag-m,body.a11y-contrast .ag-note{color:#BCCDBF}
+  body.a11y-contrast .ag-note b{color:#FFD98A}
+  body.a11y-contrast .ag-item{background:#0F1712;border-color:#3E5145}
+  body.a11y-contrast .ag-item .ag-ico{background:#26382C;color:#E2EDE5}
+  body.a11y-contrast .ag-item.done .ag-ico{background:#123524;color:#8CE8AE}
+  body.a11y-contrast .ag-item.run .ag-ico{background:#152C1E;color:#A9F2C7}
+  body.a11y-contrast .ag-item.fail .ag-ico{background:#3A1512;color:#FFB3AC}
+  body.a11y-contrast .ag-t{color:#FFFFFF}
+  body.a11y-contrast .ag-st{background:#26382C;color:#E2EDE5}
+  body.a11y-contrast .ag-st.ok{background:#123524;color:#8CE8AE}
+  body.a11y-contrast .ag-st.run{background:#152C1E;color:#A9F2C7}
+  body.a11y-contrast .ag-st.fail{background:#3A1512;color:#FFB3AC}
 
   /* ---------- responsive ---------- */
   @media (max-width: 980px){
@@ -900,8 +1038,20 @@
     .app-sheet .as-sign .line{min-width:110px}
     .save-badge{font-size:11px;padding:4px 9px}
   }
+  @media (max-width: 980px){
+    .auto-body{grid-template-columns:1fr;gap:14px;padding:16px}
+  }
+  @media (max-width: 620px){
+    .auto-cta{padding:13px}
+    .auto-body{padding:13px}
+    .receipt{padding:14px 13px 12px}
+    .rc-row{grid-template-columns:74px minmax(0,1fr);gap:7px}
+    .receipt .rc-no{font-size:17px}
+    .receipt .rc-top{flex-wrap:wrap;gap:6px}
+  }
   @media (prefers-reduced-motion:reduce){
     .card-holder .scanline{animation:none;top:50%}
+    .xfer-bar i{transition:none}
   }
   @media print{
     body{background:#fff}
@@ -934,6 +1084,13 @@
     #printArea .app-sheet .as-sign{margin-top:6px;padding-top:4px}
     #printArea .app-sheet .as-sign .d,#printArea .app-sheet .as-sign .n{font-size:10.8px}
     #printArea .app-sheet .as-sign .line{min-width:110px}
+    #printArea .receipt{max-width:520px;margin:0 auto;padding:0;border:0;border-radius:0;box-shadow:none}
+    #printArea .receipt .rc-top h4{font-size:15px}
+    #printArea .receipt .rc-tag{background:#fff !important;color:#111 !important;border:1px solid #8A948C !important}
+    #printArea .receipt .rc-no{font-size:19px}
+    #printArea .receipt .rc-note{background:#fff !important;color:#111 !important;border:1px solid #8A948C !important;font-size:10.4px}
+    #printArea .receipt .rc-code i{background:#111 !important}
+    #printArea .receipt .rc-stamp{color:#111 !important;border-color:#8A948C !important;transform:none}
     @page{margin:13mm 12mm}
   }
 </style>
@@ -1097,6 +1254,32 @@
       </div>
     </div>
     <p class="ocr-privacy"><span class="lock" aria-hidden="true">🔒</span><span><b>사진은 서버로 전송되지 않습니다.</b> 이 화면은 공모전 시연용으로, 실제 OCR 대신 브라우저 안에서 미리 준비한 예시 값을 보여 줍니다. 이름은 가명으로 처리해요.</span></p>
+  </div>
+</div>
+
+<!-- ============ 원클릭 자동 접수 시연 오버레이 (공모전 시연용 · 실제 전송 없음) ============ -->
+<div class="ocr" id="auto" role="dialog" aria-modal="true" aria-labelledby="autoTitle" aria-describedby="autoDesc" hidden>
+  <div class="ocr-sheet">
+    <div class="ocr-head">
+      <span class="ocr-ico" aria-hidden="true">📨</span>
+      <div>
+        <h2 id="autoTitle">진주시 지체장애인협회로 자동 접수 시연</h2>
+        <span class="ocr-sub" id="autoDesc">서류 점검 → 신청서 패키지 → 접수 시뮬레이션 → 가상 접수증</span>
+      </div>
+      <button class="ocr-close" type="button" id="autoClose" aria-label="자동 접수 시연 화면 닫기">✕</button>
+    </div>
+    <div class="auto-body">
+      <div class="auto-left">
+        <h3><span aria-hidden="true">🧭</span>자동 접수 단계</h3>
+        <p class="lead">① 서류·입력 항목 점검 → ② 신청서 패키지 생성 → ③ 협회 접수 시뮬레이션 → ④ 가상 접수증 발급 순서로 진행됩니다.</p>
+        <ol class="ocr-steps" id="autoSteps" aria-live="polite"></ol>
+      </div>
+      <div class="auto-side">
+        <div id="autoPanel"></div>
+        <div class="ocr-actions" id="autoActions"></div>
+      </div>
+    </div>
+    <p class="ocr-privacy"><span class="lock" aria-hidden="true">🔒</span><span><b>실제 기관으로 전송되지 않습니다.</b> 이 화면은 공모전 시연용으로, 서버 없이 브라우저 안에서 접수 과정을 흉내 내고 시연용 가상 접수증을 만들어 줍니다. 신청서와 입력값은 이 브라우저 밖으로 나가지 않습니다.</span></p>
   </div>
 </div>
 
@@ -2068,7 +2251,7 @@
 
   function setPageInert(on) {
     Array.prototype.forEach.call(document.body.children, function (el) {
-      if (!el || el.id === 'ocr') { return; }
+      if (!el || el.id === 'ocr' || el.id === 'auto' || el.id === 'printArea') { return; }
       if (el.tagName === 'SCRIPT' || el.tagName === 'NOSCRIPT') { return; }
       if (on) { el.setAttribute('inert', ''); } else { el.removeAttribute('inert'); }
     });
@@ -2486,10 +2669,16 @@
     html += '<p class="fhint" style="margin:-4px 0 12px">서류 체크는 아래 <b>구비서류 체크리스트</b>와 연결되어 있어요. ‘(해당)’ 서류는 본인에게 해당할 때만 준비하면 됩니다.</p>';
     html += '<div class="sec-title" style="margin-top:6px"><span aria-hidden="true">📄</span>신청서 전체 미리보기<span class="hint">' + esc(current.p.name) + '</span></div>';
     html += '<div id="appPreview">' + appSheetHtml(docs) + '</div>';
-    html += '<div class="ff-actions"><button class="btn primary" type="button" id="btnAppCopy">텍스트 복사</button>' +
+    html += '<div class="auto-cta">' +
+      '<div class="ac-txt"><b>공모전 시연 · 원클릭 자동 접수</b><span>서류·입력값 점검부터 신청서 패키지, 협회 접수 시뮬레이션, 시연용 가상 접수증 발급까지 한 번에 보여 줍니다. 실제 기관으로 전송되는 것은 없습니다.</span></div>' +
+      '<button class="btn primary" type="button" id="btnAutoSubmit" data-auto="1">진주시 지체장애인협회로 자동 접수 시연</button></div>';
+    html += '<div class="ff-actions"><button class="btn" type="button" id="btnAppCopy">텍스트 복사</button>' +
       '<button class="btn" type="button" id="btnAppPrint">인쇄용 출력</button>' +
+      '<button class="btn" type="button" id="btnAppMail">이메일로 바로 보내기(메일 앱 열기)</button>' +
       '<button class="btn" type="button" id="btnAppPreview">미리보기로 이동</button>' +
-      '<button class="btn" type="button" id="btnGoGuide">실제 접수 안내 보기</button></div>';
+      '<button class="btn" type="button" id="btnGoGuide">실제 접수 안내 보기</button></div>' +
+      '<div class="mail-help" id="mailHelp" hidden></div>' +
+      '<p class="fhint" style="margin-top:10px">서면 접수는 신청서를 <b>인쇄</b>(또는 PDF 저장)하고 <b>신분증·복지카드</b>를 지참해 협회(' + esc(ORG.short) + ' ☎ ' + esc(ORG.tel) + ')로 방문하면 됩니다. 메일로 먼저 보낼 때는 담당자 주소만 입력해 발송하고, 원본 서류는 방문·우편으로 함께 내세요.</p>';
     html += wizardActions(3);
     return html;
   }
@@ -2597,6 +2786,8 @@
         '<article class="gb-card"><h4><span aria-hidden="true">🏢</span>접수처 · ' + esc(ORG.short) + '</h4>' +
           '<p><b>' + esc(ORG.name) + '</b><br />' + esc(ORG.addr) + ' · 전화 <b>' + esc(ORG.tel) + '</b></p>' +
           '<ul><li><span class="mk">·</span>참여신청서·동의서 작성과 서류 확인은 <b>협회 사무실</b>에서 상담</li>' +
+          '<li><span class="mk">·</span>서면(방문) 접수는 신청서를 <b>인쇄</b>하거나 <b>PDF로 저장</b>해 <b>신분증·복지카드</b>를 지참하고 방문하면 됩니다</li>' +
+          '<li><span class="mk">·</span>메일로 먼저 보내려면 신청서 4단계의 <b>이메일로 바로 보내기</b>로 초안을 만든 뒤, 담당자 주소만 넣어 보내세요</li>' +
           '<li><span class="mk">·</span>일반형(전일제·시간제)·복지일자리 참여형은 진주시가 주소지 <b>읍·면·동 행정복지센터</b>에서 직접 접수 (복지일자리 참여형은 <b>진주시장애인종합복지관 1층</b>에서도 접수)</li>' +
           '<li><span class="mk">·</span>특수교육-복지연계형·특화형(발달장애인 요양보호사 보조 등)은 해당 <b>수행기관</b>을 통해 별도 모집</li></ul></article>' +
         '<article class="gb-card"><h4><span aria-hidden="true">💬</span>면접·선발 팁</h4>' +
@@ -2654,7 +2845,7 @@
     lines.push('■ 구비서류 준비 현황 (필수 ' + reqCount + ' / ' + requiredDocs(docs).length + ' 확인)');
     docs.forEach(function (d) {
       var on = !!state.checked[pid + ':' + d.id];
-      lines.push((on ? '[✓] ' : '[ ] ') + (isOptionalDoc(d) ? '(해당) ' : '[필수] ') + d.name + ' — ' + d.where);
+      lines.push((on ? '[✓] ' : '[ ] ') + (isOptionalDoc(d) ? '' : '[필수] ') + d.name + ' — ' + d.where);
     });
     lines.push('');
     lines.push('※ 일반형(전일제·시간제)·복지일자리 참여형은 진주시가 주소지 읍·면·동 행정복지센터에서 직접 접수하고, 특수교육-복지연계형·특화형은 수행기관을 통해 별도 모집합니다.');
@@ -2727,6 +2918,590 @@
       try { window.print(); } catch (e) { toast('이 브라우저에서는 인쇄 창을 열 수 없어요'); }
       setTimeout(function () { document.title = oldTitle; }, 900);
     }, 120);
+  }
+
+  /* ============================================================
+     7-D. 원클릭 자동 접수 시연 · 메일로 보내기
+     - 공모전 시연용 연출이다. 서버가 없고, 어떤 값도 기관·외부로 전송되지 않는다.
+     - 접수 증은 시연용 가상 문서이며 실제 접수 효력이 없다.
+     ============================================================ */
+  var AUTO_STEPS = [
+    { t: '구비서류 · 필수 입력 항목 점검', d: '서류 체크리스트와 신청서 입력값을 대조해 빠진 항목을 찾습니다.' },
+    { t: '신청서 패키지 생성', d: '신청서(서식 1)와 서류 체크 요약, 동의서 확인 상태를 한 묶음으로 만듭니다.' },
+    { t: '진주시 지체장애인협회 접수 시뮬레이션', d: '협회 접수 창구로 전송하는 과정을 브라우저 안에서 흉내 냅니다.' },
+    { t: '가상 접수증 발급', d: '시연용 접수번호가 적힌 접수증을 만들어 보여 줍니다.' }
+  ];
+  var AUTO_FIELDS = [
+    { k: 'name', label: '성명' },
+    { k: 'phone', label: '연락처' },
+    { k: 'addr', label: '거주지' },
+    { k: 'job1', label: '1지망 직무' },
+    { k: 'transport', label: '이동수단' },
+    { k: 'motivation', label: '자기소개·지원동기' }
+  ];
+  var autoState = { stage: 0, timers: [], check: null, receipt: null };
+
+  function pad2(n) { return (n < 10 ? '0' : '') + n; }
+  function nowStamp() {
+    var d = new Date();
+    return d.getFullYear() + '. ' + pad2(d.getMonth() + 1) + '. ' + pad2(d.getDate()) + '. ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+  }
+  function progOf(pid) {
+    return PROGRAMS.filter(function (p) { return p.id === pid; })[0] || PROGRAMS[0];
+  }
+  function transportLabel() {
+    return (TRANSPORTS.filter(function (t) { return t.v === state.form.transport; })[0] || {}).label || '미선택';
+  }
+  function overlayOpen(id) {
+    var el = document.getElementById(id);
+    return !!(el && !el.hidden);
+  }
+
+  /* 필수 서류·필수 입력 항목·동의서를 한 번에 점검한다. */
+  function autoCheck() {
+    var pid = state.selectedProgram || 'general_full';
+    var docs = docsFor(pid);
+    var req = requiredDocs(docs);
+    var missDocs = req.filter(function (d) { return !state.checked[pid + ':' + d.id]; });
+    var missFields = AUTO_FIELDS.filter(function (x) { return !String(state.form[x.k] || '').trim(); });
+    var consent = !!state.checked[pid + ':form3'];
+    return {
+      docs: docs, req: req, missDocs: missDocs, missFields: missFields, consent: consent,
+      ok: missDocs.length === 0 && missFields.length === 0 && consent
+    };
+  }
+
+  function autoTimersClear() {
+    autoState.timers.forEach(function (t) { clearTimeout(t); });
+    autoState.timers = [];
+  }
+  function autoAfter(ms, stageAt, fn) {
+    var t = setTimeout(function () {
+      if (!overlayOpen('auto') || autoState.stage !== stageAt) { return; }
+      fn();
+    }, ms);
+    autoState.timers.push(t);
+  }
+
+  function openAuto() {
+    var el = $('#auto');
+    if (!el) { return; }
+    autoTimersClear();
+    autoState.receipt = null;
+    autoState.stage = 0;
+    autoState.check = autoCheck();
+    el.hidden = false;
+    setPageInert(true);
+    document.body.style.overflow = 'hidden';
+    setAutoStage(1);
+    var c = $('#autoClose');
+    if (c) { c.focus(); }
+    announce('자동 접수 시연을 시작합니다. 실제 기관으로는 전송되지 않습니다.');
+  }
+
+  function closeAuto(focusBack) {
+    autoTimersClear();
+    if (AGENT_STATE.running) { AGENT_STATE.onDone = null; }
+    var el = $('#auto');
+    if (el) { el.hidden = true; }
+    autoState.stage = 0;
+    if (!overlayOpen('ocr')) {
+      setPageInert(false);
+      document.body.style.overflow = '';
+    }
+    if (AGENT_STATE.changed) {
+      AGENT_STATE.changed = false;
+      renderDocs();
+    }
+    if (focusBack !== false) {
+      var b = $('#btnAutoSubmit');
+      if (b) { b.focus(); }
+    }
+  }
+
+  function setAutoStage(n) {
+    if (!overlayOpen('auto')) { return; }
+    autoState.stage = n;
+    if (n >= 4 && !autoState.receipt) { autoState.receipt = issueReceipt(); }
+    renderAuto();
+    if (n === 1 && autoState.check && autoState.check.ok) {
+      autoAfter(1500, 1, function () { setAutoStage(2); });
+    }
+    if (n === 2) {
+      autoAfter(1700, 2, function () { setAutoStage(3); });
+    }
+    if (n === 3) {
+      autoAfter(320, 3, function () {
+        var bar = $('#xferBar'), cap = $('#xferCap');
+        if (bar) { bar.style.width = '62%'; }
+        if (cap) { cap.textContent = '신청서 패키지 전송 중…'; }
+      });
+      autoAfter(1000, 3, function () {
+        var bar = $('#xferBar'), cap = $('#xferCap');
+        if (bar) { bar.style.width = '100%'; }
+        if (cap) { cap.textContent = '접수 확인 · 접수번호 채번 중…'; }
+      });
+      autoAfter(1800, 3, function () { setAutoStage(4); });
+    }
+    if (n >= 4) {
+      var p = $('#autoPrint');
+      if (p) { p.focus(); }
+      toast('시연용 가상 접수증이 발급되었습니다');
+    }
+  }
+
+  function autoCheckHtml(c) {
+    if (!c) { return ''; }
+    var missDoc = c.missDocs.length;
+    var missFld = c.missFields.length;
+    var html = '<h3><span aria-hidden="true">🔎</span>구비서류 · 필수 입력 항목 점검</h3>' +
+      '<p class="lead">서류 체크리스트와 신청서 입력값을 자동으로 대조했습니다. 부족한 항목이 있어도 시연은 그대로 진행할 수 있어요.</p>';
+    html += '<div class="ac-kpis">' +
+      '<div class="ac-kpi' + (missDoc ? ' todo' : '') + '"><b>' + (c.req.length - missDoc) + '/' + c.req.length + '</b><span>필수 서류 확인</span></div>' +
+      '<div class="ac-kpi' + (missFld ? ' todo' : '') + '"><b>' + (AUTO_FIELDS.length - missFld) + '/' + AUTO_FIELDS.length + '</b><span>필수 입력 항목</span></div>' +
+      '<div class="ac-kpi' + (c.consent ? '' : ' todo') + '"><b>' + (c.consent ? '확인' : '미확인') + '</b><span>개인정보 동의서</span></div>' +
+      '</div>';
+    if (missDoc) {
+      html += '<div class="miss-box"><h4>아직 확인하지 않은 필수 서류 ' + missDoc + '건</h4><ul>' + c.missDocs.map(function (d) {
+        return '<li><span class="mk" aria-hidden="true">!</span><span><b>' + esc(d.name) + '</b> — ' + esc(d.where) + '</span></li>';
+      }).join('') + '</ul></div>';
+    } else {
+      html += '<div class="miss-box ok"><p class="ok-line">✓ 필수 서류 ' + c.req.length + '건을 모두 확인했어요.</p></div>';
+    }
+    if (missFld || !c.consent) {
+      var bad = missFld.map(function (x) { return x.label; });
+      if (!c.consent) { bad.push('개인정보 동의서(서식 3) 확인'); }
+      html += '<div class="miss-box"><h4>신청서에서 아직 비어 있는 항목</h4><ul>' + bad.map(function (t) {
+        return '<li><span class="mk" aria-hidden="true">!</span><span>' + esc(t) + '</span></li>';
+      }).join('') + '</ul></div>';
+    }
+    html += '<p class="auto-small">※ 시연에서는 비어 있는 항목을 그대로 두고 접수증까지 진행할 수 있습니다. 실제 접수에서는 빠진 서류·입력값을 채운 뒤 내야 합니다.</p>';
+    if (missDoc) {
+      html += '<div class="agent-box" id="autoAgent">' + agentPanelInner('modal') + '</div>';
+    }
+    return html;
+  }
+
+  function autoPkgHtml(c) {
+    var f = state.form;
+    var pid = state.selectedProgram || 'general_full';
+    var prog = progOf(pid);
+    var alt = f.aids.map(function (v) { return AIDS_LABEL[v]; }).filter(Boolean);
+    var missDoc = c ? c.missDocs.length : 0;
+    var reqN = c ? c.req.length : 0;
+    var html = '<h3><span aria-hidden="true">📦</span>신청서 패키지 생성</h3>' +
+      '<p class="lead">신청서와 서류 확인 결과를 접수용 한 묶음으로 만들었습니다.</p>';
+    html += '<div class="pkg-box"><h4><span aria-hidden="true">📄</span>장애인일자리사업 참여신청서 (서식 1)</h4><ul class="pkg-list">' +
+      '<li><span class="fi" aria-hidden="true">•</span><span>신청인 <b>' + esc(f.name || '—') + '</b> · ' + esc(f.phone || '연락처 미입력') + ' · ' + esc(f.addr || '거주지 미입력') + '</span></li>' +
+      '<li><span class="fi" aria-hidden="true">•</span><span>희망 사업 <b>' + esc(prog.name) + '</b> — ' + esc(prog.hours) + ', ' + esc(prog.pay) + '</span></li>' +
+      '<li><span class="fi" aria-hidden="true">•</span><span>직무 <b>' + esc(f.job1 || '—') + '</b>' + (f.job2 ? ' / 2지망 ' + esc(f.job2) : '') + ' · 이동수단 ' + esc(transportLabel()) + '</span></li>' +
+      '<li><span class="fi" aria-hidden="true">•</span><span>편의지원 <b>' + esc(alt.length ? alt.join(', ') : '없음') + '</b></span></li>' +
+      '<li><span class="fi" aria-hidden="true">•</span><span>자기소개 ' + ((f.motivation || '').trim() ? '<b>' + f.motivation.length + '자 작성됨</b>' : '<b>미작성</b>') + ' · 신청일 ' + esc(todayStr()) + '</span></li>' +
+      '</ul></div>';
+    html += '<div class="pkg-box"><h4><span aria-hidden="true">📁</span>서류 체크 요약</h4><ul class="pkg-list">' +
+      '<li><span class="fi" aria-hidden="true">•</span><span>필수 서류 <b>' + (reqN - missDoc) + ' / ' + reqN + '</b> 확인' + (missDoc ? ' · 미확인 ' + missDoc + '건은 접수 후 보완 안내' : '') + '</span></li>' +
+      '<li><span class="fi" aria-hidden="true">•</span><span>개인정보 수집·이용 동의서(서식 3) <b>' + (c && c.consent ? '확인' : '미확인') + '</b></span></li>' +
+      '<li><span class="fi" aria-hidden="true">•</span><span>패키지 구성 <b>신청서 1부 + 서류 요약 1부</b></span></li>' +
+      '</ul></div>';
+    html += '<p class="auto-small">※ 자필 서명과 원본 서류 확인은 실제 접수 때 담당자가 진행합니다.</p>';
+    return html;
+  }
+
+  function autoXferHtml() {
+    var prog = progOf(state.selectedProgram || 'general_full');
+    return '<h3><span aria-hidden="true">📡</span>접수 시뮬레이션 전송</h3>' +
+      '<p class="lead">협회 접수 창구로 신청서 패키지를 보내는 과정을 브라우저 안에서 흉내 냅니다. 실제로는 어디에도 전송되지 않아요.</p>' +
+      '<div class="pkg-box"><div class="xfer">' +
+      '<div class="xfer-row"><span>접수처</span><b>' + esc(ORG.name) + '</b></div>' +
+      '<div class="xfer-row"><span>신청 사업</span><b>' + esc(prog.name) + '</b></div>' +
+      '<div class="xfer-row"><span>보내는 묶음</span><b>신청서 1부 + 서류 요약 1부</b></div>' +
+      '<div class="xfer-row"><span>전송 방식</span><b>시연용 가상 전송 (서버 없음)</b></div>' +
+      '</div><div class="xfer-bar" role="img" aria-label="전송 진행률"><i id="xferBar"></i></div>' +
+      '<p class="xfer-cap" id="xferCap">접수 창구 연결 중…</p></div>';
+  }
+
+  function issueReceipt() {
+    var pid = state.selectedProgram || 'general_full';
+    var prog = progOf(pid);
+    var c = autoState.check || autoCheck();
+    var y = new Date().getFullYear();
+    return {
+      no: 'DAON-' + y + '-' + String(Math.floor(1000 + Math.random() * 9000)),
+      at: nowStamp(),
+      name: (state.form.name || '').trim() || '김다온',
+      prog: prog.name + ' (' + prog.hours + ')',
+      job: state.form.job1 || '—',
+      org: ORG.name,
+      orgAddr: ORG.addr,
+      orgTel: ORG.tel,
+      docs: (c.req.length - c.missDocs.length) + ' / ' + c.req.length,
+      docsMiss: c.missDocs.length,
+      consent: c.consent
+    };
+  }
+
+  function barcodeBars(no) {
+    var s = '';
+    for (var i = 0; i < no.length; i++) {
+      s += '<i style="height:' + (38 + (no.charCodeAt(i) % 9) * 7) + '%"></i>';
+    }
+    return '<div class="rc-code" aria-hidden="true">' + s + '</div>';
+  }
+
+  function receiptInner(r) {
+    return '<div class="rc-top"><div><h4>장애인일자리사업 참여신청 접수증</h4><span class="rc-org">' + esc(r.org) + '</span></div>' +
+      '<span class="rc-tag">시연용 · 실제 접수 아님</span></div>' +
+      '<div class="rc-no">' + esc(r.no) + '</div>' +
+      '<div class="rc-rows">' +
+      '<div class="rc-row"><b>접수 일시</b><span>' + esc(r.at) + '</span></div>' +
+      '<div class="rc-row"><b>신청인</b><span>' + esc(r.name) + ' (가명)</span></div>' +
+      '<div class="rc-row"><b>신청 사업</b><span>' + esc(r.prog) + '</span></div>' +
+      '<div class="rc-row"><b>1지망 직무</b><span>' + esc(r.job) + '</span></div>' +
+      '<div class="rc-row"><b>제출 서류</b><span>필수 ' + esc(r.docs) + ' 확인' + (r.docsMiss ? ' (미확인 ' + r.docsMiss + '건 보완 필요)' : '') + ' · 동의서 ' + (r.consent ? '확인' : '미확인') + '</span></div>' +
+      '<div class="rc-row"><b>접수처</b><span>' + esc(r.org) + ' · ☎ ' + esc(r.orgTel) + '<br />' + esc(r.orgAddr) + '</span></div>' +
+      '</div>' +
+      '<p class="rc-note">※ 공모전 시연용 가상 접수증이며 실제 기관으로 전송되지 않았습니다. 실제 접수는 협회(☎ ' + esc(r.orgTel) + ')에 서류를 지참하고 방문하거나 담당자 메일로 보내 주세요.</p>' +
+      '<div class="rc-foot"><span class="rc-stamp">시연용 가상 접수증</span>' + barcodeBars(r.no) + '</div>';
+  }
+
+  function printReceipt() {
+    var r = autoState.receipt;
+    if (!r) { toast('아직 접수증이 없어요'); return; }
+    var area = $('#printArea');
+    if (!area) { return; }
+    area.innerHTML = '<div class="receipt">' + receiptInner(r) + '</div>';
+    var oldTitle = document.title;
+    document.title = '접수증(시연용)_' + r.no;
+    setTimeout(function () {
+      try { window.print(); } catch (e) { toast('이 브라우저에서는 인쇄 창을 열 수 없어요'); }
+      setTimeout(function () { document.title = oldTitle; }, 900);
+    }, 120);
+  }
+
+  function renderAuto() {
+    var st = autoState.stage;
+    var steps = $('#autoSteps');
+    if (steps) {
+      steps.innerHTML = AUTO_STEPS.map(function (s, i) {
+        var n = i + 1;
+        var cls = (st > n) ? 'done' : (st === n ? 'active' : '');
+        var out = '';
+        if (st > n) { out = '<span class="os-out">✓ 완료</span>'; }
+        else if (st === n) {
+          out = '<span class="os-out">' + (n === 1 ? '점검 중…' : n === 2 ? '만드는 중…' : n === 3 ? '전송 중…' : '진행 중…') + '</span>';
+        }
+        return '<li class="ostep ' + cls + '"><span class="osn" aria-hidden="true">' + (st > n ? '✓' : n) + '</span><div><div class="os-t">' + esc(s.t) + '</div><div class="os-d">' + esc(s.d) + '</div>' + out + '</div></li>';
+      }).join('');
+    }
+
+    var panel = $('#autoPanel');
+    if (panel) {
+      if (st === 1) { panel.innerHTML = autoCheckHtml(autoState.check); }
+      else if (st === 2) { panel.innerHTML = autoPkgHtml(autoState.check); }
+      else if (st === 3) { panel.innerHTML = autoXferHtml(); }
+      else if (st >= 4 && autoState.receipt) { panel.innerHTML = '<h3><span aria-hidden="true">🧾</span>가상 접수증 발급</h3><p class="lead">협회 접수 창구에서 받은 것처럼 시연용 접수증을 만들었습니다. 인쇄해서 시연 화면에 보여 줄 수 있어요.</p><div class="receipt">' + receiptInner(autoState.receipt) + '</div>'; }
+      else { panel.innerHTML = ''; }
+    }
+
+    var act = $('#autoActions');
+    if (act) {
+      var bad = !autoState.check || !autoState.check.ok;
+      if (st === 1) {
+        act.innerHTML = (bad ? '<button class="btn" type="button" id="autoFix">서류·입력 보완하기</button>' : '') +
+          '<button class="btn primary" type="button" id="autoGo">' + (bad ? '그대로 시연 진행' : '신청서 패키지 만들기 →') + '</button>';
+      } else if (st === 2) {
+        act.innerHTML = '<button class="btn" type="button" id="autoCancel">취소</button><button class="btn primary" type="button" id="autoGo3">접수 시뮬레이션 실행 →</button>';
+      } else if (st === 3) {
+        act.innerHTML = '<span class="xfer-cap">전송 중…</span>';
+      } else if (st >= 4) {
+        act.innerHTML = '<button class="btn" type="button" id="autoClose2">확인 (닫기)</button><button class="btn primary" type="button" id="autoPrint">접수증 인쇄</button>';
+      } else {
+        act.innerHTML = '';
+      }
+    }
+
+    var go = $('#autoGo');
+    if (go) { go.addEventListener('click', function () { setAutoStage(2); }); }
+    var fix = $('#autoFix');
+    if (fix) { fix.addEventListener('click', function () {
+      closeAuto(false);
+      var el = $('#docCheck');
+      if (el) {
+        el.setAttribute('tabindex', '-1');
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        el.focus({ preventScroll: true });
+      }
+      toast('서류 체크리스트에서 빠진 서류를 확인해 주세요');
+    }); }
+    var go3 = $('#autoGo3');
+    if (go3) { go3.addEventListener('click', function () { setAutoStage(3); }); }
+    var cancel = $('#autoCancel');
+    if (cancel) { cancel.addEventListener('click', function () { closeAuto(); }); }
+    var close2 = $('#autoClose2');
+    if (close2) { close2.addEventListener('click', function () { closeAuto(); }); }
+    var pr = $('#autoPrint');
+    if (pr) { pr.addEventListener('click', printReceipt); }
+  }
+
+  /* --- 이메일로 바로 보내기: 빈 수신자 mailto + 제목·본문 자동 채움 --- */
+  function buildMail() {
+    var f = state.form;
+    var pid = state.selectedProgram || 'general_full';
+    var prog = progOf(pid);
+    var c = autoCheck();
+    var alt = f.aids.map(function (v) { return AIDS_LABEL[v]; }).filter(Boolean);
+    var name = (f.name || '').trim() || '신청인';
+    var subject = '[장애인일자리 참여신청] ' + name + ' - ' + prog.name;
+    var lines = [];
+    lines.push(ORG.name + ' 담당자님, 안녕하세요.');
+    lines.push(todayStr() + ' 기준으로 아래와 같이 2026년 장애인일자리사업 참여신청서를 작성했습니다. 확인 부탁드립니다.');
+    lines.push('');
+    lines.push('■ 신청서 요약');
+    lines.push('- 성명(가명): ' + (f.name || '—'));
+    lines.push('- 연락처: ' + (f.phone || '—'));
+    lines.push('- 거주지: ' + (f.addr || '—'));
+    lines.push('- 장애유형·정도: ' + (TYPE_LABEL[state.type] || '—') + ' / ' + (SEVERITY_LABEL[state.severity] || '—'));
+    lines.push('- 희망 사업: ' + prog.name + ' (' + prog.hours + ', ' + prog.pay + ')');
+    lines.push('- 1지망 직무: ' + (f.job1 || '—') + (f.job2 ? ' / 2지망: ' + f.job2 : ''));
+    lines.push('- 이동수단: ' + transportLabel());
+    lines.push('- 필요 편의지원: ' + (alt.length ? alt.join(', ') : '없음'));
+    lines.push('- 구비서류: 필수 ' + (c.req.length - c.missDocs.length) + ' / ' + c.req.length + ' 확인' +
+      (c.missDocs.length ? ' (미확인: ' + c.missDocs.map(function (d) { return d.name; }).join(', ') + ')' : '') +
+      ' · 개인정보 동의서 ' + (c.consent ? '확인' : '미확인'));
+    lines.push('');
+    lines.push('■ 첨부');
+    lines.push('인쇄(PDF 저장)한 신청서와 구비서류를 첨부해 주세요. 원본 서류는 방문 또는 우편으로 함께 제출하겠습니다.');
+    lines.push('');
+    lines.push('※ 이 메일은 공모전 시연용 프로토타입(다온 DAON)이 만든 초안입니다. 실제 제출 전에 실제 양식과 접수 방법을 협회(☎ ' + ORG.tel + ')로 확인해 주세요.');
+    lines.push('');
+    lines.push(name + ' 드림');
+    var body = lines.join('\n');
+    return {
+      subject: subject,
+      body: body,
+      href: 'mailto:?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body)
+    };
+  }
+
+  function launchMailto(href) {
+    try {
+      var a = document.createElement('a');
+      a.href = href;
+      a.rel = 'noopener';
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () { if (a.parentNode) { a.parentNode.removeChild(a); } }, 0);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function openMailApp() {
+    var m = buildMail();
+    var box = $('#mailHelp');
+    if (box) {
+      box.hidden = false;
+      box.setAttribute('data-mailto', m.href);
+      box.innerHTML = '<h4><span aria-hidden="true">✉️</span>메일 초안을 만들었어요</h4>' +
+        '<p class="mh-sub">받는 사람(수신자)은 비워 두었으니 협회·행정복지센터 담당자 메일 주소를 직접 넣어 보내면 됩니다. 메일 앱이 열리지 않으면 아래 <b>메일 본문 복사</b>로 보내 주세요.</p>' +
+        '<p class="mh-line"><b>제목</b> ' + esc(m.subject) + '</p>' +
+        '<div class="mh-prev" tabindex="0" aria-label="메일 본문 미리보기">' + esc(m.body) + '</div>' +
+        '<div class="mh-actions"><button class="btn" type="button" id="btnMailCopy">메일 본문 복사</button>' +
+        '<button class="btn" type="button" id="btnMailOpen">메일 앱 다시 열기</button></div>';
+      var cp = $('#btnMailCopy');
+      if (cp) { cp.addEventListener('click', function () { copyText(m.subject + '\n\n' + m.body); }); }
+      var op = $('#btnMailOpen');
+      if (op) { op.addEventListener('click', function () { launchMailto(m.href); }); }
+    }
+    var opened = launchMailto(m.href);
+    toast(opened
+      ? '메일 앱에 제목·본문을 채웠어요. 담당자 메일 주소만 넣어 주세요.'
+      : '메일 앱을 열 수 없어요. 아래 미리보기에서 본문을 복사해 주세요.');
+  }
+
+  /* ============================================================
+     7-E. 필요서류 자동 수집 에이전트 (시연용 Mock API)
+     - 실제 연동 시 MockDocAgentAPI.fetchDocument 안의 setTimeout 부분을
+       fetch('/api/doc-agent?doc=' + doc.id).then(r => r.json())로 바꾸면 된다.
+     - 지금은 외부 요청이 0건인 시연용 모의(Mock) 응답만 돌려 준다.
+     ============================================================ */
+  var AGENT_DOC_META = {
+    form1: { agency: '협회 비치 서식 (신청서 자동 작성)', summary: '신청서 4단계 입력값으로 자동 작성' },
+    form2: { agency: '협회 비치 서식 (참여자 정보 확인서)', summary: '신청서 기본정보와 교차 확인' },
+    form3: { agency: '협회 비치 서식 (동의서)', summary: '개인정보 수집·이용 동의 확인' },
+    id: { agency: '행정안전부 정부24', summary: '신분증 사본 · 본인 일치 확인' },
+    disability: { agency: '행정안전부 정부24', summary: '장애인등록 확인 · 주민번호 뒷자리 마스킹' },
+    resident: { agency: '행정안전부 정부24', summary: '최근 1개월 이내 발급본' },
+    insurance: { agency: '국민건강보험공단', summary: '미취업(직장가입 아님) 확인' },
+    bank: { agency: '본인 계좌 확인', summary: '급여 계좌 예금주 일치' },
+    basic: { agency: '보건복지부 복지로', summary: '수급자·차상위 확인' },
+    cert: { agency: '한국산업인력공단 큐넷', summary: '자격증 유효 확인' },
+    resume: { agency: '본인 작성 서류', summary: '이력서·자기소개서' },
+    career: { agency: '이전 근무지', summary: '경력 확인' },
+    jobmemo: { agency: '본인 작성 서류', summary: '희망 직무 경험 메모' },
+    portfolio: { agency: '본인 작성 서류', summary: '작업 이력 메모' },
+    massage: { agency: '대한안마사협회', summary: '안마사 자격 확인' },
+    edu: { agency: '대한안마사협회', summary: '보수교육 이수 확인' },
+    care_edu: { agency: '교육기관', summary: '요양보호 교육 이수 확인' },
+    enroll: { agency: '재학 중인 학교', summary: '재학 확인' },
+    otherjob: { agency: '본인 보관', summary: '다른 근로 종료 증빙' }
+  };
+
+  function agentMeta(d) {
+    return AGENT_DOC_META[d.id] || { agency: d.where || '발급기관', summary: '발급본 확인' };
+  }
+
+  var MockDocAgentAPI = {
+    name: 'DAON 필요서류 자동 수집 에이전트',
+    version: 'mock-v1 (시연용)',
+    baseUrl: 'mock://doc-agent/v1',
+    /* 실제 연동 시 이 함수만 교체하면 된다.
+    fetchDocument: function (doc) {
+      return fetch('/api/doc-agent?doc=' + encodeURIComponent(doc.id), { headers: { Accept: 'application/json' } })
+        .then(function (r) { if (!r.ok) { throw new Error('HTTP ' + r.status); } return r.json(); });
+    }
+    */
+    fetchDocument: function (doc, seq) {
+      var meta = agentMeta(doc);
+      var wait = 520 + (seq % 3) * 280;
+      return new Promise(function (resolve) {
+        setTimeout(function () {
+          var y = new Date().getFullYear();
+          resolve({
+            ok: true,
+            docId: doc.id,
+            name: doc.name,
+            source: meta.agency + ' (시연 Mock API)',
+            endpoint: 'GET ' + MockDocAgentAPI.baseUrl + '/docs/' + doc.id,
+            issuedAt: nowStamp(),
+            docNo: 'MOCK-' + y + '-' + (1000 + (seq + 1) * 137 + (doc.id.length * 17) % 89),
+            summary: meta.summary,
+            status: 'issued'
+          });
+        }, wait);
+      });
+    }
+  };
+
+  function fetchDocumentFromAgent(doc, seq) {
+    return MockDocAgentAPI.fetchDocument(doc, seq);
+  }
+
+  var AGENT_STATE = { running: false, current: null, results: {}, onDone: null, changed: false, fromModal: false };
+
+  function agentDocs() {
+    var pid = state.selectedProgram || 'general_full';
+    return docsFor(pid).filter(function (d) { return !isOptionalDoc(d); });
+  }
+
+  function agentPanelInner(where) {
+    var pid = state.selectedProgram || 'general_full';
+    var docs = agentDocs();
+    var doneN = docs.filter(function (d) { return !!state.checked[pid + ':' + d.id]; }).length;
+    var html = '<div class="ag-head"><h4><span aria-hidden="true">🤖</span>필요서류 자동 수집</h4>' +
+      '<span class="ag-badge">Mock API · 시연</span>' +
+      '<span class="ag-count">' + doneN + ' / ' + docs.length + ' 수집</span></div>' +
+      '<p class="ag-lead">발급기관 API에 서류를 요청해 받아 오는 과정을 시연합니다. 수집된 서류는 구비서류 체크리스트와 신청서 서류 표에 바로 반영됩니다.</p>' +
+      '<ul class="ag-list">';
+    docs.forEach(function (d) {
+      var on = !!state.checked[pid + ':' + d.id];
+      var res = AGENT_STATE.results[d.id];
+      var running = AGENT_STATE.running && AGENT_STATE.current === d.id;
+      var cls = 'wait', lbl = '대기', ico = '·', stCls = '';
+      if (running) { cls = 'run'; lbl = '요청 중…'; ico = '⟳'; stCls = 'run'; }
+      else if (res && res.ok) { cls = 'done'; lbl = '수집 완료'; ico = '✓'; stCls = 'ok'; }
+      else if (res && !res.ok) { cls = 'fail'; lbl = '응답 없음'; ico = '!'; stCls = 'fail'; }
+      else if (on) { cls = 'done'; lbl = '확인됨'; ico = '✓'; stCls = 'ok'; }
+      var meta;
+      if (res && res.ok) {
+        meta = esc(res.source) + ' · ' + esc(res.docNo) + ' · ' + esc(res.issuedAt) + ' · ' + esc(res.summary);
+      } else if (running) {
+        meta = '요청 전송: ' + esc(agentMeta(d).agency) + ' (시연 Mock API)';
+      } else if (on) {
+        meta = '직접 확인함 · 발급처: ' + esc(d.where);
+      } else {
+        meta = '발급처: ' + esc(d.where) + ' · 요청 전';
+      }
+      html += '<li class="ag-item ' + cls + '"><span class="ag-ico" aria-hidden="true">' + ico + '</span><div class="ag-main">' +
+        '<div class="ag-t">' + esc(d.name) + ' <span class="ag-st ' + stCls + '">' + lbl + '</span></div>' +
+        '<div class="ag-m">' + meta + '</div></div></li>';
+    });
+    html += '</ul><div class="ag-actions">' +
+      '<button class="btn' + (AGENT_STATE.running ? '' : ' primary') + '" type="button" data-agent-run="' + where + '"' +
+      (AGENT_STATE.running ? ' disabled aria-disabled="true"' : '') + '>' +
+      (AGENT_STATE.running ? '서류 수집 중…' : (doneN === docs.length ? '🤖 필요서류 다시 수집 (예시 API)' : '🤖 필요서류 자동 수집 (예시 API)')) +
+      '</button></div>' +
+      '<p class="ag-note">※ <b>실제 외부 기관 API가 아닌 시연용 모의 API(Mock) 응답입니다.</b> 실제 발급은 정부24·국민건강보험공단 등에서 본인이 받아야 하며, ‘(해당)’ 서류는 자동 수집 대상에서 제외했습니다.</p>';
+    return html;
+  }
+
+  function renderAgentPanels() {
+    var a = document.getElementById('docAgent');
+    if (a) { a.innerHTML = agentPanelInner('docs'); }
+    var b = document.getElementById('autoAgent');
+    if (b) { b.innerHTML = agentPanelInner('modal'); }
+  }
+
+  function runDocAgent(fromModal) {
+    if (AGENT_STATE.running) { toast('이미 서류를 수집하고 있어요'); return; }
+    var pid = state.selectedProgram || 'general_full';
+    var todo = agentDocs().filter(function (d) { return !state.checked[pid + ':' + d.id]; });
+    if (!todo.length) { toast('필수 서류를 이미 모두 확인했어요'); return; }
+    AGENT_STATE.running = true;
+    AGENT_STATE.fromModal = !!fromModal;
+    AGENT_STATE.todo = todo;
+    AGENT_STATE.current = null;
+    AGENT_STATE.onDone = fromModal ? function () {
+      autoState.check = autoCheck();
+      setAutoStage(2);
+    } : null;
+    renderAgentPanels();
+    agentStep(0, pid, todo);
+  }
+
+  function agentStep(i, pid, todo) {
+    if (i >= todo.length) {
+      AGENT_STATE.running = false;
+      AGENT_STATE.current = null;
+      renderAgentPanels();
+      updateDocProgress();
+      scheduleSave();
+      toast('필요서류 ' + todo.length + '건을 자동으로 수집했어요 (시연용 모의 API)');
+      announce('필요서류 ' + todo.length + '건 자동 수집을 마쳤습니다. 시연용 모의 API 응답입니다.');
+      var cb = AGENT_STATE.onDone;
+      AGENT_STATE.onDone = null;
+      if (cb) { cb(); return; }
+      if (!AGENT_STATE.fromModal && !overlayOpen('auto')) { renderDocs(); }
+      return;
+    }
+    var d = todo[i];
+    AGENT_STATE.current = d.id;
+    renderAgentPanels();
+    fetchDocumentFromAgent(d, i).then(function (res) {
+      AGENT_STATE.results[d.id] = res;
+      if (res && res.ok) {
+        state.checked[pid + ':' + d.id] = true;
+        AGENT_STATE.changed = true;
+      }
+      AGENT_STATE.current = null;
+      renderAgentPanels();
+      var box = document.getElementById('doc-' + d.id);
+      if (box && !box.checked) {
+        box.checked = true;
+        var item = box.closest ? box.closest('.doc-item') : null;
+        if (item) { item.classList.add('done'); }
+      }
+      updateDocProgress();
+      scheduleSave();
+      setTimeout(function () { agentStep(i + 1, pid, todo); }, 240);
+    }).catch(function () {
+      AGENT_STATE.results[d.id] = { ok: false, docId: d.id };
+      AGENT_STATE.current = null;
+      renderAgentPanels();
+      setTimeout(function () { agentStep(i + 1, pid, todo); }, 220);
+    });
   }
 
   /* ============================================================
@@ -3078,6 +3853,9 @@
     /* --- 실제 신청·접수 가이드 --- */
     html += guideHtml();
 
+    /* --- 필요서류 자동 수집 에이전트 (시연 Mock API) --- */
+    html += '<div class="agent-box" id="docAgent">' + agentPanelInner('docs') + '</div>';
+
     /* --- 구비서류 체크리스트 --- */
     html += '<div class="sec-title" id="docCheck"><span aria-hidden="true">📁</span>구비서류 체크리스트<span class="hint">발급처까지 적어 두었어요</span></div>';
     html += '<ul class="doc-list" id="docList">';
@@ -3184,6 +3962,10 @@
     if (appCopy) { appCopy.addEventListener('click', function () { copyText(buildAppText()); }); }
     var appPrint = $('#btnAppPrint');
     if (appPrint) { appPrint.addEventListener('click', printApp); }
+    var appMail = $('#btnAppMail');
+    if (appMail) { appMail.addEventListener('click', openMailApp); }
+    var appAuto = $('#btnAutoSubmit');
+    if (appAuto) { appAuto.addEventListener('click', openAuto); }
     var appPrev = $('#btnAppPreview');
     if (appPrev) { appPrev.addEventListener('click', function () {
       var el = $('#appPreview');
@@ -3579,6 +4361,14 @@
       if (!isNaN(idx)) { applyPersona(idx); }
     });
 
+    /* 필요서류 자동 수집 에이전트 실행 버튼(서류 탭·자동 접수 시연 공통) */
+    document.addEventListener('click', function (e) {
+      var btn = e.target && e.target.closest ? e.target.closest('[data-agent-run]') : null;
+      if (!btn || btn.disabled) { return; }
+      e.preventDefault();
+      runDocAgent(btn.getAttribute('data-agent-run') === 'modal');
+    });
+
     $$('.tab').forEach(function (t) {
       t.addEventListener('click', function () { setTab(t.getAttribute('data-tab')); });
       t.addEventListener('keydown', function (e) {
@@ -3657,10 +4447,18 @@
     $('#ocr').addEventListener('click', function (e) {
       if (e.target === this) { closeOcr(); }
     });
+    var autoEl = $('#auto');
+    if (autoEl) {
+      $('#autoClose').addEventListener('click', function () { closeAuto(); });
+      autoEl.addEventListener('click', function (e) {
+        if (e.target === this) { closeAuto(); }
+      });
+    }
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape' && e.key !== 'Esc') { return; }
       var ocr = $('#ocr');
-      if (ocr && !ocr.hidden) { closeOcr(); }
+      if (ocr && !ocr.hidden) { closeOcr(); return; }
+      if (overlayOpen('auto')) { closeAuto(); }
     });
 
     $('#composer').addEventListener('submit', function (e) {
