@@ -3295,8 +3295,9 @@
       autoAfter(1500, 1, function () { setAutoStage(2); });
     }
     if (n === 2) {
+      /* 패키지가 완성되면 잠시 멈춘다 — 사용자가 파일을 미리 보고 ZIP을 저장할 수 있도록.
+         다음 단계는 '접수 시뮬레이션 실행 →' 버튼으로 진행한다. */
       autoPkgStart();
-      autoAfter(700 + autoPkgDocs().length * 330 + 10000, 2, function () { setAutoStage(3); });
     }
     if (n === 3) {
       autoAfter(320, 3, function () {
