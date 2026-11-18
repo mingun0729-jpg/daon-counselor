@@ -755,8 +755,9 @@
     form: {
       name: '', phone: '', addr: '',
       job1: '', job2: '', jobTouched: false, transport: '', transportAuto: true,
-      aids: [], motivation: '', motivVariant: 0
+      aids: [], motivation: '', motivVariant: 0, motivEdited: false
     },
+    motivSig: '',
     ocr: { stage: 0, timer: null, data: null }
   };
 
@@ -1648,6 +1649,11 @@
   function isOptionalDoc(d) { return /^\(해당\)/.test(d.name); }
   function requiredDocs(docs) { return docs.filter(function (d) { return !isOptionalDoc(d); }); }
 
+  function motivSignature() {
+    var f = state.form;
+    return [state.selectedProgram, f.job1, f.transport, f.aids.slice().sort().join(','), state.type, state.severity, Array.from(state.envs).sort().join(',')].join('|');
+  }
+
   function formField(key, label, type, value, hint, req) {
     var id = 'form-' + key;
     return '<div class="field"><label for="' + id + '">' + esc(label) + (req ? ' <span class="req" aria-hidden="true">*</span>' : '') + '</label>' +
@@ -2237,7 +2243,11 @@
     if (!state.form.transport || state.form.transportAuto) { state.form.transport = defaultTransport(); }
     if (!state.form.name && state.card) { state.form.name = state.card.name; }
     if (state.formStep < 0 || state.formStep > 3) { state.formStep = 0; }
-    if (state.formStep === 2 && !state.form.motivation) { state.form.motivation = buildFormMotivation(0); }
+    var sig = motivSignature();
+    if (!state.form.motivation || (!state.form.motivEdited && state.motivSig !== sig)) {
+      state.form.motivation = buildFormMotivation(state.form.motivVariant || 0);
+      state.motivSig = sig;
+    }
 
     var docs = docsFor(current.p.id);
     var checkedCount = docs.filter(function (d) { return state.checked[state.selectedProgram + ':' + d.id]; }).length;
@@ -2333,7 +2343,9 @@
     var motivGen = $('#btnMotivGen');
     if (motivGen) { motivGen.addEventListener('click', function () {
       state.form.motivVariant = 0;
+      state.form.motivEdited = false;
       state.form.motivation = buildFormMotivation(0);
+      state.motivSig = motivSignature();
       renderDocs();
       var ta = $('#formMotiv');
       if (ta) { ta.focus(); }
@@ -2342,7 +2354,9 @@
     var motivVar = $('#btnMotivVar');
     if (motivVar) { motivVar.addEventListener('click', function () {
       state.form.motivVariant += 1;
+      state.form.motivEdited = false;
       state.form.motivation = buildFormMotivation(state.form.motivVariant);
+      state.motivSig = motivSignature();
       renderDocs();
       var ta = $('#formMotiv');
       if (ta) { ta.focus(); }
@@ -2663,7 +2677,8 @@
     state.formStep = 0;
     state.programAuto = true;
     state.lastProgram = null;
-    state.form = { name: '', phone: '', addr: '', job1: '', job2: '', jobTouched: false, transport: '', transportAuto: true, aids: [], motivation: '', motivVariant: 0 };
+    state.form = { name: '', phone: '', addr: '', job1: '', job2: '', jobTouched: false, transport: '', transportAuto: true, aids: [], motivation: '', motivVariant: 0, motivEdited: false };
+    state.motivSig = '';
     if (state.ocr.timer) { clearTimeout(state.ocr.timer); }
   }
 
@@ -2756,6 +2771,7 @@
       if (!fld) { return; }
       if (fld === 'disType' || fld === 'disSeverity') { return; }
       state.form[fld] = t.value;
+      if (fld === 'motivation') { state.form.motivEdited = true; }
     });
     panelDocs.addEventListener('click', function (e) {
       var t = e.target;
