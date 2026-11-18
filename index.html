@@ -114,6 +114,18 @@
   .a11y-btn.speak:hover{background:var(--grass-900);border-color:var(--grass-900)}
   .a11y-btn.stop[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
   .a11y-btn.stop[aria-disabled="false"]{background:#fff;border-color:var(--grass);color:var(--grass-700)}
+  .a11y-rate{display:inline-flex;align-items:center;gap:4px;padding:3px;border-radius:999px;background:#F2F7F2;border:1px dashed #CFE2D5}
+  .a11y-btn.rate{padding:6px 12px;min-height:40px;font-size:12.5px;gap:4px}
+  .a11y-btn.rate small{font-size:10.5px;font-weight:800;opacity:.8}
+  body.a11y-big .a11y-btn.rate{font-size:14px;min-height:44px}
+  body.a11y-big .a11y-btn.rate small{font-size:12px}
+  body.a11y-contrast .a11y-rate{background:#12271A;border-color:#3E5145}
+  body.a11y-contrast .a11y-btn.rate{background:#18261E;border-color:#4C6254;color:#FFFFFF}
+  body.a11y-contrast .a11y-btn.rate[aria-pressed="true"]{background:#2F9E62;border-color:#2F9E62;color:#04150B}
+  @media (max-width:480px){
+    .a11y-rate{flex:1 1 100%;justify-content:center;padding:4px}
+    .a11y-btn.rate{flex:1 1 0}
+  }
 
   /* ---------- layout ---------- */
   .layout{max-width:1280px;margin:0 auto;padding:20px;display:grid;grid-template-columns:minmax(320px,392px) minmax(0,1fr);gap:20px;align-items:start}
@@ -1295,10 +1307,212 @@
     #printArea .receipt .rc-stamp{color:#111 !important;border-color:#8A948C !important;transform:none}
     @page{margin:13mm 12mm}
   }
+
+  /* ============================================================
+     단계별(위저드) UI — 스크롤 대신 단계 넘기기
+     1 상담·복지카드 / 2 추천 일자리·근무지 / 3 서류 준비·자동 수집
+     4 신청서 작성 / 5 원클릭 접수·접수처
+     ============================================================ */
+  .layout{display:block;max-width:1280px;margin:0 auto;padding:14px 20px 0}
+  .stepbar-wrap{position:sticky;top:0;z-index:25;padding:8px 0 8px;background:linear-gradient(180deg,var(--bg) 72%,rgba(247,248,245,0))}
+  .stepbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:7px;box-shadow:var(--shadow)}
+  .stepbtn{position:relative;display:flex;align-items:center;gap:9px;min-height:58px;padding:9px 11px;border-radius:14px;border:1.5px solid transparent;background:#fff;color:var(--ink);text-align:left;transition:background .16s,border-color .16s,color .16s}
+  .stepbtn:hover{background:var(--mint-2);border-color:#CDE6D6}
+  .stepbtn:active{transform:scale(.995)}
+  .stepbtn .sn{flex:0 0 30px;width:30px;height:30px;border-radius:50%;background:#EDF2EC;color:var(--ink-mute);display:grid;place-items:center;font-size:13.5px;font-weight:800;line-height:1}
+  .stepbtn .sl{min-width:0;display:block}
+  .stepbtn .sl b{display:block;font-size:14px;font-weight:800;line-height:1.25;letter-spacing:-.01em}
+  .stepbtn .sl small{display:block;font-size:11px;font-weight:700;color:var(--ink-mute);line-height:1.3;margin-top:2px}
+  .stepbtn .sl-short{display:none}
+  .stepbtn[aria-current="step"]{background:var(--grass);border-color:var(--grass);color:#fff;box-shadow:0 6px 16px rgba(37,133,75,.22)}
+  .stepbtn[aria-current="step"] .sn{background:#fff;color:var(--grass-700)}
+  .stepbtn[aria-current="step"] .sl small{color:#EAF6EE}
+  .stepbtn.done .sn{background:var(--ok-bg);color:var(--ok)}
+  .stepbtn.done[aria-current="step"] .sn{background:#fff;color:var(--grass-700)}
+  .stepbar-foot{display:flex;align-items:center;gap:9px;margin-top:8px;padding:0 2px}
+  .stepbar-foot .sbar{flex:1 1 auto;height:6px;border-radius:999px;background:#E4EBE3;overflow:hidden}
+  .stepbar-foot .sbar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--grass) 0%,#4CBE7C 100%);border-radius:999px;transition:width .3s ease}
+  .stepbar-foot .spos{font-size:11.5px;font-weight:800;color:var(--ink-mute);white-space:nowrap}
+
+  .stage{padding:14px 0 4px;min-width:0}
+  .pane{min-width:0}
+  .pane[hidden]{display:none}
+  .pane-1{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,368px);gap:18px;align-items:start}
+  .side{display:grid;gap:12px;min-width:0}
+  .side-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:14px 15px;box-shadow:var(--shadow-sm);min-width:0}
+  .sc-head{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:800;line-height:1.35}
+  .sc-head span[aria-hidden]{font-size:15px}
+  .sc-lead{font-size:12.6px;color:var(--ink-mute);margin:4px 0 10px;line-height:1.55}
+  .side-card .personas{grid-template-columns:1fr;margin-top:0}
+  .side-card .sum-strip{margin-bottom:0}
+  .pane-1 .chat{top:92px;max-height:calc(100vh - 108px)}
+  @media (max-width:980px){ .pane-1 .chat{top:auto;max-height:none} }
+  .step-guide{margin-top:11px;border-top:1px dashed var(--line-soft);padding-top:11px}
+  .sg-list{list-style:none;margin:0 0 4px;padding:0;display:grid;gap:7px}
+  .sg-list li{display:flex;gap:9px;align-items:center;font-size:13.2px;color:var(--ink-soft);line-height:1.45}
+  .sg-list li .mk{flex:0 0 20px;width:20px;height:20px;border-radius:50%;border:2px solid #C9D8CB;display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff;line-height:1}
+  .sg-list li.done{color:var(--ink);font-weight:700}
+  .sg-list li.done .mk{background:var(--grass);border-color:var(--grass)}
+  .sg-note{font-size:12.5px;color:var(--ink-soft);line-height:1.6;margin-top:9px}
+  .sg-note b{color:var(--grass-900);font-weight:800}
+  .sg-cta{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
+  .sg-cta .btn{flex:1 1 150px}
+
+  .subtabs{display:flex;gap:5px;background:#EDF2EC;padding:6px;border-radius:999px;margin-bottom:14px}
+  .subtab{flex:1 1 0;min-width:0;min-height:48px;display:flex;align-items:center;justify-content:center;gap:8px;border:0;background:transparent;color:var(--ink-soft);border-radius:999px;font-size:15px;font-weight:800;letter-spacing:-.01em;padding:8px 12px;line-height:1.3;transition:background .15s,color .15s,box-shadow .15s}
+  .subtab:hover{background:rgba(255,255,255,.65);color:var(--ink)}
+  .subtab[aria-selected="true"]{background:#fff;color:var(--grass-700);box-shadow:0 2px 8px rgba(28,36,30,.09)}
+  .subtab .tab-count{font-size:12px;font-weight:800;background:#E1E9E1;color:var(--ink-soft);border-radius:999px;padding:1px 8px;white-space:nowrap}
+  .subtab[aria-selected="true"] .tab-count{background:var(--mint);color:var(--grass-700)}
+
+  .pane-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 2px 6px}
+  .pane-head h2{font-size:20px;font-weight:800;display:flex;align-items:center;gap:8px;line-height:1.3}
+  .pane-head .ph-badge{font-size:12.5px;font-weight:800;color:var(--grass-700);background:var(--mint);border:1px solid #D8EBDE;border-radius:999px;padding:4px 11px;white-space:nowrap}
+  .pane-lead{font-size:13.5px;color:var(--ink-mute);margin:0 2px 14px;line-height:1.65}
+  .pane-lead b{color:var(--ink-soft)}
+
+  .stepnav{display:flex;align-items:center;gap:10px;margin:20px 0 8px;flex-wrap:wrap}
+  .stepnav .snav-pos{flex:1 1 auto;text-align:center;font-size:13px;font-weight:800;color:var(--ink-mute);order:2}
+  .stepnav .btn{min-height:52px;font-size:16px;flex:0 1 auto;max-width:100%;order:1;white-space:normal;text-align:left}
+  .stepnav .btn.snav-next{order:3;text-align:center;font-weight:800;min-width:min(100%,280px)}
+  .stepnav .snav-ghost{order:1;flex:0 0 0}
+
+  .need-box{background:linear-gradient(180deg,#F6FBF7 0%,#FFFFFF 100%);border:1.5px dashed #CBE6D5;border-radius:22px;padding:24px 20px;text-align:center}
+  .need-box .nb-ico{width:52px;height:52px;margin:0 auto 10px;border-radius:18px;background:var(--mint);display:grid;place-items:center;font-size:23px;line-height:1}
+  .need-box h3{font-size:18px;font-weight:800;margin-bottom:6px;line-height:1.35}
+  .need-box p{font-size:14px;color:var(--ink-soft);max-width:600px;margin:0 auto 14px;line-height:1.68}
+  .need-box .nb-personas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 auto 14px;max-width:800px;text-align:left}
+  .need-box .nb-personas .persona{min-height:62px}
+  .need-box .btn{margin-top:2px;min-height:52px}
+
+  .stage-sub{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:#F6FBF7;border:1px solid #DCEBE1;border-radius:16px;padding:11px 14px;margin-bottom:14px}
+  .stage-sub b{display:block;font-size:14px;font-weight:800;line-height:1.35}
+  .stage-sub span{display:block;font-size:12.4px;color:var(--ink-mute);font-weight:700;margin-top:2px;line-height:1.4}
+  .stage-sub .btn{min-height:44px;font-size:13.5px;padding:8px 14px}
+
+  .auto-cta.big{flex-direction:column;align-items:stretch;gap:12px;padding:20px;margin:0 0 16px}
+  .auto-cta.big .btn{min-height:56px;font-size:16.5px;font-weight:800;line-height:1.35;white-space:normal}
+  .submit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin-bottom:18px}
+  .submit-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow-sm);min-width:0}
+  .submit-card h3{font-size:16px;font-weight:800;display:flex;align-items:center;gap:7px;margin-bottom:8px;line-height:1.35}
+  .submit-card .sc-lead{margin:0 0 10px}
+  .submit-card .btn{width:100%;margin-top:10px}
+  .submit-card .receipt{margin-top:4px}
+  .muted{font-size:13px;color:var(--ink-mute);line-height:1.62}
+  .org-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow-sm)}
+  .org-card h3{font-size:16px;font-weight:800;display:flex;align-items:center;gap:7px;margin-bottom:8px}
+  .org-rows{display:grid;gap:0}
+  .org-row{display:grid;grid-template-columns:74px minmax(0,1fr);gap:10px;font-size:13px;padding:7px 0;border-bottom:1px dashed var(--line-soft);color:var(--ink-soft)}
+  .org-row:last-child{border-bottom:0}
+  .org-row b{font-size:12.2px;font-weight:800;color:var(--ink-mute)}
+  .org-row span{font-weight:700;color:var(--ink);overflow-wrap:anywhere}
+
+  /* 큰 글씨 모드 */
+  body.a11y-big .stepbtn{min-height:66px}
+  body.a11y-big .stepbtn .sl b{font-size:16px}
+  body.a11y-big .stepbtn .sl small{font-size:13px}
+  body.a11y-big .stepbtn .sn{flex:0 0 34px;width:34px;height:34px;font-size:15px}
+  body.a11y-big .stepbar-foot .spos{font-size:13px}
+  body.a11y-big .subtab{font-size:17px;min-height:56px}
+  body.a11y-big .subtab .tab-count{font-size:13.5px}
+  body.a11y-big .pane-head h2{font-size:23px}
+  body.a11y-big .pane-head .ph-badge{font-size:14px}
+  body.a11y-big .pane-lead{font-size:16px}
+  body.a11y-big .stepnav .btn{min-height:56px;font-size:18px}
+  body.a11y-big .stepnav .snav-pos{font-size:14.5px}
+  body.a11y-big .stage-sub b{font-size:16px}
+  body.a11y-big .stage-sub span{font-size:14px}
+  body.a11y-big .stage-sub .btn{font-size:15.5px;min-height:48px}
+  body.a11y-big .side-card .sc-head{font-size:16.5px}
+  body.a11y-big .sc-lead,body.a11y-big .muted{font-size:14.5px}
+  body.a11y-big .sg-list li{font-size:15.2px}
+  body.a11y-big .sg-note{font-size:14.5px}
+  body.a11y-big .need-box h3{font-size:21px}
+  body.a11y-big .need-box p{font-size:16px}
+  body.a11y-big .need-box .btn{font-size:18px;min-height:58px}
+  body.a11y-big .submit-card h3,body.a11y-big .org-card h3{font-size:18px}
+  body.a11y-big .org-row{font-size:15px}
+  body.a11y-big .org-row b{font-size:13.5px}
+  body.a11y-big .auto-cta.big .btn{font-size:18px;min-height:60px}
+
+  /* 고대비 모드 */
+  body.a11y-contrast .stepbar{background:#121814;border-color:#3E5145}
+  body.a11y-contrast .stepbtn{background:#121814;color:#FFFFFF;border-color:transparent}
+  body.a11y-contrast .stepbtn:hover{background:#21362A;border-color:#8FE9B2}
+  body.a11y-contrast .stepbtn .sn{background:#26382C;color:#E2EDE5}
+  body.a11y-contrast .stepbtn .sl small{color:#BCCDBF}
+  body.a11y-contrast .stepbtn[aria-current="step"]{background:#2F9E62;border-color:#2F9E62;color:#04150B}
+  body.a11y-contrast .stepbtn[aria-current="step"] .sn{background:#04150B;color:#9BF0BE}
+  body.a11y-contrast .stepbtn[aria-current="step"] .sl small{color:#04150B}
+  body.a11y-contrast .stepbtn.done .sn{background:#123524;color:#8CE8AE}
+  body.a11y-contrast .stepbtn.done[aria-current="step"] .sn{background:#04150B;color:#9BF0BE}
+  body.a11y-contrast .stepbar-foot .sbar{background:#22302A}
+  body.a11y-contrast .stepbar-foot .spos{color:#BCCDBF}
+  body.a11y-contrast .subtabs{background:#17241C}
+  body.a11y-contrast .subtab{color:#E2EDE5}
+  body.a11y-contrast .subtab:hover{background:#21362A;color:#FFFFFF}
+  body.a11y-contrast .subtab[aria-selected="true"]{background:#2A3D31;color:#B6F5CE;box-shadow:inset 0 0 0 1px #5C7A66}
+  body.a11y-contrast .subtab .tab-count{background:#26382C;color:#E2EDE5}
+  body.a11y-contrast .subtab[aria-selected="true"] .tab-count{background:#1B4B2F;color:#B6F5CE}
+  body.a11y-contrast .pane-head .ph-badge{background:#152C1E;border-color:#3E5145;color:#A9F2C7}
+  body.a11y-contrast .pane-lead{color:#BCCDBF}
+  body.a11y-contrast .pane-lead b{color:#E2EDE5}
+  body.a11y-contrast .side-card,body.a11y-contrast .submit-card,body.a11y-contrast .org-card{background:#121814;border-color:#3E5145}
+  body.a11y-contrast .sc-lead,body.a11y-contrast .muted{color:#BCCDBF}
+  body.a11y-contrast .sg-list li{color:#E2EDE5}
+  body.a11y-contrast .sg-note{color:#D7E6DB}
+  body.a11y-contrast .sg-note b{color:#C9F7DB}
+  body.a11y-contrast .need-box{background:#121814;border-color:#4C6254}
+  body.a11y-contrast .need-box .nb-ico{background:#152C1E}
+  body.a11y-contrast .need-box h3{color:#FFFFFF}
+  body.a11y-contrast .need-box p{color:#D7E6DB}
+  body.a11y-contrast .stage-sub{background:#15251B;border-color:#3E5145}
+  body.a11y-contrast .stage-sub span{color:#BCCDBF}
+  body.a11y-contrast .org-row{color:#BCCDBF;border-bottom-color:#2A3A30}
+  body.a11y-contrast .org-row b{color:#BCCDBF}
+  body.a11y-contrast .org-row span{color:#FFFFFF}
+  body.a11y-contrast .stepnav .snav-pos{color:#BCCDBF}
+
+  /* 반응형: 단계 표시줄은 5칸 그대로, 라벨을 줄여 가로 스크롤을 만들지 않는다 */
+  @media (max-width: 980px){
+    .layout{padding:12px 14px 0}
+    .pane-1{grid-template-columns:1fr;gap:14px}
+    .side{grid-template-columns:1fr;gap:10px}
+    .stepbtn .sl small{display:none}
+    .need-box .nb-personas{grid-template-columns:1fr}
+    .stepnav{margin:16px 0 6px}
+    .stepnav .btn{flex:1 1 46%;font-size:14.5px}
+    .stepnav .btn.snav-next{min-width:0}
+    .stepnav .snav-pos{flex:1 1 100%;order:3;text-align:center}
+    .stepnav .btn.snav-next{order:2}
+    .stepnav .snav-ghost{display:none}
+  }
+  @media (max-width: 700px){
+    .stepbar{gap:4px;padding:5px;border-radius:18px}
+    .stepbtn{flex-direction:column;gap:3px;min-height:64px;padding:7px 3px;justify-content:center;text-align:center}
+    .stepbtn .sl-long{display:none}
+    .stepbtn .sl-short{display:block}
+    .stepbtn .sl b{font-size:10.6px;line-height:1.2;letter-spacing:0}
+    .stepbtn .sn{width:22px;height:22px;flex:0 0 22px;font-size:11px}
+    .pane-head h2{font-size:18px}
+    .side-card{padding:13px}
+    .need-box{padding:20px 14px}
+    .stepnav .btn{font-size:13.5px;padding:9px 12px}
+    body.a11y-big .stepbtn{min-height:72px}
+    body.a11y-big .stepbtn .sl b{font-size:12px}
+    body.a11y-big .stepbtn .sn{width:26px;height:26px;flex:0 0 26px;font-size:12.5px}
+  }
+  @media (max-width: 420px){
+    .stepbtn .sl b{font-size:10px}
+    .stepbtn{min-height:60px}
+    .stepnav{gap:8px}
+    .stepnav .btn{flex:1 1 100%;font-size:14px}
+    .stepnav .btn.snav-next{order:3}
+  }
 </style>
 </head>
 <body>
-<a class="skip-link" href="#dash">분석 결과로 바로 가기</a>
+<a class="skip-link" href="#stepBar">진행 단계로 바로 가기</a>
 
 <header class="app-header">
   <div class="inner">
@@ -1323,95 +1537,173 @@
       <button class="a11y-btn" type="button" id="btnBigText" aria-pressed="false"><span class="a11y-ico" aria-hidden="true">🔠</span>큰 글씨</button>
       <button class="a11y-btn" type="button" id="btnHighContrast" aria-pressed="false"><span class="a11y-ico" aria-hidden="true">◐</span>고대비</button>
       <button class="a11y-btn" type="button" id="btnVoice" aria-pressed="false"><span class="a11y-ico" aria-hidden="true">🔊</span>음성 안내</button>
+      <span class="a11y-rate" role="group" aria-label="음성 속도">
+        <button class="a11y-btn rate" type="button" id="btnRateSlow" aria-pressed="true">천천히 <small>0.82</small></button>
+        <button class="a11y-btn rate" type="button" id="btnRateNormal" aria-pressed="false">보통 <small>0.93</small></button>
+      </span>
       <button class="a11y-btn speak" type="button" id="btnSpeak"><span class="a11y-ico" aria-hidden="true">🗣️</span>화면 읽기</button>
       <button class="a11y-btn stop" type="button" id="btnStopSpeak" aria-disabled="true"><span class="a11y-ico" aria-hidden="true">⏹️</span>정지</button>
       <span class="sr-only" id="a11yStatus" role="status" aria-live="polite"></span>
-    </div>
-    <p class="persona-title"><span aria-hidden="true">✨</span>시연용 예시 — 버튼 한 번으로 상담이 끝까지 진행됩니다</p>
-    <div class="personas" id="personas">
-      <button class="persona" type="button" data-persona="0">
-        <span class="num" aria-hidden="true">1</span>
-        <span><b>지체 · 심한 장애</b><span class="desc">휠체어 이용 · 주 14시간 희망</span></span>
-      </button>
-      <button class="persona" type="button" data-persona="1">
-        <span class="num" aria-hidden="true">2</span>
-        <span><b>지체 · 심하지 않은 장애</b><span class="desc">전일제 사무 희망 · 서서 일하기 어려움</span></span>
-      </button>
-      <button class="persona" type="button" data-persona="2">
-        <span class="num" aria-hidden="true">3</span>
-        <span><b>청각 · 심한 장애</b><span class="desc">수어·문자통역 필요 · 주 20시간</span></span>
-      </button>
     </div>
   </div>
 </header>
 
 <main class="layout">
-  <!-- ============ 대화 패널 ============ -->
-  <section class="chat card-surface" aria-label="AI 카운셀러 상담">
-    <div class="chat-head">
-      <div class="who">
-        <span class="who-avatar" aria-hidden="true">
-          <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" role="presentation">
-            <rect x="8" y="8.5" width="32" height="14" rx="7" fill="#2E9E5B"/>
-            <rect x="12" y="16" width="10" height="25.5" rx="5" fill="#2E9E5B"/>
-            <rect x="26" y="16" width="10" height="25.5" rx="5" fill="#2E9E5B"/>
-            <circle cx="19.4" cy="15.4" r="2.7" fill="#FFFFFF"/>
-            <circle cx="28.6" cy="15.4" r="2.7" fill="#FFFFFF"/>
-            <circle cx="20" cy="15.9" r="1.3" fill="#16572F"/>
-            <circle cx="29.2" cy="15.9" r="1.3" fill="#16572F"/>
-          </svg>
-        </span>
-        <span class="who-text"><b>다온 상담</b><span class="who-sub">장애인 일자리 AI 카운셀러</span></span>
-      </div>
-      <span class="prog" id="chatProgress">0 / 4 단계</span>
-    </div>
+  <!-- ============ 단계 표시줄 (위저드) ============ -->
+  <div class="stepbar-wrap">
+    <nav class="stepbar" id="stepBar" aria-label="진행 단계">
+      <button class="stepbtn" type="button" data-step="1" aria-current="step">
+        <span class="sn" aria-hidden="true">1</span>
+        <span class="sl"><b class="sl-long">상담·복지카드</b><b class="sl-short">상담</b><small>카드 인식 · 조건 선택</small></span>
+      </button>
+      <button class="stepbtn" type="button" data-step="2" aria-current="false">
+        <span class="sn" aria-hidden="true">2</span>
+        <span class="sl"><b class="sl-long">추천 일자리·근무지</b><b class="sl-short">일자리</b><small>사업 8종 · 근무지 10곳</small></span>
+      </button>
+      <button class="stepbtn" type="button" data-step="3" aria-current="false">
+        <span class="sn" aria-hidden="true">3</span>
+        <span class="sl"><b class="sl-long">서류 준비·자동 수집</b><b class="sl-short">서류</b><small>체크리스트 · 파일 생성</small></span>
+      </button>
+      <button class="stepbtn" type="button" data-step="4" aria-current="false">
+        <span class="sn" aria-hidden="true">4</span>
+        <span class="sl"><b class="sl-long">신청서 작성</b><b class="sl-short">신청서</b><small>4단계 · 미리보기</small></span>
+      </button>
+      <button class="stepbtn" type="button" data-step="5" aria-current="false">
+        <span class="sn" aria-hidden="true">5</span>
+        <span class="sl"><b class="sl-long">원클릭 접수·접수처</b><b class="sl-short">접수</b><small>가상 접수증 · 안내</small></span>
+      </button>
+    </nav>
+    <div class="stepbar-foot"><span class="sbar" aria-hidden="true"><i id="stepFill"></i></span><span class="spos" id="stepPos">1 / 5 단계</span></div>
+  </div>
 
-    <!-- ============ 복지카드 촬영/업로드 시작 ============ -->
-    <div class="card-start" id="cardStart">
-      <div class="cs-head">
-        <span class="cs-emoji" aria-hidden="true">📷</span>
-        <div>
-          <span class="cs-title">복지카드로 바로 시작</span>
-          <span class="cs-desc">카드를 찍으면 장애 유형·정도를 읽어 상담 조건과 신청서까지 이어 드려요.</span>
+  <div class="stepnav" id="stepNavTop" aria-label="단계 이동"></div>
+
+  <div class="stage" id="stage">
+    <!-- ============ 1단계 · 상담·복지카드 ============ -->
+    <section class="pane pane-1" id="pane-1" role="region" aria-label="1단계 상담·복지카드">
+      <section class="chat card-surface" aria-label="AI 카운셀러 상담">
+        <div class="chat-head">
+          <div class="who">
+            <span class="who-avatar" aria-hidden="true">
+              <svg viewBox="0 0 48 48" aria-hidden="true" focusable="false" role="presentation">
+                <rect x="8" y="8.5" width="32" height="14" rx="7" fill="#2E9E5B"/>
+                <rect x="12" y="16" width="10" height="25.5" rx="5" fill="#2E9E5B"/>
+                <rect x="26" y="16" width="10" height="25.5" rx="5" fill="#2E9E5B"/>
+                <circle cx="19.4" cy="15.4" r="2.7" fill="#FFFFFF"/>
+                <circle cx="28.6" cy="15.4" r="2.7" fill="#FFFFFF"/>
+                <circle cx="20" cy="15.9" r="1.3" fill="#16572F"/>
+                <circle cx="29.2" cy="15.9" r="1.3" fill="#16572F"/>
+              </svg>
+            </span>
+            <span class="who-text"><b>다온 상담</b><span class="who-sub">장애인 일자리 AI 카운셀러</span></span>
+          </div>
+          <span class="prog" id="chatProgress">질문 0 / 4</span>
         </div>
+
+        <!-- ============ 복지카드 촬영/업로드 시작 ============ -->
+        <div class="card-start" id="cardStart">
+          <div class="cs-head">
+            <span class="cs-emoji" aria-hidden="true">📷</span>
+            <div>
+              <span class="cs-title">복지카드로 바로 시작</span>
+              <span class="cs-desc">카드를 찍으면 장애 유형·정도를 읽어 상담 조건과 신청서까지 이어 드려요.</span>
+            </div>
+          </div>
+          <div class="cs-actions">
+            <button class="cs-btn main" type="button" id="cardUpload">📷 복지카드 촬영·업로드</button>
+            <button class="cs-btn" type="button" data-sample="1">🎬 샘플 1 시연 <small>지체·심한</small></button>
+            <button class="cs-btn" type="button" data-sample="2">🎬 샘플 2 시연 <small>청각·심한</small></button>
+          </div>
+          <input id="cardFile" type="file" accept="image/*" capture="environment" class="sr-only" tabindex="-1" aria-hidden="true" hidden />
+          <p class="cs-note">🔒 사진은 <b>서버로 전송되지 않아요</b>. 시연용 가상 인식 화면으로 진행됩니다.</p>
+        </div>
+        <div class="chat-log" id="chatLog" role="log" aria-live="polite" aria-label="상담 대화 내용"></div>
+        <div class="chips" id="chips" aria-label="답변 선택"></div>
+        <form class="composer" id="composer" autocomplete="off">
+          <label class="sr-only" for="userInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">직접 입력</label>
+          <input id="userInput" type="text" placeholder="직접 입력해도 돼요 (예: 휠체어로 다닐 수 있는 사무 일)" />
+          <button type="submit" aria-label="입력한 내용 보내기">보내기</button>
+        </form>
+      </section>
+      <aside class="side" aria-label="상담 진행 안내">
+        <div class="side-card">
+          <div class="sc-head"><span aria-hidden="true">✨</span>예시로 바로 시작</div>
+          <p class="sc-lead">버튼 한 번이면 조건 선택부터 결과 정리까지 끝나요.</p>
+          <div class="personas" id="personas">
+  <button class="persona" type="button" data-persona="0">
+    <span class="num" aria-hidden="true">1</span>
+    <span><b>지체 · 심한 장애</b><span class="desc">휠체어 이용 · 주 14시간 희망</span></span>
+  </button>
+  <button class="persona" type="button" data-persona="1">
+    <span class="num" aria-hidden="true">2</span>
+    <span><b>지체 · 심하지 않은 장애</b><span class="desc">전일제 사무 희망 · 서서 일하기 어려움</span></span>
+  </button>
+  <button class="persona" type="button" data-persona="2">
+    <span class="num" aria-hidden="true">3</span>
+    <span><b>청각 · 심한 장애</b><span class="desc">수어·문자통역 필요 · 주 20시간</span></span>
+  </button>
+
+          </div>
+        </div>
+        <div class="side-card">
+          <div class="sc-head"><span aria-hidden="true">🧭</span>지금까지 고른 조건</div>
+          <div class="sum-strip" id="sumStrip" aria-label="선택한 조건" style="margin-top:10px"></div>
+          <div class="step-guide" id="stepGuide"></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ============ 2단계 · 추천 일자리·근무지 ============ -->
+    <section class="pane" id="pane-2" role="region" aria-label="2단계 추천 일자리·근무지" hidden>
+      <div class="pane-head">
+        <h2><span aria-hidden="true">💼</span>추천 일자리·근무지</h2>
+        <span class="ph-badge">조건에 맞춰 자동 판별</span>
       </div>
-      <div class="cs-actions">
-        <button class="cs-btn main" type="button" id="cardUpload">📷 복지카드 촬영·업로드</button>
-        <button class="cs-btn" type="button" data-sample="1">🎬 샘플 1 시연 <small>지체·심한</small></button>
-        <button class="cs-btn" type="button" data-sample="2">🎬 샘플 2 시연 <small>청각·심한</small></button>
+      <p class="pane-lead">신청할 수 있는 <b>일자리 사업 8종</b>과 <b>근로지원 제도 7종</b>, 근로환경에 맞는 <b>근무지 10곳</b>을 탭으로 나눠 봅니다.</p>
+      <div class="subtabs" role="tablist" aria-label="2단계 보기">
+        <button class="subtab" type="button" role="tab" id="tab-jobs" aria-selected="true" aria-controls="panel-jobs" data-sub="jobs"><span aria-hidden="true">💼</span> 일자리·지원제도 <span class="tab-count" id="count-jobs">0</span></button>
+        <button class="subtab" type="button" role="tab" id="tab-work" aria-selected="false" aria-controls="panel-work" data-sub="work" tabindex="-1"><span aria-hidden="true">🧭</span> 맞춤 근무지 <span class="tab-count" id="count-work">0</span></button>
       </div>
-      <input id="cardFile" type="file" accept="image/*" capture="environment" class="sr-only" tabindex="-1" aria-hidden="true" hidden />
-      <p class="cs-note">🔒 사진은 <b>서버로 전송되지 않아요</b>. 시연용 가상 인식 화면으로 진행됩니다.</p>
-    </div>
-    <div class="chat-log" id="chatLog" role="log" aria-live="polite" aria-label="상담 대화 내용"></div>
-    <div class="chips" id="chips" aria-label="답변 선택"></div>
-    <form class="composer" id="composer" autocomplete="off">
-      <label class="sr-only" for="userInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">직접 입력</label>
-      <input id="userInput" type="text" placeholder="직접 입력해도 돼요 (예: 휠체어로 다닐 수 있는 사무 일)" />
-      <button type="submit" aria-label="입력한 내용 보내기">보내기</button>
-    </form>
-  </section>
+      <div class="panel" id="panel-jobs" role="tabpanel" aria-labelledby="tab-jobs" tabindex="0">
+        <div id="jobsBody"></div>
+      </div>
+      <div class="panel" id="panel-work" role="tabpanel" aria-labelledby="tab-work" tabindex="0" hidden>
+        <div id="workBody"></div>
+      </div>
+    </section>
 
-  <!-- ============ 대시보드 ============ -->
-  <section class="dashboard" id="dash" aria-label="실시간 분석 결과">
-    <div class="sum-strip" id="sumStrip" aria-label="선택한 조건"></div>
-
-    <div class="tabs" role="tablist" aria-label="분석 결과 탭">
-      <button class="tab" type="button" role="tab" id="tab-jobs" aria-selected="true" aria-controls="panel-jobs" data-tab="jobs"><span class="tab-num" aria-hidden="true">①</span> <span class="tab-label">일자리·지원제도</span> <span class="tab-count" id="count-jobs">0</span></button>
-      <button class="tab" type="button" role="tab" id="tab-work" aria-selected="false" aria-controls="panel-work" data-tab="work" tabindex="-1"><span class="tab-num" aria-hidden="true">②</span> <span class="tab-label">맞춤 근무지</span> <span class="tab-count" id="count-work">0</span></button>
-      <button class="tab" type="button" role="tab" id="tab-docs" aria-selected="false" aria-controls="panel-docs" data-tab="docs" tabindex="-1"><span class="tab-num" aria-hidden="true">③</span> <span class="tab-label">서류·신청서</span> <span class="tab-count" id="count-docs">0</span></button>
-    </div>
-
-    <div class="panel" id="panel-jobs" role="tabpanel" aria-labelledby="tab-jobs" tabindex="0">
-      <div id="jobsBody"></div>
-    </div>
-    <div class="panel" id="panel-work" role="tabpanel" aria-labelledby="tab-work" tabindex="0" hidden>
-      <div id="workBody"></div>
-    </div>
-    <div class="panel" id="panel-docs" role="tabpanel" aria-labelledby="tab-docs" tabindex="0" hidden>
+    <!-- ============ 3단계 · 서류 준비·자동 수집 ============ -->
+    <section class="pane" id="pane-3" role="region" aria-label="3단계 서류 준비·자동 수집" hidden>
+      <div class="pane-head">
+        <h2><span aria-hidden="true">📋</span>서류 준비·자동 수집</h2>
+        <span class="ph-badge">서류 <b id="count-docs">0</b></span>
+      </div>
+      <p class="pane-lead">필요서류를 예시 API로 모아 <b>실제 파일</b>로 만들고, 빠진 서류를 체크리스트에서 확인합니다. 파일은 이 브라우저 안에서만 만들어집니다.</p>
       <div id="docsBody"></div>
-    </div>
-  </section>
+    </section>
+
+    <!-- ============ 4단계 · 신청서 작성 ============ -->
+    <section class="pane" id="pane-4" role="region" aria-label="4단계 신청서 작성" hidden>
+      <div class="pane-head">
+        <h2><span aria-hidden="true">✍️</span>신청서 작성</h2>
+        <span class="ph-badge">4단계 · 미리보기·인쇄</span>
+      </div>
+      <p class="pane-lead">기본정보 → 희망 사업·여건 → 자기소개 → 서류·최종 점검 순서로 한 화면씩 작성합니다. 복지카드 인식값과 상담 조건이 자동으로 채워져 있어요.</p>
+      <div id="formBody"></div>
+    </section>
+
+    <!-- ============ 5단계 · 원클릭 접수·접수처 ============ -->
+    <section class="pane" id="pane-5" role="region" aria-label="5단계 원클릭 접수·접수처" hidden>
+      <div class="pane-head">
+        <h2><span aria-hidden="true">📮</span>원클릭 접수·접수처</h2>
+        <span class="ph-badge">실제 전송 없음 · 시연</span>
+      </div>
+      <p class="pane-lead">서류 점검부터 신청서 패키지, 협회 접수 시뮬레이션, 가상 접수증까지 한 번에 보여 줍니다. 메일 초안과 실제 접수처 안내도 여기서 확인하세요.</p>
+      <div id="submitBody"></div>
+    </section>
+  </div>
+
+  <div class="stepnav" id="stepNavBottom" aria-label="단계 이동"></div>
 </main>
 
 <footer class="app-footer">
@@ -1541,7 +1833,9 @@
      ============================================================ */
   var A11Y_KEY = 'daon.a11y.v1';
   var STORE_KEY = 'daon.state.v1';
-  var a11y = { big: false, contrast: false, voice: false };
+  var TTS_RATE_SLOW = 0.82;    /* 기본 — 민원인 응대용으로 더 천천히 */
+  var TTS_RATE_NORMAL = 0.93;  /* 보통 */
+  var a11y = { big: false, contrast: false, voice: false, rate: TTS_RATE_SLOW };
   var ttsSupported = (typeof window !== 'undefined') && !!window.speechSynthesis && (typeof window.SpeechSynthesisUtterance === 'function');
   var tts = { speaking: false, lastSpoken: '', id: 0 };
   var storageOK = null;
@@ -1568,8 +1862,10 @@
     a11y.big = !!s.big;
     a11y.contrast = !!s.contrast;
     a11y.voice = !!(s.voice && ttsSupported);
+    a11y.rate = (s.rate === TTS_RATE_NORMAL || s.rate === TTS_RATE_SLOW) ? s.rate : TTS_RATE_SLOW;
   }
-  function saveA11y() { lsSet(A11Y_KEY, JSON.stringify({ big: a11y.big, contrast: a11y.contrast, voice: a11y.voice })); }
+  function validRate(v) { return v === TTS_RATE_NORMAL ? TTS_RATE_NORMAL : TTS_RATE_SLOW; }
+  function saveA11y() { lsSet(A11Y_KEY, JSON.stringify({ big: a11y.big, contrast: a11y.contrast, voice: a11y.voice, rate: a11y.rate })); }
 
   function applyA11y() {
     document.body.classList.toggle('a11y-big', !!a11y.big);
@@ -1579,8 +1875,23 @@
     var bb = $('#btnBigText'); if (bb) { bb.setAttribute('aria-pressed', a11y.big ? 'true' : 'false'); }
     var bc = $('#btnHighContrast'); if (bc) { bc.setAttribute('aria-pressed', a11y.contrast ? 'true' : 'false'); }
     var bv = $('#btnVoice'); if (bv) { bv.setAttribute('aria-pressed', a11y.voice ? 'true' : 'false'); }
+    var bs = $('#btnRateSlow'); if (bs) { bs.setAttribute('aria-pressed', a11y.rate === TTS_RATE_SLOW ? 'true' : 'false'); }
+    var bn = $('#btnRateNormal'); if (bn) { bn.setAttribute('aria-pressed', a11y.rate === TTS_RATE_NORMAL ? 'true' : 'false'); }
     if (!a11y.voice) { stopSpeak(true); }
     setSpeakUI(tts.speaking);
+  }
+
+  /* 음성 속도 전환 — '천천히(0.82)'가 기본, '보통(0.93)'으로 바꿀 수 있다. */
+  function setRate(v, silent) {
+    a11y.rate = validRate(v);
+    saveA11y();
+    applyA11y();
+    if (!silent) {
+      var msg = a11y.rate === TTS_RATE_SLOW ? '음성 속도를 천천히(0.82)로 바꿨어요' : '음성 속도를 보통(0.93)으로 바꿨어요';
+      toast(msg);
+      announce(msg);
+      if (a11y.voice && ttsSupported) { speak('이 속도로 안내해 드릴게요.'); }
+    }
   }
 
   function setA11y(key, on, msg) {
@@ -1652,7 +1963,7 @@
     var myId = tts.id;
     var u = new SpeechSynthesisUtterance(t.slice(0, 1500));
     u.lang = 'ko-KR';
-    u.rate = 0.93;   /* 천천히, 또박또박 */
+    u.rate = validRate(a11y.rate);   /* 기본 0.82 — 천천히, 또박또박 */
     u.pitch = 1.04;  /* 조금 높여 부드럽게 */
     u.volume = 1;
     var kv = pickKoreanVoice();
@@ -1671,58 +1982,86 @@
 
   /* 화면 요약 낭독 대본 — 민원인에게 말하듯 따뜻하고 공손한 구어체.
      쉼표·마침표로 호흡을 넣어 TTS가 딱딱하게 끊기지 않도록 한다. */
+  function stepTitleText() { return (STEP_META[state.step] || STEP_META[1]).t; }
+
   function screenSummaryText() {
     var parts = [];
+    var n = state.step || 1;
     if (state.card) {
       parts.push('복지카드에서 ' + (TYPE_LABEL[state.card.type] || '장애') + ', ' + sevShort(state.card.severity) + ' 정보를 확인했어요.');
     }
     if (!ready()) {
       var pend0 = nextUnanswered();
-      parts.push('안녕하세요, 다온입니다. 지금은 몇 가지만 여쭤보고 있어요.');
-      if (pend0 < STEPS.length) { parts.push('화면에서는 이런 것을 여쭤보고 있어요. ' + plainText(STEPS[pend0].bot)); }
-      parts.push('편하게 골라 주시면, 다음 안내를 이어서 해 드릴게요.');
+      parts.push('안녕하세요, 다온입니다. 지금은 ' + (n === 1 ? '1단계 상담 화면' : n + '단계 ' + stepTitleText() + ' 화면') + '이에요.');
+      if (n !== 1) {
+        parts.push('아직 조건이 다 채워지지 않아서, 먼저 1단계에서 몇 가지만 여쭤보고 있어요.');
+        parts.push('화면 위 예시 세 개 가운데 하나를 누르면 상담이 끝까지 진행되고 이 화면도 바로 채워집니다.');
+      } else if (pend0 < STEPS.length) {
+        parts.push('화면에서는 이런 것을 여쭤보고 있어요. ' + plainText(STEPS[pend0].bot));
+      }
+      parts.push('편하게 골라 주시면, 다음 단계 안내를 이어서 해 드릴게요.');
       return parts.join(' ');
     }
     var cond = '지금 조건은 ' + (TYPE_LABEL[state.type] || '장애 유형 확인 전') + ', ' + sevShort(state.severity) +
       ', 희망 근무는 ' + (WORK_LABEL[state.workType] || '미선택') + '입니다.';
     var rows = analyze();
     var okRows = rows.filter(function (x) { return x.status !== '불가'; });
-    if (state.tab === 'work') {
+
+    if (n === 2 && state.subtab === 'work') {
       var good = scoredWorkplaces().filter(function (r) { return r.m.status === 'good'; }).length;
-      parts.push('안녕하세요, 다온입니다. 지금은 맞춤 근무지 화면을 보고 계세요.');
+      parts.push('안녕하세요, 다온입니다. 지금은 2단계, 맞춤 근무지 화면을 보고 계세요.');
       parts.push(cond);
       parts.push(good
         ? ('이 조건에 잘 맞는 근무지가 ' + good + '곳 있어요. 천천히 살펴보시고, 더 알고 싶은 곳이 있으면 담당자에게 편하게 물어보셔도 좋아요.')
         : '이 조건에 꼭 맞는 근무지는 아직 보이지 않아요. 확인이 필요한 곳을 함께 살펴보시면 좋겠습니다.');
       return parts.join(' ');
     }
-    if (state.tab === 'docs' && okRows.length) {
-      var pid0 = state.selectedProgram || okRows[0].p.id;
+
+    if (n === 3 || n === 4) {
+      var pid0 = state.selectedProgram || (okRows[0] ? okRows[0].p.id : 'general_full');
       var prog0 = PROGRAMS.filter(function (p) { return p.id === pid0; })[0] || PROGRAMS[0];
       var docs0 = docsFor(pid0);
       var req0 = requiredDocs(docs0);
       var miss0 = req0.filter(function (d) { return !state.checked[pid0 + ':' + d.id]; });
-      parts.push('안녕하세요, 다온입니다. 이제 제출하실 서류를 확인해 볼까요?');
+      parts.push('안녕하세요, 다온입니다. 지금은 ' + n + '단계, ' + stepTitleText() + ' 화면이에요.');
       parts.push(cond);
-      parts.push('신청서는 ' + (state.formStep + 1) + '단계까지 작성하셨어요. 필수 서류 ' + req0.length + '건 가운데 ' +
-        (req0.length - miss0.length) + '건을 확인하셨습니다.');
-      if (miss0.length) {
-        parts.push('아직 남은 서류는 ' + miss0.slice(0, 3).map(function (d) { return d.name; }).join(', ') +
-          ' 등이에요. 필요하시면 제가 필요서류 자동 수집으로 파일까지 만들어 드릴게요.');
+      if (n === 3) {
+        parts.push('신청하실 사업은 ' + prog0.name + '이고, 근무 시간은 ' + prog0.hours + '입니다.');
+        parts.push('필수 서류 ' + req0.length + '건 가운데 ' + (req0.length - miss0.length) + '건을 확인하셨습니다.');
+        if (miss0.length) {
+          parts.push('아직 남은 서류는 ' + miss0.slice(0, 3).map(function (d) { return d.name; }).join(', ') +
+            ' 등이에요. 필요하시면 제가 필요서류 자동 수집으로 파일까지 만들어 드릴게요.');
+        } else {
+          parts.push('필요한 서류를 모두 확인하셨어요. 이제 다음 단계에서 신청서를 마무리하실 수 있습니다.');
+        }
       } else {
-        parts.push('필요한 서류를 모두 확인하셨어요. 이제 신청서를 저장하거나 인쇄하실 수 있습니다.');
+        parts.push('신청서는 ' + (state.formStep + 1) + '단계까지 작성하셨어요.');
+        parts.push(miss0.length
+          ? ('서류는 ' + (req0.length - miss0.length) + '건 확인하셨고 ' + miss0.length + '건이 남아 있어요. 3단계에서 채우실 수 있습니다.')
+          : '필요한 서류도 모두 확인하셨으니, 미리보기로 신청서를 확인하고 인쇄하실 수 있어요.');
       }
-      parts.push('신청하실 사업은 ' + prog0.name + '이고, 근무 시간은 ' + prog0.hours + '입니다.');
       parts.push('천천히 하셔도 괜찮아요.');
       return parts.join(' ');
     }
+
+    if (n === 5) {
+      var prog5 = progOf(state.selectedProgram || 'general_full');
+      parts.push('안녕하세요, 다온입니다. 지금은 5단계, 원클릭 접수와 접수처 화면이에요.');
+      parts.push(cond);
+      parts.push('신청하실 사업은 ' + prog5.name + '이고, 접수처는 ' + ORG.name + ', 전화 ' + ORG.tel + '입니다.');
+      parts.push(autoState.receipt
+        ? ('시연으로 가상 접수증 ' + autoState.receipt.no + '이 발급되어 있어요. 실제 기관으로 전송된 것은 아닙니다.')
+        : '화면의 자동 접수 시연을 누르면 서류 점검부터 가상 접수증 발급까지 한 번에 진행됩니다. 실제 기관으로는 전송되지 않아요.');
+      return parts.join(' ');
+    }
+
     if (okRows.length) {
       var best = okRows[0];
-      parts.push('안녕하세요, 다온입니다. 현재 선택하신 조건을 바탕으로 확인해 드릴게요.');
+      parts.push('안녕하세요, 다온입니다. ' + (n === 2 ? '지금은 2단계, 추천 일자리 화면을 보고 계세요.' : '1단계 상담에서 조건이 모두 정리됐어요.'));
       parts.push(cond);
       parts.push('신청 가능한 일자리는 모두 ' + okRows.length + '가지입니다. 그중 가장 잘 맞는 사업은 ' + best.p.name +
         '이고, 근무 시간은 ' + best.p.hours + ', 보수는 ' + best.p.pay + '입니다.');
-      parts.push('화면 위의 맞춤 근무지와 준비 서류 탭을 누르시면, 제가 이어서 하나씩 안내해 드릴게요.');
+      parts.push('화면 위 단계 표시줄에서 2단계 추천 일자리·근무지나 3단계 서류 준비를 누르시면, 제가 이어서 하나씩 안내해 드릴게요.');
     } else {
       parts.push('안녕하세요, 다온입니다. 지금 조건에 바로 맞는 사업이 보이지는 않아요.');
       parts.push('근무 시간을 조금 바꿔 보시거나, 거주지 시·군·구청 담당자와 편하게 상담해 보시길 권해 드려요. 제가 옆에서 도와드릴게요.');
@@ -1748,10 +2087,11 @@
   /* ----- 자동 임시저장 ----- */
   function snapshot() {
     return {
-      v: 1, t: Date.now(),
+      v: 2, t: Date.now(),
       severity: state.severity, type: state.type, workType: state.workType,
       envs: Array.from(state.envs), envAnswered: state.envAnswered,
-      tab: state.tab, selectedProgram: state.selectedProgram, programAuto: state.programAuto,
+      tab: state.tab, step: state.step, subtab: state.subtab,
+      selectedProgram: state.selectedProgram, programAuto: state.programAuto,
       lastProgram: state.lastProgram, checked: state.checked,
       draft: state.draft, draftVariant: state.draftVariant, draftShown: state.draftShown,
       card: state.card, formStep: state.formStep, form: state.form, motivSig: state.motivSig
@@ -1797,7 +2137,7 @@
     if (!storageCheck()) { return false; }
     var s = null;
     try { s = JSON.parse(lsGet(STORE_KEY) || 'null'); } catch (e) { s = null; }
-    if (!s || typeof s !== 'object' || s.v !== 1) { return false; }
+    if (!s || typeof s !== 'object' || (s.v !== 1 && s.v !== 2)) { return false; }
     var touched = false;
     if (s.severity && SEVERITY_LABEL[s.severity]) { state.severity = s.severity; touched = true; }
     if (s.type && TYPE_LABEL[s.type]) { state.type = s.type; touched = true; }
@@ -1837,6 +2177,8 @@
     state.draftShown = !!s.draftShown;
     if (typeof s.draftVariant === 'number') { state.draftVariant = s.draftVariant; }
     if (s.tab && ['jobs', 'work', 'docs'].indexOf(s.tab) > -1) { state.tab = s.tab; }
+    if (s.subtab === 'jobs' || s.subtab === 'work') { state.subtab = s.subtab; }
+    if (typeof s.step === 'number' && s.step >= 1 && s.step <= 5) { state.step = Math.round(s.step); }
     if (typeof s.t === 'number') { savedAt = s.t; }
     return touched;
   }
@@ -1881,6 +2223,8 @@
     envAnswered: false,
     pendingEnvs: new Set(),
     tab: 'jobs',
+    step: 1,
+    subtab: 'jobs',
     selectedProgram: null,
     programAuto: true,
     lastProgram: null,
@@ -2933,19 +3277,14 @@
     } else {
       html += '<div class="miss-box ok"><p class="ok-line">✓ 필수 서류 ' + reqDocs.length + '건을 모두 확인했어요. 제출할 수 있습니다.</p></div>';
     }
-    html += '<p class="fhint" style="margin:-4px 0 12px">서류 체크는 아래 <b>구비서류 체크리스트</b>와 연결되어 있어요. ‘(해당)’ 서류는 본인에게 해당할 때만 준비하면 됩니다.</p>';
-    html += '<div class="sec-title" style="margin-top:6px"><span aria-hidden="true">📄</span>신청서 전체 미리보기<span class="hint">' + esc(current.p.name) + '</span></div>';
+    html += '<p class="fhint" style="margin:-4px 0 12px">서류 체크는 <b>3단계 서류 준비</b> 화면과 연결되어 있어요. ‘(해당)’ 서류는 본인에게 해당할 때만 준비하면 됩니다.</p>';
+    html += '<div class="ff-actions"><button class="btn" type="button" data-goto="3">← 3단계 서류 준비로</button></div>';
+    html += '<div class="sec-title" style="margin-top:14px"><span aria-hidden="true">📄</span>신청서 전체 미리보기<span class="hint">' + esc(current.p.name) + '</span></div>';
     html += '<div id="appPreview">' + appSheetHtml(docs) + '</div>';
-    html += '<div class="auto-cta">' +
-      '<div class="ac-txt"><b>공모전 시연 · 원클릭 자동 접수</b><span>서류·입력값 점검부터 신청서 패키지, 협회 접수 시뮬레이션, 시연용 가상 접수증 발급까지 한 번에 보여 줍니다. 실제 기관으로 전송되는 것은 없습니다.</span></div>' +
-      '<button class="btn primary" type="button" id="btnAutoSubmit" data-auto="1">진주시 지체장애인협회로 자동 접수 시연</button></div>';
     html += '<div class="ff-actions"><button class="btn" type="button" id="btnAppCopy">텍스트 복사</button>' +
       '<button class="btn" type="button" id="btnAppPrint">인쇄용 출력</button>' +
-      '<button class="btn" type="button" id="btnAppMail">이메일로 바로 보내기(메일 앱 열기)</button>' +
-      '<button class="btn" type="button" id="btnAppPreview">미리보기로 이동</button>' +
-      '<button class="btn" type="button" id="btnGoGuide">실제 접수 안내 보기</button></div>' +
-      '<div class="mail-help" id="mailHelp" hidden></div>' +
-      '<p class="fhint" style="margin-top:10px">서면 접수는 신청서를 <b>인쇄</b>(또는 PDF 저장)하고 <b>신분증·복지카드</b>를 지참해 협회(' + esc(ORG.short) + ' 전화 ' + esc(ORG.tel) + ')로 방문하면 됩니다. 메일로 먼저 보낼 때는 담당자 주소만 입력해 발송하고, 원본 서류는 방문·우편으로 함께 내세요.</p>';
+      '<button class="btn" type="button" id="btnAppPreview">미리보기로 이동</button></div>' +
+      '<p class="fhint" style="margin-top:10px">서면 접수는 신청서를 <b>인쇄</b>(또는 PDF 저장)하고 <b>신분증·복지카드</b>를 지참해 협회(' + esc(ORG.short) + ' 전화 ' + esc(ORG.tel) + ')로 방문하면 됩니다. 메일·자동 접수 시연은 <b>5단계</b>에 있어요.</p>';
     html += wizardActions(3);
     return html;
   }
@@ -3054,7 +3393,7 @@
           '<p><b>' + esc(ORG.name) + '</b><br />' + esc(ORG.addr) + ' · 전화 <b>' + esc(ORG.tel) + '</b></p>' +
           '<ul><li><span class="mk">·</span>참여신청서·동의서 작성과 서류 확인은 <b>협회 사무실</b>에서 상담</li>' +
           '<li><span class="mk">·</span>서면(방문) 접수는 신청서를 <b>인쇄</b>하거나 <b>PDF로 저장</b>해 <b>신분증·복지카드</b>를 지참하고 방문하면 됩니다</li>' +
-          '<li><span class="mk">·</span>메일로 먼저 보내려면 신청서 4단계의 <b>이메일로 바로 보내기</b>로 초안을 만든 뒤, 담당자 주소만 넣어 보내세요</li>' +
+          '<li><span class="mk">·</span>메일로 먼저 보내려면 <b>5단계</b>의 <b>메일 앱으로 초안 열기</b>로 초안을 만든 뒤, 담당자 주소만 넣어 보내세요</li>' +
           '<li><span class="mk">·</span>일반형(전일제·시간제)·복지일자리 참여형은 진주시가 주소지 <b>읍·면·동 행정복지센터</b>에서 직접 접수 (복지일자리 참여형은 <b>진주시장애인종합복지관 1층</b>에서도 접수)</li>' +
           '<li><span class="mk">·</span>특수교육-복지연계형·특화형(발달장애인 요양보호사 보조 등)은 해당 <b>수행기관</b>을 통해 별도 모집</li></ul></article>' +
         '<article class="gb-card"><h4><span aria-hidden="true">💬</span>면접·선발 팁</h4>' +
@@ -3281,6 +3620,8 @@
       AGENT_STATE.changed = false;
       renderDocs();
     }
+    /* 5단계에 발급된 가상 접수증이 남도록 다시 그린다 */
+    if ($('#submitBody')) { renderSubmitStage(); renderStepBar(); }
     if (focusBack !== false) {
       var b = $('#btnAutoSubmit');
       if (b) { b.focus(); }
@@ -3496,6 +3837,7 @@
     var fix = $('#autoFix');
     if (fix) { fix.addEventListener('click', function () {
       closeAuto(false);
+      goStep(3);
       var el = $('#docCheck');
       if (el) {
         el.setAttribute('tabindex', '-1');
@@ -4620,7 +4962,7 @@
       addMsg('bot', closingMessage());
     }
     log.scrollTop = log.scrollHeight;
-    $('#chatProgress').textContent = Math.min(pend, 4) + ' / 4 단계';
+    $('#chatProgress').textContent = '질문 ' + Math.min(pend, 4) + ' / 4';
     renderChips(pend);
     scheduleSave();
     maybeSpeakChat();
@@ -4639,7 +4981,7 @@
       ? ' 지금 조건에서는 <b>' + esc(best.p.name) + '</b> 사업이 가장 잘 맞아요.'
       : ' 지금 조건에서는 바로 맞는 사업이 보이지 않아요. 담당자 상담을 권해 드립니다.';
     return '정리했어요. ' + esc(parts.join(' · ')) + '<br>환경: ' + esc(env) + '.' + tail +
-      ' 오른쪽(모바일에서는 아래)에 사업 판별, 맞춤 근무지, 준비 서류를 정리해 두었습니다. 조건을 바꾸면 바로 다시 계산돼요.';
+      ' 화면 위 <b>단계 표시줄</b>에서 2단계 추천 일자리·근무지, 3단계 서류 준비로 이어서 보실 수 있어요. 조건을 바꾸면 바로 다시 계산돼요.';
   }
 
   function makeChip(label, sub, pressed, onClick) {
@@ -4759,10 +5101,11 @@
     var names = ['장애 정도', '장애 유형', '희망 근무형태', '근로환경 조건'];
     var done = [!!state.severity, !!state.type, !!state.workType, state.envAnswered];
     return '<div class="placeholder"><div class="ph-art" aria-hidden="true">' + PICKLE_SVG + '</div><h3>조건을 고르면 바로 판별해 드려요</h3>' +
-      '<p>왼쪽 상담에서 네 가지만 답하면 아래에 결과가 채워집니다.</p><ol>' +
+      '<p>1단계 상담에서 네 가지만 답하면 결과가 채워집니다. 예시 3개 중 하나를 누르면 바로 끝까지 진행돼요.</p><ol>' +
       names.map(function (n, i) {
         return '<li class="' + (done[i] ? 'done' : '') + '"><span class="mark" aria-hidden="true">' + (done[i] ? '✓' : '') + '</span>' + n + '</li>';
-      }).join('') + '</ol></div>';
+      }).join('') + '</ol>' +
+      '<div class="nb-personas" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-top:16px;text-align:left">' + personaButtonsHtml() + '</div></div>';
   }
 
   function renderJobs() {
@@ -4855,19 +5198,11 @@
     body.innerHTML = html;
   }
 
-  function renderDocs() {
-    var body = $('#docsBody');
-    if (!ready()) {
-      body.innerHTML = placeholderHtml();
-      $('#count-docs').textContent = '0';
-      return;
-    }
+  /* 서류·신청서 단계가 함께 쓰는 계산 — 상태 보정도 이 한 곳에서만 한다. */
+  function docsCtx() {
+    if (!ready()) { return null; }
     var options = analyze().filter(function (x) { return x.status !== '불가'; });
-    if (!options.length) {
-      body.innerHTML = '<div class="placeholder"><h3>지금 조건에 맞는 사업이 보이지 않아요</h3><p>왼쪽 상담에서 근무시간을 바꾸거나, 거주지 시·군·구청 담당자와 상담해 보세요.</p></div>';
-      $('#count-docs').textContent = '0';
-      return;
-    }
+    if (!options.length) { return { options: [], current: null, docs: [], checkedCount: 0 }; }
     if (!state.selectedProgram) { state.selectedProgram = options[0].p.id; state.programAuto = true; }
     var current = options.filter(function (x) { return x.p.id === state.selectedProgram; })[0];
     if (!current) { current = options[0]; state.selectedProgram = current.p.id; state.programAuto = true; }
@@ -4884,14 +5219,64 @@
       state.form.motivation = buildFormMotivation(state.form.motivVariant || 0);
       state.motivSig = sig;
     }
-
     var docs = docsFor(current.p.id);
     var checkedCount = docs.filter(function (d) { return state.checked[state.selectedProgram + ':' + d.id]; }).length;
-    $('#count-docs').textContent = checkedCount + '/' + docs.length;
+    return { options: options, current: current, docs: docs, checkedCount: checkedCount };
+  }
 
-    var html = '<div class="panel-title"><h2><span class="em" aria-hidden="true">📋</span>서류·신청서 작성</h2><span class="hint">복지카드 → 판별 → 신청서까지 한 번에</span></div>';
-    html += '<div class="docs-toolbar"><label for="programSelect">신청할 사업</label><select id="programSelect">' +
-      options.map(function (x) {
+  /* 아직 상담 조건이 없을 때 — 예시 선택을 자연스럽게 유도한다. */
+  function personaButtonsHtml() {
+    return PERSONAS.map(function (p, i) {
+      var title = (SEVERITY_LABEL[p.severity] || '장애').replace(/\(.*\)/, '').trim() + ' · ' + (TYPE_LABEL[p.type] || '');
+      var desc = (WORK_LABEL[p.workType] || '') + (p.envs.length ? ' · ' + ENV_LABEL[p.envs[0]].split('(')[0].trim() : '');
+      return '<button class="persona" type="button" data-persona="' + i + '">' +
+        '<span class="num" aria-hidden="true">' + (i + 1) + '</span>' +
+        '<span><b>' + esc(title) + '</b><span class="desc">' + esc(desc) + '</span></span></button>';
+    }).join('');
+  }
+
+  function needHtml(stepName) {
+    return '<div class="need-box"><div class="nb-ico" aria-hidden="true">🧭</div>' +
+      '<h3>먼저 1단계에서 조건을 골라 주세요</h3>' +
+      '<p>' + esc(stepName) + ' 화면은 상담 조건에 맞춰 채워집니다. 아래 <b>예시 3개</b> 중 하나를 누르면 상담이 끝까지 진행되고 이 화면도 바로 준비돼요.</p>' +
+      '<div class="nb-personas">' + personaButtonsHtml() + '</div>' +
+      '<button class="btn primary" type="button" data-goto="1">1단계 상담으로 가기 →</button></div>';
+  }
+
+  /* 3·4·5단계를 한 번에 다시 그린다. */
+  function renderDocs() {
+    renderDocsPrep();
+    renderFormStage();
+    renderSubmitStage();
+    renderStepBar();
+    updateSaveBadge();
+  }
+
+  /* ---------- 3단계 · 서류 준비·자동 수집 ---------- */
+  function renderDocsPrep() {
+    var body = $('#docsBody');
+    if (!body) { return; }
+    var cx = docsCtx();
+    var cnt = $('#count-docs');
+    if (!cx) {
+      if (cnt) { cnt.textContent = '0'; }
+      body.innerHTML = needHtml('3단계 서류 준비');
+      return;
+    }
+    if (!cx.options.length) {
+      if (cnt) { cnt.textContent = '0'; }
+      body.innerHTML = '<div class="placeholder"><h3>지금 조건에 맞는 사업이 보이지 않아요</h3>' +
+        '<p>1단계에서 근무시간을 바꾸거나, 거주지 시·군·구청 담당자와 상담해 보세요.</p>' +
+        '<button class="btn" type="button" data-goto="1">1단계로 가기</button></div>';
+      return;
+    }
+    var current = cx.current;
+    var docs = cx.docs;
+    var checkedCount = cx.checkedCount;
+    if (cnt) { cnt.textContent = checkedCount + '/' + docs.length; }
+
+    var html = '<div class="docs-toolbar"><label for="programSelect">신청할 사업</label><select id="programSelect">' +
+      cx.options.map(function (x) {
         var label = x.p.name + (x.status === '조건부' ? ' (조건부 가능)' : ' (가능)');
         return '<option value="' + esc(x.p.id) + '"' + (x.p.id === state.selectedProgram ? ' selected' : '') + '>' + esc(label) + '</option>';
       }).join('') + '</select><span class="save-badge js-save" title="작성 내용이 이 브라우저에만 저장됩니다"></span></div>';
@@ -4899,17 +5284,10 @@
     html += '<div class="bar-label">서류 준비 ' + checkedCount + ' / ' + docs.length + ' — ' + esc(current.p.name) + '</div>';
     html += '<div class="bar-wrap"><div class="bar" id="docBar" style="width:' + (docs.length ? Math.round(checkedCount / docs.length * 100) : 0) + '%"></div></div>';
 
-    /* --- 신청서 작성 4단계 --- */
-    html += wizardHtml(current, docs);
-
-    /* --- 실제 신청·접수 가이드 --- */
-    html += guideHtml();
-
-    /* --- 필요서류 자동 수집 에이전트 (시연 Mock API) --- */
+    html += '<div class="sec-title" id="docCheck"><span aria-hidden="true">🤖</span>필요서류 자동 수집<span class="hint">발급기관 예시 API → 실제 파일</span></div>';
     html += '<div class="agent-box" id="docAgent">' + agentPanelInner('docs') + '</div>';
 
-    /* --- 구비서류 체크리스트 --- */
-    html += '<div class="sec-title" id="docCheck"><span aria-hidden="true">📁</span>구비서류 체크리스트<span class="hint">발급처까지 적어 두었어요</span></div>';
+    html += '<div class="sec-title" style="margin-top:22px"><span aria-hidden="true">📁</span>구비서류 체크리스트<span class="hint">발급처까지 적어 두었어요</span></div>';
     html += '<ul class="doc-list" id="docList">';
     docs.forEach(function (d) {
       var key = state.selectedProgram + ':' + d.id;
@@ -4920,57 +5298,75 @@
         (d.note ? '<span class="note">· ' + esc(d.note) + '</span>' : '') + '</label></li>';
     });
     html += '</ul>';
+    html += '<p class="fine">※ 서류 체크와 자동 수집 결과는 이 브라우저에만 저장되고 서버로 전송되지 않습니다. ‘(해당)’ 서류는 본인에게 해당할 때만 준비하면 됩니다.</p>';
 
-    /* --- 기존 5항목 초안 --- */
-    html += '<div class="draft-box"><h3><span aria-hidden="true">✍️</span>자기소개·지원동기 5항목 초안</h3>' +
+    body.innerHTML = html;
+
+    var sel = $('#programSelect');
+    if (sel) {
+      sel.addEventListener('change', function (e) {
+        state.selectedProgram = e.target.value;
+        state.programAuto = false;
+        state.lastProgram = e.target.value;
+        state.draftShown = false;
+        state.draft = '';
+        state.form.job1 = '';
+        state.form.job2 = '';
+        state.form.jobTouched = false;
+        state.form.motivation = '';
+        ensureJobs(false);
+        renderDocs();
+      });
+    }
+    updateSaveBadge();
+  }
+
+  /* ---------- 4단계 · 신청서 작성 ---------- */
+  function draftBoxHtml() {
+    return '<div class="draft-box"><h3><span aria-hidden="true">✍️</span>자기소개·지원동기 5항목 초안</h3>' +
       '<p class="lead">선택한 사업·장애 유형·근무 조건을 반영해 문장을 만들어 드려요. 복사해서 신청서에 붙이고, 경력 부분만 고치면 됩니다.</p>' +
       '<div class="draft-actions"><button class="btn primary" type="button" id="btnGenerate">초안 만들기</button>' +
       '<button class="btn" type="button" id="btnVariant"' + (state.draftShown ? '' : ' disabled') + '>다른 표현으로</button>' +
       '<button class="btn teal" type="button" id="btnCopy"' + (state.draftShown ? '' : ' disabled') + '>복사하기</button></div>' +
       '<div class="draft" id="draftOut"' + (state.draftShown ? '' : ' hidden') + '>' + esc(state.draft) + '</div></div>';
+  }
 
+  function renderFormStage() {
+    var body = $('#formBody');
+    if (!body) { return; }
+    var cx = docsCtx();
+    if (!cx) { body.innerHTML = needHtml('4단계 신청서 작성'); return; }
+    if (!cx.options.length) { body.innerHTML = needHtml('4단계 신청서 작성'); return; }
+
+    var html = '<div class="stage-sub"><div><b>신청서 작성 4단계</b><span>기본정보 → 희망 사업·여건 → 자기소개 → 서류·최종 점검</span></div>' +
+      '<button class="btn" type="button" data-goto="3">← 서류 준비로</button></div>';
+    html += wizardHtml(cx.current, cx.docs);
+    html += draftBoxHtml();
     body.innerHTML = html;
+    attachFormStage(body);
+  }
 
-    $('#programSelect').addEventListener('change', function (e) {
-      state.selectedProgram = e.target.value;
-      state.programAuto = false;
-      state.lastProgram = e.target.value;
-      state.draftShown = false;
-      state.draft = '';
-      state.form.job1 = '';
-      state.form.job2 = '';
-      state.form.jobTouched = false;
-      state.form.motivation = '';
-      ensureJobs(false);
-      renderDocs();
-    });
-    $('#btnGenerate').addEventListener('click', function () { generateDraft(); });
-    $('#btnVariant').addEventListener('click', function () { state.draftVariant += 1; generateDraft(); });
-    $('#btnCopy').addEventListener('click', function () {
-      if (!state.draft) { toast('먼저 초안을 만들어 주세요'); return; }
-      copyText(state.draft);
-    });
-
-    /* --- 4단계 위저드 이벤트 --- */
+  function attachFormStage(body) {
+    /* 신청서 4단계 위저드 */
     $$('.wstep', body).forEach(function (btn, idx) {
       btn.addEventListener('click', function () {
         state.formStep = idx;
         if (idx === 2 && !state.form.motivation) { state.form.motivation = buildFormMotivation(0); }
-        renderDocs();
+        renderFormStage();
         scrollToFormFlow();
       });
     });
     var prev = $('#wPrev');
-    if (prev) { prev.addEventListener('click', function () { state.formStep = Math.max(0, state.formStep - 1); renderDocs(); scrollToFormFlow(); }); }
+    if (prev) { prev.addEventListener('click', function () { state.formStep = Math.max(0, state.formStep - 1); renderFormStage(); scrollToFormFlow(); }); }
     var next = $('#wNext');
     if (next) { next.addEventListener('click', function () {
       state.formStep = Math.min(3, state.formStep + 1);
       if (state.formStep === 2 && !state.form.motivation) { state.form.motivation = buildFormMotivation(0); }
-      renderDocs();
+      renderFormStage();
       scrollToFormFlow();
     }); }
     var back1 = $('#wBack1');
-    if (back1) { back1.addEventListener('click', function () { state.formStep = 0; renderDocs(); scrollToFormFlow(); }); }
+    if (back1) { back1.addEventListener('click', function () { state.formStep = 0; renderFormStage(); scrollToFormFlow(); }); }
     var wreset = $('#wReset');
     if (wreset) { wreset.addEventListener('click', function () {
       state.form.phone = '';
@@ -4989,7 +5385,7 @@
       state.form.motivEdited = false;
       state.form.motivation = buildFormMotivation(0);
       state.motivSig = motivSignature();
-      renderDocs();
+      renderFormStage();
       var ta = $('#formMotiv');
       if (ta) { ta.focus(); }
       toast('조건에 맞춰 초안을 다시 만들었어요');
@@ -5000,7 +5396,7 @@
       state.form.motivEdited = false;
       state.form.motivation = buildFormMotivation(state.form.motivVariant);
       state.motivSig = motivSignature();
-      renderDocs();
+      renderFormStage();
       var ta = $('#formMotiv');
       if (ta) { ta.focus(); }
       toast('다른 표현으로 다시 썼어요');
@@ -5010,26 +5406,83 @@
       if (!state.form.motivation) { toast('먼저 초안을 만들어 주세요'); return; }
       copyText(state.form.motivation);
     }); }
+    var gen = $('#btnGenerate');
+    if (gen) { gen.addEventListener('click', function () { generateDraft(); }); }
+    var variant = $('#btnVariant');
+    if (variant) { variant.addEventListener('click', function () { state.draftVariant += 1; generateDraft(); }); }
+    var copyDraft = $('#btnCopy');
+    if (copyDraft) { copyDraft.addEventListener('click', function () {
+      if (!state.draft) { toast('먼저 초안을 만들어 주세요'); return; }
+      copyText(state.draft);
+    }); }
     var appCopy = $('#btnAppCopy');
     if (appCopy) { appCopy.addEventListener('click', function () { copyText(buildAppText()); }); }
     var appPrint = $('#btnAppPrint');
     if (appPrint) { appPrint.addEventListener('click', printApp); }
-    var appMail = $('#btnAppMail');
-    if (appMail) { appMail.addEventListener('click', openMailApp); }
-    var appAuto = $('#btnAutoSubmit');
-    if (appAuto) { appAuto.addEventListener('click', openAuto); }
     var appPrev = $('#btnAppPreview');
     if (appPrev) { appPrev.addEventListener('click', function () {
       var el = $('#appPreview');
       if (el && el.scrollIntoView) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
     }); }
-    var appGuide = $('#btnGoGuide');
-    if (appGuide) { appGuide.addEventListener('click', function () {
-      var g = $('#applyGuide');
-      if (g && g.scrollIntoView) { g.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-      var h = $('#guideTitle');
-      if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
-    }); }
+    updateSaveBadge();
+  }
+
+  /* ---------- 5단계 · 원클릭 접수·접수처 ---------- */
+  function orgCardHtml() {
+    return '<div class="org-card"><h3><span aria-hidden="true">🏢</span>접수처</h3>' +
+      '<div class="org-rows">' +
+      '<div class="org-row"><b>기관명</b><span>' + esc(ORG.name) + ' (' + esc(ORG.short) + ')</span></div>' +
+      '<div class="org-row"><b>주소</b><span>' + esc(ORG.addr) + '</span></div>' +
+      '<div class="org-row"><b>전화</b><span>' + esc(ORG.tel) + '</span></div>' +
+      '<div class="org-row"><b>접수</b><span>방문(신분증·복지카드 지참) 또는 담당자 메일. 일반형·복지일자리 참여형은 주소지 읍·면·동 행정복지센터에서도 접수합니다.</span></div>' +
+      '</div></div>';
+  }
+
+  function renderSubmitStage() {
+    var body = $('#submitBody');
+    if (!body) { return; }
+    var cx = docsCtx();
+    if (!cx || !cx.options.length) { body.innerHTML = needHtml('5단계 원클릭 접수'); return; }
+    var r = autoState.receipt;
+    var html = '<div class="auto-cta big">' +
+      '<div class="ac-txt"><b>공모전 시연 · 원클릭 자동 접수</b>' +
+      '<span>서류·입력값 점검부터 신청서 패키지 생성, 협회 접수 시뮬레이션, 시연용 가상 접수증 발급까지 한 번에 보여 줍니다. 실제 기관으로 전송되는 것은 없습니다.</span></div>' +
+      '<button class="btn primary" type="button" id="btnAutoSubmit" data-auto="1">진주시 지체장애인협회로 자동 접수 시연</button></div>';
+
+    html += '<div class="submit-grid">';
+    html += '<div class="submit-card"><h3><span aria-hidden="true">🧾</span>가상 접수증</h3>' +
+      (r
+        ? '<p class="sc-lead">시연으로 발급된 접수증입니다. 인쇄해서 화면에 보여 줄 수 있어요.</p><div class="receipt">' + receiptInner(r) + '</div>' +
+          '<button class="btn" type="button" id="receiptPrint">접수증 인쇄</button>'
+        : '<p class="muted">아직 접수증이 없어요. 위 <b>자동 접수 시연</b>을 진행하면 서류 점검 → 패키지 → 접수 → 접수증 순서로 흐르고, 발급된 접수증이 이 자리에 남습니다.</p>') +
+      '</div>';
+    html += '<div class="submit-card"><h3><span aria-hidden="true">✉️</span>이메일로 보내기</h3>' +
+      '<p class="sc-lead">받는 사람은 비워 둔 <b>메일 초안</b>을 만들어 메일 앱을 열어 드려요. 담당자 주소만 넣으면 됩니다.</p>' +
+      '<button class="btn" type="button" id="btnAppMail">메일 앱으로 초안 열기</button>' +
+      '<div class="mail-help" id="mailHelp" hidden></div></div>';
+    html += '</div>';
+
+    html += '<div class="submit-grid">' + orgCardHtml() +
+      '<div class="submit-card"><h3><span aria-hidden="true">📄</span>신청서 다시 보기</h3>' +
+      '<p class="sc-lead">4단계에서 작성한 신청서를 복사하거나 인쇄(PDF 저장)해 서면으로 낼 수 있습니다.</p>' +
+      '<button class="btn" type="button" id="btnAppCopy2">신청서 텍스트 복사</button>' +
+      '<button class="btn" type="button" id="btnAppPrint2">인쇄용 출력</button>' +
+      '<button class="btn" type="button" data-goto="4">4단계 신청서로</button></div>' +
+      '</div>';
+
+    html += guideHtml();
+    body.innerHTML = html;
+
+    var auto = $('#btnAutoSubmit');
+    if (auto) { auto.addEventListener('click', openAuto); }
+    var mail = $('#btnAppMail');
+    if (mail) { mail.addEventListener('click', openMailApp); }
+    var rp = $('#receiptPrint');
+    if (rp) { rp.addEventListener('click', printReceipt); }
+    var c2 = $('#btnAppCopy2');
+    if (c2) { c2.addEventListener('click', function () { copyText(buildAppText()); }); }
+    var p2 = $('#btnAppPrint2');
+    if (p2) { p2.addEventListener('click', printApp); }
     updateSaveBadge();
   }
 
@@ -5040,7 +5493,7 @@
     $('#count-docs').textContent = checkedCount + '/' + docs.length;
     var bar = $('#docBar');
     if (bar) { bar.style.width = (docs.length ? Math.round(checkedCount / docs.length * 100) : 0) + '%'; }
-    var lab = $('.bar-label');
+    var lab = $('.bar-label', $('#docsBody') || document);
     if (lab) {
       var name = (PROGRAMS.filter(function (p) { return p.id === state.selectedProgram; })[0] || {}).name || '';
       lab.textContent = '서류 준비 ' + checkedCount + ' / ' + docs.length + ' — ' + name;
@@ -5053,6 +5506,7 @@
     renderJobs();
     renderWorkplaces();
     renderDocs();
+    renderStepGuide();
     scheduleSave();
   }
 
@@ -5295,29 +5749,148 @@
   }
 
   /* ============================================================
-     12. 탭 · 초기화 · 예시
+     12. 단계(위저드) · 탭 · 초기화 · 예시
      ============================================================ */
-  function setTab(name) {
-    state.tab = name;
-    $$('.tab').forEach(function (t) {
-      var on = t.getAttribute('data-tab') === name;
+  var STEP_META = [
+    null,
+    { t: '상담·복지카드', short: '상담' },
+    { t: '추천 일자리·근무지', short: '일자리' },
+    { t: '서류 준비·자동 수집', short: '서류' },
+    { t: '신청서 작성', short: '신청서' },
+    { t: '원클릭 접수·접수처', short: '접수' }
+  ];
+
+  function stepIndex(n) {
+    n = Math.round(Number(n));
+    if (!n || n < 1) { n = 1; }
+    if (n > 5) { n = 5; }
+    return n;
+  }
+
+  /* 필수 서류 진행률만 가볍게 계산한다(화면을 다시 그리지 않음). */
+  function docsProgress() {
+    if (!ready() || !state.selectedProgram) { return null; }
+    var docs = docsFor(state.selectedProgram);
+    var req = requiredDocs(docs);
+    var done = req.filter(function (d) { return !!state.checked[state.selectedProgram + ':' + d.id]; }).length;
+    return { done: done, total: req.length };
+  }
+
+  function stepAchieved(n) {
+    if (n === 1 || n === 2) { return ready(); }
+    if (n === 3) { var p = docsProgress(); return !!(p && p.total && p.done === p.total); }
+    if (n === 4) { return stepDone(0) && stepDone(1) && stepDone(2); }
+    if (n === 5) { return !!autoState.receipt; }
+    return false;
+  }
+
+  function renderStepBar() {
+    $$('.stepbtn').forEach(function (b) {
+      var n = parseInt(b.getAttribute('data-step'), 10);
+      var cur = n === state.step;
+      b.setAttribute('aria-current', cur ? 'step' : 'false');
+      b.classList.toggle('done', !cur && stepAchieved(n));
+      b.classList.toggle('current', cur);
+    });
+    var fill = $('#stepFill');
+    if (fill) { fill.style.width = (((state.step - 1) / 4) * 100) + '%'; }
+    var pos = $('#stepPos');
+    if (pos) { pos.textContent = state.step + ' / 5 단계'; }
+  }
+
+  function renderStepNavs() {
+    var n = state.step;
+    var prevHtml = n > 1
+      ? '<button class="btn snav-prev" type="button" data-nav-step="' + (n - 1) + '">← ' + esc(STEP_META[n - 1].t) + '</button>'
+      : '<span class="snav-ghost" aria-hidden="true"></span>';
+    var nextStep = n < 5 ? n + 1 : 1;
+    var nextLabel = n < 5 ? esc(STEP_META[n + 1].t) + ' →' : '1단계로 돌아가기';
+    var html = prevHtml +
+      '<span class="snav-pos" aria-hidden="true">' + n + ' / 5</span>' +
+      '<button class="btn primary snav-next" type="button" data-nav-step="' + nextStep + '">' + nextLabel + '</button>';
+    ['#stepNavTop', '#stepNavBottom'].forEach(function (sel) {
+      var box = $(sel);
+      if (box) { box.innerHTML = html; }
+    });
+  }
+
+  /* 1단계 오른쪽 '진행 안내' 카드 — 남은 질문과 다음 단계를 보여 준다. */
+  function renderStepGuide() {
+    var box = $('#stepGuide');
+    if (!box) { return; }
+    if (ready()) {
+      var rows = analyze().filter(function (x) { return x.status !== '불가'; });
+      box.innerHTML = '<p class="sg-note"><b>조건이 모두 정리됐어요.</b> 이 조건으로 신청할 수 있는 사업 ' + rows.length + '개를 찾았습니다.</p>' +
+        '<div class="sg-cta"><button class="btn primary" type="button" data-goto="2">2단계 추천 일자리 보기 →</button></div>';
+      return;
+    }
+    var names = ['장애 정도', '장애 유형', '희망 근무형태', '근로환경 조건'];
+    var done = [!!state.severity, !!state.type, !!state.workType, state.envAnswered];
+    box.innerHTML = '<ul class="sg-list">' + names.map(function (nm, i) {
+      return '<li class="' + (done[i] ? 'done' : '') + '"><span class="mk" aria-hidden="true">' + (done[i] ? '✓' : '') + '</span>' + nm + '</li>';
+    }).join('') + '</ul>' +
+      '<p class="sg-note">' + (state.card ? '복지카드에서 읽은 값도 넣어 두었어요. ' : '') +
+      '상담에서 답하거나 위 <b>예시 3개</b> 중 하나를 누르면 바로 정리됩니다.</p>';
+  }
+
+  function goStep(n, opts) {
+    opts = opts || {};
+    n = stepIndex(n);
+    state.step = n;
+    state.tab = (n <= 2) ? state.subtab : 'docs';
+    for (var i = 1; i <= 5; i++) {
+      var pane = document.getElementById('pane-' + i);
+      if (pane) { pane.hidden = (i !== n); }
+    }
+    if (n === 1) { renderStepGuide(); }
+    if (n === 2) { renderSubTabs(); renderJobs(); renderWorkplaces(); }
+    if (n >= 3) { renderDocs(); }
+    renderStepBar();
+    renderStepNavs();
+    scheduleSave();
+    if (!opts.silent) {
+      scrollToStepTop();
+      announce(STEP_META[n].t + ' 단계로 이동했습니다.');
+      var cur = $('.stepbtn[aria-current="step"]');
+      if (cur && cur.focus) { cur.focus({ preventScroll: true }); }
+    }
+  }
+
+  function scrollToStepTop() {
+    var bar = $('#stepBar');
+    if (bar && bar.scrollIntoView) {
+      bar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (window.scrollTo) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }
+
+  function renderSubTabs() {
+    $$('.subtab').forEach(function (t) {
+      var on = t.getAttribute('data-sub') === state.subtab;
       t.setAttribute('aria-selected', on ? 'true' : 'false');
       t.tabIndex = on ? 0 : -1;
     });
-    ['jobs', 'work', 'docs'].forEach(function (k) {
-      var panel = $('#panel-' + k);
-      if (panel) { panel.hidden = (k !== name); }
-    });
-    scheduleSave();
+    var pj = $('#panel-jobs');
+    var pw = $('#panel-work');
+    if (pj) { pj.hidden = state.subtab !== 'jobs'; }
+    if (pw) { pw.hidden = state.subtab !== 'work'; }
+  }
+
+  function setSubTab(name) {
+    state.subtab = (name === 'work') ? 'work' : 'jobs';
+    state.tab = state.subtab;
+    goStep(2);
+  }
+
+  /* 'jobs' | 'work' → 2단계, 'docs' → 3단계 (예전 탭 호출부와 호환) */
+  function setTab(name) {
+    if (name === 'work' || name === 'jobs') { setSubTab(name); return; }
+    goStep(3);
   }
 
   function focusDashboard() {
-    var dash = $('#dash');
-    if (dash && dash.scrollIntoView) {
-      dash.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-    var first = $('#tab-jobs');
-    if (first) { first.focus({ preventScroll: true }); }
+    goStep(2);
   }
 
   function resetState() {
@@ -5337,6 +5910,9 @@
     state.formStep = 0;
     state.programAuto = true;
     state.lastProgram = null;
+    state.step = 1;
+    state.subtab = 'jobs';
+    state.tab = 'jobs';
     state.form = { name: '', phone: '', addr: '', job1: '', job2: '', jobTouched: false, transport: '', transportAuto: true, aids: [], motivation: '', motivVariant: 0, motivEdited: false };
     state.motivSig = '';
     if (state.ocr.timer) { clearTimeout(state.ocr.timer); }
@@ -5345,6 +5921,9 @@
     AGENT_STATE.current = null;
     AGENT_STATE.onDone = null;
     AGENT_STATE.changed = false;
+    autoState.receipt = null;
+    autoState.stage = 0;
+    autoState.pkgDone = false;
     if (overlayOpen('auto')) { closeAuto(false); }
   }
 
@@ -5352,9 +5931,9 @@
     resetState();
     closeOcr();
     renderCardStart();
-    setTab('jobs');
     renderAll();
     renderChat();
+    goStep(1);
     toast('처음부터 다시 시작합니다');
   }
 
@@ -5381,10 +5960,10 @@
     state.form.aids = suggestAids();
     state.form.transport = defaultTransport();
     renderCardStart();
-    setTab('jobs');
     renderAll();
     renderChat();
-    toast('예시 ' + (i + 1) + '번 조건으로 상담을 마쳤어요');
+    goStep(2);
+    toast('예시 ' + (i + 1) + '번 조건으로 상담을 마쳤어요 — 2단계에서 추천을 확인하세요');
   }
 
   /* ============================================================
@@ -5410,13 +5989,32 @@
       stopSpeak(false);
       toast('음성 안내를 멈췄어요');
     }); }
+    var bRateS = $('#btnRateSlow');
+    if (bRateS) { bRateS.addEventListener('click', function () { setRate(TTS_RATE_SLOW); }); }
+    var bRateN = $('#btnRateNormal');
+    if (bRateN) { bRateN.addEventListener('click', function () { setRate(TTS_RATE_NORMAL); }); }
     if (ttsSupported) { try { window.speechSynthesis.getVoices(); } catch (e) {} }
 
-    document.getElementById('personas').addEventListener('click', function (e) {
-      var btn = e.target.closest ? e.target.closest('.persona') : null;
-      if (!btn) { return; }
-      var idx = parseInt(btn.getAttribute('data-persona'), 10);
-      if (!isNaN(idx)) { applyPersona(idx); }
+    /* 단계 표시줄 — 원하는 단계로 바로 이동 */
+    $$('.stepbtn').forEach(function (b) {
+      b.addEventListener('click', function () {
+        goStep(parseInt(b.getAttribute('data-step'), 10));
+      });
+    });
+
+    /* 단계 이동 버튼(data-nav-step) · 안내 버튼(data-goto) · 예시(persona) 공통 위임 */
+    document.addEventListener('click', function (e) {
+      var t = e.target;
+      if (!t || !t.closest) { return; }
+      var nav = t.closest('[data-nav-step]');
+      if (nav) { e.preventDefault(); goStep(parseInt(nav.getAttribute('data-nav-step'), 10)); return; }
+      var go = t.closest('[data-goto]');
+      if (go) { e.preventDefault(); goStep(parseInt(go.getAttribute('data-goto'), 10)); return; }
+      var per = t.closest('.persona');
+      if (per && per.getAttribute('data-persona') != null) {
+        var idx = parseInt(per.getAttribute('data-persona'), 10);
+        if (!isNaN(idx)) { applyPersona(idx); }
+      }
     });
 
     /* 필요서류 자동 수집 에이전트 실행 버튼(서류 탭·자동 접수 시연 공통) */
@@ -5439,21 +6037,18 @@
       if (pk) { e.preventDefault(); savePackage(); return; }
     });
 
-    $$('.tab').forEach(function (t) {
-      t.addEventListener('click', function () { setTab(t.getAttribute('data-tab')); });
+    $$('.subtab').forEach(function (t) {
+      t.addEventListener('click', function () { setSubTab(t.getAttribute('data-sub')); });
       t.addEventListener('keydown', function (e) {
-        var keys = { ArrowRight: 1, ArrowLeft: -1 };
-        if (!(e.key in keys)) { return; }
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') { return; }
         e.preventDefault();
-        var tabs = $$('.tab');
-        var i = tabs.indexOf(t);
-        var next = tabs[(i + keys[e.key] + tabs.length) % tabs.length];
-        setTab(next.getAttribute('data-tab'));
-        next.focus();
+        setSubTab(e.key === 'ArrowRight' ? 'work' : 'jobs');
+        var nextBtn = $('.subtab[data-sub="' + state.subtab + '"]');
+        if (nextBtn) { nextBtn.focus(); }
       });
     });
 
-    var panelDocs = $('#panel-docs');
+    var panelDocs = $('#stage');
     panelDocs.addEventListener('change', function (e) {
       var t = e.target;
       if (!t) { return; }
@@ -5561,7 +6156,8 @@
     renderCardStart();
     renderAll();
     renderChat();
-    setTab(state.tab || 'jobs');
+    renderSubTabs();
+    goStep(state.step || 1, { silent: true });
     updateSaveBadge();
     booted = true;
     if (restored) {
