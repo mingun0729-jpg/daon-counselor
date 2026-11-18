@@ -2517,7 +2517,7 @@
     var html = '<div class="app-sheet">';
     html += '<h4>장애인일자리사업 참여신청서</h4>';
     html += '<div class="as-sub">(서식 1) · 신청일 ' + esc(today) + ' · 다온(DAON) 프로토타입 미리보기 — 실제 제출 양식과 다를 수 있습니다</div>';
-    html += '<div class="as-to"><b>수신</b> ' + esc(ORG_LINE) + ' · ☎ ' + esc(ORG.tel) + '<br />' + esc(ORG.addr) + '</div>';
+    html += '<div class="as-to"><b>수신</b> ' + esc(ORG_LINE) + ' · 전화 ' + esc(ORG.tel) + '<br />' + esc(ORG.addr) + '</div>';
     html += '<table><tbody>';
     html += '<tr><th>성명(가명)</th><td>' + esc(f.name || '—') + '</td><th>연락처</th><td>' + esc(f.phone || '—') + '</td></tr>';
     html += '<tr><th>거주지</th><td colspan="3">' + esc(f.addr || '—') + '</td></tr>';
@@ -2525,7 +2525,7 @@
     html += '<tr><th>복지카드</th><td colspan="3">등록번호 <span class="masked">' + esc(state.card ? state.card.reg : '******-*******') + '</span> (뒷자리 마스킹 · ' + (state.card ? '카드 인식값' : '미인식') + ')</td></tr>';
     html += '<tr><th>접수처</th><td colspan="3">' + esc(place) + '</td></tr>';
     html += '</tbody></table>';
-    html += '<p class="as-note">※ 일반형(전일제·시간제)·복지일자리 참여형은 진주시가 직접 접수해 주소지 <b>읍·면·동 행정복지센터</b>로 내고(복지일자리 참여형은 진주시장애인종합복지관에서도 접수), 특수교육-복지연계형·특화형은 해당 수행기관을 통해 별도 모집합니다. 협회 접수 여부는 ☎ ' + esc(ORG.tel) + '로 먼저 확인해 주세요.</p>';
+    html += '<p class="as-note">※ 일반형(전일제·시간제)·복지일자리 참여형은 진주시가 직접 접수해 주소지 <b>읍·면·동 행정복지센터</b>로 내고(복지일자리 참여형은 진주시장애인종합복지관에서도 접수), 특수교육-복지연계형·특화형은 해당 수행기관을 통해 별도 모집합니다. 협회 접수 여부는 전화 ' + esc(ORG.tel) + '로 먼저 확인해 주세요.</p>';
     html += '<div class="as-h">■ 1. 희망 사업·근로여건</div>';
     html += '<table><tbody>';
     html += '<tr><th>희망 사업</th><td>' + esc(prog.name) + ' — ' + esc(prog.hours) + ', ' + esc(prog.pay) + '</td></tr>';
@@ -2545,14 +2545,14 @@
         '<td class="k"><span class="ck ' + (on ? 'on' : 'no') + '" aria-hidden="true">' + (on ? '☑' : '☐') + '</span><span class="sr-only">' + (on ? '준비됨' : '미준비') + '</span></td></tr>';
     }).join('');
     html += '</tbody></table>';
-    html += '<p class="as-note">※ 서류는 사본 1부씩 준비하고 원본을 함께 지참해 담당자 확인을 받는 것이 일반적입니다. 양식·추가 서류는 협회 담당자(☎ ' + esc(ORG.tel) + ')에게 먼저 확인하면 다시 오는 일을 줄일 수 있습니다.</p>';
+    html += '<p class="as-note">※ 서류는 사본 1부씩 준비하고 원본을 함께 지참해 담당자 확인을 받는 것이 일반적입니다. 양식·추가 서류는 협회 담당자(전화 ' + esc(ORG.tel) + ')에게 먼저 확인하면 다시 오는 일을 줄일 수 있습니다.</p>';
     html += '<div class="as-h">■ 4. 개인정보 수집·이용 동의</div>';
     html += '<div class="as-consent"><span class="ck ' + (consent ? '' : 'no') + '" aria-hidden="true">' + (consent ? '☑' : '☐') + '</span><span>개인정보 수집·이용 및 제3자 제공 동의서(서식 3) — ' +
       (consent ? '제출 확인' : '아직 확인하지 않았습니다. 접수할 때 반드시 작성·제출하세요.') + '</span></div>';
     html += '<p class="as-oath">본인은 위 기재 사항이 사실과 같음을 확인하며, 장애인일자리사업 참여를 신청합니다.</p>';
     html += '<div class="as-sign"><span class="d">' + esc(today) + '</span><span class="n">신청인 <b>' + esc(f.name || '—') + '</b><span class="line">(서명 또는 인)</span></span></div>';
     html += '<p class="as-to-foot">' + esc(ORG.name) + ' 귀하</p>';
-    html += '<p class="as-foot">※ 이 문서는 공모전 시연용으로 다온(DAON) 프로토타입이 만든 초안입니다. 실제 제출은 ' + esc(ORG.name) + ' 담당자(☎ ' + esc(ORG.tel) + ')에게 문의해 해당 사업의 실제 양식과 안내를 확인한 뒤 진행하고, 본인 경력·계좌·연락처는 제출 전에 직접 확인해 주세요. (서명은 인쇄 후 직접 하세요.)</p>';
+    html += '<p class="as-foot">※ 이 문서는 공모전 시연용으로 다온(DAON) 프로토타입이 만든 초안입니다. 실제 제출은 ' + esc(ORG.name) + ' 담당자(전화 ' + esc(ORG.tel) + ')에게 문의해 해당 사업의 실제 양식과 안내를 확인한 뒤 진행하고, 본인 경력·계좌·연락처는 제출 전에 직접 확인해 주세요. (서명은 인쇄 후 직접 하세요.)</p>';
     html += '</div>';
     return html;
   }
@@ -2572,16 +2572,16 @@
   }
 
   function submissionPlace() {
-    return ORG.name + ' (' + ORG.short + ') — ' + ORG.addr + ' · ☎ ' + ORG.tel;
+    return ORG.name + ' (' + ORG.short + ') — ' + ORG.addr + ' · 전화 ' + ORG.tel;
   }
 
   function guideHtml() {
     var city = jurisdiction();
     var mine;
     if (!city) {
-      mine = '<b>진주시</b> 기준 기본 접수처는 <b>' + esc(ORG.name) + '</b> — ' + esc(ORG.short) + ', ' + esc(ORG.addr) + ', ☎ ' + esc(ORG.tel) + '입니다. 신청서 1단계에 거주지를 적으면 그 지역 기준 접수처를 여기에 다시 보여 드려요.';
+      mine = '<b>진주시</b> 기준 기본 접수처는 <b>' + esc(ORG.name) + '</b> — ' + esc(ORG.short) + ', ' + esc(ORG.addr) + ', 전화 ' + esc(ORG.tel) + '입니다. 신청서 1단계에 거주지를 적으면 그 지역 기준 접수처를 여기에 다시 보여 드려요.';
     } else if (city === '진주시') {
-      mine = '입력하신 거주지가 <b>진주시</b>라서 기본 접수처는 <b>' + esc(ORG.name) + '</b>(' + esc(ORG.short) + ' · ☎ ' + esc(ORG.tel) + ')입니다. 다만 일반형·시간제처럼 진주시가 직접 접수하는 사업은 주소지 <b>읍·면·동 행정복지센터</b>로 내야 해요.';
+      mine = '입력하신 거주지가 <b>진주시</b>라서 기본 접수처는 <b>' + esc(ORG.name) + '</b>(' + esc(ORG.short) + ' · 전화 ' + esc(ORG.tel) + ')입니다. 다만 일반형·시간제처럼 진주시가 직접 접수하는 사업은 주소지 <b>읍·면·동 행정복지센터</b>로 내야 해요.';
     } else {
       mine = '입력하신 거주지(' + esc(city) + ') 기준으로는 <b>' + esc(city) + '청 장애인일자리 담당부서</b>와 주소지 <b>읍·면·동 행정복지센터</b>에 문의·접수하세요. 아래 접수처·전화번호는 진주시 기준입니다.';
     }
@@ -2595,7 +2595,7 @@
           '<li><span class="mk">·</span>인원이 차면 조기 마감되니 공고 첫 주에 접수</li>' +
           '<li><span class="mk">·</span>연중 결원 추가 모집은 수시로 나옵니다</li></ul></article>' +
         '<article class="gb-card"><h4><span aria-hidden="true">🏢</span>접수처 · ' + esc(ORG.short) + '</h4>' +
-          '<p><b>' + esc(ORG.name) + '</b><br />' + esc(ORG.addr) + ' · ☎ <b>' + esc(ORG.tel) + '</b></p>' +
+          '<p><b>' + esc(ORG.name) + '</b><br />' + esc(ORG.addr) + ' · 전화 <b>' + esc(ORG.tel) + '</b></p>' +
           '<ul><li><span class="mk">·</span>참여신청서·동의서 작성과 서류 확인은 <b>협회 사무실</b>에서 상담</li>' +
           '<li><span class="mk">·</span>일반형(전일제·시간제)·복지일자리 참여형은 진주시가 주소지 <b>읍·면·동 행정복지센터</b>에서 직접 접수 (복지일자리 참여형은 <b>진주시장애인종합복지관 1층</b>에서도 접수)</li>' +
           '<li><span class="mk">·</span>특수교육-복지연계형·특화형(발달장애인 요양보호사 보조 등)은 해당 <b>수행기관</b>을 통해 별도 모집</li></ul></article>' +
@@ -2615,7 +2615,7 @@
         '<li><span class="n" aria-hidden="true">7</span>근로계약·근로 시작</li>' +
       '</ol>' +
       '<div class="gb-mine"><span aria-hidden="true">📍</span><span>' + mine + '</span></div>' +
-      '<p class="gb-note">※ 협회 기관명·주소·대표전화는 공개된 공식 정보입니다. 사업별 모집 여부·접수 기간·추가 서류는 협회(☎ ' + esc(ORG.tel) + ')나 진주시청 공고에서 확인하세요. 참고: 거주지 시·군·구청 홈페이지, 한국장애인개발원, 한국장애인고용공단(고용24), 복지로. 이 화면은 공모전 시연용입니다.</p>' +
+      '<p class="gb-note">※ 협회 기관명·주소·대표전화는 공개된 공식 정보입니다. 사업별 모집 여부·접수 기간·추가 서류는 협회(전화 ' + esc(ORG.tel) + ')나 진주시청 공고에서 확인하세요. 참고: 거주지 시·군·구청 홈페이지, 한국장애인개발원, 한국장애인고용공단(고용24), 복지로. 이 화면은 공모전 시연용입니다.</p>' +
       '</section>';
   }
 
@@ -2630,7 +2630,7 @@
     var lines = [];
     lines.push('장애인일자리사업 참여신청서 (서식 1) — 작성 초안');
     lines.push('신청일: ' + todayStr() + ' · 다온(DAON) 프로토타입으로 작성');
-    lines.push('수신: ' + ORG_LINE + ' · ☎ ' + ORG.tel);
+    lines.push('수신: ' + ORG_LINE + ' · 전화 ' + ORG.tel);
     lines.push('접수처: ' + submissionPlace());
     lines.push('');
     lines.push('■ 기본정보');
@@ -2658,7 +2658,7 @@
     });
     lines.push('');
     lines.push('※ 일반형(전일제·시간제)·복지일자리 참여형은 진주시가 주소지 읍·면·동 행정복지센터에서 직접 접수하고, 특수교육-복지연계형·특화형은 수행기관을 통해 별도 모집합니다.');
-    lines.push('※ 서류는 사본 1부씩 준비해 원본과 함께 지참하고, 양식·추가 서류는 협회 담당자(☎ ' + ORG.tel + ')에게 먼저 확인하세요.');
+    lines.push('※ 서류는 사본 1부씩 준비해 원본과 함께 지참하고, 양식·추가 서류는 협회 담당자(전화 ' + ORG.tel + ')에게 먼저 확인하세요.');
     lines.push('');
     lines.push('■ 개인정보 수집·이용 동의');
     lines.push((state.checked[pid + ':form3'] ? '[✓] ' : '[ ] ') + '개인정보 수집·이용 및 제3자 제공 동의서(서식 3) 제출');
@@ -2668,7 +2668,7 @@
     lines.push('');
     lines.push(ORG.name + ' 귀하');
     lines.push('');
-    lines.push('※ 공모전 시연용 초안입니다. 실제 제출 전에 협회(☎ ' + ORG.tel + ') 담당자에게 실제 양식·접수 방법을 확인하고, 본인 정보로 다시 확인한 뒤 서명은 인쇄 후 직접 해 주세요.');
+    lines.push('※ 공모전 시연용 초안입니다. 실제 제출 전에 협회(전화 ' + ORG.tel + ') 담당자에게 실제 양식·접수 방법을 확인하고, 본인 정보로 다시 확인한 뒤 서명은 인쇄 후 직접 해 주세요.');
     return lines.join('\n');
   }
 
