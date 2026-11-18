@@ -48,7 +48,7 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 | 6. 근무지 예시 | `WORKPLACES`(10곳), `matchWorkplace`, `scoredWorkplaces` |
 | 7. 서류 체크리스트 | `COMMON_DOCS`, `EXTRA_DOCS`, `ALWAYS_EXTRA`, `docsFor(pid)` |
 | 7-B. 복지카드 인식 | `CARD_SAMPLES`, `OCR_STEPS`, `openOcr`, `setOcrStage`, `renderOcr`, `confirmOcr`, `applyCard`, `handleCardFile`, `renderCardStart` |
-| 7-C. 신청서 4단계 | `WIZARD_STEPS`, `TRANSPORTS`, `AIDS`, `JOB_OPTIONS`, `wizardHtml`, `step1Html`~`step4Html`, `appSheetHtml`(신청일·접수처·서류 현황 표·동의·서명란), `guideHtml`(실제 신청·접수 가이드), `todayStr`, `jurisdiction`/`submissionPlace`, `buildAppText`, `buildFormMotivation`, `printApp`, `toggleAid`, `onFieldChange` |
+| 7-C. 신청서 4단계 | `ORG`(접수처 기관 정보: 기관명·주소·대표전화), `WIZARD_STEPS`, `TRANSPORTS`, `AIDS`, `JOB_OPTIONS`, `wizardHtml`, `step1Html`~`step4Html`, `appSheetHtml`(신청일·수신처·접수처·서류 현황 표·동의·서명란), `guideHtml`(실제 신청·접수 가이드), `todayStr`, `jurisdiction`/`submissionPlace`, `buildAppText`, `buildFormMotivation`, `printApp`, `toggleAid`, `onFieldChange` |
 | 8. 대화 렌더링 | `addMsg`, `renderChat`, `renderChips` |
 | 9. 대시보드 렌더링 | `renderSummary`, `renderJobs`, `renderWorkplaces`, `renderDocs` |
 | 10. 신청서 초안 | `buildDraft()` (자기소개 5항목 초안), `generateDraft`, `copyText` |
@@ -60,7 +60,7 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 
 - 모든 사업 종류·근무시간·보수·서류·선발 기준은 **2026년 장애인일자리 사업안내(보건복지부)** 기준으로 작성했다. 예: 일반형 전일제 주 40시간(12월 37.5시간) 월 2,156,880원(12월 2,022,720원, 세전), 시간제 주 20시간 월 1,078,440원, 복지일자리 참여형 주 14시간 이내 월 577,920원.
 - 수치를 바꿀 때는 **출처 연도를 함께 표기**하고, 화면 하단 고지(`.disclaimer`, `.fine`)의 "2026년 장애인일자리 사업안내 기준" 문구도 같이 갱신한다.
-- 근무지 10곳과 신청서 예시 값(성명·연락처·거주지 등)은 **가상 예시**다. 실제 기관·개인 정보로 바꾸지 않는다.
+- 근무지 10곳과 신청서 예시 값(성명·연락처·거주지 등)은 **가상 예시**다. 실제 기관·개인 정보로 바꾸지 않는다. 다만 **접수처 안내의 기관명·주소·대표전화**는 공개된 공식 정보(**(사)경남지체장애인연합회 진주시지회**, 경남 진주시 대신로 232번길 16, ☎ 055-755-0008)를 실제 값으로 쓰고, 코드의 `ORG` 상수에서 관리한다. 신청인 예시 값은 계속 가상 값만 쓴다.
 - 복지카드 인식은 **실제 OCR이 아니다.** 브라우저 안에서 미리 정한 `CARD_SAMPLES` 값을 단계별로 보여 주는 시연용 연출이다. 실제 OCR·서버 전송 기능을 넣는 것처럼 문구를 바꾸지 말 것.
 
 ## 4. 수정 시 주의사항
