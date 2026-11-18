@@ -3206,7 +3206,7 @@
     { k: 'transport', label: '이동수단' },
     { k: 'motivation', label: '자기소개·지원동기' }
   ];
-  var autoState = { stage: 0, timers: [], check: null, receipt: null };
+  var autoState = { stage: 0, timers: [], check: null, receipt: null, pkgDone: false };
 
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
   function nowStamp() {
@@ -3256,6 +3256,7 @@
     autoTimersClear();
     autoState.receipt = null;
     autoState.stage = 0;
+    autoState.pkgDone = false;
     autoState.check = autoCheck();
     el.hidden = false;
     setPageInert(true);
@@ -3445,21 +3446,24 @@
     }, 120);
   }
 
+  function autoStepsHtml(st) {
+    return AUTO_STEPS.map(function (s, i) {
+      var n = i + 1;
+      var done = st > n || (n === 2 && st === 2 && autoState.pkgDone);
+      var cls = done ? 'done' : (st === n ? 'active' : '');
+      var out = '';
+      if (done) { out = '<span class="os-out">✓ 완료</span>'; }
+      else if (st === n) {
+        out = '<span class="os-out">' + (n === 1 ? '점검 중…' : n === 2 ? '만드는 중…' : n === 3 ? '전송 중…' : '진행 중…') + '</span>';
+      }
+      return '<li class="ostep ' + cls + '"><span class="osn" aria-hidden="true">' + (done ? '✓' : n) + '</span><div><div class="os-t">' + esc(s.t) + '</div><div class="os-d">' + esc(s.d) + '</div>' + out + '</div></li>';
+    }).join('');
+  }
+
   function renderAuto() {
     var st = autoState.stage;
     var steps = $('#autoSteps');
-    if (steps) {
-      steps.innerHTML = AUTO_STEPS.map(function (s, i) {
-        var n = i + 1;
-        var cls = (st > n) ? 'done' : (st === n ? 'active' : '');
-        var out = '';
-        if (st > n) { out = '<span class="os-out">✓ 완료</span>'; }
-        else if (st === n) {
-          out = '<span class="os-out">' + (n === 1 ? '점검 중…' : n === 2 ? '만드는 중…' : n === 3 ? '전송 중…' : '진행 중…') + '</span>';
-        }
-        return '<li class="ostep ' + cls + '"><span class="osn" aria-hidden="true">' + (st > n ? '✓' : n) + '</span><div><div class="os-t">' + esc(s.t) + '</div><div class="os-d">' + esc(s.d) + '</div>' + out + '</div></li>';
-      }).join('');
-    }
+    if (steps) { steps.innerHTML = autoStepsHtml(st); }
 
     var panel = $('#autoPanel');
     if (panel) {
@@ -3791,7 +3795,7 @@
     '.dim{color:#5C6B62;font-weight:600}',
     'h2{margin:16px 0 6px;font-size:12.6px;font-weight:800;color:#1B6438}',
     'table{width:100%;border-collapse:collapse;margin:0 0 12px}',
-    'th,td{border:1px solid #D8E2D9;padding:6px 8px;font-size:11.8px;text-align:left;vertical-align:top;line-height:1.55}',
+    'th,td{border:1px solid #D8E2D9;padding:6px 8px;font-size:11.8px;text-align:left;vertical-align:top;line-height:1.55;overflow-wrap:anywhere}',
     'th{background:#F4F9F5;font-weight:800;color:#11462A;width:84px;white-space:nowrap}',
     'td.c,th.c{text-align:center;white-space:nowrap}',
     'table.docs th{width:auto;white-space:normal}',
@@ -4234,7 +4238,7 @@
       : [['등록번호', maskedRrn()], ['장애유형', TYPE_LABEL[state.type] || '지체장애'], ['장애정도', (SEVERITY_LABEL[state.severity] || '심한 장애').replace(/\s*\(.*\)/, '')], ['등록일', '2024. 03. 12.']];
     var out = '';
     fields.forEach(function (r, i) {
-      var y = (isId ? 330 : 318) + i * 30;
+      var y = 332 + i * 34;
       out += '<text x="272" y="' + (y - 12) + '" font-size="10.5" fill="#5C6B62" font-weight="700">' + esc(r[0]) + '</text>' +
         '<text x="272" y="' + y + '" font-size="13" fill="#16201A" font-weight="700">' + esc(r[1]) + '</text>';
     });
@@ -4266,11 +4270,11 @@
       '<text x="118" y="248" font-size="11" font-weight="800" letter-spacing="3" fill="' + accent + '">' + esc(cardName) + '</text>\n' +
       '<rect x="118" y="266" width="130" height="172" rx="9" fill="#FFFFFF" stroke="#CBD8CD" />\n' +
       '<text x="183" y="358" font-size="12" text-anchor="middle" fill="#8A948C" font-weight="700">사진</text>\n' +
-      '<text x="272" y="292" font-size="20" font-weight="800" fill="#16201A">' + esc(nm) + '</text>\n' +
-      '<text x="272" y="312" font-size="10.5" fill="#5C6B62" font-weight="700">(가명 예시)</text>\n' +
+      '<text x="272" y="262" font-size="21" font-weight="800" fill="#16201A">' + esc(nm) + '</text>\n' +
+      '<text x="272" y="282" font-size="10.5" fill="#5C6B62" font-weight="700">(가명 예시)</text>\n' +
       out +
       '<text x="640" y="490" font-size="12" text-anchor="end" font-weight="800" fill="' + accent + '">' + (isId ? '진주시 ○○동 주민센터장' : '진주시장') + '</text>\n' +
-      '<text x="380" y="380" font-size="52" font-weight="800" fill="#B0504A" opacity="0.16" text-anchor="middle" transform="rotate(-18 380 380)">사본</text>\n' +
+      '<text x="590" y="392" font-size="38" font-weight="800" fill="#B0504A" opacity="0.13" text-anchor="middle" transform="rotate(-14 590 392)">사본</text>\n' +
       '<text x="100" y="560" font-size="13" font-weight="800" fill="#11462A">■ 사본 확인 정보</text>\n' +
       detail +
       '<text x="100" y="840" font-size="10.8" fill="#5C6B62">이 사본은 공모전 시연용으로 다온(DAON)이 브라우저에서 만든 가상 이미지입니다.</text>\n' +
@@ -4413,6 +4417,7 @@
   }
   function autoPkgStart() {
     pkgState = { files: [], zip: null };
+    autoState.pkgDone = false;
     var docs = autoPkgDocs();
     var box = $('#pkgFiles');
     if (!box) { return; }
@@ -4442,6 +4447,9 @@
         '<p class="pz-note">미리보기로 내용을 확인한 뒤 저장하세요. 실제 접수처로 전송되는 파일이 아닙니다.</p>' +
         '<button class="btn primary" type="button" data-pkg-save="1">패키지 저장 (ZIP)</button>';
     }
+    autoState.pkgDone = true;
+    var steps = $('#autoSteps');
+    if (steps && autoState.stage === 2) { steps.innerHTML = autoStepsHtml(2); }
     var badge = $('#pkgBadge');
     if (badge) { badge.textContent = '만들기 완료'; badge.className = 'fc-badge ok'; }
     toast('신청서 패키지 ' + total + '개 파일을 만들었어요 (시연용)');

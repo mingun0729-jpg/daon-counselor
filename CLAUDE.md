@@ -52,6 +52,7 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 | 7-C. 신청서 4단계 | `ORG`(접수처 기관 정보: 기관명·주소·대표전화), `WIZARD_STEPS`, `TRANSPORTS`, `AIDS`, `JOB_OPTIONS`, `wizardHtml`, `step1Html`~`step4Html`, `appSheetHtml`(신청일·수신처·접수처·서류 현황 표·동의·서명란), `guideHtml`(실제 신청·접수 가이드), `todayStr`, `jurisdiction`/`submissionPlace`, `buildAppText`, `buildFormMotivation`, `printApp`, `toggleAid`, `onFieldChange` |
 | 7-D. 자동 접수 시연·메일 | `AUTO_STEPS`, `AUTO_FIELDS`, `autoState`, `autoCheck`, `openAuto`/`closeAuto`/`setAutoStage`/`renderAuto`, `issueReceipt`/`receiptInner`/`printReceipt`/`barcodeBars`, `buildMail`/`launchMailto`/`openMailApp` |
 | 7-E. 서류 자동 수집 에이전트 | `AGENT_DOC_META`, `MockDocAgentAPI`(`fetchDocument` — 실제 연동 시 `fetch()`로 교체), `fetchDocumentFromAgent`, `AGENT_STATE`, `agentPanelInner`, `renderAgentPanels`, `runDocAgent`/`agentStep` |
+| 7-F. 서류 파일 생성·미리보기·저장 | `DOC_STYLE`/`DOC_WM`(문서 공통 서식·워터마크), `DOC_FILE_META`/`DOC_TITLE`, `docFileFor`(HTML/SVG 본문 + 실제 Blob 크기, 입력값 캐시), `form1Doc`~`form3Doc`, `certSpec`/`certDoc`, `svgCardDoc`, `docFileCard`/`docPendingCard`, `fmtBytes`, `buildZip`(무압축 ZIP), `autoPkgStart`/`pkgFinish`, `openFileView`/`closeFileView`/`printDocFile`, `saveDocFile`/`savePackage` |
 | 8. 대화 렌더링 | `addMsg`, `renderChat`, `renderChips` |
 | 9. 대시보드 렌더링 | `renderSummary`, `renderJobs`, `renderWorkplaces`, `renderDocs` |
 | 10. 신청서 초안 | `buildDraft()` (자기소개 5항목 초안), `generateDraft`, `copyText` |
@@ -79,8 +80,10 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 7. **인쇄** — 신청서·가상 접수증 인쇄는 `#printArea`만 출력된다(`@media print`의 `body > *:not(#printArea)` 규칙). 새 요소를 인쇄에 넣으려면 `#printArea` 안에 생성해야 한다.
 8. **XSS 습관** — 사용자 입력은 반드시 `esc()`로 이스케이프한 뒤 `innerHTML`에 넣는다.
 9. **접근성 3모드 유지** — 새 UI를 추가하면 `body.a11y-big`(큰 글씨)와 `body.a11y-contrast`(고대비) 대응 스타일을 같은 커밋에 넣는다. 고대비에서 새 색을 쓰면 흰 배경/흰 글씨가 남지 않도록 오버라이드하고, 대비 4.5:1을 확인한다. 인쇄는 고대비 모드에서도 `#printArea`를 흑백으로 강제한다.
-10. **localStorage 키 고정** — 접근성 설정 `daon.a11y.v1`, 자동 임시저장 `daon.state.v1`. 저장값은 브라우저 밖으로 나가지 않으며 `resetAll`/`resetState`(새로 시작)에서 비운다. 저장 스키마를 바꾸면 `v`를 올리고 `restoreSaved`에서 검증한다.
-11. **음성 안내** — 외부 TTS 라이브러리를 넣지 않고 `window.speechSynthesis`만 사용한다. 미지원 브라우저에서는 토스트로 안내하고 기능을 켜진 상태로 두지 않는다.
+10. **서류 파일은 시연용 가상 문서** — 파일 카드·미리보기·저장(`Blob`+`URL.createObjectURL`)·ZIP(`buildZip`)은 모두 브라우저 안에서만 만들어지며 외부 전송이 없다. 문서 본문에는 항상 ‘시연용 가상 문서’ 워터마크와 고지, 가상 값(가명)만 넣고, 실제 발급 효력이 있는 것처럼 쓰지 않는다. ZIP은 무압축(store) 방식이며 파일명은 UTF-8 플래그(0x0800)로 기록한다.
+11. **큰 글씨·음성 안내 기준** — 큰 글씨 모드는 본문 22px·말풍선 20px·버튼 56px 이상을 기준으로 하고, 1280px·375px에서 가로 스크롤이 없어야 한다. 음성 대본은 민원인 응대용 구어체로 쓰고, 음성은 한국어 우선순위(SunHi→Yuna→Sora→Heami→Google 한국의)로 고르며 `rate 0.93`·`pitch 1.04`를 유지한다.
+12. **localStorage 키 고정** — 접근성 설정 `daon.a11y.v1`, 자동 임시저장 `daon.state.v1`. 저장값은 브라우저 밖으로 나가지 않으며 `resetAll`/`resetState`(새로 시작)에서 비운다. 저장 스키마를 바꾸면 `v`를 올리고 `restoreSaved`에서 검증한다.
+13. **음성 안내** — 외부 TTS 라이브러리를 넣지 않고 `window.speechSynthesis`만 사용한다. 미지원 브라우저에서는 토스트로 안내하고 기능을 켜진 상태로 두지 않는다.
 
 ## 5. Claude Code 협업 규칙
 
