@@ -139,7 +139,8 @@
   .who-text b{display:block;font-size:15px;line-height:1.25;font-weight:800}
   .who-sub{display:block;font-size:11.5px;color:var(--ink-mute);font-weight:700;margin-top:1px}
   .chat-head .prog{font-size:12.5px;color:var(--grass-700);font-weight:800;background:var(--mint);border-radius:999px;padding:5px 11px;white-space:nowrap}
-  .chat-log{flex:1;min-height:240px;max-height:50vh;overflow-y:auto;padding:16px;background:var(--cream);scroll-behavior:smooth}
+  .chat > *:not(.chat-log){flex-shrink:0}
+  .chat-log{flex:1 1 auto;min-height:160px;max-height:50vh;overflow-y:auto;padding:16px;background:var(--cream);scroll-behavior:smooth}
   .chat-log::-webkit-scrollbar,.chips::-webkit-scrollbar{width:8px}
   .chat-log::-webkit-scrollbar-thumb,.chips::-webkit-scrollbar-thumb{background:#DDE6DD;border-radius:999px}
   .msg{display:flex;gap:9px;margin-bottom:12px;align-items:flex-start}
@@ -335,6 +336,7 @@
   /* ---------- 복지카드 촬영/인식 시작 ---------- */
   .card-start{margin:12px 14px 0;border:1px solid #D8EBDD;background:linear-gradient(180deg,#F2FBF5 0%,#FFFFFF 100%);border-radius:18px;padding:12px 13px}
   .card-start.used{background:#F4FBF6;border-color:#CBE7D6}
+  .card-start.compact .cs-head .cs-desc{display:none}
   .cs-head{display:flex;gap:9px;align-items:flex-start}
   .cs-emoji{flex:0 0 28px;width:28px;height:28px;border-radius:10px;background:var(--mint);display:grid;place-items:center;font-size:15px;line-height:1}
   .cs-head .cs-title{display:block;font-size:14.5px;font-weight:800;line-height:1.3}
@@ -1768,7 +1770,7 @@
     <div class="ocr-head">
       <span class="ocr-ico" aria-hidden="true">📨</span>
       <div>
-        <h2 id="autoTitle">진주시 지체장애인협회로 자동 접수 시연</h2>
+        <h2 id="autoTitle">경남지체장애인연합회 진주시지회로 자동 접수 시연</h2>
         <span class="ocr-sub" id="autoDesc">서류 점검 → 신청서 패키지 → 접수 시뮬레이션 → 가상 접수증</span>
       </div>
       <button class="ocr-close" type="button" id="autoClose" aria-label="자동 접수 시연 화면 닫기">✕</button>
@@ -2826,11 +2828,11 @@
   /* 접수처 기관 정보 — 공개된 공식 정보(2026-11 확인). 신청인 예시 값과 달리 실제 기관 값이다. */
   var ORG = {
     name: '(사)경남지체장애인연합회 진주시지회',
-    short: '진주시 지체장애인협회',
+    short: '진주시지회',
     addr: '경상남도 진주시 대신로 232번길 16 (상대동, 52782)',
     tel: '055-755-0008'
   };
-  var ORG_LINE = ORG.name + ' (' + ORG.short + ')';
+  var ORG_LINE = ORG.name;
 
   function ensureJobs(force) {
     var pid = state.selectedProgram;
@@ -3378,16 +3380,16 @@
   }
 
   function submissionPlace() {
-    return ORG.name + ' (' + ORG.short + ') — ' + ORG.addr + ' · 전화 ' + ORG.tel;
+    return ORG.name + ' — ' + ORG.addr + ' · 전화 ' + ORG.tel;
   }
 
   function guideHtml() {
     var city = jurisdiction();
     var mine;
     if (!city) {
-      mine = '<b>진주시</b> 기준 기본 접수처는 <b>' + esc(ORG.name) + '</b> — ' + esc(ORG.short) + ', ' + esc(ORG.addr) + ', 전화 ' + esc(ORG.tel) + '입니다. 신청서 1단계에 거주지를 적으면 그 지역 기준 접수처를 여기에 다시 보여 드려요.';
+      mine = '<b>진주시</b> 기준 기본 접수처는 <b>' + esc(ORG.name) + '</b> — ' + esc(ORG.addr) + ', 전화 ' + esc(ORG.tel) + '입니다. 신청서 1단계에 거주지를 적으면 그 지역 기준 접수처를 여기에 다시 보여 드려요.';
     } else if (city === '진주시') {
-      mine = '입력하신 거주지가 <b>진주시</b>라서 기본 접수처는 <b>' + esc(ORG.name) + '</b>(' + esc(ORG.short) + ' · 전화 ' + esc(ORG.tel) + ')입니다. 다만 일반형·시간제처럼 진주시가 직접 접수하는 사업은 주소지 <b>읍·면·동 행정복지센터</b>로 내야 해요.';
+      mine = '입력하신 거주지가 <b>진주시</b>라서 기본 접수처는 <b>' + esc(ORG.name) + '</b>(전화 ' + esc(ORG.tel) + ')입니다. 다만 일반형·시간제처럼 진주시가 직접 접수하는 사업은 주소지 <b>읍·면·동 행정복지센터</b>로 내야 해요.';
     } else {
       mine = '입력하신 거주지(' + esc(city) + ') 기준으로는 <b>' + esc(city) + '청 장애인일자리 담당부서</b>와 주소지 <b>읍·면·동 행정복지센터</b>에 문의·접수하세요. 아래 접수처·전화번호는 진주시 기준입니다.';
     }
@@ -3545,7 +3547,7 @@
   var AUTO_STEPS = [
     { t: '구비서류 · 필수 입력 항목 점검', d: '서류 체크리스트와 신청서 입력값을 대조해 빠진 항목을 찾습니다.' },
     { t: '신청서 패키지 생성', d: '신청서(서식 1)와 서류 체크 요약, 동의서 확인 상태를 한 묶음으로 만듭니다.' },
-    { t: '진주시 지체장애인협회 접수 시뮬레이션', d: '협회 접수 창구로 전송하는 과정을 브라우저 안에서 흉내 냅니다.' },
+    { t: ORG.short + ' 접수 시뮬레이션', d: '협회 접수 창구로 전송하는 과정을 브라우저 안에서 흉내 냅니다.' },
     { t: '가상 접수증 발급', d: '시연용 접수번호가 적힌 접수증을 만들어 보여 줍니다.' }
   ];
   var AUTO_FIELDS = [
@@ -4975,6 +4977,9 @@
     }
     log.scrollTop = log.scrollHeight;
     $('#chatProgress').textContent = '질문 ' + Math.min(pend, 4) + ' / 4';
+    /* 상담이 시작되면 복지카드 안내 설명을 접어 대화·답변 버튼 공간을 확보한다(서버 미전송 고지는 유지) */
+    var cs = $('#cardStart');
+    if (cs) { cs.classList.toggle('compact', pend > 0 && !state.card); }
     renderChips(pend);
     scheduleSave();
     maybeSpeakChat();
@@ -5440,7 +5445,7 @@
   function orgCardHtml() {
     return '<div class="org-card"><h3><span aria-hidden="true">🏢</span>접수처</h3>' +
       '<div class="org-rows">' +
-      '<div class="org-row"><b>기관명</b><span>' + esc(ORG.name) + ' (' + esc(ORG.short) + ')</span></div>' +
+      '<div class="org-row"><b>기관명</b><span>' + esc(ORG.name) + '</span></div>' +
       '<div class="org-row"><b>주소</b><span>' + esc(ORG.addr) + '</span></div>' +
       '<div class="org-row"><b>전화</b><span>' + esc(ORG.tel) + '</span></div>' +
       '<div class="org-row"><b>접수</b><span>방문(신분증·복지카드 지참) 또는 담당자 메일. 일반형·복지일자리 참여형은 주소지 읍·면·동 행정복지센터에서도 접수합니다.</span></div>' +
@@ -5456,7 +5461,7 @@
     var html = '<div class="auto-cta big">' +
       '<div class="ac-txt"><b>공모전 시연 · 원클릭 자동 접수</b>' +
       '<span>서류·입력값 점검부터 신청서 패키지 생성, 협회 접수 시뮬레이션, 시연용 가상 접수증 발급까지 한 번에 보여 줍니다. 실제 기관으로 전송되는 것은 없습니다.</span></div>' +
-      '<button class="btn primary" type="button" id="btnAutoSubmit" data-auto="1">진주시 지체장애인협회로 자동 접수 시연</button></div>';
+      '<button class="btn primary" type="button" id="btnAutoSubmit" data-auto="1">' + esc(ORG.short) + '로 자동 접수 시연</button></div>';
 
     html += '<div class="submit-grid">';
     html += '<div class="submit-card"><h3><span aria-hidden="true">🧾</span>가상 접수증</h3>' +
