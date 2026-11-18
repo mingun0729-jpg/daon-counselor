@@ -875,6 +875,10 @@
     .gb-flow li{font-size:11.8px;padding:6px 10px}
     .gb-mine{font-size:12.5px;padding:10px 11px}
     .app-sheet{padding:13px 11px}
+    .app-sheet table:not(.as-docs) tr{display:grid;grid-template-columns:84px minmax(0,1fr)}
+    .app-sheet table:not(.as-docs) th{width:auto}
+    .app-sheet table:not(.as-docs) td[colspan]{grid-column:1 / -1}
+    .app-sheet table:not(.as-docs) th,.app-sheet table:not(.as-docs) td{padding:6px 8px}
     .app-sheet .as-docs th,.app-sheet .as-docs td{font-size:11.5px;padding:5px 6px}
     .app-sheet .as-docs td.g{width:42px;font-size:11px}
     .app-sheet .as-docs td.k{width:32px}
