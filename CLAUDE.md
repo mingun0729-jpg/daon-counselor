@@ -27,8 +27,8 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 
 | 위치 | 내용 |
 | --- | --- |
-| `<style>` (약 10~525행) | 디자인 토큰(`:root`) · 레이아웃 · 복지카드 인식 오버레이 · 신청서 4단계 · 인쇄 스타일 |
-| `<body>` 헤더 | 로고(눈 달린 ㅍ) · 예시 3개(`#personas`) |
+| `<style>` (약 10~915행) | 디자인 토큰(`:root`) · 레이아웃 · 접근성 툴바/큰 글씨/고대비 테마 · 복지카드 인식 오버레이 · 신청서 4단계 · 신청·접수 가이드 · 인쇄 스타일 |
+| `<body>` 헤더 | 로고(눈 달린 ㅍ) · 접근성 툴바(`#btnBigText`, `#btnHighContrast`, `#btnVoice`, `#btnSpeak`, `#btnStopSpeak`) · 예시 3개(`#personas`) |
 | 대화 패널 `.chat` | 복지카드 시작 영역 `#cardStart` → `#chatLog` → `#chips` → `#composer` |
 | 대시보드 `.dashboard` | `#sumStrip` 요약 + 탭 3개(`#tab-jobs`, `#tab-work`, `#tab-docs`)과 패널 3개 |
 | `#ocr` | 복지카드 인식 시연 오버레이(4단계·추출값 확인·개인정보 고지) |
@@ -39,6 +39,7 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 | 섹션 | 주요 심볼 |
 | --- | --- |
 | 0. 공통 유틸 | `$`, `$$`, `esc`, `toast` |
+| 0-B. 접근성·임시저장 | `a11y` 상태, `applyA11y`, `setA11y`, `speak`/`speakScreen`/`stopSpeak`(TTS), `screenSummaryText`, `snapshot`, `saveNow`/`scheduleSave`/`restoreSaved`/`clearSaved`, `updateSaveBadge` |
 | 1. 조건 라벨 | `SEVERITY_LABEL`, `TYPE_LABEL`, `WORK_LABEL`, `ENV_LABEL` |
 | 2. 상태 | `state` — 상담 조건 + `card`(카드 인식 결과) + `form`(신청서 입력) + `formStep` + `ocr` |
 | 3. 질문 정의 | `STEPS` (장애 정도 → 유형 → 근무형태 → 근로환경) |
@@ -47,7 +48,7 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 | 6. 근무지 예시 | `WORKPLACES`(10곳), `matchWorkplace`, `scoredWorkplaces` |
 | 7. 서류 체크리스트 | `COMMON_DOCS`, `EXTRA_DOCS`, `ALWAYS_EXTRA`, `docsFor(pid)` |
 | 7-B. 복지카드 인식 | `CARD_SAMPLES`, `OCR_STEPS`, `openOcr`, `setOcrStage`, `renderOcr`, `confirmOcr`, `applyCard`, `handleCardFile`, `renderCardStart` |
-| 7-C. 신청서 4단계 | `WIZARD_STEPS`, `TRANSPORTS`, `AIDS`, `JOB_OPTIONS`, `wizardHtml`, `step1Html`~`step4Html`, `appSheetHtml`, `buildAppText`, `buildFormMotivation`, `printApp`, `toggleAid`, `onFieldChange` |
+| 7-C. 신청서 4단계 | `WIZARD_STEPS`, `TRANSPORTS`, `AIDS`, `JOB_OPTIONS`, `wizardHtml`, `step1Html`~`step4Html`, `appSheetHtml`(신청일·접수처·서류 현황 표·동의·서명란), `guideHtml`(실제 신청·접수 가이드), `todayStr`, `jurisdiction`/`submissionPlace`, `buildAppText`, `buildFormMotivation`, `printApp`, `toggleAid`, `onFieldChange` |
 | 8. 대화 렌더링 | `addMsg`, `renderChat`, `renderChips` |
 | 9. 대시보드 렌더링 | `renderSummary`, `renderJobs`, `renderWorkplaces`, `renderDocs` |
 | 10. 신청서 초안 | `buildDraft()` (자기소개 5항목 초안), `generateDraft`, `copyText` |
@@ -72,6 +73,9 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 6. **프로토타입 고지 유지** — 화면 하단 `공모전 시연용 프로토타입입니다` 문구, 복지카드 화면과 시작 영역의 "사진은 서버로 전송되지 않습니다" 문구, 신청서 미리보기의 "제출 전 실제 양식 확인" 안내를 지우지 않는다.
 7. **인쇄** — 신청서 인쇄는 `#printArea`만 출력된다(`@media print`의 `body > *:not(#printArea)` 규칙). 새 요소를 인쇄에 넣으려면 `#printArea` 안에 생성해야 한다.
 8. **XSS 습관** — 사용자 입력은 반드시 `esc()`로 이스케이프한 뒤 `innerHTML`에 넣는다.
+9. **접근성 3모드 유지** — 새 UI를 추가하면 `body.a11y-big`(큰 글씨)와 `body.a11y-contrast`(고대비) 대응 스타일을 같은 커밋에 넣는다. 고대비에서 새 색을 쓰면 흰 배경/흰 글씨가 남지 않도록 오버라이드하고, 대비 4.5:1을 확인한다. 인쇄는 고대비 모드에서도 `#printArea`를 흑백으로 강제한다.
+10. **localStorage 키 고정** — 접근성 설정 `daon.a11y.v1`, 자동 임시저장 `daon.state.v1`. 저장값은 브라우저 밖으로 나가지 않으며 `resetAll`/`resetState`(새로 시작)에서 비운다. 저장 스키마를 바꾸면 `v`를 올리고 `restoreSaved`에서 검증한다.
+11. **음성 안내** — 외부 TTS 라이브러리를 넣지 않고 `window.speechSynthesis`만 사용한다. 미지원 브라우저에서는 토스트로 안내하고 기능을 켜진 상태로 두지 않는다.
 
 ## 5. Claude Code 협업 규칙
 
