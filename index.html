@@ -1660,8 +1660,10 @@ body.easy .twbox p{font-size:16px}
     signature: { mode: '', data: '', name: '', at: '' },
     uploads: [],
     /* 본인이 올린 사진 — 신분증 사본·복지카드 사본 서류로 그대로 붙인다.
-       메모리에만 두고 저장(localStorage)하지 않는다. { id: {name,type,size,bytes} } */
+       메모리에만 두고 저장(localStorage)하지 않는다. { id: {name,type,size,bytes} }
+       photoDocs: 그 사진을 실제로 서류로 붙인 문서 id 목록(올리기만 하고 안 쓸 수도 있다). */
     photos: {},
+    photoDocs: [],
     receipt: null,
     easy: false,
     showAllJobs: false,
@@ -2507,10 +2509,15 @@ body.easy .twbox p{font-size:16px}
   /* 본인이 올린 사진(신분증·복지카드) — 서류 파일 원본으로 쓴다. */
   function photoSig() {
     var p = state.photos || {};
-    return ['id', 'disability'].map(function (k) {
+    return (state.photoDocs || []).join('+') + '|' + ['id', 'disability'].map(function (k) {
       var v = p[k];
       return v && v.bytes ? (v.name || '') + ':' + (v.size || 0) : '';
     }).join(',');
+  }
+  /* 서류로 실제 붙인 사진만 파일 원본으로 쓴다 — 올리기만 한 사진은 쓰지 않는다. */
+  function photoForDoc(docId) {
+    if ((state.photoDocs || []).indexOf(docId) === -1) { return null; }
+    return photoDoc(docId);
   }
   function photoDoc(docId) {
     var p = (state.photos || {})[docId];
@@ -2525,7 +2532,7 @@ body.easy .twbox p{font-size:16px}
   }
   var photoUrls = {};
   function photoUrlOf(f) {
-    var key = f.name + '|' + (f.size || 0);
+    var key = (f.pid ? f.pid + '|' : '') + f.name + '|' + (f.size || 0);
     if (photoUrls[key]) { return photoUrls[key]; }
     try {
       photoUrls[key] = URL.createObjectURL(new Blob([f.bytes], { type: f.mime || 'image/jpeg' }));
@@ -2542,6 +2549,8 @@ body.easy .twbox p{font-size:16px}
   /* 사진 파일을 서류로 붙인다 — name(type·size·bytes)는 메모리에만 둔다. */
   function attachPhotoDoc(docId, how) {
     if (!photoDoc(docId)) { return false; }
+    state.photoDocs = state.photoDocs || [];
+    if (state.photoDocs.indexOf(docId) === -1) { state.photoDocs.push(docId); }
     state.fetched[docId] = { at: nowStamp(), agency: how || '본인 첨부', photo: true };
     if (state.selectedProgram) { state.checked[state.selectedProgram + ':' + docId] = true; }
     delete state.real[docId];
@@ -2551,7 +2560,7 @@ body.easy .twbox p{font-size:16px}
   }
   /* 프로그램을 고르면 첨부 상태가 초기화된다 — 사진으로 붙인 서류는 다시 붙여 준다. */
   function reapplyPhotoDocs() {
-    ['id', 'disability'].forEach(function (k) {
+    (state.photoDocs || []).forEach(function (k) {
       if (photoDoc(k)) { state.fetched[k] = { at: nowStamp(), agency: '본인 첨부', photo: true }; }
     });
   }
@@ -2561,7 +2570,8 @@ body.easy .twbox p{font-size:16px}
         var rd = new FileReader();
         rd.onload = function () {
           try {
-            resolve({ name: file.name || 'photo.jpg', type: file.type || 'image/jpeg', size: file.size || 0, bytes: new Uint8Array(rd.result) });
+            resolve({ name: file.name || 'photo.jpg', type: file.type || 'image/jpeg', size: file.size || 0,
+              bytes: new Uint8Array(rd.result), pid: Date.now() + '-' + Math.random().toString(36).slice(2, 8) });
           } catch (e) { resolve(null); }
         };
         rd.onerror = function () { resolve(null); };
@@ -2578,13 +2588,13 @@ body.easy .twbox p{font-size:16px}
     if (docCache.map[key]) { return docCache.map[key]; }
     var m = DOC_FILE_META[d.id] || {};
     var isReal = !!state.real[d.id];
-    var ph = isReal ? null : photoDoc(d.id);
+    var ph = isReal ? null : photoForDoc(d.id);
     if (ph) {
       var pExt = photoExt(ph);
       var pFile = {
         id: d.id, doc: d,
         name: docFileName(d, seq || seqOfDoc(d), { base: (d.id === 'id' ? '주민등록증_사본' : '복지카드_사본'), ext: pExt, who: 'name' }),
-        content: '', mime: ph.type || 'image/jpeg', ext: pExt, bytes: ph.bytes,
+        content: '', mime: ph.type || 'image/jpeg', ext: pExt, bytes: ph.bytes, pid: ph.pid || '',
         kind: '본인 첨부 사진',
         title: (d.id === 'id' ? '신분증 사본 (주민등록증 사진)' : '복지카드(장애인등록증) 사본 (사진)'),
         size: ph.bytes.length, photo: true
@@ -4956,7 +4966,7 @@ body.easy .twbox p{font-size:16px}
         var r = state.real[d.id];
         var opts = r
           ? { badge: r.__mock ? '모의 응답' : '실제 조회 결과', badgeCls: 'real' }
-          : photoDoc(d.id)
+          : photoForDoc(d.id)
             ? { badge: '본인 첨부 사진', badgeCls: 'real' }
             : { badge: '신청서에 자동 첨부됨' };
         return docFileCard(d, opts) + (r ? '<p class="rsum">' + esc(realSummary(d.id, r)) + '</p>' : '');
@@ -4968,18 +4978,21 @@ body.easy .twbox p{font-size:16px}
       var idDoc = requiredFetchDocs().filter(function (d) { return d.id === 'id'; })[0] || null;
       pb.hidden = !idDoc;
       if (idDoc) {
-        var hasPhoto = !!photoDoc('id');
+        var hasPhoto = !!photoForDoc('id');
         var gotId = !!state.fetched.id;
         if (pst) {
-          pst.textContent = hasPhoto ? '사진 첨부됨 ✓' : (gotId ? '첨부됨 ✓' : '사진 필요');
+          pst.textContent = hasPhoto ? '사진 첨부됨 ✓'
+            : (gotId ? '첨부됨 ✓' : (photoDoc('id') ? '등록 확인 필요' : '사진 필요'));
           pst.className = 'st' + (hasPhoto || gotId ? ' done' : '');
         }
         if (phint) {
           phint.innerHTML = hasPhoto
             ? '올린 주민등록증 사진이 <b>신분증 사본</b>으로 들어가 있습니다. 다시 올리면 새 사진으로 바뀝니다.'
-            : '주민등록증 사진을 올리면 글자를 읽어 빈칸을 채우고, 이 사진을 <b>신분증 사본</b>으로 함께 냅니다. 사진은 서버로 보내지 않아요.';
+            : photoDoc('id')
+              ? '올린 사진이 아직 서류로 붙지 않았습니다. <b>사진 올리기</b>를 눌러 다시 읽고 등록하거나, 위 로그인으로 자동 조회를 쓸 수 있습니다.'
+              : '주민등록증 사진을 올리면 글자를 읽어 빈칸을 채우고, 이 사진을 <b>신분증 사본</b>으로 함께 냅니다. 사진은 서버로 보내지 않아요.';
         }
-        if (pbtn) { pbtn.textContent = hasPhoto ? '🪪 주민등록증 사진 다시 올리기' : '🪪 주민등록증 사진 올리기'; }
+        if (pbtn) { pbtn.textContent = hasPhoto || photoDoc('id') ? '🪪 주민등록증 사진 다시 올리기' : '🪪 주민등록증 사진 올리기'; }
       }
     }
     var selfBox = $('#selfBox');
@@ -5411,7 +5424,7 @@ body.easy .twbox p{font-size:16px}
             '<span class="hint">정부24 장애인증명서는 이 주소를 <b>주소검색</b>에 그대로 넣어 찾습니다. 예: 진주시 가좌동 123-4</span>' +
             '<input id="cfAddr" type="text" autocomplete="street-address" placeholder="예: 진주시 가좌동 123-4" value="' + esc(f.addr || '') + '" aria-describedby="cfAddr-err" />' +
             '<span class="err" id="cfAddr-err" role="alert" hidden></span>' +
-            '<p class="addrcheck" id="cfAddrOut"></p>' +
+            '<p class="addrcheck" id="cfAddrOut" aria-live="polite"></p>' +
             '</div>'
           : '');
       body += '<span class="lab" id="cfTelLab" style="display:block;font-size:14px;font-weight:800;margin:0 0 6px">통신사</span>' +
@@ -5634,7 +5647,7 @@ body.easy .twbox p{font-size:16px}
           '<label for="runAddr">주소 (동·번지까지)</label>' +
           '<input id="runAddr" type="text" autocomplete="street-address" placeholder="예: 진주시 가좌동 123-4" value="' + esc(cleanAddr(tried)) + '" aria-describedby="runAddr-err" />' +
           '<span class="err" id="runAddr-err" role="alert" hidden></span>' +
-          '<p class="addrcheck" id="runAddrOut"></p>' +
+          '<p class="addrcheck" id="runAddrOut" aria-live="polite"></p>' +
           '</div>' +
           '<p style="font-size:12.5px;margin-top:6px">※ 주소를 고쳐 다시 요청하면 휴대폰 인증 알림이 한 번 더 옵니다.</p>';
       } else {
@@ -6978,6 +6991,7 @@ body.easy .twbox p{font-size:16px}
       if (state.fetched[k].photo) { delete state.fetched[k]; droppedPhoto += 1; }
     });
     state.photos = {};
+    state.photoDocs = [];
     if (raw.form && typeof raw.form === 'object') {
       state.form = Object.assign({ name: '', birth: '', phone: '', email: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '', guardian: '', extra: {}, lic: '' }, raw.form);
       if (!state.form.extra || typeof state.form.extra !== 'object') { state.form.extra = {}; }
@@ -7025,6 +7039,7 @@ body.easy .twbox p{font-size:16px}
       state.signature = { mode: '', data: '', name: '', at: '' };
       state.uploads = [];
       state.photos = {};
+      state.photoDocs = [];
       state.receipt = null;
       state.easy = false;
       document.body.classList.remove('easy');
@@ -7124,8 +7139,11 @@ body.easy .twbox p{font-size:16px}
     if (!/^image\//.test(file.type || '')) { toast('이미지 파일(jpg·png) 필요'); return; }
     if (file.size > 12 * 1024 * 1024) { toast('파일 12MB 초과 · 12MB 이하 이미지 사용'); return; }
     state.photos = state.photos || {};
+    /* 새 사진으로 바꾸는 중 — 확인 화면에서 등록해야 서류로 붙는다(예전 사진 첨부는 잠시 내린다). */
+    state.photoDocs = (state.photoDocs || []).filter(function (k) { return k !== 'id'; });
+    delete state.fetched.id;
     readPhotoFile(file).then(function (ph) {
-      if (ph) { state.photos.id = ph; docCache = { sig: '', map: {} }; }
+      if (ph) { state.photos.id = ph; docCache = { sig: '', map: {} }; render(); }
     });
     startCardOcr(file, 'id');
   }
