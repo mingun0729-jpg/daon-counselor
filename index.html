@@ -2418,13 +2418,13 @@ body.easy .twbox p{font-size:16px}
         }).join('') + '</table>';
     }
     var body = realHead(d) +
-      '<h1>' + esc(DOC_TITLE[d.id] || d.name) + '</h1>' +
+      '<h1>' + esc(REAL_DOC_TITLE[d.id] || d.name) + '</h1>' +
       '<p class="sub">' + esc((AGENT_DOC_META[d.id] || {}).summary || '') + ' · ' + esc(n.__mock ? '모의 응답(CODEF_MOCK)' : 'CODEF 간편인증 조회') + '</p>' +
       '<table>' + tbl + '</table>' + extra +
       '<p class="note">※ 이 파일은 다온이 기관 응답에서 항목을 추려 만든 <b>요약본</b>입니다. 기관이 발급한 원본 증명서(PDF)를 대신하지 않으며, 실제 제출처가 원본을 요구하면 기관에서 직접 발급받아 주세요.</p>' +
       '<div class="issuer">' + esc((AGENT_DOC_META[d.id] || {}).agency || '') + ' <span class="stamp">조회<br>확인</span></div>' +
       '<p class="foot">※ CODEF API 경유 조회값 · ' + esc(todayStr()) + ' 정리 · 다온(DAON) 프로토타입.</p>';
-    return docShell(DOC_TITLE[d.id] || d.name, body, REAL_WM);
+    return docShell(REAL_DOC_TITLE[d.id] || d.name, body, REAL_WM);
   }
   function docTitleOf(d) { return DOC_TITLE[d.id] || d.name; }
   function docKindOf(d) { var m = DOC_FILE_META[d.id]; return (m && m.kind) || '서류'; }
@@ -2434,11 +2434,13 @@ body.easy .twbox p{font-size:16px}
     for (var i = 0; i < list.length; i++) { if (list[i].id === d.id) { return i + 1; } }
     return 1;
   }
-  function docFileName(d, seq, baseOverride) {
+  function docFileName(d, seq, opt) {
+    opt = opt || {};
     var m = DOC_FILE_META[d.id] || {};
-    var base = baseOverride || m.base || safeFileName(d.name).replace(/[()\s]/g, '');
-    var who = m.who === 'sim' ? '시연' : safeFileName(applicantName());
-    return (seq < 10 ? '0' + seq : String(seq)) + '_' + base + '_' + who + '.' + (m.ext || 'html');
+    var base = opt.base || m.base || safeFileName(d.name).replace(/[()\s]/g, '');
+    var who = opt.who === 'name' ? safeFileName(applicantName()) : (m.who === 'sim' ? '시연' : safeFileName(applicantName()));
+    var ext = opt.ext || m.ext || 'html';
+    return (seq < 10 ? '0' + seq : String(seq)) + '_' + base + '_' + who + '.' + ext;
   }
   var docCache = { sig: '', map: {} };
   function docCacheSig() {
@@ -2452,6 +2454,7 @@ body.easy .twbox p{font-size:16px}
       rankText(''), state.type, state.severity, checked].join('|');
   }
   var REAL_DOC_BASE = { insurance: '건강보험자격득실확인서', resident: '주민등록등본', disability: '장애인증명서' };
+  var REAL_DOC_TITLE = { insurance: '건강보험 자격득실확인서', resident: '주민등록표 등본', disability: '장애인증명서' };
   function docFileFor(d, seq) {
     var sig = docCacheSig();
     if (docCache.sig !== sig) { docCache = { sig: sig, map: {} }; }
@@ -2463,8 +2466,8 @@ body.easy .twbox p{font-size:16px}
     var content = isReal ? realCertDoc(d) : (ext === 'svg' ? svgCardDoc(d) : htmlDoc(d));
     var mime = isReal ? 'text/html' : (ext === 'svg' ? 'image/svg+xml' : 'text/html');
     var file = {
-      id: d.id, doc: d, name: docFileName(d, seq || seqOfDoc(d), isReal ? REAL_DOC_BASE[d.id] : null), content: content,
-      mime: mime, ext: ext, kind: docKindOf(d), title: docTitleOf(d),
+      id: d.id, doc: d, name: docFileName(d, seq || seqOfDoc(d), isReal ? { base: REAL_DOC_BASE[d.id], ext: 'html', who: 'name' } : null), content: content,
+      mime: mime, ext: ext, kind: isReal ? '기관 조회 결과' : docKindOf(d), title: isReal ? REAL_DOC_TITLE[d.id] : docTitleOf(d),
       size: new Blob([content], { type: mime }).size
     };
     docCache.map[key] = file;
@@ -3179,9 +3182,12 @@ body.easy .twbox p{font-size:16px}
     if (s) { s.textContent = f.title + ' · ' + fmtBytes(f.size) + ' · ' + f.ext.toUpperCase(); }
     if (ico) { ico.innerHTML = fileIconSvg(f.ext); }
     if (meta) {
+      var isRealFile = !!state.real[d.id];
       meta.innerHTML = '<span class="fv-row"><b>발급·생성</b>' + esc(agentMeta(d).agency) + '</span>' +
         '<span class="fv-row"><b>분류</b>' + esc(f.kind) + '</span>' +
-        '<span class="fv-row"><b>상태</b><span class="fc-badge ok">시연용 생성됨</span></span>' +
+        '<span class="fv-row"><b>상태</b>' + (isRealFile
+          ? '<span class="fc-badge real">기관 조회 결과</span>'
+          : '<span class="fc-badge ok">시연용 생성됨</span>') + '</span>' +
         '<span class="fv-row"><b>바이트</b>' + f.size.toLocaleString() + ' B</span>';
     }
     if (fr) { fr.setAttribute('srcdoc', previewDocContent(f)); }
@@ -3190,7 +3196,7 @@ body.easy .twbox p{font-size:16px}
     document.body.style.overflow = 'hidden';
     var c = $('#fvClose');
     if (c) { c.focus(); }
-    announce(f.name + ' 미리보기를 열었습니다. 시연용 가상 문서입니다.');
+    announce(f.name + ' 미리보기를 열었습니다. ' + (state.real[d.id] ? '기관에서 받은 조회값을 정리한 요약본입니다.' : '시연용 가상 문서입니다.'));
   }
   function closeFileView(focusBack) {
     var el = $('#fileView');
@@ -5018,7 +5024,6 @@ body.easy .twbox p{font-size:16px}
       body += '<div class="twbox wait"><b>실제 기관 조회를 하려면 프록시 연결이 필요합니다</b>' +
         '<p>다온은 정적 페이지라 기관 API 키를 브라우저에 둘 수 없습니다. <b>Cloudflare Worker 프록시</b> 주소를 연결하면 정부24·건강보험공단 간편인증으로 실제 서류를 받아옵니다.</p>' +
         '<p style="font-size:13px">연결 전에는 아래 <b>시연용 예시 데이터</b>로만 진행합니다. 실제 조회가 아닙니다.</p></div>' +
-        '<button class="btn block" type="button" data-cfg-open="1" style="margin:6px 0 14px">⚙️ 기관 API 연결 설정</button>' +
         '<div class="note"><b>가져올 서류</b><ul style="margin:6px 0 0;padding:0;list-style:none">' +
         (loginAgencySummary(docs) || '<li>· 가져올 서류 없음</li>') + '</ul></div>' +
         '<h3 style="font-size:15.5px;font-weight:900;margin:14px 0 8px">시연 인증 수단(연출)</h3>' +
