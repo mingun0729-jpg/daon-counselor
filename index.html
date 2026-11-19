@@ -5280,7 +5280,7 @@ body.easy .twbox p{font-size:16px}
       html += '<b>' + esc((realState.error && realState.error.message) || '조회에 실패했습니다.') + '</b>' +
         '<p>' + (/^CF-/.test(ec) ? '응답 코드 ' + esc(ec) + ' · ' : '') +
         '같은 문제가 계속되면 이 서류는 직접 발급해 주세요. 가짜 성공으로 넘기지 않습니다.</p>' +
-        (!(codef.health && codef.health.env === 'api')
+        (codef.health && codef.health.env !== 'api'
           ? '<p style="font-size:12.5px;margin-top:6px">※ 지금은 CODEF 데모 서버로 연결되어 있습니다(하루 100회까지 조회).</p>'
           : '');
     } else {
