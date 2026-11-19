@@ -36,9 +36,9 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 | `.steps` | 4단계 표시 `button.stp[data-goto="card|jobs|docs|submit"]` — 지나온 단계는 `✓`, 지금 단계는 `aria-current="step"` |
 | `main` 안 5개 화면 | `#view-card`(카드 인식) · `#view-jobs` · `#view-docs` · `#view-submit` · `#view-done`. 한 번에 하나만 보이고 나머지는 `hidden` |
 | `#view-card` | `#cardHome`(시작: `#btnScan`, `#btnSamples`, `#btnManual`, `#cardFile`) / `#cardDone`(인식 결과 `#cardVisual`, 배려 안내 `#cardHint`, `#btnCardEdit`, `#btnCardAgain`) |
-| `#view-jobs` | `#condWho`·`#btnCond`(조건 바꾸기), `#jobList`(라디오 카드), `#btnJobMore`, `#offBox`(지금은 어려운 일자리), `#workList`(근무지), `#supportBox`(근로지원 제도) |
+| `#view-jobs` | `#condWho`·`#btnCond`(조건 바꾸기), `#jobList`(라디오 카드), `#btnJobMore`, `#offBox`(지금은 어려운 일자리), `#workSection`(`#rankBox`/`#rankList` 희망 근무지 1·2·3순위 요약, `#workList` 순위 버튼이 붙은 근무지 카드, `#btnWorkMore`, `#assignRule` 배정 기준), `#supportBox`(근로지원 제도) |
 | `#view-docs` | 진행 카드(`#docsTitle`·`#docProgTxt`·`#docBar`), **실시간 진행 로그** `#agentLog`/`#alList`, 기관 카드 `#agencyList`, 파일 카드 `#fileList`, `#selfBox`(직접 준비) |
-| `#view-submit` | 자동 채움 안내 `#autoDesc`, 입력 3칸(`#inPhone`, `#inAddr`, `#inBank`+`#inAcct`)과 `#inMotiv`(+`#btnDraft`), `#formDocList` |
+| `#view-submit` | 자동 채움 안내 `#autoDesc`, 희망 근무지 순위 `#confirmRanks`(+`#btnRankEdit`), 입력 3칸(`#inPhone`, `#inAddr`, `#inBank`+`#inAcct`)과 `#inMotiv`(+`#btnDraft`), **추가 신청서 항목(선택)** `#extraBox`/`#extraFields`(서식 1의 성별·소득수준·장기요양·최종학력·전산능력·자격면허·보호자 연락처 등), `#formDocList` |
 | `#view-done` | 접수증 `#doneNo`·`#doneReceipt`, 인쇄 `#btnPrint`, ZIP `#btnZip`, 메일 `#btnMail` |
 | `.dock` | 화면마다 **큰 버튼 하나** `#ctaMain` + 안내 `#dockNote`. 카드 화면(인식 전)과 완료 화면에서는 숨긴다 |
 | 시트·모달 | `#sheet`(예시 카드·직접 고르기·조건 바꾸기·처음부터), `#ocr`(카드 읽기 4단계), `#login`(기관 로그인 시연), `#submitOv`(제출 4단계), `#fileView`(서류 미리보기 iframe) |
@@ -51,18 +51,18 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 | 0. 공통 유틸 | `$`, `$$`, `esc`, `toast` |
 | 0-B. 접근성·임시저장 | `a11y`(`big`·`contrast`·`voice`·`rate`), `applyA11y`, `setA11y`, `setRate`, `TTS_RATE_SLOW(0.82)`/`TTS_RATE_NORMAL(0.93)`, `speak`/`stopSpeak`(TTS), `setSpeakUI`, `checkKoreanVoice`, `announce` |
 | 1. 이름표 | `TYPE_LABEL`, `TYPE_SHORT`, `SEVERITY_LABEL`, `WORK_LABEL`, `WORK_SHORT`, `ENV_LABEL`, `TRANSPORTS`, `AIDS`/`AIDS_LABEL`, `ORG` |
-| 2. 상태 | `state` — `view`·`card`·`type`·`severity`·`workType`·`envs(Set)`·`selectedProgram`·`selectedWorkplace`·`checked`·`fetched`·`form`·`receipt`·`easy` |
+| 2. 상태 | `state` — `view`·`card`·`type`·`severity`·`workType`·`envs(Set)`·`selectedProgram`·`selectedWorkplace`(1순위 미러)·`workplaceRanks`(1·2·3순위)·`checked`·`fetched`·`form`(안에 `extra`·`lic`·`guardian`)·`receipt`·`easy` |
 | 3. 기관 | `AGENCY`(정부24·건강보험·복지로·고용24·협회), `DOC_AGENCY`, `AGENT_DOC_META`/`agentMeta` |
 | 4. 판별 규칙 | `ruleGeneralFull` ~ `ruleRemote`, `statusOf`, `PROGRAMS`(8개), `analyze()` |
 | 5. 근로지원 | `buildSupports()`(7개 제도) |
-| 6. 근무지 | `WORKPLACES`(10곳), `TAG_LABEL`, `WARN_TAGS`, `matchWorkplace`, `scoredWorkplaces` |
+| 6. 근무지 | `WORKPLACES`(10곳), `TAG_LABEL`, `WARN_TAGS`, `matchWorkplace`, `scoredWorkplaces`, `rankList`/`rankSync`/`setRanks`/`setRank`/`rankOf`/`rankText`(1·2·3순위), `fitScore`(적합도 점수) |
 | 7. 서류 목록 | `COMMON_DOCS`, `EXTRA_DOCS`, `ALWAYS_EXTRA`, `docsFor` |
 | 5(앱). 복지카드 | `CARD_SAMPLES`(7종), `OCR_STEPS`, `openSamples`/`openSampleConfirm`(예시 인물 확인), `openUploadNotice`(사진 업로드 → 판독 없음 안내), `openManual`, `openOcr`/`finishOcr`, `applyCard`, `applyManual`, `applyProfile`(장애 유형별 배려: 시각=큰글씨+읽어주기, 지적·자폐성=쉬운 말, 정신=근무 시간·업무 조정 안내, 지체·뇌병변=큰 글씨·큰 버튼) |
 | 6(앱). 화면 흐름 | `VIEW_ORDER`, `go`, `render`, `renderSteps`, `renderCard`, `renderDock` |
-| 7(앱). 일자리 | `analyze` 결과를 `jobCardHtml`로, `kindOfProgram`·`workRows`·`pickDefaultWorkplace`, `renderWork`(진주 근무지), `renderSupports`, `openCond` |
+| 7(앱). 일자리 | `analyze` 결과를 `jobCardHtml`로, `kindOfProgram`·`workRows`·`pickDefaultWorkplace`, `renderWork`(진주 근무지 3장 + 더 보기)·`workCardHtml`(순위 버튼)·`renderRankSummary`, `renderSupports`, `openCond` |
 | 8(앱). 서류 | `fetchState`(진행 로그·phase), `requiredFetchDocs`, `assocDocs`, `docsStats`, `agencyGroups`, `renderDocs`, `renderAgentLog`/`pushLog`/`phaseLabel`, `openLogin`/`confirmLogin`, `fetchDocs`(접속→로그인→발급→첨부 단계별 실행) |
-| 9(앱). 신청 | `renderSubmit`(확인 카드 `#confirmCard` · 필요 지원 칩 `aidChipsHtml`), `validateForm`(aria-invalid·role=alert), `readForm`, `clearFieldError`, `JOB_DEFAULT`, `buildDraftText`, `submitAll`, `makeReceipt`, `renderDone`, `birthText`/`maskedRrn` |
-| 9-B. 포커스 | `focusViewHeading`(화면 전환 → 제목), `focusBack`/`overlayReturn`(모달을 열었던 버튼으로 복원), `selectProgram`/`selectWorkplace`가 재렌더 뒤 선택한 라디오로 포커스 |
+| 9(앱). 신청 | `renderSubmit`(확인 카드 `#confirmCard` · 희망 근무지 순위 `renderConfirmRanks` · 필요 지원 칩 `aidChipsHtml`), `renderExtraFields`(서식 1 추가 항목 칩), `validateForm`(aria-invalid·role=alert), `readForm`, `clearFieldError`, `JOB_DEFAULT`, `buildDraftText`, `submitAll`, `makeReceipt`(순위 포함), `renderDone`, `birthText`/`maskedRrn`/`rrnMasked` |
+| 9-B. 포커스 | `focusViewHeading`(화면 전환 → 제목), `focusBack`/`overlayReturn`(모달을 열었던 버튼으로 복원), `selectProgram`·순위 버튼(`data-work-rank`)·순위 비우기(`data-clear-rank`)·추가 항목 칩(`data-xkey`)이 재렌더 뒤 같은 버튼으로 포커스 |
 | 10(앱). 인쇄·저장 | `printHtmlString`(새 탭 인쇄, 팝업 차단 시 `downloadHtml`), `printApp`, `saveAllZip`, `sendMail`, `allDocs` |
 | 11(앱). 읽어주기 | `screenSummaryText`(화면별 대본), `speakScreen` |
 | 12(앱). 저장·복원 | `snapshot`(v4), `saveNow`/`scheduleSave`/`restoreSaved`/`clearSaved`, `resetAll` |
