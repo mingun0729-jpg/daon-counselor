@@ -2046,7 +2046,11 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     '.small{font-size:11.2px;color:#3F4E44;line-height:1.7;margin:0 0 8px}',
     '.checks{font-size:11.6px;font-weight:800;color:#11462A;background:#F3F9F5;border:1px dashed #B7D9C3;border-radius:8px;padding:8px 10px;margin:4px 0 0}',
     '.chk{display:inline-block;margin:0 12px 0 0;white-space:nowrap}',
+    '.chk i{display:inline-block;width:10px;height:10px;border:1px solid #6F7C74;border-radius:2px;margin-right:5px;vertical-align:-1px;position:relative;background:#fff}',
+    '.chk.on i{background:#1B6438;border-color:#1B6438}',
+    '.chk.on i::after{content:"";position:absolute;left:2px;top:0.5px;width:4px;height:7px;border:solid #fff;border-width:0 1.6px 1.6px 0;transform:rotate(42deg)}',
     '.cbline{margin:0 0 5px;font-size:11.8px;line-height:1.85}',
+    '.sr-v{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}',
     '.docrow{display:flex;justify-content:flex-end;margin:-4px 0 2px}',
     '.rcptbox{border:1px solid #D8E2D9;border-radius:6px;padding:4px 10px;font-size:10.6px;color:#5C6B62;background:#FCFDFB}',
     '.rcptbox b{color:#11462A;font-weight:800;margin-right:6px}',
@@ -2240,8 +2244,9 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   var EDU_OPTS = ['무학', '초졸', '중졸', '고졸', '전문대졸', '대졸 이상'];
   var IT_OPTS = ['문서작성', '표계산', '인터넷', '기타'];
 
+  /* 체크 표시는 글꼴(☑·□) 대신 CSS 상자로 그린다 — 어떤 브라우저·PDF에서도 깨지지 않게 */
   function cbx(on, label) {
-    return '<span class="chk">' + (on ? '☑' : '□') + ' ' + esc(label) + '</span>';
+    return '<span class="chk' + (on ? ' on' : '') + '"><i aria-hidden="true"></i>' + esc(label) + (on ? '<span class="sr-v"> 선택</span>' : '') + '</span>';
   }
   function opBox(opts, val, multiVals) {
     return opts.map(function (o) {
@@ -2317,7 +2322,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       '<h2>4. 자격·선발·지원 정보</h2>' +
       '<table>' +
       docTr([{ h: '소득수준' }, { t: opBox(['기초생활수급자', '차상위계층', '해당사항 없음'], ex.income || ''), cs: 3 }]) +
-      docTr([{ h: '장애유형' }, { t: esc(TYPE_LABEL[state.type] || '지체장애') + ' (' + esc(SEVERITY_LABEL[state.severity] || '심하지 않은 장애') + ')' }, { h: '장애정도' }, { t: cbx(state.severity === 'severe', '심한 장애') + cbx(state.severity !== 'severe', '심하지 않은 장애') }]) +
+      docTr([{ h: '장애유형' }, { t: esc(TYPE_LABEL[state.type] || '지체장애') }, { h: '장애정도' }, { t: cbx(state.severity === 'severe', '심한 장애') + cbx(state.severity !== 'severe', '심하지 않은 장애') }]) +
       docTr([{ h: '장기요양등급 판정' }, { t: opBox(['유', '무'], ex.care || '') }, { h: '여성가장' }, { t: opBox(['해당', '비해당'], ex.femaleHead || '') }]) +
       docTr([{ h: '취업지원대상자' }, { t: opBox(['해당', '비해당'], ex.jobTarget || '') }, { h: '이동수단' }, { t: cbx(tWalk, '도보') + cbx(tBus, '대중교통') + cbx(tCar, '자가용') + cbx(tEtc, '기타' + etcNote) }]) +
       docTr([{ h: '보조기기 사용' }, { t: opBox(['사용', '미사용'], ex.device || ''), cs: 3 }]) +
@@ -3287,21 +3292,22 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var r = rankList(), ti = rank - 1, from = r.indexOf(name), holder = r[ti], msg;
     if (from === ti) {
       r[ti] = '';
-      msg = rank + '순위에서 뺐습니다. ' + name;
+      msg = rank + '순위 해제 · ' + name;
     } else if (from > -1 && holder) {
       r[from] = holder;
       r[ti] = name;
-      msg = (from + 1) + '순위 ' + holder + '와 ' + rank + '순위 자리를 바꿨습니다.';
+      msg = (from + 1) + '순위·' + rank + '순위 자리 바꿈 · ' + name;
     } else if (from > -1) {
       r[from] = '';
       r[ti] = name;
-      msg = name + '을(를) ' + rank + '순위로 옮겼습니다.';
+      msg = name + ' · ' + rank + '순위로 옮겼습니다';
     } else if (holder) {
+      holder = r[ti];
       r[ti] = name;
-      msg = rank + '순위를 ' + name + '(으)로 바꿨습니다. ' + holder + '은(는) 순위에서 빠졌습니다.';
+      msg = rank + '순위 교체 · ' + name + ' (' + holder + ' 빠짐)';
     } else {
       r[ti] = name;
-      msg = name + '을(를) ' + rank + '순위로 정했습니다.';
+      msg = rank + '순위 지정 · ' + name;
     }
     rankSync();
     scheduleSave();
