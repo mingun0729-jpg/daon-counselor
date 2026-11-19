@@ -800,7 +800,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
 .cfgbar .cdot{display:inline-block; width:9px; height:9px; border-radius:50%; background:#9AA79E; margin-right:6px; vertical-align:1px}
 .cfgbar.on .cdot{background:var(--grass)}
 .cfgbar.mock .cdot{background:var(--amber)}
-.cfgbar .btn{min-height:44px; padding:0 14px; font-size:14px; flex:0 0 auto}
+.cfgbar .btn{min-height:44px; padding:0 14px; font-size:14px; flex:0 0 auto; white-space:nowrap}
 .cfgrow{display:grid; grid-template-columns:1fr 1fr; gap:10px}
 .cfgrow .field{margin-bottom:12px}
 @media (max-width:430px){.cfgrow{grid-template-columns:1fr}}
@@ -4834,7 +4834,9 @@ body.easy .twbox p{font-size:16px}
     if (!box || !txt) { return; }
     box.classList.remove('on', 'mock');
     if (!h) {
-      txt.innerHTML = '<b>아직 연결하지 않았습니다</b>연결 테스트를 눌러 확인해 주세요.';
+      txt.innerHTML = codef.url
+        ? '<b>주소는 저장되어 있습니다</b>연결 테스트로 지금 상태를 확인해 주세요.'
+        : '<b>아직 연결하지 않았습니다</b>연결 테스트를 눌러 확인해 주세요.';
       return;
     }
     if (h.mock) {
