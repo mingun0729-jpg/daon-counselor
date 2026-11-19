@@ -3253,9 +3253,7 @@ body.easy .foot-note{font-size:13.5px}
   function submitAll() {
     if (!validateForm()) { return; }
     readForm();
-    state.checked[state.selectedProgram + ':form1'] = true;
-    state.checked[state.selectedProgram + ':form2'] = true;
-    state.checked[state.selectedProgram + ':form3'] = true;
+    allDocs().forEach(function (d) { state.checked[state.selectedProgram + ':' + d.id] = true; });
     scheduleSave();
     var ov = $('#submitOv'), box = $('#subSteps'), sub = $('#subSub');
     var steps = ['서류 확인', '신청서 쓰기', '접수처로 보내기', '접수증 받기'];
