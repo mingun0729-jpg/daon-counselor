@@ -12,6 +12,8 @@ body{margin:0;background:#d8ddd8;font-family:system-ui;-webkit-text-size-adjust:
 var Q = new URLSearchParams(location.search);
 var BIG = Q.get('big') === '1';
 var CONTRAST = Q.get('contrast') === '1';
+var WIDTH = parseInt(Q.get('w') || '375', 10) || 375;
+var HEIGHT = parseInt(Q.get('h') || '812', 10) || 812;
 window.__errs = [];
 window.__log = [];
 try {
@@ -53,6 +55,8 @@ function measure() {
   window.__result = out;
   return out;
 }
+fr.style.width = WIDTH + 'px';
+fr.style.height = HEIGHT + 'px';
 fr.addEventListener('load', function () { window.__log.push('load'); attach(); });
 fr.src = '../index.html?check=' + Date.now();
 window.__measure = measure;
