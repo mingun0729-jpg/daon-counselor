@@ -177,7 +177,7 @@ h2.sec .cnt{font-size:15px; font-weight:800; color:var(--grass); background:var(
   width:100%; min-height:46px; margin-top:6px; border-radius:14px; background:transparent;
   border:0; color:var(--ink-soft); font-size:14.5px; font-weight:800; text-decoration:underline; text-underline-offset:3px;
 }
-.dock .note{margin:0 0 8px; font-size:13.5px; color:var(--ink-mute); text-align:center; line-height:1.5}
+.dock .note{margin:0 0 8px; font-size:13.5px; color:var(--ink-mute); text-align:center; line-height:1.5; background:transparent; border:0; border-radius:0; padding:0}
 
 /* ---------- 복지카드 ---------- */
 .cardarea{position:relative}
@@ -324,7 +324,7 @@ h2.sec .cnt{font-size:15px; font-weight:800; color:var(--grass); background:var(
 .al-head{display:flex; align-items:center; gap:8px; margin-bottom:8px}
 .al-head b{font-size:16.5px; font-weight:900; letter-spacing:-.02em}
 .al-badge{font-size:12px; font-weight:900; color:#12452A; background:var(--grass-soft); border:1px solid var(--grass-line); border-radius:999px; padding:2px 8px}
-.al-list{display:flex; flex-direction:column; gap:7px; max-height:238px; overflow:auto}
+.al-list{display:flex; flex-direction:column; gap:6px}
 .al-list li{display:flex; gap:9px; align-items:flex-start; font-size:14.5px; line-height:1.5; color:var(--ink-soft); font-weight:700}
 .al-list li .ali{width:22px; min-width:22px; text-align:center; font-size:15px; line-height:1.4}
 .al-list li.run{color:var(--ink)}
@@ -785,7 +785,7 @@ body.easy .foot-note{font-size:13.5px}
         <div class="field" id="fAddr">
           <label for="inAddr">사는 곳</label>
           <span class="hint">동까지만 적어도 괜찮아요</span>
-          <input id="inAddr" name="addr" type="text" autocomplete="street-address" placeholder="경상남도 진주시 ○○로 12" />
+          <input id="inAddr" name="addr" type="text" autocomplete="street-address" placeholder="예: 경상남도 진주시 ○○로 12" />
           <span class="err" id="eAddr" hidden>사는 곳을 적어 주세요.</span>
         </div>
         <div class="field" id="fAcct">
@@ -2982,7 +2982,7 @@ body.easy .foot-note{font-size:13.5px}
     if (!box || !list) { return; }
     if (!fetchState.log.length) { box.hidden = true; list.innerHTML = ''; return; }
     box.hidden = false;
-    var rows = fetchState.log.slice().reverse();
+    var rows = fetchState.log.slice().reverse().slice(0, 8);
     list.innerHTML = rows.map(function (l) {
       return '<li class="' + esc(l.tone) + '"><span class="ali" aria-hidden="true">' + l.icon + '</span><span>' + esc(l.text) + '</span></li>';
     }).join('');
@@ -3106,10 +3106,10 @@ body.easy .foot-note{font-size:13.5px}
     });
     var body = '';
     if (loginState.mode === 'all') {
-      body += '<div class="note"><b>가져올 곳</b><br>' + keys.map(function (k) {
+      body += '<div class="note"><b>가져올 곳</b><ul style="margin:6px 0 0;padding:0;list-style:none">' + keys.map(function (k) {
         var left = groups[k].filter(function (d) { return !state.fetched[d.id]; }).length;
-        return '· ' + esc((AGENCY[k] || {}).name || k) + ' ' + left + '장';
-      }).join('<br>') + '</div>';
+        return '<li>· ' + esc((AGENCY[k] || {}).name || k) + ' ' + left + '장</li>';
+      }).join('') + '</ul></div>';
     }
     body += '<h3 style="font-size:15.5px;font-weight:900;margin:6px 0 8px">어떻게 인증할까요?</h3>' +
       LOGIN_METHODS.map(function (m) {
@@ -3367,7 +3367,7 @@ body.easy .foot-note{font-size:13.5px}
     if (no) { no.textContent = r.no; }
     if (box) {
       box.innerHTML = [
-        ['접수처', r.org + '<br><span style="color:var(--ink-mute);font-size:13px">' + esc(r.orgAddr) + ' · ☎ ' + esc(r.orgTel) + '</span>'],
+        ['접수처', r.org + ' <br><span style="color:var(--ink-mute);font-size:13px">' + esc(r.orgAddr) + ' · ☎ ' + esc(r.orgTel) + '</span>'],
         ['신청한 일', esc(r.program)],
         ['일할 곳', esc(r.workplace)],
         ['함께 낸 서류', '신청서 3장 포함 모두 ' + requiredDocs(docsFor(state.selectedProgram)).length + '장'],
