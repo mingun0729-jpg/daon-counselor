@@ -4568,8 +4568,14 @@ body.easy .twbox p{font-size:16px}
       else if (st.done >= st.total && st.total > 0) { label = '신청서 작성'; noteTxt = ''; }
       else {
         var needN = realDocs(requiredFetchDocs().filter(function (d) { return !state.fetched[d.id]; })).length;
-        label = '기관 로그인 · ' + (st.total - st.done) + '장 수집';
-        noteTxt = needN ? '기관마다 1번 · 인증 ' + needN + '번' : '';
+        /* '장 수집'은 기관에서 실제로 받아올 수 있는 서류 수로 센다(신분증 사본처럼 직접 준비하는 서류 제외). */
+        if (needN) {
+          label = '기관 로그인 · ' + needN + '장 수집';
+          noteTxt = '기관마다 1번 · 인증 ' + needN + '번';
+        } else {
+          label = '서류 직접 준비 · 다음 단계';
+          noteTxt = '자동으로 받을 서류는 다 받았습니다 · 남은 서류는 직접 준비';
+        }
       }
     } else if (v === 'submit') {
       if (state.receipt && state.receipt.no) {
@@ -7522,6 +7528,8 @@ body.easy .twbox p{font-size:16px}
     if (v === 'docs') {
       var st = docsStats();
       if (st.total === 0 || st.done >= st.total) { go('submit'); return; }
+      /* 자동으로 받을 서류가 남아 있지 않으면(신분증 사본처럼 직접 준비하는 것만 남았다) 바로 넘긴다. */
+      if (!realDocs(requiredFetchDocs().filter(function (d) { return !state.fetched[d.id]; })).length) { markSelfDocs(); return; }
       openLogin('all');
       return;
     }
