@@ -38,7 +38,7 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 | `#view-card` | `#cardHome`(시작: `#btnScan`, `#btnSamples`, `#btnManual`, `#cardFile`) / `#cardDone`(인식 결과 `#cardVisual`, 배려 안내 `#cardHint`, `#btnCardEdit`, `#btnCardAgain`) |
 | `#view-jobs` | `#condWho`·`#btnCond`(조건 바꾸기), `#jobList`(라디오 카드), `#btnJobMore`, `#offBox`(지금은 어려운 일자리), `#workSection`(`#rankBox`/`#rankList` 희망 근무지 1·2·3순위 요약, `#workList` 순위 버튼이 붙은 근무지 카드, `#btnWorkMore`, `#assignRule` 배정 기준), `#supportBox`(근로지원 제도) |
 | `#view-docs` | 진행 카드(`#docsTitle`·`#docProgTxt`·`#docBar`), **실시간 진행 로그** `#agentLog`/`#alList`, 기관 카드 `#agencyList`, 파일 카드 `#fileList`, `#selfBox`(직접 준비) |
-| `#view-submit` | 자동 채움 안내 `#autoDesc`, 희망 근무지 순위 `#confirmRanks`(+`#btnRankEdit`), 입력 3칸(`#inPhone`, `#inAddr`, `#inBank`+`#inAcct`)과 `#inMotiv`(+`#btnDraft`), **추가 신청서 항목(선택)** `#extraBox`/`#extraFields`(서식 1의 성별·소득수준·장기요양·최종학력·전산능력·자격면허·보호자 연락처 등), `#formDocList` |
+| `#view-submit` | 자동 채움 안내 `#autoDesc`, 희망 근무지 순위 `#confirmRanks`(+`#btnRankEdit`), 입력 칸(`#inPhone`, `#inEmail`, `#inAddr`, `#inBank`+`#inAcct`)과 `#inMotiv`(+`#btnDraft`), **추가 신청서 항목(선택)** `#extraBox`/`#extraFields`(서식 1의 성별·소득수준·최종학력·전산능력·자격면허·보호자 연락처 등), `#formDocList`, **자격 판정** `#eligResult`, **자필 서명** `#sigPad`/`#sigState`, **서식 3종 탭** `#formTabs`/`#formPreviewFrame`/`#formMeta` |
 | `#view-done` | 접수증 `#doneNo`·`#doneReceipt`, 인쇄 `#btnPrint`, ZIP `#btnZip`, 메일 `#btnMail` |
 | `.dock` | 화면마다 **큰 버튼 하나** `#ctaMain` + 안내 `#dockNote`. 카드 화면(인식 전)과 완료 화면에서는 숨긴다 |
 | 시트·모달 | `#sheet`(예시 카드·직접 고르기·조건 바꾸기·처음부터), `#ocr`(카드 읽기 4단계), `#login`(기관 로그인 시연), `#submitOv`(제출 4단계), `#fileView`(서류 미리보기 iframe) |
@@ -67,7 +67,11 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 | 11(앱). 읽어주기 | `screenSummaryText`(화면별 대본), `speakScreen` |
 | 12(앱). 저장·복원 | `snapshot`(v4), `saveNow`/`scheduleSave`/`restoreSaved`/`clearSaved`, `resetAll` |
 | 13~15. 시트·이벤트·시작 | `openSheet`/`closeSheet`, `bindEvents`(이벤트 위임), `init` |
-| 7-F. 서류 파일 | `DOC_STYLE`/`DOC_WM`, `DOC_FILE_META`/`DOC_TITLE`, `docFileFor`(HTML/SVG + 실제 Blob 크기), `form1Doc`~`form3Doc`, `certSpec`/`certDoc`, `svgCardDoc`, `docFileCard`/`docPendingCard`, `buildZip`(무압축 ZIP), `openFileView`/`saveDocFile`/`printDocFile` |
+| 7-F. 서류 파일 | `DOC_STYLE`/`DOC_WM`, `DOC_FILE_META`/`DOC_TITLE`, `docFileFor`(HTML/SVG + 실제 Blob 크기), `certSpec`/`certDoc`, `svgCardDoc`, `docFileCard`/`docPendingCard`, `buildZip`(무압축 ZIP, `bytes` 항목 지원), `openFileView`/`saveDocFile`/`printDocFile` |
+| 7-G. 공식 서식 3종 | `OF_STYLE`(A4 인쇄 CSS), `form1Pages`/`form2Pages`/`form3Pages`(원본 구조 그대로), `form1Doc`~`form3Doc`, `allFormsDoc`(3종 한 번에 인쇄), `obx`/`ofv`/`sigMark` |
+| 7-H. 자격 판정 | `ELIG_DEF`, `eligDefault`, `eligibility`(지침 p.15·p.20·p.23·공고 4), `eligBadge`, `renderElig`, `renderEligResult`, `setElig` |
+| 7-I. 자필 서명 | `sigPad`, `sigInit`/`sigRedraw`/`sigDown`/`sigMove`/`sigUp`, `sigStatus`, `sigClear`, `sigMode` |
+| 7-J. 서식 탭·인쇄 | `FORM_TABS`, `renderFormTabs`, `selectFormTab`, `refreshFormPreview`, `printAllForms`/`printOneForm`/`saveOneForm`/`openFormInTab`, `buildSummaryJson` |
 
 ## 3. 데이터·수치 출처
 
@@ -99,6 +103,9 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 17. **단계 표시와 화면 이동** — 화면 이동은 항상 `go(view)`를 거쳐 `state.view`·화면 표시·단계 표시·하단 버튼을 함께 맞춘다. 화면을 직접 감추지 않는다. `go()`는 새 화면 제목(`h1`/`h2`)으로 포커스를 옮기고, 목록을 다시 그리는 함수는 재렌더 뒤 선택한 라디오로 포커스를 돌려준다(`focusBack`). 모달은 `overlayReturn`으로 열었던 버튼에 포커스를 돌린다.
 18. **입력 오류 연결** — 필수 입력은 `required`(aria-required)·`aria-describedby`(오류 span)·`aria-invalid`·오류 문구 `role="alert"`를 함께 쓴다. `validateForm`은 필드 안 모든 입력의 `aria-invalid`를 같이 맞춘다. 새 입력칸을 추가하면 label·오류 문구·연결을 같은 커밋에 넣는다.
 19. **4단계 확인 카드** — `#view-submit` 맨 위 `#confirmCard`에서 이름·생년월일·주소·필요 지원·이동 수단을 확인·수정하게 하고, 값은 `state.form`에 저장되어 `form1Doc`~`form3Doc`·인쇄·ZIP·접수증·미리보기에 그대로 들어간다. 이름·생년월일을 가짜로 만들지 않는다(`birthText()`는 입력값만 쓰고 비어 있으면 `—`).
+20. **공식 서식 3종은 원본 1:1** — 제목·표 구조·항목명·문구를 기장군 2027년 모집공고 [서식1]~[서식3]과 진주시 참여신청서식에서 그대로 옮긴다. 구조를 임의로 바꾸거나 항목을 지어내지 않는다. 값이 없으면 원본처럼 빈칸으로 두고, 글자를 읽지 못하는 항목은 억지로 채우지 않는다.
+21. **자격 판정은 지침 수치** — `eligibility()`의 제한·예외는 「2026년 장애인일자리 사업안내」와 모집공고 근거를 주석으로 남긴다. 제한이 있으면 `submitAll`이 접수를 막고, 서명이 없으면 서명란으로 포커스를 옮긴다.
+22. **개인정보** — 서명 이미지·올린 사진은 브라우저 안에서만 다루고 서버로 보내지 않는다. 공개 저장소이므로 커밋 금지(`CLAUDE.md` 상단 규칙).
 18. **진행 로그** — 기관 서류 수집은 `fetchState.log`에 쌓고 `renderAgentLog()`가 최신 순으로 그린다. 단계는 `connect → login → issue → attach`이며, 새 단계를 넣으면 `phaseLabel()`과 기관 카드 상태 문구를 함께 고친다.
 
 ## 5. Claude Code 협업 규칙

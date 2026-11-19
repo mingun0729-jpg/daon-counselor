@@ -414,6 +414,51 @@ h2.sec .cnt{font-size:15px; font-weight:800; color:var(--grass); background:var(
 .field .withbtn{display:flex; gap:8px}
 .field .withbtn .btn{min-width:auto; white-space:nowrap; padding:0 14px; font-size:15px}
 
+/* ---------- 공식 서식 · 자격 판정 · 자필 서명 ---------- */
+.eligcard{padding:14px 16px}
+.elighead{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:10px}
+.elighead h3{font-size:17px;font-weight:900;letter-spacing:-.02em}
+.eliglist{border-top:1px solid var(--line)}
+.eliglist li{display:flex;flex-wrap:wrap;align-items:flex-start;gap:6px 10px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14.5px;line-height:1.5}
+.eliglist .el-lab{flex:0 0 38%;font-weight:800;color:var(--ink-soft)}
+.eliglist .el-val{flex:1 1 40%;min-width:0;font-weight:800}
+.eliglist .el-note{display:block;margin-top:3px;font-size:13px;font-weight:600;color:var(--ink-mute);line-height:1.5}
+.eliglist .el-lv{flex:0 0 auto;margin-left:auto}
+details.eligs{border:1px solid var(--line);border-radius:12px;margin-top:12px;background:var(--surface-2)}
+details.eligs>summary{min-height:50px;display:flex;align-items:center;gap:6px;padding:0 12px;font-size:15px;font-weight:900;cursor:pointer;list-style:none}
+details.eligs>summary::-webkit-details-marker{display:none}
+details.eligs>summary::after{content:"▾";margin-left:auto;color:var(--ink-mute)}
+details.eligs[open]>summary::after{content:"▴"}
+details.eligs .inner{padding:0 12px 12px}
+.eligq{margin-bottom:14px}
+.eligq .lab{display:block;font-size:15px;font-weight:900;margin-bottom:7px}
+.eligq .chip{min-height:44px;font-size:14px;padding:0 12px}
+.badge.bad{background:var(--red-soft);color:var(--red);border-color:var(--red-line)}
+.formtabs{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 10px;margin:0 -2px}
+.formtabs button{flex:0 0 auto;min-height:48px;padding:0 14px;border-radius:999px;border:1.5px solid var(--line-strong);background:var(--surface);font-size:14.5px;font-weight:900;white-space:nowrap}
+.formtabs button[aria-selected="true"]{background:var(--grass-soft);border-color:var(--grass);color:#12452A}
+.formframe{display:block;width:100%;height:560px;border:1px solid var(--line);border-radius:12px;background:#E4E8E3}
+.sigwrap{position:relative}
+#sigPad{display:block;width:100%;height:180px;touch-action:none;border:1.5px dashed var(--line-strong);border-radius:12px;background:#fff;cursor:crosshair}
+.sighint{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;color:#8B978F;font-size:15.5px;font-weight:800;letter-spacing:.02em;text-align:center;padding:0 16px}
+.sigstate{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14.5px;font-weight:800;color:var(--ink-mute)}
+.sigstate.on{color:#12452A}
+body.a11y-big .eliglist li{font-size:17px}
+body.a11y-big .eliglist .el-lab{flex:0 0 100%}
+body.a11y-big .eliglist .el-note{font-size:15px}
+body.a11y-big .eligq .lab{font-size:17px}
+body.a11y-big .eligq .chip{font-size:16px;min-height:50px}
+body.a11y-big .formtabs button{font-size:17px;min-height:56px}
+body.a11y-big #sigPad{height:230px}
+body.a11y-big .sigstate{font-size:16px}
+body.a11y-big details.eligs>summary{font-size:17px;min-height:58px}
+body.a11y-big .formframe{height:620px}
+body.a11y-contrast .eligcard,body.a11y-contrast details.eligs{border-color:#3E6F4F}
+body.a11y-contrast .formframe{background:#0A0E0B}
+body.a11y-contrast .eliglist li{border-color:#3A453C}
+body.a11y-contrast #sigPad{background:#F2F5F0}
+body.a11y-contrast .badge.bad{background:#3A1B19;color:#FFB4AC;border-color:#7A3B36}
+
 /* ---------- 완료 ---------- */
 .donebox{text-align:center; padding:26px 18px; background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); box-shadow:var(--shadow)}
 .donebox .check{width:88px; height:88px; margin:0 auto 10px; border-radius:50%; background:var(--grass-soft); border:2px solid var(--grass-line); display:grid; place-items:center; font-size:44px}
@@ -824,7 +869,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
           <button class="btn block" id="btnSamples" type="button"><span aria-hidden="true">🗂️</span> 예시 인물로 해 보기</button>
           <button class="btn block" id="btnManual" type="button">내 정보 직접 입력</button>
         </div>
-        <p class="micro" style="text-align:center; margin-top:12px">사진은 서버로 보내지 않아요 · 이 시연판은 사진 글자를 <b>자동으로 판독하지 않습니다</b></p>
+        <p class="micro" style="text-align:center; margin-top:12px">사진은 이 브라우저 안에서만 처리하고 서버로 보내지 않아요 · 이 시연판은 사진 글자를 <b>자동으로 판독하지 않습니다</b> · 올린 사진은 서류 묶음(ZIP)에 원본 그대로 첨부됩니다</p>
         <input type="file" id="cardFile" accept="image/*" hidden>
       </div>
 
@@ -845,6 +890,18 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       <div class="condbar">
         <div class="who" id="condWho">조건을 불러오는 중…</div>
         <button class="chip" id="btnCond" type="button">조건 바꾸기</button>
+      </div>
+      <div class="card eligcard" id="eligCard" aria-labelledby="eligTitle">
+        <div class="elighead">
+          <h3 id="eligTitle">신청 자격 확인</h3>
+          <span class="badge ok" id="eligPill">신청 가능</span>
+        </div>
+        <ul class="eliglist" id="eligList"></ul>
+        <details class="eligs">
+          <summary>확인 항목 바꾸기 · 서식 2 항목</summary>
+          <div class="inner" id="eligInputs"></div>
+        </details>
+        <p class="micro" style="margin-top:10px">「2026년 장애인일자리 사업안내」p.15·p.20·p.23 기준. 최종 판정은 수행기관 자격 조회로 확정됩니다.</p>
       </div>
       <h2 class="sec">할 수 있는 일자리 <span class="cnt" id="jobCount">0</span></h2>
       <p class="lead">복지카드·조건 기준 맞춤 결과 · 일자리 선택 시 서류 준비로 이동</p>
@@ -925,7 +982,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
           <button class="btn block small" id="btnSelfDocs" type="button">직접 준비 · 다음 단계</button>
         </div>
       </details>
-      <p class="micro">※ 시연용 가상 연결. 실제 발급은 본인 인증 후 정부24·복지로 등에서 직접. 수집 서류는 신청서와 함께 제출.</p>
+      <p class="micro">※ 이 시연판은 <b>기관 서버에 연결하지 않습니다.</b> 아래 서류는 다온이 이 브라우저 안에서 만든 예시 파일이며(전송·수집 없음), 실제 발급은 본인 인증 후 정부24·복지로·건강보험공단에서 직접 받습니다. 여기 담긴 서류는 신청서 묶음(ZIP)에 함께 저장됩니다.</p>
     </section>
 
     <!-- ============ 4. 신청 ============ -->
@@ -980,6 +1037,11 @@ body.a11y-big.easy .hero h1{line-height:1.4}
           <input id="inPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-1234-5678" aria-required="true" aria-describedby="ePhone" />
           <span class="err" id="ePhone" role="alert" hidden>전화번호 형식 확인 (예: 010-1234-5678)</span>
         </div>
+        <div class="field" id="fEmail">
+          <label for="inEmail">이메일 <span style="font-weight:700;color:var(--ink-mute);font-size:14px">(선택)</span></label>
+          <span class="hint">신청서 ‘연락처 [이메일]’ 칸에 들어갑니다</span>
+          <input id="inEmail" name="email" type="email" autocomplete="email" placeholder="예: daon@example.com" />
+        </div>
         <div class="field" id="fAcct">
           <label for="inBank">은행</label>
           <span class="hint">목록에서 고르거나 직접 입력</span>
@@ -1022,7 +1084,44 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         <summary>함께 제출할 서류</summary>
         <div class="inner"><div class="filelist" id="formDocList"></div></div>
       </details>
-      <p class="micro">※ 시연용. 실제 제출은 협회 방문·본인 서명 필요.</p>
+      <h2 class="sec" style="font-size:18px;margin-top:4px">3. 신청 자격 판정</h2>
+      <div class="card" id="eligResult" aria-live="polite"></div>
+
+      <h2 class="sec" style="font-size:18px">4. 자필 서명</h2>
+      <div class="card">
+        <p class="note" style="margin-top:0">모집공고는 <b>참여신청서·개인정보동의서에 자필서명</b>을 요구합니다(자필이 어려우면 도장 등 가능). 아래 칸에 이름을 직접 써 주세요.</p>
+        <div class="sigwrap">
+          <canvas id="sigPad" tabindex="0" role="img" aria-label="자필 서명 입력란. 마우스나 손가락으로 이름을 씁니다."></canvas>
+          <span class="sighint" id="sigHint" aria-hidden="true">여기에 손가락이나 마우스로 서명</span>
+        </div>
+        <div class="btnrow" style="margin-top:10px">
+          <button class="btn small" id="btnSigAgain" type="button"><span aria-hidden="true">↻</span> 다시 쓰기</button>
+          <button class="btn small" id="btnSigStamp" type="button">도장(인)으로 대체</button>
+          <button class="btn small" id="btnSigText" type="button">이름 입력으로 대체</button>
+        </div>
+        <div class="sigstate" id="sigState">아직 서명하지 않았습니다</div>
+        <button class="linkbtn" id="btnSigErase" type="button" hidden>서명 지우기</button>
+        <p class="micro" style="margin-top:8px">서명은 이 브라우저 안에서만 만들어지고 서버로 보내지 않습니다. 서식 1·2·3의 서명란에 그대로 인쇄됩니다.</p>
+      </div>
+
+      <h2 class="sec" style="font-size:18px">5. 공식 서식 3종</h2>
+      <div class="card">
+        <p class="note" style="margin-top:0">원본과 같은 구조로 만든 <b>필수 서식 3종</b>입니다. 탭을 눌러 확인하고, 인쇄하면 A4 4쪽(서식1·서식2·서식3)으로 나옵니다.</p>
+        <div class="formtabs" id="formTabs" role="tablist" aria-label="공식 서식 고르기"></div>
+        <div class="formpane" id="formPane" role="tabpanel" tabindex="0">
+          <iframe id="formPreviewFrame" class="formframe" title="공식 서식 미리보기"></iframe>
+        </div>
+        <p class="micro" id="formMeta" style="margin:8px 0 10px"></p>
+        <div class="btnrow">
+          <button class="btn small" id="btnFormPrint" type="button"><span aria-hidden="true">🖨️</span> 3종 모두 인쇄·PDF</button>
+          <button class="btn small ghost" id="btnFormPrintOne" type="button">이 서식만 인쇄</button>
+          <button class="btn small ghost" id="btnFormSave" type="button">HTML로 저장</button>
+          <button class="btn small ghost" id="btnFormOpen" type="button">A4 크기로 보기</button>
+        </div>
+        <p class="micro" style="margin-top:10px">원본 대조: 기장군 2027년 모집공고 [서식1]·[서식2]·[서식3] · 진주시 참여신청서식(수신처 ‘진주시장 귀하’) · 보건복지부 「2026년 장애인일자리 사업안내」</p>
+      </div>
+
+      <p class="micro">※ 시연용 프로토타입입니다. 실제 접수는 협회·주민센터 방문 접수이며, 이 화면의 값은 서버로 전송되지 않습니다.</p>
     </section>
 
     <!-- ============ 완료 ============ -->
@@ -1397,15 +1496,11 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   var EXTRA_FIELDS = [
     { key: 'gender', label: '성별', opts: ['남', '여'] },
     { key: 'income', label: '소득수준', opts: ['기초생활수급자', '차상위계층', '해당사항 없음'] },
-    { key: 'care', label: '장기요양등급 판정', opts: ['유', '무'] },
     { key: 'femaleHead', label: '여성가장', opts: ['해당', '비해당'] },
     { key: 'jobTarget', label: '취업지원대상자', opts: ['해당', '비해당'] },
     { key: 'device', label: '보조기기 사용', opts: ['사용', '미사용'] },
     { key: 'edu', label: '최종학력', opts: ['무학', '초졸', '중졸', '고졸', '전문대졸', '대졸 이상'] },
-    { key: 'it', label: '전산능력 (여러 개 가능)', opts: ['문서작성', '표계산', '인터넷', '기타'], multi: true },
-    { key: 'biz', label: '사업자등록', opts: ['유', '무'] },
-    { key: 'emp', label: '취업상태', opts: ['취업상태', '미취업상태'] },
-    { key: 'exp', label: '장애인일자리 참여경험', opts: ['유', '무'] }
+    { key: 'it', label: '전산능력 (여러 개 가능)', opts: ['문서작성', '표계산', '인터넷', '기타'], multi: true }
   ];
 
   /* 접수처 — 공개된 공식 정보. 신청인 값은 모두 가명·예시다. */
@@ -1426,7 +1521,10 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     envs: new Set(),
     selectedProgram: '', selectedWorkplace: '', workplaceRanks: ['', '', ''],
     checked: {}, fetched: {},
-    form: { name: '', birth: '', phone: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '', guardian: '', extra: {}, lic: '' },
+    form: { name: '', birth: '', phone: '', email: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '', guardian: '', extra: {}, lic: '' },
+    elig: eligDefault(),
+    signature: { mode: '', data: '', name: '', at: '' },
+    uploads: [],
     receipt: null,
     easy: false,
     showAllJobs: false,
@@ -2084,9 +2182,9 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   var DOC_WM = '<div class="wm" aria-hidden="true"><i>시연용 가상 문서</i><i>시연용 가상 문서</i><i>시연용 가상 문서</i></div>';
 
   var DOC_FILE_META = {
-    form1: { base: '장애인일자리_참여신청서', ext: 'html', kind: '신청서', who: 'name' },
-    form2: { base: '참여자_정보_확인서', ext: 'html', kind: '신청서', who: 'name' },
-    form3: { base: '개인정보_동의서', ext: 'html', kind: '동의서', who: 'name' },
+    form1: { base: '서식1_참여신청서', ext: 'html', kind: '신청서', who: 'name' },
+    form2: { base: '서식2_참여자정보확인서', ext: 'html', kind: '확인서', who: 'name' },
+    form3: { base: '서식3_개인정보동의서', ext: 'html', kind: '동의서', who: 'name' },
     id: { base: '신분증_사본', ext: 'svg', kind: '증빙', who: 'name' },
     disability: { base: '복지카드_사본', ext: 'svg', kind: '증빙', who: 'name' },
     resident: { base: '주민등록등본', ext: 'html', kind: '발급서류', who: 'sim' },
@@ -2107,9 +2205,9 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   };
 
   var DOC_TITLE = {
-    form1: '장애인일자리사업 참여신청서 (서식 1)',
-    form2: '참여자 정보 확인서 (서식 2)',
-    form3: '개인정보 수집·이용 및 제3자 제공 동의서 (서식 3)',
+    form1: '장애인일자리사업 참여신청서 [서식1]',
+    form2: '참여자 정보 확인서 [서식2]',
+    form3: '개인정보 수집·이용 및 목적 외 이용·제3자 제공 안내·동의서 [서식3]',
     id: '신분증 사본',
     disability: '복지카드(장애인등록증) 사본',
     resident: '주민등록표 등본',
@@ -2202,8 +2300,10 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   function docCacheSig() {
     var f = state.form;
     var checked = Object.keys(state.checked || {}).filter(function (k) { return state.checked[k]; }).join(',');
-    return [state.selectedProgram, f.name, f.birth, f.phone, f.addr, f.motivation, f.job1, f.job2,
+    var sg = state.signature || {};
+    return [state.selectedProgram, f.name, f.birth, f.phone, f.email, f.addr, f.motivation, f.job1, f.job2,
       (f.aids || []).join(','), f.transport, f.guardian, f.lic, JSON.stringify(f.extra || {}),
+      JSON.stringify(state.elig || {}), sg.mode, sg.at,
       rankText(''), state.type, state.severity, checked].join('|');
   }
   function docFileFor(d, seq) {
@@ -2267,149 +2367,285 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     return d.slice(2) + '-' + digit + '******';
   }
 
-  function form1Doc() {
-    var f = state.form;
-    var pid = state.selectedProgram || 'general_full';
-    var prog = progOf(pid);
-    var aids = (f.aids || []).map(function (v) { return AIDS_LABEL[v]; }).filter(Boolean);
-    var ex = f.extra || {};
-    var licTxt = String(f.lic || '').trim();
+  /* ============================================================
+     7-G. 공식 서식 3종 (원본 1:1 대조 구현)
+     - 원본: 기장군 2027년 모집공고 필수서식 [서식1]·[서식2]·[서식3](hwp)
+             진주시 장애인일자리사업 참여신청서식(hwpx)
+     - 제목·표 구조·항목명·체크 항목·법령 문구·서명란·‘귀하’ 문구를 원본과 같게 옮긴다.
+     - 값이 있는 칸만 채우고, 값이 없으면 원본처럼 빈칸으로 두어 직접 적을 수 있게 한다.
+     ============================================================ */
+  var OF_RECEIVER = '진주시장 귀하';   /* 진주시 공식 서식의 수신처 문구 */
+  var OF_YEAR = 2026;
+
+  function ofToday() {
+    var d = new Date();
+    return d.getFullYear() + '년   ' + (d.getMonth() + 1) + '월    ' + d.getDate() + '일';
+  }
+  function obx(on, label) {
+    return '<span class="obx"><span class="ob' + (on ? ' on' : '') + '" aria-hidden="true"></span>' + esc(label) + '</span>';
+  }
+  function ofName() {
+    var n = applicantName();
+    return n === '이름 미입력' ? '' : n;
+  }
+  function ofv(v) {
+    var t = String(v == null ? '' : v).trim();
+    return t ? '<span class="fv">' + esc(t) + '</span>' : '';
+  }
+  function manAge() {
+    var d = birthDigits();
+    if (d.length !== 8) { return null; }
+    var by = +d.slice(0, 4), bm = +d.slice(4, 6), bd = +d.slice(6, 8);
+    if (!by || !bm || !bd) { return null; }
+    var now = new Date();
+    var a = now.getFullYear() - by;
+    if ((now.getMonth() + 1) < bm || ((now.getMonth() + 1) === bm && now.getDate() < bd)) { a -= 1; }
+    return (a > 0 && a < 120) ? a : null;
+  }
+  function f1_edu() { return (state.form.extra || {}).edu || ''; }
+  function f1_it() { var v = (state.form.extra || {}).it; return Array.isArray(v) ? v : []; }
+  function f1_move() {
+    var tv = state.form.transport || 'bus';
+    return {
+      walk: tv === 'wheel', bus: tv === 'bus', car: tv === 'car',
+      etc: tv === 'special' || tv === 'family', note: tv === 'special' ? '특별교통수단' : tv === 'family' ? '보호자 동행' : tv === 'wheel' ? '전동휠체어·도보' : ''
+    };
+  }
+  function f1_program() {
+    var pid = state.selectedProgram || '';
+    return {
+      full: pid === 'general_full', part: pid === 'general_part',
+      general: pid === 'general_full' || pid === 'general_part',
+      welfare: pid === 'welfare' || pid === 'edu_link',
+      eduLink: pid === 'edu_link'
+    };
+  }
+  function f1_job(i) {
     var r = rankList();
-    var rk = r.filter(Boolean);
-    var rankRows = [0, 1, 2].map(function (i) {
-      var nm = r[i] || '';
-      var duty = nm ? workDuty(nm) : '';
-      var cert = i === 0 ? (licTxt ? cbx(true, '있음') + ' · ' + esc(licTxt) : cbx(false, '있음') + cbx(false, '없음')) : '—';
-      return docTr([{ h: (i + 1) + '순위', cls: 'c' },
-        { t: nm ? esc(nm) + (duty ? '<br><span class="dim">' + esc(duty) + '</span>' : '') : '미기재' },
-        { t: cert, cls: 'c' }]);
-    }).join('');
-
-    var catGeneral = pid === 'general_full' || pid === 'general_part';
-    var catWelfare = pid === 'welfare' || pid === 'edu_link';
-    var catSpecial = pid === 'special_care' || pid === 'special_massage';
-    var catOther = pid === 'standard' || pid === 'remote';
-
-    var tv = f.transport || 'bus';
-    var tWalk = tv === 'wheel' || tv === 'walk';
-    var tBus = tv === 'bus';
-    var tCar = tv === 'car';
-    var tEtc = !tWalk && !tBus && !tCar;
-    var etcNote = tv === 'special' ? ' (특별교통수단)' : tv === 'family' ? ' (보호자 동행)' : tv === 'wheel' ? ' (전동휠체어)' : '';
-
-    var body = docHead() +
-      '<div class="docrow"><span class="rcptbox"><b>접수번호</b> 미기재</span></div>' +
-      '<h1>장애인일자리사업 참여신청서</h1>' +
-      '<p class="sub">2026년 장애인일자리사업 · 「2026년 장애인일자리 사업안내」 [서식 1] · ' + esc(ORG.short) + ' 접수용</p>' +
-
-      '<h2>1. 신청분야 (일자리 유형)</h2>' +
-      '<div class="cbline">' + cbx(catGeneral, '일반형일자리') + '(' + cbx(pid === 'general_full', '전일제') + cbx(pid === 'general_part', '시간제') + ')</div>' +
-      '<div class="cbline">' + cbx(catWelfare, '복지일자리') + '(' + cbx(pid === 'welfare', '참여형') + cbx(pid === 'edu_link', '특수교육-복지연계형') + ')</div>' +
-      '<div class="cbline">' + cbx(catSpecial, '특화형일자리') + '(' + cbx(pid === 'special_care', '발달장애인 요양보호사 보조') + cbx(false, '장애인편의시설 모니터링') + cbx(pid === 'special_massage', '시각장애인 안마사 파견') + ')</div>' +
-      '<div class="cbline">' + cbx(catOther, '그 외') + '(' + cbx(pid === 'standard', '장애인 표준사업장') + cbx(pid === 'remote', '민간·재택 직무') + ')</div>' +
-
-      '<h2>2. 희망 근무지 및 직무</h2>' +
-      '<table class="rank"><tr><th class="c">순위</th><th>희망 근무지 (직무)</th><th class="c">관련 자격증·경험</th></tr>' + rankRows + '</table>' +
-      '<p class="note">※ 희망 근무지에 배치되지 않을 수도 있으며 배치기관은 변경될 수 있음.</p>' +
-
-      '<h2>3. 기본 인적사항</h2>' +
-      '<table>' +
-      docTr([{ h: '성명' }, { t: esc(applicantName()) }, { h: '생년월일' }, { t: esc(rrnMasked()) }]) +
-      docTr([{ h: '성별' }, { t: cbx(ex.gender === '남', '남') + cbx(ex.gender === '여', '여'), cls: 'c' }, { h: '연락처' }, { t: esc(f.phone || '010-1234-5678 (예시)') }]) +
-      docTr([{ h: '보호자 연락처' }, { t: esc(f.guardian || '—'), cs: 3 }]) +
-      docTr([{ h: '주소' }, { t: esc(f.addr || '경상남도 진주시 ○○로 12 (예시)'), cs: 3 }]) +
-      '</table>' +
-
-      '<h2>4. 자격·선발·지원 정보</h2>' +
-      '<table>' +
-      docTr([{ h: '소득수준' }, { t: opBox(['기초생활수급자', '차상위계층', '해당사항 없음'], ex.income || ''), cs: 3 }]) +
-      docTr([{ h: '장애유형' }, { t: esc(TYPE_LABEL[state.type] || '지체장애') }, { h: '장애정도' }, { t: cbx(state.severity === 'severe', '심한 장애') + cbx(state.severity !== 'severe', '심하지 않은 장애') }]) +
-      docTr([{ h: '장기요양등급 판정' }, { t: opBox(['유', '무'], ex.care || '') }, { h: '여성가장' }, { t: opBox(['해당', '비해당'], ex.femaleHead || '') }]) +
-      docTr([{ h: '취업지원대상자' }, { t: opBox(['해당', '비해당'], ex.jobTarget || '') }, { h: '이동수단' }, { t: cbx(tWalk, '도보') + cbx(tBus, '대중교통') + cbx(tCar, '자가용') + cbx(tEtc, '기타' + etcNote) }]) +
-      docTr([{ h: '보조기기 사용' }, { t: opBox(['사용', '미사용'], ex.device || ''), cs: 3 }]) +
-      docTr([{ h: '필요 지원' }, { t: esc(aids.length ? aids.join(', ') : '없음'), cs: 3 }]) +
-      '</table>' +
-
-      '<h2>5. 주요 이력 및 적격 확인</h2>' +
-      '<table>' +
-      docTr([{ h: '최종학력' }, { t: opBox(EDU_OPTS, ex.edu || ''), cs: 3 }]) +
-      docTr([{ h: '전산능력' }, { t: opBox(IT_OPTS, '', Array.isArray(ex.it) ? ex.it : []), cs: 3 }]) +
-      docTr([{ h: '자격면허·경력' }, { t: esc(licTxt || '—'), cs: 3 }]) +
-      docTr([{ h: '사업자등록' }, { t: opBox(['유', '무'], ex.biz || '') }, { h: '취업상태' }, { t: opBox(['취업상태', '미취업상태'], ex.emp || '') }]) +
-      docTr([{ h: '장애인일자리사업 참여경험' }, { t: opBox(['유', '무'], ex.exp || ''), cs: 3 }]) +
-      '</table>' +
-
-      '<h2>6. 지원동기 (다온 작성 · 참고)</h2>' +
-      '<div class="txt">' + esc((f.motivation || '').trim() || '성실하게 배우며 오래 일하고 싶습니다.') + '</div>' +
-
-      '<h2>7. 서약</h2>' +
-      '<div class="serve">위와 같이 장애인일자리사업에 참여하고자 신청합니다. 기재사항은 사실과 다름이 없으며, 상기 개인정보 중 일부는 장애인일자리 사업관리를 위한 전산시스템에 등록됨에 동의합니다.</div>' +
-      '<div class="sign"><span>신청일 ' + esc(todayStr()) + '</span><span>신청인 <b>' + esc(applicantName()) + '</b><span class="line">(서명 또는 인)</span></span></div>' +
-      '<p class="addr">진주시장(사업수행기관장) 귀하</p>' +
-      '<p class="attach"><b>붙임</b> 1. 참여자 정보 확인서 1부. 2. 개인정보 수집·이용 및 제3자 제공 동의서 1부. 3. 행정정보 공동이용 사전동의서 1부.</p>' +
-      '<p class="small dim" style="margin-top:10px">접수처 ' + esc(ORG.name) + ' · ' + esc(ORG.addr) + ' · ☎ ' + esc(ORG.tel) + ' · 신청 사업 ' + esc(prog.name) + '</p>' +
-      docFoot('실제 접수 때는 협회 비치 서식에 자필로 작성·서명해야 합니다.');
-    return docShell(docTitleOf({ id: 'form1' }), body);
+    var nm = r[i] || '';
+    if (!nm) { return ''; }
+    var duty = workDuty(nm);
+    return nm + (duty ? ' · ' + duty : '');
+  }
+  /* 서명 이미지 — 자필 캔버스 / 도장(인) / 이름 입력 */
+  function sigMark(scale) {
+    var s = state.signature || {};
+    var h = scale === 'big' ? 44 : 30;
+    if (s.mode === 'draw' && s.data) {
+      return '<img class="sigimg" style="height:' + h + 'px" src="' + s.data + '" alt="신청인 자필 서명">';
+    }
+    if (s.mode === 'stamp') {
+      return '<span class="sigstamp" style="width:' + h + 'px;height:' + h + 'px;font-size:' + Math.round(h * 0.42) + 'px" aria-label="신청인 도장(인)">인</span>';
+    }
+    if (s.mode === 'text' && s.name) {
+      return '<span class="sigtext" style="font-size:' + Math.round(h * 0.62) + 'px">' + esc(s.name) + '</span>';
+    }
+    return '<span class="sigblank" style="height:' + h + 'px"></span>';
   }
 
-  function form2Doc() {
-    var f = state.form;
-    var aids = (f.aids || []).map(function (v) { return AIDS_LABEL[v]; }).filter(Boolean);
-    var body = docHead() +
-      '<h1>참여자 정보 확인서</h1>' +
-      '<p class="sub">2026년 장애인일자리사업 서식 2 · 수행기관 확인용</p>' +
-      '<table>' +
-      docTr([{ h: '성명' }, { t: esc(applicantName()) }, { h: '생년월일' }, { t: esc(birthText()) }]) +
-      docTr([{ h: '연락처' }, { t: esc(f.phone || '010-1234-5678 (예시)'), cs: 3 }]) +
-      docTr([{ h: '주소' }, { t: esc(f.addr || '경상남도 진주시 ○○로 12 (예시)'), cs: 3 }]) +
-      docTr([{ h: '장애 유형' }, { t: esc(TYPE_LABEL[state.type] || '지체장애') }, { h: '장애 정도' }, { t: esc(SEVERITY_LABEL[state.severity] || '확인 전') }]) +
-      docTr([{ h: '복지카드' }, { t: '등록번호 ' + esc(maskedRrn()) + ' (뒷자리 가림)', cs: 3 }]) +
-      docTr([{ h: '근로 가능 시간' }, { t: '평일 09:00~18:00 중 조정 가능 (예시)' }, { h: '이동 수단' }, { t: esc(transportLabel()) }]) +
-      docTr([{ h: '편의 지원' }, { t: esc(aids.length ? aids.join(', ') : '없음'), cs: 3 }]) +
-      docTr([{ h: '희망 직무' }, { t: esc(f.job1 || '—') + (f.job2 ? ' / ' + esc(f.job2) : ''), cs: 3 }]) +
-      '</table>' +
-      '<h2>확인 사항</h2>' +
-      '<ul class="memo">' +
-      '<li>본인은 위 정보가 사실과 같음을 확인합니다.</li>' +
-      '<li>다른 사업에 중복 참여하지 않았음을 확인합니다.</li>' +
-      '<li>근로 시작 전까지 제출 서류를 모두 갖추어 제출하겠습니다.</li>' +
-      '<li>개인정보 수집·이용 및 제3자 제공에 동의합니다.</li>' +
-      '</ul>' +
-      '<div class="sign"><span>확인일 ' + esc(todayStr()) + '</span><span>참여자 <b>' + esc(applicantName()) + '</b><span class="line">(서명 또는 인)</span></span></div>' +
-      '<div class="issuer">담당자 확인 <span class="stamp">시연용<br>직인</span></div>' +
-      docFoot();
-    return docShell(docTitleOf({ id: 'form2' }), body);
+  function ofRow(cells) {
+    return '<tr>' + cells.map(function (c) {
+      var tag = c.h ? 'th' : 'td';
+      return '<' + tag + (c.cs ? ' colspan="' + c.cs + '"' : '') + (c.rs ? ' rowspan="' + c.rs + '"' : '') +
+        ' class="' + (c.cls || '') + '">' + (c.t == null ? '' : c.t) + '</' + tag + '>';
+    }).join('') + '</tr>';
   }
 
-  function form3Doc() {
-    var body = docHead() +
-      '<h1>개인정보 수집·이용 및 제3자 제공 동의서</h1>' +
-      '<p class="sub">2026년 장애인일자리사업 서식 3 · ' + esc(ORG.short) + '</p>' +
-      '<table>' +
-      docTr([{ h: '성명' }, { t: esc(applicantName()) }, { h: '생년월일' }, { t: esc(birthText()) }]) +
-      docTr([{ h: '연락처' }, { t: esc(state.form.phone || '010-1234-5678 (예시)'), cs: 3 }]) +
-      docTr([{ h: '주소' }, { t: esc(state.form.addr || '경상남도 진주시 ○○로 12 (예시)'), cs: 3 }]) +
-      '</table>' +
-      '<h2>1. 수집·이용 목적</h2>' +
-      '<p class="small">장애인일자리사업 참여 신청 접수, 참여 자격 확인, 근로 배치 및 사후 관리, 급여 지급을 위해 개인정보를 수집·이용합니다.</p>' +
-      '<h2>2. 수집·이용 항목</h2>' +
-      '<p class="small">성명, 생년월일, 주민등록번호(뒷자리 가림), 주소, 연락처, 장애 유형·정도, 복지카드 등록번호, 건강보험 자격, 급여 계좌번호</p>' +
-      '<h2>3. 보유·이용 기간</h2>' +
-      '<p class="small">사업 종료 후 5년까지 보관하며, 보유 기간이 지나면 지체 없이 파기합니다. 다만 관계 법령에 따라 보존이 필요한 경우 해당 기간 동안 보관합니다.</p>' +
-      '<h2>4. 제3자 제공</h2>' +
-      '<table><tr><th>제공받는 자</th><th>제공 목적</th><th>제공 항목</th><th class="c">보유 기간</th></tr>' +
-      docTr([{ t: '진주시 · 주민센터' }, { t: '참여 자격 확인·선발' }, { t: '성명, 장애 정보, 소득·재산 확인 자료' }, { t: '사업 종료 후 5년', cls: 'c' }]) +
-      docTr([{ t: '국민건강보험공단' }, { t: '미취업(자격) 확인' }, { t: '성명, 주민등록번호(가림)' }, { t: '확인 완료 시까지', cls: 'c' }]) +
-      '</table>' +
-      '<h2>5. 동의를 거부할 권리</h2>' +
-      '<p class="small">동의를 거부할 수 있으나, 거부하면 장애인일자리사업 참여 신청이 제한될 수 있습니다.</p>' +
-      '<div class="checks">' + cbx(true, '위 내용을 읽고 개인정보 수집·이용에 동의합니다.') + '<br>' + cbx(true, '고유식별정보(주민등록번호) 처리에 동의합니다.') + '<br>' + cbx(true, '제3자 제공에 동의합니다.') + '</div>' +
-      '<div class="sign"><span>동의일 ' + esc(todayStr()) + '</span><span>동의자 <b>' + esc(applicantName()) + '</b><span class="line">(서명 또는 인)</span></span></div>' +
-      docFoot();
-    return dShell('form3', body);
+  /* ---------------- [서식 1] 장애인일자리사업 참여신청서 ---------------- */
+  function form1Pages() {
+    var f = state.form, ex = f.extra || {}, e = state.elig || {};
+    var p = f1_program();
+    var mv = f1_move();
+    var age = manAge();
+    var lic = String(f.lic || '').trim();
+    var job1 = f1_job(0) || JOB_DEFAULT[state.selectedProgram] || '';
+    var job2 = f1_job(1);
+    var qual = function (hasCert) {
+      return '<span class="q">(관련자격증- ' + obx(hasCert, '있음') + obx(false, '없음') + ' / 관련근무경험- ' + obx(false, '있음') + obx(false, '없음') + ')</span>';
+    };
+    var income = ex.income || '';
+    var exp = (e.cont && e.cont !== '없음') ? '유' : '무';
+    var sigCell =
+      '<div class="serve">위와 같이 장애인일자리사업에 참여하고자 신청합니다. 기재사항은 사실과 다름이 없으며,<br>상기 개인정보 중 일부는 장애인일자리 사업관리를 위한 전산시스템에 등록됨에 동의합니다.</div>' +
+      '<div class="ofdate">' + esc(ofToday()) + '</div>' +
+      '<div class="ofsign"><span class="s1">신청인</span>' + sigMark() + '<span class="s2">(서명 또는 인)</span></div>';
+
+    var rows =
+      ofRow([{ t: '졸업예정자', cls: 'lab', cs: 2 }, { t: obx(false, '특수학교(급)') }, { t: obx(false, '대학교'), cs: 5 }, { t: '', cs: 5 },
+        { t: '접수번호', cs: 4 }, { t: '미기재', cs: 3, cls: 'dim' }]) +
+      ofRow([{ t: '신청분야<br><span class="sm">(일반형, 복지)<br>택 1</span>', cls: 'lab', cs: 2, rs: 2 },
+        { t: obx(p.general, '일반형일자리') }, { t: '1순위', cls: 'lab', cs: 2 },
+        { t: obx(p.full, '전일제') + '<br><span class="sm">(일8시간)</span> ' + obx(p.part, '시간제') + '<br><span class="sm">(일4시간)</span>', cs: 10 },
+        { t: '2순위', cls: 'lab', cs: 2 }, { t: obx(false, '전일제') + '<br>' + obx(false, '시간제'), cs: 3 }]) +
+      ofRow([{ t: obx(p.welfare, '복지일자리') }, { t: '참여형 (주14시간 근무, 월 56시간근무)', cs: 17, cls: 'left' }]) +
+      ofRow([{ t: '희망직무', cls: 'lab', cs: 2, rs: 2 }, { t: '① ' + ofv(job1) + ' ' + qual(!!lic), cs: 18, cls: 'left' }]) +
+      ofRow([{ t: '② ' + ofv(job2) + ' ' + qual(false), cs: 18, cls: 'left' }]) +
+      ofRow([{ t: '성    명', cls: 'lab', cs: 2, rs: 2 }, { t: ofv(ofName()), cs: 4, rs: 2 },
+        { t: '연락처', cls: 'lab', cs: 3, rs: 2 }, { t: '<span class="sm">[핸드폰]</span> ' + ofv(f.phone), cs: 11, cls: 'left' }]) +
+      ofRow([{ t: '<span class="sm">[이메일]</span> ' + ofv(f.email), cs: 11, cls: 'left' }]) +
+      ofRow([{ t: '주민등록번호', cls: 'lab', cs: 2 }, { t: ofv(rrnMasked()) + '<span class="sm"> (만 ' + (age == null ? '   ' : age) + '세)</span>', cs: 13 },
+        { t: '성 별', cls: 'lab', cs: 2 }, { t: obx(ex.gender === '남', '남') + obx(ex.gender === '여', '여'), cs: 3 }]) +
+      ofRow([{ t: '주     소', cls: 'lab', cs: 2 }, { t: ofv(f.addr), cs: 18, cls: 'left' }]) +
+      ofRow([{ t: '소득수준', cls: 'lab', cs: 2 },
+        { t: obx(income === '기초생활수급자', '기초생활수급자') + obx(income === '차상위계층', '차상위계층') + obx(income === '해당사항 없음' || income === '해당없음', '해당없음'), cs: 11 },
+        { t: '장기요양등급<br>판정유무', cls: 'lab', cs: 4 }, { t: obx(e.care === '유', '유') + ' ' + obx(e.care === '무', '무'), cs: 3 }]) +
+      ofRow([{ t: '여성가장', cls: 'lab', cs: 2 }, { t: obx(ex.femaleHead === '해당', '해당') + obx(ex.femaleHead === '비해당', '비해당'), cs: 7 },
+        { t: '취업지원대상자', cls: 'lab', cs: 6 }, { t: obx(ex.jobTarget === '해당', '해당') + obx(ex.jobTarget === '비해당', '비해당'), cs: 5 }]) +
+      ofRow([{ t: '장애유형', cls: 'lab', cs: 2 }, { t: ofv(TYPE_LABEL[state.type] || ''), cs: 7, cls: 'left' },
+        { t: '장애정도', cls: 'lab', cs: 3 }, { t: obx(state.severity === 'severe', '심한 장애') + obx(state.severity === 'mild', '심하지 않은 장애'), cs: 8 }]) +
+      ofRow([{ t: '특수교육대상자', cls: 'lab', cs: 2 },
+        { t: obx(p.eduLink, '특수교육 대상자') + '<br><span class="sm">*특수교육 복지연계형 일자리 참여자만 해당</span>', cs: 7, cls: 'left' },
+        { t: '이동수단', cls: 'lab', cs: 3 },
+        { t: obx(mv.walk, '도보') + obx(mv.bus, '대중교통') + '<br>' + obx(mv.car, '자가용') + obx(mv.etc, '기타' + (mv.note ? '(' + mv.note + ')' : '')), cs: 8 }]) +
+      ofRow([{ t: '주  요  이  력  사  항', cls: 'lab', cs: 20 }]) +
+      ofRow([{ t: '최 종 학 력', cls: 'lab', cs: 2 },
+        { t: ['무학', '초졸', '중졸', '고졸', '전문대졸', '대졸 이상'].map(function (o) { return obx(f1_edu() === o, o); }).join(''), cs: 18 }]) +
+      ofRow([{ t: '주요경력사항', cls: 'lab', cs: 2, rs: 2 }, { t: '<span class="ln">(                ∼                )</span>', cs: 18 }]) +
+      ofRow([{ t: '<span class="ln">(                ∼                )</span>', cs: 18 }]) +
+      ofRow([{ t: '직업훈련', cls: 'lab', rs: 3 }, { t: '기관명', cls: 'lab' }, { t: '', cs: 8 }, { t: '', cs: 10 }]) +
+      ofRow([{ t: '훈련기간', cls: 'lab' }, { t: '∼', cs: 8, cls: 'dim' }, { t: '∼', cs: 10, cls: 'dim' }]) +
+      ofRow([{ t: '훈련직종', cls: 'lab' }, { t: '', cs: 8 }, { t: '', cs: 10 }]) +
+      ofRow([{ t: '자격면허', cls: 'lab', cs: 2 }, { t: '1) ' + ofv(lic) + '<br>2) ', cs: 4, cls: 'left' },
+        { t: '전산능력', cls: 'lab', cs: 4 },
+        { t: obx(f1_it().indexOf('문서작성') > -1, '문서작성') + obx(f1_it().indexOf('표계산') > -1, '표계산') + '<br>' +
+            obx(f1_it().indexOf('인터넷') > -1, '인터넷') + obx(f1_it().indexOf('기타') > -1, '기타(         )'), cs: 10 }]) +
+      ofRow([{ t: '사업자등록 또는<br>고유번호증 유무', cls: 'lab', cs: 2 },
+        { t: obx(e.biz === '유' || e.uniq === '유', '유') + obx(e.biz !== '유' && e.uniq !== '유', '무') },
+        { t: '취업상태 여부', cls: 'lab', cs: 4 },
+        { t: obx(e.emp === '취업', '취업상태') + obx(e.emp !== '취업', '미취업상태') + '<br><span class="sm">* 타 재정지원일자리 참여 여부 (공공근로, 자활, 노인일자리 등 )</span>', cs: 13, cls: 'left' }]) +
+      ofRow([{ t: '장애인 지역사회 자립지원 시범사업 대상자 해당여부', cs: 10 }, { t: obx(false, '유') + obx(false, '무'), cs: 10 }]) +
+      ofRow([{ t: '장애인일자리사업<br>참여경험', cls: 'lab', cs: 2 },
+        { t: obx(exp === '유', '유') + obx(exp === '무', '무') + '<br><span class="sm">(참여기간:               일자리사업명:                    )</span>', cs: 18, cls: 'left' }]) +
+      ofRow([{ t: '장애인일자리사업 우수참여자 해당 여부', cs: 6 },
+        { t: obx(false, '유') + obx(false, '무') + '<span class="sm">      최근 3년 이내 (2023년~2025년)</span>', cs: 14 }]) +
+      ofRow([{ t: sigCell, cs: 20, cls: 'sigcell' }]) +
+      ofRow([{ t: esc(OF_RECEIVER), cs: 20, cls: 'recv' }]) +
+      ofRow([{ t: '<span class="bl">붙임</span>  1. 참여자 정보 확인서【서식2】1부.<br>      2. 개인정보 조회·제공 및 활용에 관한 동의서【서식3】1부.<br>      3. 그 외 해당자에 한해 제출해야 하는 서류(모집 공고문 참조) 각 1부.', cs: 20, cls: 'left attach' }]);
+
+    return ['<div class="fh">【 서식1 】</div>' +
+      '<div class="ftitle">장애인일자리사업 참여신청서</div>' +
+      '<table class="of"><colgroup>' + ofCols() + '</colgroup><tbody>' + rows + '</tbody></table>' +
+      '<p class="srcnote">원본 대조: 기장군 2027년 모집공고 [서식1] · 진주시 참여신청서식 · 수신처는 진주시 서식 문구</p>'];
   }
-  function dShell(id, body) {
-    return docShell(DOC_TITLE[id] || '문서', body);
+  /* 원본 표의 20열 너비 */
+  function ofCols() {
+    var w = [6.2, 6.2, 9.3, 4.35, 4.35, 4.35, 4.35, 4.35, 4.35, 4.35, 4.35, 4.35, 4.35, 4.35, 4.35, 4.35, 4.35, 4.35, 4.35, 4.3];
+    return w.map(function (v) { return '<col style="width:' + v + '%">'; }).join('');
+  }
+
+  /* ---------------- [서식 2] 참여자 정보 확인서 ---------------- */
+  function form2Pages() {
+    var e = state.elig || {};
+    var bizHas = (e.biz === '유' || e.uniq === '유');
+    var bizNote = (e.biz !== '유' && e.uniq === '유') ? '<div class="sm2">(고유번호증)</div>' : '';
+    var row = function (label, cells) {
+      return '<tr><td class="l">' + label + '</td>' + cells.map(function (c) { return '<td class="c">' + c + '</td>'; }).join('') + '</tr>';
+    };
+    return ['<div class="fh">【 서식2 】</div>' +
+      '<div class="fbox">' +
+      '<div class="ftitle" style="margin:16mm 0 12mm">참여자 정보 확인서</div>' +
+      '<div class="f2name"><div><span>참여자 성  명:</span><u>' + esc(applicantName() === '이름 미입력' ? '' : applicantName()) + '</u></div>' +
+      '<div><span>연락처:</span><u>' + esc(state.form.phone || '') + '</u></div></div>' +
+      '<table class="f2"><tbody>' +
+      '<tr><th class="hy" colspan="1">구    분</th><th class="hy" colspan="2">확인사항</th></tr>' +
+      row('사업자등록증 유무', [obx(bizHas, '있음') + bizNote, obx(!bizHas, '없음')]) +
+      row('장애인등록 여부', e.reg === '무' ? [obx(false, '있음'), obx(true, '없음')] : [obx(true, '있음'), obx(false, '없음')]) +
+      row('장기요양등급 판정 여부', e.care === '유' ? [obx(true, '있음'), obx(false, '없음')] : [obx(false, '있음'), obx(true, '없음')]) +
+      row('미취업 상태 여부', e.emp === '취업' ? [obx(true, '취업'), obx(false, '미취업')] : [obx(false, '취업'), obx(true, '미취업')]) +
+      row('임직원 겸임 여부*', e.staff === '해당' ? [obx(true, '해당'), obx(false, '미해당')] : [obx(false, '해당'), obx(true, '미해당')]) +
+      '</tbody></table>' +
+      '<p class="f2note">* 일자리사업 수행기관 또는 배치기관의 법인, 기관단체의 대표, 임직원 겸임 여부</p>' +
+      '<p class="f2warn">※ 위 내용이 사실과 다를 경우, 선발이 취소되거나 장애인<br>일자리사업 참여가 즉시 중단 조치될 수 있음을 확인함.</p>' +
+      '<div class="f2sign"><span>신청인: ' + esc(applicantName() === '이름 미입력' ? '' : applicantName()) + '</span>' + sigMark('big') + '<span>(서명 또는 인)</span></div>' +
+      '<div class="f2date">' + esc(ofToday()) + '</div>' +
+      '<div class="f2recv">' + esc(OF_RECEIVER) + '</div>' +
+      '</div>' +
+      '<p class="srcnote">원본 대조: 기장군 2027년 모집공고 [서식2] (진주시 서식 동일 구조)</p>'];
+  }
+
+  /* ---------------- [서식 3] 개인정보 수집·이용 및 목적 외 이용·제3자 제공 안내·동의서 ---------------- */
+  function form3Pages() {
+    var purposes =
+      '<li>본인식별절차에 이용</li>' +
+      '<li>장애인일자리사업 참여자 선발 및 관리, 지원 등 사업운영</li>' +
+      '<li>장애인일자리사업 참여적격 여부 확인(장애유무 및 장애정도, 장기요양등급판정유무조회, 사업자등록여부조회, 타재정지원일자리사업 참여이력조회, 기초생활보장법에 따른 수급정보, 건강보험득실확인여부조회 등)</li>' +
+      '<li>장애인일자리 전산시스템 정보 입력 및 관리</li>' +
+      '<li>조사연구 등에 필요한 통계자료 및 사업유지·확대를 위한 근거자료</li>' +
+      '<li>만족도조사에 필요한 참여자 기본 정보</li>' +
+      '<li>배치기관별 특성에 따라 관련법에 의거 범죄 경력조회</li>' +
+      '<li>취업정보 제공에 따른 서비스 제공 결과 확인</li>' +
+      '<li>중증장애인직업재활 지원사업 수행기관에 취업정보 제공</li>';
+    var hold = '◦ 사업종료 후 5년간 보유(보유기간 종료일 후 개인정보 즉시 파기)';
+
+    var p1 =
+      '<div class="fh">【 서식3 】</div>' +
+      '<div class="ftitle t3">개인정보 수집·이용 및 목적 외 이용·제3자 제공 안내·동의서</div>' +
+      '<p class="f3lead">장애인일자리사업과 관련하여 귀하의 개인정보를 아래와 같이 수집 ․ 이용 및 목적외 이용 ․ 제3자 제공을 하고자 합니다. 다음의 사항에 대해 충분히 읽어보신 후 서명하여 주시기 바랍니다.</p>' +
+      '<h3 class="f3h">1. 개인정보 수집 및 이용 고지</h3>' +
+      '<div class="pbox">' +
+      '<p class="bk">[개인정보의 수집·이용 목적]</p><ul class="bl">' + purposes + '</ul>' +
+      '<p class="bn">※ 위와 같이 수집·이용되는 개인정보는 장애인일자리 및 중증장애인직업재활 지원사업 전산시스템에 활용됩니다.</p>' +
+      '<p class="bk">[수집·이용하려는 개인정보의 항목]</p>' +
+      '<ul class="bl"><li>성명, 연락처, e-mail주소, 성별, 주소, 소득수준, 학력, 경력, 직업훈련, 자격면허, 전산능력, 장애인일자리사업 참여유형 및 기간, 보수</li>' +
+      '<li>은행계좌(통장사본), 근무상황부, 보수대장, 참여조건합의서</li></ul>' +
+      '<p class="bk dash">[근거 법령]</p><p class="bt">◦ 장애인복지법 시행령 제13조의2(장애인일자리사업 실시)</p>' +
+      '<p class="bk dash">[개인정보 이용 및 보유기간]</p><p class="bt">' + hold + '</p>' +
+      '</div>' +
+      '<h3 class="f3h">2. 고유식별정보 수집 및 이용 고지</h3>' +
+      '<div class="pbox">' +
+      '<p class="bk">[고유식별정보의 수집·이용 목적]</p><ul class="bl">' + purposes + '</ul>' +
+      '<p class="bn">※ 위와 같이 수집·이용되는 개인정보는 장애인일자리 및 중증장애인직업재활 지원사업 전산시스템에 활용됩니다.</p>' +
+      '<p class="bk">[수집·이용하려는 고유식별정보의 항목]</p><p class="bt">⋅ 주민등록번호, 외국인등록번호 등</p>' +
+      '<p class="bk dash">[근거 법령]</p><p class="bt">⋅ 장애인복지법 시행령 제45조의2(민감정보 및 고유식별정보의 처리)</p>' +
+      '<p class="bk dash">[고유식별정보 이용 및 보유기간]</p><p class="bt">' + hold + '</p>' +
+      '<p class="bk dash">[고유식별정보 수집 및 이용안내]</p><p class="bt">◦ 위 근거 법령에 의거하여 고유식별정보 수집 및 이용됨을 안내드립니다.</p>' +
+      '</div>';
+
+    var p2 =
+      '<h3 class="f3h">3. 민감정보 수집 및 이용 고지</h3>' +
+      '<div class="pbox">' +
+      '<p class="bk">[민감정보의 수집·이용 목적]</p><ul class="bl">' + purposes + '</ul>' +
+      '<p class="bn">※ 위와 같이 수집·이용되는 개인정보는 장애인일자리 및 중증장애인직업재활 지원사업 전산시스템에 활용됩니다</p>' +
+      '<p class="bk">[수집·이용하려는 민감정보의 항목]</p><p class="bt">⋅ 장애유형 및 장애정도(복지카드), 기초생활보장법에 따른 수급여부, 특수교육 대상자 여부</p>' +
+      '<p class="bk dash">[근거 법령]</p><p class="bt">◦ 장애인복지법 시행령 제45조의2(민감정보 및 고유식별정보의 처리)</p>' +
+      '<p class="bk dash">[민감정보 이용 및 보유기간]</p><p class="bt">' + hold + '</p>' +
+      '<p class="bk dash">[민감정보 수집 및 이용안내]</p><p class="bt">◦ 위 근거 법령에 의거하여 민감정보 수집 및 이용됨을 안내드립니다.</p>' +
+      '</div>' +
+      '<h3 class="f3h">4. 개인정보의 제3자 제공 고지</h3>' +
+      '<table class="f3"><colgroup><col style="width:13%"><col style="width:19%"><col style="width:34%"><col style="width:14%"><col style="width:20%"></colgroup><tbody>' +
+      '<tr><th>제공처</th><th>목적</th><th>항  목</th><th>기  간</th><th>근  거</th></tr>' +
+      '<tr><td class="c">지자체<br>(시도, 시군구)</td><td>장애인일자리사업 보조사업 운영에 대한 관리·감독</td><td>참여인원수, 직무유형, 근무기관, 근무상태 등 비식별 통계자료</td><td class="c">보조사업 운영 종료 시까지</td><td>장애인복지법 시행령 제13조의2, 개인정보보호법 제18조 제2항 (법령상 관리·감독 목적)</td></tr>' +
+      '<tr><td class="c">한국장애인개발원</td><td>·참여자 취업정보 제공 및 정보제공에 대한 결과확인</td><td>·성명, 성별, 생년월일, 주소, 전화번호(휴대전화번호), e-mail 주소, 학교, 학년, 최종학력, 참여기관, 사업유형, 직무유형, 장애유형, 장애정도, 기초생활 수급여부</td><td>·한국장애인개발원 내부지침에 의거 개인정보 보유기간 준영구</td><td>장애인복지법 시행령 제13조의2</td></tr>' +
+      '<tr><td class="c">사회보장정보원</td><td>·참여자변동 정보 조회</td><td>·성명, 주민등록번호(외국인등록번호), 급여금액, 급여지급일, 사업참여일, 참여종료일, 사업시작일, 사업종료일</td><td>·사회보장정보원 내부지침에 의거 2년간 보유 후 개인정보 파기</td><td>사회보장기본법 시행령 제19조</td></tr>' +
+      '<tr><td class="c">한국고용정보원</td><td>·재정지원일자리사업 중복 참여 조회</td><td>·성명, 주민등록번호(외국인등록번호), 급여금액, 급여지급일, 사업참여일, 참여종료일, 중도종료일, 중도종료사유, 근무처명, 근무처, 사업자등록번호, 성별, 생년월일, 연락처, 주소, 우편번호, 취약계층정보</td><td>·한국고용정보원 내부지침에 의거 개인정보 보유기간 준영구(요청시 파기)</td><td>고용정책기본법 제13조 2항, 고용정책기본법 시행령 제25조 3항</td></tr>' +
+      '<tr><td class="c">경찰서</td><td>·범죄경력조회</td><td>·성명, 주민등록번호(외국인등록번호), 성별, 주소, 연락처 수집된 개인정보</td><td>·경찰청 내부지침에 의거 경력조회 개인정보 보유</td><td>아동·청소년의 성보호에 관한 법률 제56조, 장애인복지법 제59조의 3, 사회복지사업법 제35조의 2</td></tr>' +
+      '<tr><td class="c">한국장애인고용공단</td><td>·범부처 취업지원시스템 서비스 의뢰자 서비스 결과</td><td>·주민등록번호, 서비스제공시작일자, 서비스제공종료일자, 희망지원 처리상태코드</td><td>·한국장애인고용공단 내부지침에 의거 개인정보 보유기간 준영구</td><td>고용정책기본법 제15조의2, 장애인고용촉진 및 직업재활법 제8조</td></tr>' +
+      '<tr><td class="c">국민건강보험공단</td><td>·장기요양등급 판정자 적정성 확인</td><td>·성명, 주민등록번호(인정관리번호 확인가능하면 인정관리번호로 대체 가능), 시군구(거주지), 참여사업명, 사업유형, 직무명, 참여상태, 사업참여일, 참여종료일, 중도종료일, 중도종료사유, 수행기관명, 수행기관 연락처</td><td>·국민건강보험공단 내부지침에 의거 개인정보 보유기간 준영구</td><td>국민건강보험법 제96조, 노인장기요양법 제15조, 제64조</td></tr>' +
+      '</tbody></table>' +
+      '<p class="bn">※ 위 근거 법령에 의거하여 개인정보 제3자 제공에 대하여 안내드립니다.</p>' +
+      '<p class="f3read">본인은 본 “개인정보의 수집·이용 및 목적외 이용·제3자 제공 안내·동의서” 내용을 읽고 명확히 이해하였습니다.</p>' +
+      '<div class="f2date">' + esc(ofToday()) + '</div>' +
+      '<div class="f3sign"><span>성    명:</span>' + sigMark('big') + '<span>(성명 또는 인)</span></div>' +
+      '<p class="srcnote">원본 대조: 기장군 2027년 모집공고 [서식3] · 진주시 참여신청서식 개인정보 동의서</p>';
+
+    return [p1, p2];
+  }
+
+  function ofPages(list) {
+    return list.map(function (inner) { return '<div class="page">' + inner + '</div>'; }).join('');
+  }
+  function form1Doc() { return ofShell(DOC_TITLE.form1, form1Pages()); }
+  function form2Doc() { return ofShell(DOC_TITLE.form2, form2Pages()); }
+  function form3Doc() { return ofShell(DOC_TITLE.form3, form3Pages()); }
+  function ofShell(title, pages) {
+    return '<!doctype html>\n<html lang="ko">\n<head>\n<meta charset="utf-8">\n' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
+      '<title>' + esc(title) + '</title>\n<style>\n' + DOC_STYLE + '\n' + OF_STYLE + '\n</style>\n</head>\n<body>\n' +
+      '<div class="pagewrap">\n' + ofPages(pages) + '\n</div>\n</body>\n</html>';
+  }
+  /* 3종 한 번에 인쇄·저장 (서식1 → 서식2 → 서식3 1쪽 → 서식3 2쪽, 페이지 나눔) */
+  function allFormsDoc() {
+    return ofShell('공식 서식 3종 · ' + applicantName(), form1Pages().concat(form2Pages()).concat(form3Pages()));
   }
 
   /* --- 문서 본문: 통장·이력서·메모 --- */
@@ -2706,7 +2942,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var offset = 0;
     entries.forEach(function (e) {
       var nameB = utf8Bytes(e.name);
-      var data = utf8Bytes(e.content);
+      var data = (e.bytes && e.bytes.length != null) ? e.bytes : utf8Bytes(e.content);
       var crc = crc32(data);
       var local = [].concat(u32(0x04034b50), u16(20), u16(0x0800), u16(0), u16(dTime), u16(dDate),
         u32(crc), u32(data.length), u32(data.length), u16(nameB.length), u16(0));
@@ -2772,10 +3008,17 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       var fit = '<style>svg{width:100%;max-width:760px;height:auto;display:block;margin:0 auto}html{margin:0;background:#E9EDE9}</style>';
       return c.replace(/<svg\b([^>]*)>/, '<svg$1>' + fit);
     }
-    if (!a11y.big) { return c; }
+    var fit = '<scr' + 'ipt>(function(){function fit(){var ps=document.querySelectorAll(".page");if(!ps.length){return;}' +
+      'var w=document.documentElement.clientWidth-6;for(var i=0;i<ps.length;i++){var p=ps[i];p.style.zoom="";' +
+      'var s=Math.min(1,w/p.getBoundingClientRect().width);p.style.zoom=s;}}' +
+      'window.addEventListener("resize",fit);window.addEventListener("load",fit);fit();setTimeout(fit,250);})();</scr' + 'ipt>';
+    var withFit = function (html) {
+      return html.indexOf('</body>') >= 0 ? html.replace('</body>', fit + '</body>') : html + fit;
+    };
+    if (!a11y.big) { return withFit(c); }
     var extra = '<style>.sheet{font-size:14.6px}h1{font-size:22px}th,td{font-size:13.6px}.txt,.small,.memo{font-size:13.6px}' +
       '.doc-badge,.doc-no,.sub{font-size:11.8px}.sub{font-size:12.4px}</style>';
-    return c.indexOf('</head>') >= 0 ? c.replace('</head>', extra + '</head>') : c;
+    return withFit(c.indexOf('</head>') >= 0 ? c.replace('</head>', extra + '</head>') : c);
   }
   function openFileView(id, opener) {
     var d = findDocById(id);
@@ -2922,7 +3165,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   /* 사진을 올렸을 때 — 이 시연판은 글자를 판독하지 않는다고 먼저 알리고 길을 고르게 한다. */
   function openUploadNotice(fileName) {
     var body = '<div class="note" role="note" style="margin-bottom:14px"><b>사진에서 글자를 자동으로 판독하지 않았습니다.</b><br>' +
-      '이 시연판은 브라우저 안에서 글자를 읽는 OCR을 넣지 않았습니다. 사진은 서버로 보내지 않고, 화면에도 저장하지 않습니다.' +
+      '이 시연판은 브라우저 안에서 글자를 읽는 OCR을 넣지 않았습니다. 사진은 서버로 보내지 않고, 이 브라우저 안에서만 처리됩니다. 올린 사진 원본 1장은 서류 묶음(ZIP)에 그대로 첨부됩니다.' +
       (fileName ? '<br><span style="color:var(--ink-mute)">고른 파일: ' + esc(fileName) + '</span>' : '') + '</div>' +
       '<p class="lead" style="margin-bottom:12px">아래 두 가지 중에서 골라 주세요.</p>' +
       '<div class="btnrow">' +
@@ -3140,7 +3383,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     });
     renderSteps();
     renderCard();
-    if (v === 'jobs') { renderJobs(); }
+    if (v === 'jobs') { renderJobs(); renderElig(); }
     if (v === 'docs') { renderDocs(); }
     if (v === 'submit') { renderSubmit(); }
     if (v === 'done') { renderDone(); }
@@ -3198,8 +3441,11 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       else if (st.done >= st.total && st.total > 0) { label = '신청서 작성'; noteTxt = ''; }
       else { label = '기관 로그인 · ' + (st.total - st.done) + '장 수집'; noteTxt = '주민등록등본·장애인증명서 등'; }
     } else if (v === 'submit') {
+      var jd = eligibility();
       label = '신청서 제출';
-      noteTxt = '이름·생년월일·연락처·계좌 확인';
+      noteTxt = jd.level === '제한' ? '신청 제한 항목이 있어 접수할 수 없습니다'
+        : !(state.signature || {}).mode ? '자필 서명을 먼저 해 주세요'
+          : '준비됐습니다 · 서식 3종 함께 제출';
     } else if (v === 'done') {
       label = '처음부터 다시 하기';
     }
@@ -3859,6 +4105,14 @@ body.a11y-big.easy .hero h1{line-height:1.4}
           '</div>';
       }).join('');
     }
+    /* 자격 판정 · 서명 · 서식 3종 미리보기 */
+    var em = $('#inEmail');
+    if (em && document.activeElement !== em) { em.value = state.form.email || ''; }
+    renderEligResult();
+    renderFormTabs();
+    refreshFormPreview();
+    sigInit();
+    sigStatus();
   }
 
   function aidChipsHtml() {
@@ -3922,6 +4176,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if ($('#inBirth')) { state.form.birth = ($('#inBirth').value || '').trim(); }
     if ($('#inTransport')) { state.form.transport = $('#inTransport').value || state.form.transport; }
     state.form.phone = ($('#inPhone').value || '').trim();
+    if ($('#inEmail')) { state.form.email = ($('#inEmail').value || '').trim(); }
     state.form.addr = ($('#inAddr').value || '').trim();
     state.form.bank = ($('#inBank').value || '').trim();
     state.form.account = ($('#inAcct').value || '').trim();
@@ -3960,6 +4215,23 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   function submitAll() {
     if (!validateForm()) { return; }
     readForm();
+    var jd = eligibility();
+    if (jd.level === '제한') {
+      var blocked = jd.rows.filter(function (r) { return r.lvl === '제한'; });
+      renderEligResult();
+      toast('신청 제한 항목 ' + blocked.length + '개 · 접수할 수 없습니다');
+      announce('신청 제한 항목이 ' + blocked.length + '개 있어 접수하지 않았습니다. ' + blocked.map(function (r) { return r.label; }).join(', ') + '.');
+      var eb = $('#eligResult');
+      if (eb) { try { eb.scrollIntoView({ block: 'center' }); } catch (e) {} eb.setAttribute('tabindex', '-1'); eb.focus(); }
+      return;
+    }
+    if (!(state.signature || {}).mode) {
+      toast('자필 서명이 필요합니다');
+      announce('자필 서명을 먼저 해 주세요. 서명란으로 이동합니다.');
+      var pad = $('#sigPad');
+      if (pad) { try { pad.scrollIntoView({ block: 'center' }); } catch (e) {} pad.focus(); }
+      return;
+    }
     allDocs().forEach(function (d) { state.checked[state.selectedProgram + ':' + d.id] = true; });
     scheduleSave();
     var ov = $('#submitOv'), box = $('#subSteps'), sub = $('#subSub');
@@ -4034,6 +4306,471 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if (bc) { bc.setAttribute('aria-hidden', 'true'); }
   }
 
+  /* 공식 서식 3종 전용 인쇄 스타일 (A4 고정 · 화면에서는 종이처럼 보이게) */
+  var OF_STYLE = [
+    'html,body{margin:0;padding:0}',
+    'body{background:#E4E8E3;color:#000;font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;-webkit-text-size-adjust:100%}',
+    '.pagewrap{padding:16px 10px 28px}',
+    '.page{position:relative;width:210mm;max-width:100%;margin:0 auto 16px;padding:13mm 11mm 11mm;background:#fff;box-sizing:border-box;color:#000;font-size:10.5px;line-height:1.45;box-shadow:0 2px 10px rgba(20,30,24,.12);word-break:keep-all;overflow-wrap:anywhere}',
+    '.fv{font-weight:600}',
+    '.fh{font-size:10.5px;font-weight:700;margin:0 0 7px;letter-spacing:.04em}',
+    '.ftitle{font-size:21px;font-weight:800;text-align:center;letter-spacing:.12em;margin:2px 0 8px}',
+    '.ftitle.t3{font-size:16px;letter-spacing:.01em;line-height:1.35}',
+    'table.of{width:100%;border-collapse:collapse;table-layout:fixed}',
+    'table.of td{border:1px solid #000;padding:3px 4px;font-size:10px;line-height:1.3;vertical-align:middle;text-align:center;word-break:keep-all}',
+    'table.of td.lab{background:#FFF200;font-weight:700}',
+    'table.of td.left{text-align:left}',
+    'table.of td.dim{color:#333}',
+    'table.of td.sigcell{text-align:left;padding:7px 9px 9px}',
+    'table.of td.recv{font-weight:700;font-size:11px;padding:5px}',
+    'table.of td.attach{font-size:8.6px;line-height:1.5;padding:4px 7px}',
+    '.sm{font-size:8px;font-weight:400;line-height:1.2}',
+    '.q{font-size:8px;white-space:nowrap}',
+    '.ln{color:#333}',
+    '.obx{display:inline-block;white-space:nowrap;margin:0 6px 0 0}',
+    '.ob{display:inline-block;width:8.5px;height:8.5px;border:1px solid #000;margin-right:3px;vertical-align:-1px;background:#fff;position:relative}',
+    '.ob.on{background:#000}',
+    '.ob.on::after{content:"";position:absolute;left:1.8px;top:0;width:2.6px;height:5.4px;border:solid #fff;border-width:0 1.3px 1.3px 0;transform:rotate(40deg)}',
+    '.serve{font-size:9.6px;line-height:1.6;border:0;background:transparent;border-radius:0;padding:0;margin:0;color:#000}',
+    '.ofdate{text-align:center;margin:8px 0 5px;font-size:10.5px}',
+    '.ofsign{display:flex;align-items:center;justify-content:center;gap:12px;font-size:10.5px}',
+    '.ofsign .s1{font-weight:700}',
+    '.ofsign .s2{font-size:9px}',
+    '.sigimg{height:30px;width:auto;max-width:140px;vertical-align:middle}',
+    '.sigstamp{display:inline-grid;place-items:center;width:30px;height:30px;border:2px solid #B0504A;border-radius:50%;color:#B0504A;font-weight:800;line-height:1;transform:rotate(-6deg);vertical-align:middle}',
+    '.sigtext{font-family:"Nanum Brush Script","Segoe Script","휴먼매직체",cursive;color:#10221A;vertical-align:middle;padding:0 6px}',
+    '.sigblank{display:inline-block;min-width:88px;border-bottom:1px solid #000;vertical-align:middle}',
+    '.srcnote{font-size:7.6px;color:#666;margin:5px 0 0;text-align:right}',
+    '.fbox{border:1px solid #000;padding:5mm 7mm 7mm;min-height:244mm}',
+    '.f2name{margin:0 0 9mm;padding-left:20%;font-size:11px;line-height:2.3}',
+    '.f2name span{display:inline-block;min-width:84px}',
+    '.f2name u{display:inline-block;min-width:150px;border-bottom:1px solid #000;text-decoration:none;font-weight:600}',
+    'table.f2{width:80%;margin:0 auto;border-collapse:collapse;table-layout:fixed}',
+    'table.f2 th,table.f2 td{border:1px solid #000;padding:2.5px 5px;font-size:10.5px;line-height:1.3;text-align:center;vertical-align:middle}',
+    'table.f2 th.hy{background:#FFF200;font-weight:700}',
+    'table.f2 td.l{width:37%}',
+    'table.f2 td.c{width:31.5%}',
+    '.sm2{font-size:7.6px;color:#333}',
+    '.f2note{font-size:9.2px;margin:3px 0 0 10%}',
+    '.f2warn{font-size:11px;line-height:1.9;margin:11mm 0 0 9%}',
+    '.f2sign{display:flex;align-items:center;justify-content:center;gap:14px;margin:15mm 0 0;font-size:11px}',
+    '.f2date{text-align:center;margin:11mm 0 0;font-size:11px}',
+    '.f2recv{text-align:center;margin:11mm 0 0;font-size:15px;font-weight:700;letter-spacing:.3em}',
+    '.f3lead{font-size:10.2px;line-height:1.65;margin:1mm 0 4mm;text-indent:6px}',
+    '.f3h{font-size:12.5px;font-weight:700;margin:4mm 0 1.6mm}',
+    '.pbox{border:1px solid #000;padding:2mm 2.6mm}',
+    '.pbox .bk{font-size:9.2px;font-weight:700;margin:1.4mm 0 0.5mm}',
+    '.pbox .bk.dash{border-top:1px dashed #888;padding-top:1.2mm;margin-top:1.8mm}',
+    '.bl{margin:0;padding:0;list-style:none}',
+    '.bl li{font-size:8.7px;line-height:1.5;padding-left:8px;position:relative}',
+    '.bl li::before{content:"·";position:absolute;left:0}',
+    '.bn{font-size:8.5px;font-weight:600;line-height:1.45;margin:1mm 0 0}',
+    '.bt{font-size:8.7px;line-height:1.5;margin:0.3mm 0 0}',
+    'table.f3{width:100%;border-collapse:collapse;table-layout:fixed;margin:1mm 0 0}',
+    'table.f3 th,table.f3 td{border:1px solid #000;padding:1.8px 2.6px;font-size:7.6px;line-height:1.32;vertical-align:middle;text-align:left;word-break:keep-all}',
+    'table.f3 th{font-weight:700;text-align:center}',
+    'table.f3 td.c{text-align:center}',
+    '.f3read{font-size:10.5px;line-height:1.7;margin:8mm 0 0 5mm}',
+    '.f3sign{display:flex;align-items:center;justify-content:center;gap:14px;margin:12mm 0 0;font-size:11.5px}',
+    '@media print{',
+    'body{background:#fff}',
+    '.pagewrap{padding:0}',
+    '.page{width:210mm;min-height:297mm;margin:0;padding:13mm 11mm 11mm;box-shadow:none;page-break-after:always;break-after:page}',
+    '.page:last-child{page-break-after:auto;break-after:auto}',
+    '@page{size:A4;margin:0}',
+    '}',
+    '@media (max-width:700px){.page{padding:6mm 4mm;font-size:8px}.pagewrap{padding:8px 4px 16px}table.of td{font-size:7.4px;padding:1.4px 2px}.ftitle{font-size:14px}.fbox{min-height:0;padding:4mm}.ftitle.t3{font-size:11px}}'
+  ].join('\n');
+
+  /* ============================================================
+     7-H. 신청 자격 판정 — 「2026년 장애인일자리 사업안내」·모집공고 기준
+     - 서식2 확인 항목 + 반복참여 제한을 실제 지침 수치로 계산한다.
+     - 판정은 ‘가능 / 확인 필요 / 신청 제한’ 3단계. 제한이 있으면 접수를 막는다.
+     ============================================================ */
+  var ELIG_DEF = [
+    { key: 'reg', label: '장애인 등록 여부', opts: ['유', '무'] },
+    { key: 'biz', label: '사업자등록증', opts: ['유', '무'] },
+    { key: 'uniq', label: '고유번호증', opts: ['유', '무'] },
+    { key: 'care', label: '장기요양등급 판정', opts: ['유', '무'] },
+    { key: 'emp', label: '미취업 상태', opts: ['미취업', '취업'] },
+    { key: 'staff', label: '임직원 겸임', opts: ['미해당', '해당'] },
+    { key: 'cont', label: '최근 2년 연속 참여', opts: ['없음', '1년 참여', '2년 연속 참여'] }
+  ];
+  function eligDefault() {
+    return { reg: '유', biz: '무', uniq: '무', care: '무', emp: '미취업', staff: '미해당', cont: '없음' };
+  }
+  function eligibility() {
+    var e = state.elig || eligDefault();
+    var rows = [];
+    var level = '가능';
+    function add(key, label, value, lvl, note) {
+      rows.push({ key: key, label: label, value: value, lvl: lvl, note: note || '' });
+      if (lvl === '제한') { level = '제한'; }
+      else if (lvl === '확인' && level !== '제한') { level = '확인'; }
+    }
+    var ex = state.form.extra || {};
+    var age = manAge();
+    var severe = state.severity === 'severe';
+    var poor = ex.income === '기초생활수급자';
+    var over65 = age != null && age >= 65;
+
+    /* ① 장애인 등록 (사업안내 p.15 - 18세 이상 등록 장애인) */
+    if (e.reg === '무') {
+      if (state.selectedProgram === 'edu_link') {
+        add('reg', '장애인 등록 여부', '미등록', '확인', '특수교육-복지연계형은 장애 미등록 특수교육대상자도 재학증명서로 신청할 수 있습니다(사업안내 p.15).');
+      } else {
+        add('reg', '장애인 등록 여부', '미등록', '제한', '장애인복지법에 따라 등록된 장애인만 참여할 수 있습니다.');
+      }
+    } else {
+      add('reg', '장애인 등록 여부', '등록', '가능', '');
+    }
+    /* ② 연령 (18세 이상) */
+    if (age == null) {
+      add('age', '연령 (만 18세 이상)', '생년월일 미입력', '정보', '4단계에서 생년월일을 입력하면 확인됩니다.');
+    } else if (age < 18) {
+      add('age', '연령 (만 18세 이상)', '만 ' + age + '세', '제한', '18세 이상부터 신청할 수 있습니다.');
+    } else {
+      add('age', '연령 (만 18세 이상)', '만 ' + age + '세', '가능', '');
+    }
+    /* ③ 사업자등록증·고유번호증 (공고 4-②) */
+    if (e.biz === '유') {
+      add('biz', '사업자등록증', '있음', '제한', '사업자등록증이 있는 사람은 참여 제한 대상입니다(모집공고 4-②).');
+    } else {
+      add('biz', '사업자등록증', '없음', '가능', '');
+    }
+    if (e.uniq === '유') {
+      add('uniq', '고유번호증', '있음', '확인', '서식1에 고유번호증 보유로 표시됩니다. 사업자로 보아 제한될 수 있어 수행기관 확인이 필요합니다.');
+    } else {
+      add('uniq', '고유번호증', '없음', '가능', '');
+    }
+    /* ④ 장기요양등급 (제한이 아니라 확인 사항 — 사업안내 p.20) */
+    if (e.care === '유') {
+      add('care', '장기요양등급 판정', '판정자', '확인', '장기요양등급 판정자는 등급별 특성을 고려해 근로 가능 여부를 확인합니다. 필요하면 의사진단서를 요구할 수 있습니다(사업안내 p.20).');
+    } else {
+      add('care', '장기요양등급 판정', '미판정', '가능', '');
+    }
+    /* ⑤ 미취업 (국민건강보험 직장가입자 제한 — 공고 4-①) */
+    if (e.emp === '취업') {
+      add('emp', '미취업 상태', '취업(직장가입)', '제한', '국민건강보험 직장가입자는 참여 제한입니다. 사업 시작 전 근로종료일을 근로계약서로 입증하면 신청할 수 있습니다.');
+    } else {
+      add('emp', '미취업 상태', '미취업', '가능', '');
+    }
+    /* ⑥ 임직원 겸임 (공고 4-③) */
+    if (e.staff === '해당') {
+      add('staff', '임직원 겸임', '해당', '제한', '수행기관·배치기관 법인의 대표·임직원은 참여 제한입니다.');
+    } else {
+      add('staff', '임직원 겸임', '미해당', '가능', '');
+    }
+    /* ⑦ 반복참여 제한 (사업안내 p.23) */
+    if (e.cont === '2년 연속 참여') {
+      if (severe || over65 || poor) {
+        var why = severe ? '장애정도가 심한 장애' : over65 ? '만 65세 이상' : '기초생활수급자';
+        add('cont', '2년 연속 참여', '2년 연속', '가능', '반복참여 제한 예외 대상(' + why + ')에 해당해 계속 신청할 수 있습니다. 65세 이상 연속참여자는 선발 득점 5% 감점이 있습니다.');
+      } else {
+        add('cont', '2년 연속 참여', '2년 연속', '제한', '2년 이상 연속 참여자는 1년간 참여가 제한됩니다(사업안내 p.23). 예외: 심한 장애, 만 65세 이상, 기초생활수급자.');
+      }
+    } else if (e.cont === '1년 참여') {
+      add('cont', '2년 연속 참여', '1년(작년)', '가능', '올해 참여하면 2년이 됩니다. 내년 신청 때 반복참여 제한을 확인합니다.');
+    } else {
+      add('cont', '2년 연속 참여', '없음', '가능', '');
+    }
+    return { level: level, rows: rows };
+  }
+  function eligBadge(lvl) {
+    if (lvl === '제한') { return '<span class="badge bad">신청 제한</span>'; }
+    if (lvl === '확인') { return '<span class="badge check">확인 필요</span>'; }
+    if (lvl === '정보') { return '<span class="badge no">입력 전</span>'; }
+    return '<span class="badge ok">신청 가능</span>';
+  }
+  function eligLevelText(lvl) {
+    return lvl === '제한' ? '신청 제한 항목이 있습니다' : lvl === '확인' ? '확인할 항목이 있습니다' : '신청할 수 있습니다';
+  }
+  /* 2단계 카드 */
+  function renderElig() {
+    var j = eligibility();
+    var pill = $('#eligPill'), list = $('#eligList'), box = $('#eligInputs');
+    if (pill) {
+      pill.className = 'badge ' + (j.level === '제한' ? 'bad' : j.level === '확인' ? 'check' : 'ok');
+      pill.textContent = j.level === '제한' ? '신청 제한' : j.level === '확인' ? '확인 필요' : '신청 가능';
+    }
+    if (list) {
+      list.innerHTML = j.rows.map(function (r) {
+        return '<li><span class="el-lab">' + esc(r.label) + '</span>' +
+          '<span class="el-val">' + esc(r.value) + (r.note ? '<span class="el-note">' + esc(r.note) + '</span>' : '') + '</span>' +
+          '<span class="el-lv">' + eligBadge(r.lvl) + '</span></li>';
+      }).join('');
+    }
+    if (box) {
+      var e = state.elig;
+      box.innerHTML = ELIG_DEF.map(function (d) {
+        return '<div class="eligq"><span class="lab" id="elq-' + d.key + '">' + esc(d.label) + '</span>' +
+          '<div class="chiprow" role="group" aria-labelledby="elq-' + d.key + '">' +
+          d.opts.map(function (o) {
+            return '<button class="chip" type="button" data-ekey="' + d.key + '" data-eval="' + esc(o) + '" aria-pressed="' + (e[d.key] === o ? 'true' : 'false') + '">' + esc(o) + '</button>';
+          }).join('') + '</div></div>';
+      }).join('');
+    }
+  }
+  function setElig(key, val) {
+    if (!state.elig) { state.elig = eligDefault(); }
+    if (state.elig[key] === val) { return; }
+    state.elig[key] = val;
+    renderElig();
+    renderEligResult();
+    renderDock();
+    scheduleSave();
+  }
+  /* 4단계 판정 결과 카드 */
+  function renderEligResult() {
+    var box = $('#eligResult');
+    if (!box) { return; }
+    var j = eligibility();
+    box.innerHTML = '<div class="elighead"><h3>신청 자격 판정 결과</h3>' + eligBadge(j.level) + '</div>' +
+      '<p class="lead" style="font-size:15px;margin:2px 0 10px">' + esc(eligLevelText(j.level)) + '</p>' +
+      '<ul class="eliglist">' + j.rows.filter(function (r) { return r.lvl !== '가능' || r.key === 'age' || r.key === 'reg'; }).map(function (r) {
+        return '<li><span class="el-lab">' + esc(r.label) + '</span>' +
+          '<span class="el-val">' + esc(r.value) + (r.note ? '<span class="el-note">' + esc(r.note) + '</span>' : '') + '</span>' +
+          '<span class="el-lv">' + eligBadge(r.lvl) + '</span></li>';
+      }).join('') + '</ul>' +
+      (j.rows.filter(function (r) { return r.lvl !== '가능'; }).length ? '' :
+        '<p class="note" style="margin:10px 0 0">사업자등록증·고유번호증·장기요양등급·미취업·임직원 겸임·반복참여 항목 모두 충족했습니다.</p>') +
+      '<p class="micro" style="margin-top:10px">근거: 「2026년 장애인일자리 사업안내」 p.15·p.20·p.23, 기장군 2027년 모집공고 4. 신청자격·참여 제한. 최종 판정은 수행기관의 자격 조회로 확정됩니다.</p>';
+  }
+
+  /* ============================================================
+     7-I. 자필 서명 패드 — 마우스·터치로 직접 서명, 서식 3종에 그대로 인쇄
+     - 서명 이미지(DataURL)는 이 브라우저 안에서만 만들고 서버로 보내지 않는다.
+     - 자필이 어려우면 도장(인)·이름 입력으로 대체할 수 있다(공고: 도장 등 가능).
+     ============================================================ */
+  var sigPad = { ctx: null, on: false, last: null, ready: false, w: 0, h: 0, dpr: 1 };
+
+  function sigInit() {
+    var c = $('#sigPad');
+    if (!c) { return; }
+    var w = c.clientWidth || 560;
+    var h = c.clientHeight || 180;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    if (sigPad.ready && sigPad.w === w && sigPad.h === h) { sigRedraw(); return; }
+    c.width = Math.round(w * dpr);
+    c.height = Math.round(h * dpr);
+    var ctx = c.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.lineWidth = 2.8;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = '#10221A';
+    sigPad.ctx = ctx;
+    sigPad.ready = true;
+    sigPad.w = w;
+    sigPad.h = h;
+    sigPad.dpr = dpr;
+    sigRedraw();
+  }
+  function sigRedraw() {
+    var c = $('#sigPad');
+    var ctx = sigPad.ctx;
+    if (!c || !ctx) { return; }
+    ctx.clearRect(0, 0, sigPad.w, sigPad.h);
+    var s = state.signature || {};
+    if (s.mode === 'draw' && s.data) {
+      var img = new Image();
+      img.onload = function () { ctx.clearRect(0, 0, sigPad.w, sigPad.h); ctx.drawImage(img, 0, 0, sigPad.w, sigPad.h); };
+      img.src = s.data;
+    }
+  }
+  function sigPos(e) {
+    var c = $('#sigPad');
+    var r = c.getBoundingClientRect();
+    return { x: (e.clientX - r.left) * (sigPad.w / r.width), y: (e.clientY - r.top) * (sigPad.h / r.height) };
+  }
+  function sigDown(e) {
+    if (!sigPad.ctx) { return; }
+    sigPad.on = true;
+    sigPad.last = sigPos(e);
+    var ctx = sigPad.ctx;
+    ctx.beginPath();
+    ctx.moveTo(sigPad.last.x, sigPad.last.y);
+    ctx.lineTo(sigPad.last.x + 0.1, sigPad.last.y + 0.1);
+    ctx.stroke();
+    if (e.pointerId != null) { try { $('#sigPad').setPointerCapture(e.pointerId); } catch (err) {} }
+    e.preventDefault();
+  }
+  function sigMove(e) {
+    if (!sigPad.on || !sigPad.ctx) { return; }
+    var p = sigPos(e);
+    var ctx = sigPad.ctx;
+    ctx.beginPath();
+    ctx.moveTo(sigPad.last.x, sigPad.last.y);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    sigPad.last = p;
+    e.preventDefault();
+  }
+  function sigUp() {
+    if (!sigPad.on) { return; }
+    sigPad.on = false;
+    var c = $('#sigPad');
+    if (!c) { return; }
+    state.signature = { mode: 'draw', data: c.toDataURL('image/png'), name: applicantName(), at: nowStamp() };
+    sigStatus();
+    scheduleSave();
+    refreshFormPreview();
+  }
+  function sigStatus() {
+    var el = $('#sigState');
+    if (!el) { return; }
+    var s = state.signature || {};
+    el.textContent = s.mode === 'draw' ? '서명했습니다 (자필)' :
+      s.mode === 'stamp' ? '도장(인)으로 표시합니다' :
+      s.mode === 'text' ? '이름 입력 서명으로 표시합니다 (자필 아님)' : '아직 서명하지 않았습니다';
+    el.className = 'sigstate ' + (s.mode ? 'on' : '');
+    var hint = $('#sigHint');
+    if (hint) { hint.hidden = s.mode === 'draw'; }
+    var clearBtn = $('#btnSigErase');
+    if (clearBtn) { clearBtn.hidden = !s.mode; }
+  }
+  function sigClear() {
+    state.signature = { mode: '', data: '', name: '', at: '' };
+    if (sigPad.ctx) { sigPad.ctx.clearRect(0, 0, sigPad.w, sigPad.h); }
+    sigStatus();
+    scheduleSave();
+    refreshFormPreview();
+  }
+  function sigMode(mode) {
+    if (mode === 'draw') {
+      sigClear();
+      var pad = $('#sigPad');
+      if (pad) { pad.focus(); }
+      toast('서명란에 손가락이나 마우스로 써 주세요');
+      return;
+    }
+    state.signature = { mode: mode, data: '', name: applicantName(), at: nowStamp() };
+    if (sigPad.ctx) { sigPad.ctx.clearRect(0, 0, sigPad.w, sigPad.h); }
+    sigStatus();
+    scheduleSave();
+    refreshFormPreview();
+    announce(mode === 'stamp' ? '도장으로 서명했습니다.' : '이름 입력 서명으로 표시합니다.');
+  }
+
+  /* ============================================================
+     7-J. 서식 3종 탭 미리보기 · 인쇄 · 저장
+     ============================================================ */
+  var FORM_TABS = [
+    { id: 'form1', label: '서식 1 참여신청서' },
+    { id: 'form2', label: '서식 2 참여자 정보 확인서' },
+    { id: 'form3', label: '서식 3 개인정보 동의서' }
+  ];
+  var formTab = 'form1';
+  var formPreviewKey = '';
+
+  function renderFormTabs() {
+    var bar = $('#formTabs');
+    if (!bar) { return; }
+    if (bar.children.length === FORM_TABS.length) {
+      Array.prototype.forEach.call(bar.children, function (b) {
+        var on = b.getAttribute('data-formtab') === formTab;
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+        b.tabIndex = on ? 0 : -1;
+      });
+      var pane0 = $('#formPane');
+      if (pane0) { pane0.setAttribute('aria-labelledby', 'tab-' + formTab); }
+      return;
+    }
+    bar.innerHTML = FORM_TABS.map(function (t) {
+      var on = t.id === formTab;
+      return '<button type="button" role="tab" id="tab-' + t.id + '" data-formtab="' + t.id + '"' +
+        ' aria-selected="' + (on ? 'true' : 'false') + '" aria-controls="formPane" tabindex="' + (on ? '0' : '-1') + '">' + esc(t.label) + '</button>';
+    }).join('');
+    var pane = $('#formPane');
+    if (pane) { pane.setAttribute('aria-labelledby', 'tab-' + formTab); }
+  }
+  function selectFormTab(id, focus) {
+    if (!id || id === formTab) { formTab = id || formTab; renderFormTabs(); refreshFormPreview(true); return; }
+    formTab = id;
+    renderFormTabs();
+    refreshFormPreview(true);
+    if (focus) { var b = $('#tab-' + id); if (b) { b.focus(); } }
+  }
+  function refreshFormPreview(force) {
+    var fr = $('#formPreviewFrame');
+    if (!fr) { return; }
+    var d = findDocById(formTab);
+    if (!d) { return; }
+    var f = docFileFor(d, seqOfDoc(d));
+    var key = formTab + '|' + docCacheSig();
+    if (!force && key === formPreviewKey) { return; }
+    formPreviewKey = key;
+    fr.setAttribute('srcdoc', previewDocContent(f));
+    var meta = $('#formMeta');
+    if (meta) { meta.textContent = f.name + ' · ' + fmtBytes(f.size) + ' · A4 ' + (formTab === 'form3' ? '2쪽' : '1쪽'); }
+  }
+  var formRefreshTimer = null;
+  function scheduleFormRefresh() {
+    if (formRefreshTimer) { clearTimeout(formRefreshTimer); }
+    formRefreshTimer = setTimeout(function () {
+      if (state.view === 'submit') { renderEligResult(); refreshFormPreview(true); }
+    }, 550);
+  }
+  function printAllForms() {
+    printHtmlString(allFormsDoc(), '공식서식3종_' + safeFileName(applicantName()));
+  }
+  function printOneForm() {
+    var d = findDocById(formTab);
+    if (!d) { return; }
+    printHtmlString(docFileFor(d, seqOfDoc(d)).content, safeFileName(DOC_FILE_META[formTab].base) + '_' + safeFileName(applicantName()));
+  }
+  function saveOneForm() {
+    var d = findDocById(formTab);
+    if (!d) { return; }
+    var f = docFileFor(d, seqOfDoc(d));
+    downloadHtml(f.content, f.name.replace(/\.html$/, ''));
+    toast(f.name + ' 저장 시작');
+  }
+  function openFormInTab() {
+    var d = findDocById(formTab);
+    if (!d) { return; }
+    var f = docFileFor(d, seqOfDoc(d));
+    var blob = new Blob([f.content], { type: 'text/html;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var w = null;
+    try { w = window.open(url, '_blank'); } catch (e) { w = null; }
+    if (!w) { downloadHtml(f.content, f.name.replace(/\.html$/, '')); toast('팝업 차단 · 파일로 저장했습니다'); return; }
+    setTimeout(function () { URL.revokeObjectURL(url); }, 120000);
+    announce('서식을 새 탭에서 A4 크기로 열었습니다.');
+  }
+  /* 묶음 저장에 들어갈 요약 JSON — 서식 3종에 들어간 값과 판정 결과를 같은 값으로 남긴다 */
+  function buildSummaryJson() {
+    var j = eligibility();
+    var f = state.form;
+    var data = {
+      document: '다온(DAON) 서식 3종 신청 묶음',
+      created: nowStamp(),
+      prototype: '공모전 시연용 · 실제 접수 효력 없음 · 모든 값은 이 브라우저 안에서만 처리',
+      applicant: {
+        name: applicantName(), birth: f.birth || '', phone: f.phone || '', email: f.email || '',
+        address: f.addr || '', gender: (f.extra || {}).gender || '',
+        disabilityType: TYPE_LABEL[state.type] || '', severity: SEVERITY_LABEL[state.severity] || ''
+      },
+      application: {
+        program: progOf(state.selectedProgram).name,
+        workplaceRanks: rankList().filter(Boolean),
+        transport: transportLabel(),
+        supports: (f.aids || []).map(function (v) { return AIDS_LABEL[v]; }).filter(Boolean),
+        license: f.lic || '',
+        motivation: f.motivation || ''
+      },
+      eligibility: { level: j.level, items: j.rows },
+      signature: { mode: (state.signature || {}).mode || 'none', at: (state.signature || {}).at || '' },
+      forms: FORM_TABS.map(function (t) { return { file: DOC_TITLE[t.id], a4: t.id === 'form3' ? 2 : 1 }; }),
+      sources: [
+        '기장군 2027년 장애인일자리사업 참여자 모집공고 필수서식 [서식1]·[서식2]·[서식3]',
+        '진주시 장애인일자리사업 참여신청서식(hwpx)',
+        '보건복지부 「2026년 장애인일자리 사업안내」'
+      ]
+    };
+    return JSON.stringify(data, null, 2);
+  }
+
   /* ============================================================
      10. 인쇄 · 메일 · ZIP
      ============================================================ */
@@ -4078,27 +4815,33 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   }
   function saveAllZip() {
     var files = allDocs().map(function (d) { return docFileFor(d, seqOfDoc(d)); });
+    var entries = files.map(function (f) { return { name: f.name, content: f.content }; });
     var r = state.receipt;
     if (r) {
-      files.push({
+      entries.push({
         name: '00_접수증_' + r.no + '.txt',
-        content: '다온(DAON) 시연용 접수증\n접수번호: ' + r.no + '\n접수일시: ' + r.at + '\n접수처: ' + r.org + ' (' + r.orgTel + ')\n신청 사업: ' + r.program + '\n일할 곳: ' + r.workplace + '\n신청인: ' + r.name + '\n\n※ 실제 기관으로 전송된 문서가 아닙니다.',
-        mime: 'text/plain;charset=utf-8'
+        content: '다온(DAON) 시연용 접수증\n접수번호: ' + r.no + '\n접수일시: ' + r.at + '\n접수처: ' + r.org + ' (' + r.orgTel + ')\n신청 사업: ' + r.program + '\n일할 곳: ' + r.workplace + '\n신청인: ' + r.name + '\n\n※ 실제 기관으로 전송된 문서가 아닙니다.'
       });
     }
-    var bytes = buildZip(files.map(function (f) { return { name: f.name, content: f.content }; }));
+    entries.push({ name: '00_요약.json', content: buildSummaryJson() });
+    entries.push({ name: '99_공식서식3종_한번에인쇄.html', content: allFormsDoc() });
+    (state.uploads || []).forEach(function (u, i) {
+      var ext = (String(u.name || '').match(/\.[A-Za-z0-9]+$/) || ['.jpg'])[0];
+      entries.push({ name: '90_업로드_' + safeFileName((state.form && state.form.name) || '신청인') + '_' + (i + 1) + ext, bytes: u.bytes });
+    });
+    var bytes = buildZip(entries);
     var blob = new Blob([bytes], { type: 'application/zip' });
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = url;
-    a.download = '다온_신청서_' + (state.form.name || '신청인') + '.zip';
+    a.download = '다온_서식3종_신청묶음_' + safeFileName(applicantName()) + '.zip';
     a.rel = 'noopener';
     a.style.display = 'none';
     document.body.appendChild(a);
     a.click();
     setTimeout(function () { if (a.parentNode) { a.parentNode.removeChild(a); } URL.revokeObjectURL(url); }, 1500);
-    toast('서류 ' + files.length + '개 ZIP 저장 (' + fmtBytes(blob.size) + ')');
-    announce('신청서와 서류 묶음 저장을 시작했습니다.');
+    toast('서식 3종 + 요약 + 서류 ' + entries.length + '개 ZIP 저장 (' + fmtBytes(blob.size) + ')');
+    announce('서식 3종과 서류 묶음 저장을 시작했습니다.');
   }
   function sendMail() {
     var r = state.receipt;
@@ -4179,7 +4922,8 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       v: 4, view: state.view, card: state.card, type: state.type, severity: state.severity,
       workType: state.workType, envs: Array.from(state.envs), selectedProgram: state.selectedProgram,
       selectedWorkplace: state.selectedWorkplace, workplaceRanks: rankList().slice(), checked: state.checked, fetched: state.fetched,
-      form: state.form, receipt: state.receipt, easy: state.easy
+      form: state.form, elig: state.elig, signature: state.signature,
+      receipt: state.receipt, easy: state.easy
     };
   }
   function saveNow() {
@@ -4210,8 +4954,12 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     state.checked = raw.checked && typeof raw.checked === 'object' ? raw.checked : {};
     state.fetched = raw.fetched && typeof raw.fetched === 'object' ? raw.fetched : {};
     if (raw.form && typeof raw.form === 'object') {
-      state.form = Object.assign({ name: '', birth: '', phone: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '', guardian: '', extra: {}, lic: '' }, raw.form);
+      state.form = Object.assign({ name: '', birth: '', phone: '', email: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '', guardian: '', extra: {}, lic: '' }, raw.form);
       if (!state.form.extra || typeof state.form.extra !== 'object') { state.form.extra = {}; }
+    }
+    state.elig = Object.assign(eligDefault(), (raw.elig && typeof raw.elig === 'object') ? raw.elig : {});
+    if (raw.signature && typeof raw.signature === 'object' && raw.signature.mode) {
+      state.signature = { mode: raw.signature.mode, data: raw.signature.data || '', name: raw.signature.name || '', at: raw.signature.at || '' };
     }
     state.receipt = raw.receipt || null;
     state.easy = !!raw.easy;
@@ -4244,14 +4992,19 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       setRanks(['', '', '']);
       state.checked = {};
       state.fetched = {};
-      state.form = { name: '', birth: '', phone: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '', guardian: '', extra: {}, lic: '' };
+      state.form = { name: '', birth: '', phone: '', email: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '', guardian: '', extra: {}, lic: '' };
+      state.elig = eligDefault();
+      state.signature = { mode: '', data: '', name: '', at: '' };
+      state.uploads = [];
       state.receipt = null;
       state.easy = false;
       document.body.classList.remove('easy');
       clearSaved();
       var hint = $('#cardHint');
       if (hint) { hint.hidden = true; hint.innerHTML = ''; }
-      ['#inName', '#inBirth', '#inPhone', '#inAddr', '#inBank', '#inAcct', '#inMotiv'].forEach(function (sel) { var el = $(sel); if (el) { el.value = ''; } });
+      ['#inName', '#inBirth', '#inPhone', '#inEmail', '#inAddr', '#inBank', '#inAcct', '#inMotiv'].forEach(function (sel) { var el = $(sel); if (el) { el.value = ''; } });
+      if (sigPad.ctx) { sigPad.ctx.clearRect(0, 0, sigPad.w, sigPad.h); }
+      sigStatus();
       $$('.field.bad').forEach(function (f) {
         f.classList.remove('bad');
         Array.prototype.forEach.call(f.querySelectorAll('[aria-invalid]'), function (el) { el.removeAttribute('aria-invalid'); });
@@ -4329,7 +5082,16 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       toast('파일 12MB 초과 · 12MB 이하 이미지 사용');
       return;
     }
-    /* 사진을 실제로 읽지 않는다. 예시값을 몰래 넣지 않고, 길을 사용자가 고르게 한다. */
+    /* 글자는 읽지 않지만, 올린 사진 원본은 서류 묶음(ZIP)에 그대로 담는다. */
+    try {
+      var rd = new FileReader();
+      rd.onload = function () {
+        try {
+          state.uploads = [{ name: file.name || 'card.jpg', type: file.type || 'image/jpeg', size: file.size, bytes: new Uint8Array(rd.result) }];
+        } catch (err) { state.uploads = []; }
+      };
+      rd.readAsArrayBuffer(file);
+    } catch (err) { state.uploads = []; }
     openUploadNotice(file.name || '');
   }
 
@@ -4435,6 +5197,61 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if (cta) { cta.addEventListener('click', onCta); }
     var startOver = $('#btnStartOver');
     if (startOver) { startOver.addEventListener('click', function () { resetAll(false); }); }
+
+    /* 자격 확인 항목 */
+    var eligInputs = $('#eligInputs');
+    if (eligInputs) {
+      eligInputs.addEventListener('click', function (e) {
+        var b = e.target.closest ? e.target.closest('[data-ekey]') : null;
+        if (!b) { return; }
+        setElig(b.getAttribute('data-ekey'), b.getAttribute('data-eval'));
+      });
+    }
+
+    /* 서식 3종 탭 */
+    var ftabs = $('#formTabs');
+    if (ftabs) {
+      ftabs.addEventListener('click', function (e) {
+        var b = e.target.closest ? e.target.closest('[data-formtab]') : null;
+        if (b) { selectFormTab(b.getAttribute('data-formtab')); }
+      });
+      ftabs.addEventListener('keydown', function (e) {
+        var b = e.target.closest ? e.target.closest('[data-formtab]') : null;
+        if (!b) { return; }
+        var i = 0;
+        for (var k = 0; k < FORM_TABS.length; k++) { if (FORM_TABS[k].id === b.getAttribute('data-formtab')) { i = k; } }
+        var to = e.key === 'ArrowRight' ? (i + 1) % FORM_TABS.length : e.key === 'ArrowLeft' ? (i + FORM_TABS.length - 1) % FORM_TABS.length : -1;
+        if (to < 0) { return; }
+        e.preventDefault();
+        selectFormTab(FORM_TABS[to].id, true);
+      });
+    }
+    var fPrint = $('#btnFormPrint');
+    if (fPrint) { fPrint.addEventListener('click', printAllForms); }
+    var fPrintOne = $('#btnFormPrintOne');
+    if (fPrintOne) { fPrintOne.addEventListener('click', printOneForm); }
+    var fSave = $('#btnFormSave');
+    if (fSave) { fSave.addEventListener('click', saveOneForm); }
+    var fOpen = $('#btnFormOpen');
+    if (fOpen) { fOpen.addEventListener('click', openFormInTab); }
+
+    /* 자필 서명 */
+    var padEl = $('#sigPad');
+    if (padEl) {
+      padEl.addEventListener('pointerdown', sigDown);
+      padEl.addEventListener('pointermove', sigMove);
+      padEl.addEventListener('pointerup', sigUp);
+      padEl.addEventListener('pointercancel', sigUp);
+      padEl.addEventListener('pointerleave', function () { if (sigPad.on) { sigUp(); } });
+    }
+    var sigAgain = $('#btnSigAgain');
+    if (sigAgain) { sigAgain.addEventListener('click', function () { sigMode('draw'); }); }
+    var sigStamp = $('#btnSigStamp');
+    if (sigStamp) { sigStamp.addEventListener('click', function () { sigMode('stamp'); }); }
+    var sigText = $('#btnSigText');
+    if (sigText) { sigText.addEventListener('click', function () { sigMode('text'); }); }
+    var sigErase = $('#btnSigErase');
+    if (sigErase) { sigErase.addEventListener('click', sigClear); }
     var selfBtn = $('#btnSelfDocs');
     if (selfBtn) { selfBtn.addEventListener('click', markSelfDocs); }
     var draft = $('#btnDraft');
@@ -4459,12 +5276,13 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       form.addEventListener('input', function (e) {
         var t = e.target;
         if (!t || !t.id) { return; }
-        var map = { inPhone: 'phone', inAddr: 'addr', inBank: 'bank', inAcct: 'account', inMotiv: 'motivation' };
+        var map = { inPhone: 'phone', inEmail: 'email', inAddr: 'addr', inBank: 'bank', inAcct: 'account', inMotiv: 'motivation' };
         var key = map[t.id];
         if (!key) { return; }
         state.form[key] = t.value;
         clearFieldError(t);
         scheduleSave();
+        scheduleFormRefresh();
       });
       form.addEventListener('submit', function (e) { e.preventDefault(); submitAll(); });
     }
@@ -4481,6 +5299,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         else { return; }
         clearFieldError(t);
         scheduleSave();
+        scheduleFormRefresh();
       });
       cc.addEventListener('change', function (e) {
         var t = e.target;
