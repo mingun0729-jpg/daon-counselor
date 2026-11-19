@@ -3551,7 +3551,19 @@ body.easy .foot-note{font-size:13.5px}
     state.receipt = raw.receipt || null;
     state.easy = !!raw.easy;
     document.body.classList.toggle('easy', state.easy);
-    state.view = VIEW_ORDER.indexOf(raw.view) >= 0 ? raw.view : (state.receipt ? 'done' : state.card ? 'jobs' : 'card');
+    if (state.selectedProgram && !PROGRAMS.some(function (p) { return p.id === state.selectedProgram; })) {
+      state.selectedProgram = '';
+      state.selectedWorkplace = '';
+      state.checked = {};
+      state.fetched = {};
+    }
+    state.view = VIEW_ORDER.indexOf(raw.view) >= 0 ? raw.view : (state.receipt ? 'done' : state.card ? 'card' : 'card');
+    if (!state.type) { state.view = 'card'; }
+    if ((state.view === 'docs' || state.view === 'submit') && !state.selectedProgram) { state.view = state.card ? 'jobs' : 'card'; }
+    if (state.view === 'done' && !state.receipt) { state.view = state.card ? 'jobs' : 'card'; }
+    var gotN = 0;
+    Object.keys(state.fetched || {}).forEach(function (k) { if (state.fetched[k]) { gotN += 1; } });
+    if (gotN) { fetchState.log = [{ icon: '✅', text: '서류 ' + gotN + '장을 신청서에 붙여 두었어요', tone: 'ok' }]; }
     return true;
   }
 
