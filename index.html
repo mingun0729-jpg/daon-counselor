@@ -559,6 +559,10 @@ details.box .inner{padding:0 16px 16px; font-size:15px; color:var(--ink-soft); l
 .stickybtns{position:sticky; bottom:0; background:var(--surface); padding-top:10px; margin-top:6px}
 /* 마지막 버튼이 하단 고정 버튼 밑에 가리지 않도록 시트 아래에 여백을 둔다 */
 .sheet.hasfoot{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
+/* 기관 로그인 시트는 내용이 길어 늘 스크롤된다. 시트 자체의 아래 여백은 붙박이 버튼을
+   150px 위로 띄우므로, 여백을 본문(#loginBody) 쪽에 주어 버튼이 시트 맨 아래에 붙게 한다. */
+#login .sheet.hasfoot{padding-bottom:0}
+#login .sheet.hasfoot #loginBody{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
 
 /* ---------- OCR 인식 ---------- */
 #ocr .sheet{text-align:center}
@@ -5052,7 +5056,7 @@ body.easy .twbox p{font-size:16px}
         if (stt) { stt.textContent = disOn ? '함께 조회' : (wc ? '복지카드로 대신' : '받지 않음'); }
         var hintEl = $('#disScopeHint');
         if (hintEl) {
-          var nPhrase = leftN ? '남은 서류 ' + leftN + '건 기준 <b>' + leftN + '번</b>입니다' : '<b>0번</b>입니다(다 받았습니다)';
+          var nPhrase = leftN ? '<b>' + leftN + '번</b> 남았습니다' : '<b>0번</b>입니다(다 받았습니다)';
           hintEl.innerHTML = disOn
             ? '정부24에서 장애인증명서까지 받습니다. 간편인증은 기관마다 1번, ' + nPhrase + '. 뒷자리 7자리는 조회에만 쓰고 저장하지 않습니다.'
             : (wc
