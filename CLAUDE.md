@@ -51,10 +51,10 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 | 0-B. 접근성·임시저장 | `a11y` 상태(`big`·`contrast`·`voice`·`rate`), `applyA11y`, `setA11y`, `setRate`, `TTS_RATE_SLOW(0.82)`/`TTS_RATE_NORMAL(0.93)`, `speak`/`speakScreen`/`stopSpeak`(TTS), `screenSummaryText`, `snapshot`(v2), `saveNow`/`scheduleSave`/`restoreSaved`/`clearSaved`, `updateSaveBadge` |
 | 1. 조건 라벨 | `SEVERITY_LABEL`, `TYPE_LABEL`, `WORK_LABEL`, `ENV_LABEL` |
 | 2. 상태 | `state` — 상담 조건 + `card`(카드 인식 결과) + `form`(신청서 입력) + `formStep` + `ocr` |
-| 3. 질문 정의 | `STEPS` (장애 정도 → 유형 → 근무형태 → 근로환경) |
+| 3. 질문 정의 | `STEPS` (장애 정도 → 유형 → 근무형태 → 근로환경 7개: 휠체어·서있기·단순 반복·의사소통·시각 보조(`vision`)·조용한 환경(`quiet`)·통원 일정(`flexible`)) |
 | 4. 판별 규칙 | `ruleGeneralFull` ~ `ruleRemote`, `statusOf`, `PROGRAMS`(8개 사업), `analyze()` |
 | 5. 근로지원 제도 | `buildSupports()` (7개 제도) |
-| 6. 근무지 예시 | `WORKPLACES`(10곳), `matchWorkplace`, `scoredWorkplaces` |
+| 6. 근무지 예시 | `WORKPLACES`(10곳, 태그 `TAG_LABEL` — `assist` 보조기기 설치 가능·`flex` 근무시간 조정 가능 포함), `matchWorkplace(wp, envs, workType)` — 근로환경 + 희망 근무시간으로 판정(환경 조건이 없어도 근무시간으로 잘 맞음/확인 필요가 나뉨, 재택 근무지는 휠체어 접근 문제 없음), `scoredWorkplaces` |
 | 7. 서류 체크리스트 | `COMMON_DOCS`, `EXTRA_DOCS`, `ALWAYS_EXTRA`, `docsFor(pid)` |
 | 7-B. 복지카드 인식 | `CARD_SAMPLES`, `OCR_STEPS`, `openOcr`, `setOcrStage`, `renderOcr`, `confirmOcr`, `applyCard`, `handleCardFile`, `renderCardStart` |
 | 7-C. 신청서 4단계 | `ORG`(접수처 기관 정보: 기관명·주소·대표전화), `WIZARD_STEPS`, `TRANSPORTS`, `AIDS`, `JOB_OPTIONS`, `wizardHtml`, `step1Html`~`step4Html`, `appSheetHtml`(신청일·수신처·접수처·서류 현황 표·동의·서명란), `guideHtml`(실제 신청·접수 가이드), `todayStr`, `jurisdiction`/`submissionPlace`, `buildAppText`, `buildFormMotivation`, `printApp`, `toggleAid`, `onFieldChange` |

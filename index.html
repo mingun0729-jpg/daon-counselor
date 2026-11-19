@@ -1175,6 +1175,8 @@
     .ff-steps{padding:10px 12px}
     .layout{grid-template-columns:1fr;padding:14px;gap:16px}
     .chat{position:static;max-height:none;border-radius:22px}
+    /* 패널이 고정되지 않는 화면에서는 답변 버튼을 잘라 스크롤시키지 않는다(근로환경 선택지 9개) */
+    .chips{max-height:none;overflow:visible}
     .chat-log{max-height:46vh}
     .app-header{padding:20px 16px 18px}
     .hdr-badge{margin-left:0}
@@ -2319,7 +2321,10 @@
     wheelchair: '휠체어 접근(경사로·승강기) 필수',
     standing: '장시간 서있기 어려움',
     simple: '단순·반복 사무 선호',
-    communication: '수어·문자통역 등 의사소통 지원 필요'
+    communication: '수어·문자통역 등 의사소통 지원 필요',
+    vision: '화면낭독·확대 등 시각 보조 필요',
+    quiet: '조용하고 붐비지 않는 환경 필요',
+    flexible: '통원·치료 일정에 맞춘 시간 조정 필요'
   };
 
   /* ============================================================
@@ -2410,7 +2415,10 @@
         { v: 'wheelchair', label: '휠체어 접근', sub: '경사로·승강기 필수' },
         { v: 'standing', label: '장시간 서있기 어려움', sub: '앉아서 하는 일 선호' },
         { v: 'simple', label: '단순·반복 사무 선호', sub: '여러 일 동시에 어려움' },
-        { v: 'communication', label: '의사소통 지원 필요', sub: '수어·문자통역' }
+        { v: 'communication', label: '의사소통 지원 필요', sub: '수어·문자통역' },
+        { v: 'vision', label: '시각 보조 필요', sub: '화면낭독·확대·점자' },
+        { v: 'quiet', label: '조용한 환경', sub: '소음·붐비는 곳 어려움' },
+        { v: 'flexible', label: '통원 일정 조정', sub: '투석·정기 진료' }
       ]
     }
   ];
@@ -2750,28 +2758,31 @@
   var TAG_LABEL = {
     ramp: '경사로', elevator: '승강기', toilet: '장애인 화장실', seated: '좌식·사무중심',
     remote: '재택가능', sign: '수어·문자 안내', quiet: '정숙한 환경',
-    standing: '서서 하는 일', outdoor: '실외 이동', noise: '소음 있음'
+    standing: '서서 하는 일', outdoor: '실외 이동', noise: '소음 있음',
+    assist: '보조기기 설치 가능', flex: '근무시간 조정 가능'
   };
   var WARN_TAGS = { standing: true, outdoor: true, noise: true };
 
   var WORKPLACES = [
-    { name: '진주시청 민원실 행정도우미', kind: '일반형', duty: '민원 서류 접수·정리, 안내문 발송', hours: '주 40 / 20시간', tags: ['ramp', 'elevator', 'toilet', 'seated', 'quiet'], note: '관공서 대표 근무지' },
-    { name: '진주시지체장애인협회 사무보조', kind: '일반형', duty: '회원 관리 보조, 문서 정리, 행사 준비', hours: '주 20시간', tags: ['ramp', 'elevator', 'toilet', 'seated'], note: '장애인 단체 사무실' },
+    { name: '진주시청 민원실 행정도우미', kind: '일반형', duty: '민원 서류 접수·정리, 안내문 발송', hours: '주 40 / 20시간', tags: ['ramp', 'elevator', 'toilet', 'seated', 'quiet', 'assist'], note: '관공서 대표 근무지' },
+    { name: '진주시지체장애인협회 사무보조', kind: '일반형', duty: '회원 관리 보조, 문서 정리, 행사 준비', hours: '주 20시간', tags: ['ramp', 'elevator', 'toilet', 'seated', 'flex'], note: '장애인 단체 사무실' },
     { name: '진주시립도서관 사서보조', kind: '복지일자리', duty: '도서 배가·정리, 이용 안내', hours: '주 14시간', tags: ['ramp', 'elevator', 'toilet', 'standing', 'quiet'], note: '배가 업무는 서서 하기도 함' },
     { name: '읍·면·동 주민센터 환경정비·주차계도', kind: '복지일자리', duty: '장애인전용주차구역 계도, 청사 주변 정비', hours: '주 14시간', tags: ['outdoor', 'standing'], note: '실외 이동이 많은 직무' },
-    { name: '읽기 쉬운 자료 감수 (재택)', kind: '복지일자리', duty: '관공서 안내문을 쉬운 말로 고치기', hours: '주 14시간 이내', tags: ['remote', 'seated', 'quiet'], note: '2026년 신규 직무' },
-    { name: '재택 데이터·콘텐츠 검수', kind: '민간·재택', duty: '이미지 분류, 문장 검수, 목록 정리', hours: '계약별 (주 10~20시간)', tags: ['remote', 'seated'], note: '계약형 재택 직무' },
-    { name: '장애인 표준사업장 사무보조', kind: '표준사업장', duty: '문서 작성 보조, 우편물 정리', hours: '주 40시간(협의)', tags: ['ramp', 'elevator', 'toilet', 'seated', 'sign'], note: '무장애 작업환경' },
+    { name: '읽기 쉬운 자료 감수 (재택)', kind: '복지일자리', duty: '관공서 안내문을 쉬운 말로 고치기', hours: '주 14시간 이내', tags: ['remote', 'seated', 'quiet', 'flex'], note: '2026년 신규 직무' },
+    { name: '재택 데이터·콘텐츠 검수', kind: '민간·재택', duty: '이미지 분류, 문장 검수, 목록 정리', hours: '계약별 (주 10~20시간)', tags: ['remote', 'seated', 'quiet', 'flex'], note: '계약형 재택 직무' },
+    { name: '장애인 표준사업장 사무보조', kind: '표준사업장', duty: '문서 작성 보조, 우편물 정리', hours: '주 40시간(협의)', tags: ['ramp', 'elevator', 'toilet', 'seated', 'sign', 'assist'], note: '무장애 작업환경' },
     { name: '우체국 우편물 분류 보조', kind: '복지일자리', duty: '우편물 분류·정리', hours: '주 14시간', tags: ['standing', 'toilet'], note: '서서 하는 작업' },
     { name: '노인복지관 급식지원', kind: '복지일자리', duty: '배식·식기 정리 돕기', hours: '주 14시간', tags: ['elevator', 'toilet', 'standing'], note: '급식 시간대 집중' },
     { name: '어린이집 보육도우미', kind: '복지일자리', duty: '놀이·간식 돕기, 교실 정리', hours: '주 14시간', tags: ['standing', 'noise'], note: '소음이 있는 환경' }
   ];
 
-  function matchWorkplace(wp, envs) {
+  function matchWorkplace(wp, envs, wt) {
     var out = [];
     var has = function (t) { return wp.tags.indexOf(t) > -1; };
     if (envs.has('wheelchair')) {
-      if (has('ramp') && has('elevator') && has('toilet')) {
+      if (has('remote')) {
+        out.push({ k: 'ok', t: '집에서 일해 건물 이동 부담이 없습니다.' });
+      } else if (has('ramp') && has('elevator') && has('toilet')) {
         out.push({ k: 'ok', t: '경사로·승강기·장애인 화장실이 모두 있어 휠체어로 이동할 수 있습니다.' });
       } else {
         out.push({ k: 'no', t: '경사로·승강기·장애인 화장실 중 빠진 것이 있어 휠체어 이동이 어렵습니다.' });
@@ -2802,6 +2813,44 @@
         out.push({ k: 'check', t: '업무 지시를 문자·서면으로 받을 수 있는지 확인하세요.' });
       }
     }
+    if (envs.has('vision')) {
+      if (has('assist') || has('remote')) {
+        out.push({ k: 'ok', t: '화면낭독·확대 프로그램 같은 보조기기를 쓸 수 있는 곳입니다.' });
+      } else if (has('outdoor')) {
+        out.push({ k: 'no', t: '실외 이동·계도 업무라 시각 보조만으로는 어렵습니다.' });
+      } else {
+        out.push({ k: 'check', t: '화면낭독·확대 프로그램 설치가 되는지 확인하세요.' });
+      }
+    }
+    if (envs.has('quiet')) {
+      if (has('noise')) {
+        out.push({ k: 'no', t: '소음이 많은 환경입니다.' });
+      } else if (has('quiet') || has('remote')) {
+        out.push({ k: 'ok', t: '조용하고 붐비지 않는 곳입니다.' });
+      } else {
+        out.push({ k: 'check', t: '사람이 붐비거나 시끄러운 시간대가 있는지 확인하세요.' });
+      }
+    }
+    if (envs.has('flexible')) {
+      if (has('flex') || has('remote') || /14/.test(wp.hours)) {
+        out.push({ k: 'ok', t: '근무시간이 짧거나 조정할 수 있어 통원 일정과 맞추기 쉽습니다.' });
+      } else {
+        out.push({ k: 'check', t: '통원·치료 날에 근무시간을 조정할 수 있는지 확인하세요.' });
+      }
+    }
+    /* 희망 근무시간과 맞는지 — 환경 조건이 없는 사람도 판정을 받는다 */
+    if (wt) {
+      var hrs = wp.hours;
+      if (wt === 'remote') {
+        out.push(has('remote') ? { k: 'ok', t: '집에서 일할 수 있습니다.' } : { k: 'check', t: '출근해서 하는 일입니다. 재택이 꼭 필요하면 다른 곳을 보세요.' });
+      } else if (wt === 'full') {
+        out.push(/40/.test(hrs) ? { k: 'ok', t: '희망하신 전일제로 일할 수 있습니다.' } : { k: 'check', t: '희망하신 전일제보다 근무시간이 짧습니다.' });
+      } else if (wt === 'part') {
+        out.push(/20/.test(hrs) ? { k: 'ok', t: '희망하신 시간제(주 20시간)에 맞습니다.' } : { k: 'check', t: '희망하신 주 20시간과 근무시간이 다릅니다.' });
+      } else if (wt === 'welfare') {
+        out.push(/14|10/.test(hrs) ? { k: 'ok', t: '희망하신 짧은 근무(주 14시간 안팎)에 맞습니다.' } : { k: 'check', t: '희망하신 것보다 근무시간이 깁니다.' });
+      }
+    }
     var status = 'none';
     if (out.some(function (r) { return r.k === 'no'; })) { status = 'bad'; }
     else if (out.some(function (r) { return r.k === 'check'; })) { status = 'check'; }
@@ -2811,7 +2860,7 @@
 
   function scoredWorkplaces() {
     var rows = WORKPLACES.map(function (wp, i) {
-      var m = matchWorkplace(wp, state.envs);
+      var m = matchWorkplace(wp, state.envs, state.workType);
       return { wp: wp, m: m, idx: i };
     });
     var order = { good: 0, check: 1, none: 2, bad: 3 };
@@ -3601,6 +3650,9 @@
     if (s.envs.has('standing')) { envSentences.push('서서 오래 일하는 자리보다 앉아서 하는 자리가 맞습니다.'); }
     if (s.envs.has('simple')) { envSentences.push('여러 가지를 동시에 하기보다 정해진 일을 순서대로 할 때 실수가 적습니다.'); }
     if (s.envs.has('communication') && s.type !== 'hearing') { envSentences.push('업무 지시를 글로 받거나 통역의 도움을 받으면 정확하게 해낼 수 있습니다.'); }
+    if (s.envs.has('vision')) { envSentences.push('화면낭독 프로그램이나 화면 확대 기능을 쓰면 문서 업무를 할 수 있습니다.'); }
+    if (s.envs.has('quiet')) { envSentences.push('조용하고 붐비지 않는 곳에서 더 집중해서 일할 수 있습니다.'); }
+    if (s.envs.has('flexible')) { envSentences.push('정기적인 통원 치료가 있어 근무시간을 조금 조정할 수 있으면 좋겠습니다.'); }
     var transport = (TRANSPORTS.filter(function (t) { return t.v === state.form.transport; })[0] || {}).label || '대중교통';
     var aidNames = state.form.aids.map(function (x) { return AIDS_LABEL[x]; }).filter(Boolean);
     var strength = s.envs.has('simple')
@@ -5313,10 +5365,12 @@
     $('#count-work').textContent = String(goodCount);
 
     var html = '<div class="panel-title"><h2><span class="em" aria-hidden="true">🧭</span>맞춤 근로환경 일터 예시</h2><span class="hint">' +
-      (state.envs.size ? '선택한 환경 조건에 맞춰 정렬했어요' : '환경 조건을 고르면 접근성 기준으로 정렬합니다') + '</span></div>';
+      (state.envs.size ? '근로환경·희망 근무시간 기준' : '희망 근무시간 기준') + '</span></div>';
 
     if (!state.envs.size) {
-      html += '<div class="notice"><span class="ico" aria-hidden="true">i</span><div>근로환경 조건(<b>휠체어 접근</b>, <b>서있기 어려움</b> 등)을 고르면 맞는 곳과 아닌 곳이 나뉩니다.</div></div>';
+      html += '<div class="notice"><span class="ico" aria-hidden="true">i</span><div>' + (state.envAnswered
+        ? '특별히 필요한 근로환경이 없어 <b>희망 근무시간</b>으로만 맞췄어요.'
+        : '근로환경 조건(<b>휠체어 접근</b>, <b>시각 보조</b>, <b>조용한 환경</b> 등)을 고르면 더 정확하게 나뉩니다.') + '</div></div>';
     }
 
     html += '<div class="wp-grid">';
@@ -5745,6 +5799,9 @@
     if (s.envs.has('standing')) { envSentences.push('서서 오래 일하는 자리보다 앉아서 하는 자리가 맞습니다.'); }
     if (s.envs.has('simple')) { envSentences.push('여러 가지를 동시에 하기보다 정해진 일을 순서대로 할 때 실수가 적습니다.'); }
     if (s.envs.has('communication') && s.type !== 'hearing') { envSentences.push('업무 지시를 글로 받거나 통역의 도움을 받으면 정확하게 해낼 수 있습니다.'); }
+    if (s.envs.has('vision')) { envSentences.push('화면낭독 프로그램이나 화면 확대 기능을 쓰면 문서 업무를 할 수 있습니다.'); }
+    if (s.envs.has('quiet')) { envSentences.push('조용하고 붐비지 않는 곳에서 더 집중해서 일할 수 있습니다.'); }
+    if (s.envs.has('flexible')) { envSentences.push('정기적인 통원 치료가 있어 근무시간을 조금 조정할 수 있으면 좋겠습니다.'); }
 
     var strength = s.envs.has('simple')
       ? pick(['한 가지 일을 반복해서 정확하게 해내는 데 익숙합니다.', '맡은 일을 순서대로 끝까지 해 두는 편입니다.'], v)
@@ -5872,7 +5929,11 @@
     /* '서서 하는 건 싫어요'는 앉아서 일해야 한다는 뜻이라 '괜찮아요'류만 부정으로 본다 */
     { v: 'standing', re: /서서|서\s?있|오래\s?서|앉아서|오래\s?걷|걷는\s?게\s?힘|다리가\s?아파/, neg: /^.{0,12}?(괜찮|상관\s?없|문제\s?없|잘\s?서)/ },
     { v: 'simple', re: /단순|반복|한\s?가지씩|순서대로|복잡하면|복잡한\s?건/ },
-    { v: 'communication', re: /수어|통역|문자로|필담|의사소통|글로\s?(소통|받|주고)/ }
+    { v: 'communication', re: /수어|통역|문자로|필담|의사소통|글로\s?(소통|받|주고)/ },
+    { v: 'vision', re: /화면\s?낭독|스크린\s?리더|확대|점자|큰\s?글(자|씨)|음성으로\s?(읽|들)/ },
+    /* '시끄러운 건 싫어요'는 조용한 곳이 필요하다는 뜻이라 '괜찮'류만 부정으로 본다 */
+    { v: 'quiet', re: /조용한|소음|시끄러|사람\s?(많은|붐비)|붐비/, neg: /^.{0,12}?(괜찮|상관\s?없|문제\s?없)/ },
+    { v: 'flexible', re: /투석|통원|병원\s?(에\s?)?(다녀|다니|가요|가야|진료)|치료\s?(받|일정)|정기\s?진료/ }
   ];
   /* 조건 낱말 바로 뒤(12자 안)에 오는 부정 표현 */
   var NEG_ENV = /^.{0,12}?(안\s|않|없이|없어도|필요\s?없|괜찮|싫|아니|상관\s?없)/;
