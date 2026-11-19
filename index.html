@@ -1266,21 +1266,21 @@ body.easy .twbox p{font-size:16px}
     <div class="grab" aria-hidden="true"></div>
     <button class="close" id="cfgClose" type="button" aria-label="닫기">✕</button>
     <h2 id="cfgTitle">기관 API 연결 설정</h2>
-    <p class="sub" id="cfgSub">다온 기본 프록시 주소가 미리 들어 있습니다. 그대로 쓰거나, 직접 만든 Cloudflare Worker 주소로 바꿀 수 있어요.</p>
+    <p class="sub" id="cfgSub">다온 기본 프록시가 미리 들어 있습니다. 그대로 쓰거나 직접 만든 주소로 바꿀 수 있어요.</p>
+    <p class="cfgbar" id="cfgState" style="margin:0 0 8px">
+      <span class="cdot" aria-hidden="true"></span><span class="cbtxt" id="cfgStateTxt"><b>아직 연결하지 않았습니다</b>연결 테스트를 눌러 확인해 주세요.</span>
+    </p>
+    <p id="cfgMsg" class="micro" role="status" aria-live="polite" style="min-height:20px;margin:0 0 10px"></p>
     <div class="field">
       <label for="cfgUrl">프록시 주소</label>
       <span class="hint">기본 주소: https://daon-codef-proxy.mingun29.workers.dev</span>
       <input id="cfgUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://daon-codef-proxy.mingun29.workers.dev" />
-      <button class="btn small" id="cfgUrlDefault" type="button" style="margin-top:8px">기본 주소로 채우기</button>
+      <button class="btn small" id="cfgUrlDefault" type="button" style="align-self:flex-start;margin-top:2px">기본 주소로 채우기</button>
     </div>
     <div class="field">
       <label for="cfgToken">접속 토큰 <span class="hint" style="display:inline">(프록시에 PROXY_TOKEN을 걸었을 때만)</span></label>
       <input id="cfgToken" type="password" autocomplete="off" spellcheck="false" placeholder="비워 두어도 됩니다" />
     </div>
-    <p class="cfgbar" id="cfgState" style="margin:0 0 12px">
-      <span class="cdot" aria-hidden="true"></span><span class="cbtxt" id="cfgStateTxt"><b>아직 연결하지 않았습니다</b>연결 테스트를 눌러 확인해 주세요.</span>
-    </p>
-    <p id="cfgMsg" class="micro" role="status" aria-live="polite" style="min-height:20px"></p>
     <div class="stickybtns">
       <button class="btn block" id="cfgTest" type="button">연결 테스트</button>
       <button class="btn primary block" id="cfgSave" type="button">저장</button>
@@ -4870,7 +4870,7 @@ body.easy .twbox p{font-size:16px}
     fitSheetFoot(ov);
     setPageInert(true);
     document.body.style.overflow = 'hidden';
-    if (u) { u.focus(); }
+    if (u) { u.focus(); try { u.setSelectionRange(0, 0); u.scrollLeft = 0; } catch (e) { /* 선택 지원 안 하면 무시 */ } }
   }
   function closeCfg() {
     var ov = $('#apiCfg');
