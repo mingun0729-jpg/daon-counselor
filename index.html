@@ -5141,11 +5141,11 @@ body.easy .twbox p{font-size:16px}
       toast('이 기관 서류는 자동 조회가 없습니다 · 직접 발급해 주세요');
       return;
     }
+    var p = readProfile();
+    if (!validateProfile(p)) { return; }
     if (manualDocs(docs).length) {
       announce('자동 조회 ' + auto.length + '장을 가져옵니다. 나머지 ' + manualDocs(docs).length + '장은 직접 준비합니다.');
     }
-    var p = readProfile();
-    if (!validateProfile(p)) { return; }
     if (needsAddress(auto) && !p.address) {
       var el = $('#cfAddr');
       if (el) { el.setAttribute('aria-invalid', 'true'); el.focus(); }
@@ -5184,18 +5184,18 @@ body.easy .twbox p{font-size:16px}
     } else if (realState.phase === 'verifying') {
       html += '<b>기관 응답을 기다리는 중…</b><p>인증이 확인되면 서류를 받아옵니다.</p>';
     } else if (realState.phase === 'error') {
+      var ec = realState.error && realState.error.code ? String(realState.error.code) : '';
       html += '<b>' + esc((realState.error && realState.error.message) || '조회에 실패했습니다.') + '</b>' +
-        '<p>' + (realState.error && realState.error.code ? '응답 코드 ' + esc(realState.error.code) + ' · ' : '') +
+        '<p>' + (/^CF-/.test(ec) ? '응답 코드 ' + esc(ec) + ' · ' : '') +
         '같은 문제가 계속되면 이 서류는 직접 발급해 주세요. 가짜 성공으로 넘기지 않습니다.</p>';
     } else {
       html += '<b>서류를 받아왔습니다</b><p>신청서에 반영했습니다.</p>';
     }
     html += '</div>';
-    if (realState.done.length || realState.error) {
+    if (realState.done.length) {
       html += '<ul class="twlist" aria-live="polite">' + realState.done.map(function (t) {
         return '<li class="ok"><span class="ti" aria-hidden="true">✓</span><span>' + esc(t) + '</span></li>';
-      }).join('') + (realState.error
-        ? '<li class="err"><span class="ti" aria-hidden="true">!</span><span>' + esc(realState.error.message) + '</span></li>' : '') + '</ul>';
+      }).join('') + '</ul>';
     }
     if (realState.phase === 'error') {
       html += '<button class="btn ghost block" type="button" data-real-skip="1" style="margin-top:10px">이 서류는 직접 준비하고 넘어가기</button>';
@@ -6919,6 +6919,16 @@ body.easy .twbox p{font-size:16px}
     var cfgUrlEl = $('#cfgUrl');
     if (cfgUrlEl) {
       cfgUrlEl.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); testCfg(true); } });
+    }
+    var loginBodyEl = $('#loginBody');
+    if (loginBodyEl) {
+      loginBodyEl.addEventListener('input', function (e) {
+        var t = e.target;
+        if (!t || !t.id || !/^cf(Name|Birth|Phone|Addr)$/.test(t.id)) { return; }
+        t.removeAttribute('aria-invalid');
+        var err = document.getElementById(t.id + '-err');
+        if (err) { err.hidden = true; err.textContent = ''; }
+      });
     }
 
     document.addEventListener('click', function (e) {
