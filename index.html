@@ -1012,7 +1012,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       <details class="box" id="extraBox">
         <summary>추가 신청서 항목 (선택)</summary>
         <div class="inner">
-          <p class="note" style="margin:0 0 14px">실제 참여신청서(서식 1)에 있는 항목입니다. 고르지 않으면 신청서에 빈칸(□)으로 인쇄되어 직접 표시할 수 있습니다.</p>
+          <p class="note" style="margin:0 0 14px">실제 참여신청서(서식 1)에 있는 항목입니다. 고르지 않으면 신청서에 빈칸으로 인쇄되어 직접 표시할 수 있습니다.</p>
           <div id="extraFields"></div>
         </div>
       </details>
@@ -2046,9 +2046,9 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     '.small{font-size:11.2px;color:#3F4E44;line-height:1.7;margin:0 0 8px}',
     '.checks{font-size:11.6px;font-weight:800;color:#11462A;background:#F3F9F5;border:1px dashed #B7D9C3;border-radius:8px;padding:8px 10px;margin:4px 0 0}',
     '.chk{display:inline-block;margin:0 12px 0 0;white-space:nowrap}',
-    '.chk i{display:inline-block;width:10px;height:10px;border:1px solid #6F7C74;border-radius:2px;margin-right:5px;vertical-align:-1px;position:relative;background:#fff}',
+    '.chk i{display:inline-block;width:11px;height:11px;border:1px solid #6F7C74;border-radius:2px;margin-right:5px;vertical-align:-1.5px;position:relative;background:#fff}',
     '.chk.on i{background:#1B6438;border-color:#1B6438}',
-    '.chk.on i::after{content:"";position:absolute;left:2px;top:0.5px;width:4px;height:7px;border:solid #fff;border-width:0 1.6px 1.6px 0;transform:rotate(42deg)}',
+    '.chk.on i::after{content:"";position:absolute;left:2.5px;top:1px;width:4px;height:7px;border:solid #fff;border-width:0 1.7px 1.7px 0;transform:rotate(42deg)}',
     '.cbline{margin:0 0 5px;font-size:11.8px;line-height:1.85}',
     '.sr-v{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}',
     '.docrow{display:flex;justify-content:flex-end;margin:-4px 0 2px}',
@@ -2278,7 +2278,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var rankRows = [0, 1, 2].map(function (i) {
       var nm = r[i] || '';
       var duty = nm ? workDuty(nm) : '';
-      var cert = i === 0 ? (licTxt ? '☑ 있음 · ' + esc(licTxt) : '□ 있음　□ 없음') : '—';
+      var cert = i === 0 ? (licTxt ? cbx(true, '있음') + ' · ' + esc(licTxt) : cbx(false, '있음') + cbx(false, '없음')) : '—';
       return docTr([{ h: (i + 1) + '순위', cls: 'c' },
         { t: nm ? esc(nm) + (duty ? '<br><span class="dim">' + esc(duty) + '</span>' : '') : '미기재' },
         { t: cert, cls: 'c' }]);
@@ -2402,7 +2402,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       '</table>' +
       '<h2>5. 동의를 거부할 권리</h2>' +
       '<p class="small">동의를 거부할 수 있으나, 거부하면 장애인일자리사업 참여 신청이 제한될 수 있습니다.</p>' +
-      '<div class="checks">☑ 위 내용을 읽고 개인정보 수집·이용에 동의합니다.<br>☑ 고유식별정보(주민등록번호) 처리에 동의합니다.<br>☑ 제3자 제공에 동의합니다.</div>' +
+      '<div class="checks">' + cbx(true, '위 내용을 읽고 개인정보 수집·이용에 동의합니다.') + '<br>' + cbx(true, '고유식별정보(주민등록번호) 처리에 동의합니다.') + '<br>' + cbx(true, '제3자 제공에 동의합니다.') + '</div>' +
       '<div class="sign"><span>동의일 ' + esc(todayStr()) + '</span><span>동의자 <b>' + esc(applicantName()) + '</b><span class="line">(서명 또는 인)</span></span></div>' +
       docFoot();
     return dShell('form3', body);
@@ -3442,11 +3442,13 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         ' aria-pressed="' + (on ? 'true' : 'false') + '"' + (taken ? ' data-taken="true"' : '') +
         ' aria-label="' + label + '"><span aria-hidden="true">' + (on ? '✓' : '') + '</span>' + k + '순위</button>';
     }).join('');
-    var hint = ok
-      ? '적합도 ' + fit + ' · 1순위로 두면 정원 안에서 먼저 배정 심사'
-      : check
-        ? '적합도 ' + fit + ' · 확인 필요 항목 있어 2·3순위로 두면 안전'
-        : '적합도 ' + fit + ' · 현장 확인 뒤 2·3순위 권장';
+    var hint = rank
+      ? '적합도 ' + fit + ' · 지금 ' + rank + '순위' + (rank === 1 ? ' · 정원 안에서 먼저 배정 심사' : ' · 1순위로 올리면 먼저 심사')
+      : ok
+        ? '적합도 ' + fit + ' · 1순위로 두면 정원 안에서 먼저 배정 심사'
+        : check
+          ? '적합도 ' + fit + ' · 확인 필요 항목 있어 2·3순위로 두면 안전'
+          : '적합도 ' + fit + ' · 현장 확인 뒤 2·3순위 권장';
     return '<div class="job wp" data-state="' + (rank ? 'picked' : '') + '">' +
       '<div class="jbody">' +
       '<span class="top">' +
