@@ -2195,9 +2195,9 @@
   /* ----- 자동 임시저장 ----- */
   function snapshot() {
     return {
-      v: 2, t: Date.now(),
+      v: 3, t: Date.now(),
       severity: state.severity, type: state.type, workType: state.workType,
-      envs: Array.from(state.envs), envAnswered: state.envAnswered,
+      envs: Array.from(state.envs), envAnswered: state.envAnswered, pendingEnvs: Array.from(state.pendingEnvs),
       tab: state.tab, step: state.step, subtab: state.subtab,
       selectedProgram: state.selectedProgram, programAuto: state.programAuto,
       lastProgram: state.lastProgram, checked: state.checked,
@@ -2245,13 +2245,15 @@
     if (!storageCheck()) { return false; }
     var s = null;
     try { s = JSON.parse(lsGet(STORE_KEY) || 'null'); } catch (e) { s = null; }
-    if (!s || typeof s !== 'object' || (s.v !== 1 && s.v !== 2)) { return false; }
+    if (!s || typeof s !== 'object' || [1, 2, 3].indexOf(s.v) === -1) { return false; }
     var touched = false;
     if (s.severity && SEVERITY_LABEL[s.severity]) { state.severity = s.severity; touched = true; }
     if (s.type && TYPE_LABEL[s.type]) { state.type = s.type; touched = true; }
     if (s.workType && WORK_LABEL[s.workType]) { state.workType = s.workType; touched = true; }
     if (Array.isArray(s.envs)) { state.envs = new Set(s.envs.filter(function (v) { return !!ENV_LABEL[v]; })); }
     if (typeof s.envAnswered === 'boolean') { state.envAnswered = s.envAnswered; }
+    /* v3: 직접 입력으로 미리 골라 둔 근로환경(확인 전) */
+    if (Array.isArray(s.pendingEnvs) && !state.envAnswered) { state.pendingEnvs = new Set(s.pendingEnvs.filter(function (v) { return !!ENV_LABEL[v]; })); }
     if (s.checked && typeof s.checked === 'object') {
       Object.keys(s.checked).forEach(function (k) { if (s.checked[k]) { state.checked[k] = true; } });
     }
@@ -5842,55 +5844,133 @@
   /* ============================================================
      11. 직접 입력 해석
      ============================================================ */
-  var KEYWORDS = [
-    { re: /(심한|중증|1급|2급|3급|많이 불편)/, key: 'severity', v: 'severe' },
-    { re: /(심하지|경증|4급|5급|6급|가벼운)/, key: 'severity', v: 'mild' },
-    { re: /지체/, key: 'type', v: 'physical' },
-    { re: /뇌병변|뇌성/, key: 'type', v: 'brain' },
-    { re: /시각|맹인|저시력|앞이 안/, key: 'type', v: 'visual' },
-    { re: /청각|난청|농아|언어|말을 못|귀가/, key: 'type', v: 'hearing' },
-    { re: /발달|자폐|지적|정신/, key: 'type', v: 'developmental' },
-    { re: /전일|풀타임|40시간|하루 종일|꼬박/, key: 'workType', v: 'full' },
-    { re: /시간제|파트|20시간|반나절/, key: 'workType', v: 'part' },
-    { re: /14시간|복지형|참여형|짧게|조금만/, key: 'workType', v: 'welfare' },
-    { re: /재택|집에서|유연|자택/, key: 'workType', v: 'remote' },
-    { re: /휠체어|경사로|승강기|엘리베이터|계단/, key: 'env', v: 'wheelchair' },
-    { re: /서서|서 있|오래 서|체력|피곤|힘들/, key: 'env', v: 'standing' },
-    { re: /단순|반복|사무|정리/, key: 'env', v: 'simple' },
-    { re: /수어|통역|문자|글자|의사소통/, key: 'env', v: 'communication' }
+  /* 직접 입력은 실제 사용자가 쓰는 말투(신체 표현·질환명·시간 표현)를 기준으로 해석한다.
+     - 유형은 더 구체적인 표현을 먼저 본다(뇌병변 → 시각 → 청각·언어 → 발달·정신 → 기타 → 지체).
+     - 조건 낱말 바로 뒤에 '안/않/없이/괜찮/싫' 같은 말이 오면 그 조건은 넣지 않는다(부정문).
+     - 근로환경은 바로 확정하지 않고 근로환경 질문에 미리 골라 둔 뒤 사용자가 확인한다. */
+  var TYPE_RULES = [
+    { v: 'brain', re: /뇌병변|뇌성|뇌졸중|중풍|뇌출혈|뇌경색|편마비|한쪽(이|이\s)?\s?마비|몸\s?한쪽|(^|[^하])반신\s?마비|파킨슨|뇌\s?손상|뇌\s?다쳐/ },
+    { v: 'visual', re: /시각|맹인|전맹|저시력|약시|시력|앞이\s?안|눈이|안\s?보여|잘\s?안\s?보|점자|녹내장|망막/ },
+    { v: 'hearing', re: /청각|청력|난청|농아|농인|귀가|귀\s|보청기|인공\s?와우|안\s?들려|못\s?들|소리를\s?못|언어\s?장애|말이\s?어눌|말하는\s?게|말을\s?못|발음이|말더듬|구음/ },
+    { v: 'developmental', re: /발달|자폐|지적|정신|조현|우울|양극|조울|공황|강박|ADHD|adhd|경계선|이해가\s?(어려|느)|복잡한\s?건|읽는\s?게\s?(좀\s?)?(느|어려)/ },
+    { v: 'other', re: /신장|투석|콩팥|심장|호흡기|숨이\s?차|폐\s?기능|간\s?장애|간\s?이식|안면|장루|요루|뇌전증|간질/ },
+    { v: 'physical', re: /지체|다리|하반신|하지\s?마비|척수|척추|절단|의족|의수|목발|팔을|팔이|손가락|관절|허리|디스크|소아마비|왜소증|걷기\s?(가|가\s)?어려|못\s?걸/ }
   ];
+  var SEV_RULES = [
+    { v: 'mild', re: /심하지\s?않|경증|[456]\s?급|가벼운|가볍/ },
+    { v: 'severe', re: /심한|중증|[123]\s?급|많이\s?불편/ },
+    { v: 'unsure', re: /(등급|정도|급수).{0,6}(모르|몰라|기억\s?안)/ }
+  ];
+  var WORK_RULES = [
+    { v: 'remote', re: /재택|집에서|자택|원격|비대면|온라인으로/ },
+    { v: 'full', re: /전일|풀\s?타임|40\s?시간|하루\s?종일|꼬박|정규직|주\s?5\s?일|여덟\s?시간|8\s?시간/ },
+    { v: 'welfare', re: /14\s?시간|복지형|참여형|짧게|조금만|조금씩|가끔|일주일에\s?(한|두|세)\s?번|주\s?[1-3]\s?일/ },
+    { v: 'part', re: /시간제|파트|20\s?시간|반나절|오전(에)?만|오후(에)?만|네\s?시간|4\s?시간/ }
+  ];
+  var ENV_RULES = [
+    { v: 'wheelchair', re: /휠체어|경사로|승강기|엘리베이터|계단|하반신|전동\s?스쿠터/ },
+    /* '서서 하는 건 싫어요'는 앉아서 일해야 한다는 뜻이라 '괜찮아요'류만 부정으로 본다 */
+    { v: 'standing', re: /서서|서\s?있|오래\s?서|앉아서|오래\s?걷|걷는\s?게\s?힘|다리가\s?아파/, neg: /^.{0,12}?(괜찮|상관\s?없|문제\s?없|잘\s?서)/ },
+    { v: 'simple', re: /단순|반복|한\s?가지씩|순서대로|복잡하면|복잡한\s?건/ },
+    { v: 'communication', re: /수어|통역|문자로|필담|의사소통|글로\s?(소통|받|주고)/ }
+  ];
+  /* 조건 낱말 바로 뒤(12자 안)에 오는 부정 표현 */
+  var NEG_ENV = /^.{0,12}?(안\s|않|없이|없어도|필요\s?없|괜찮|싫|아니|상관\s?없)/;
+  var NEG_WORK = /^.{0,12}?(안\s|않|싫|아니|힘들|어렵|못\s|무리)/;
+
+  function firstHit(text, re, neg) {
+    var g = new RegExp(re.source, 'g');
+    var m;
+    while ((m = g.exec(text))) {
+      var tail = text.slice(m.index + m[0].length, m.index + m[0].length + 14);
+      if (!neg || !neg.test(tail)) { return m.index; }
+      if (m[0].length === 0) { g.lastIndex += 1; }
+    }
+    return -1;
+  }
+
+  /* '하루 4시간', '주 3일', '주 30시간'처럼 숫자로 말한 근무시간 */
+  function workFromNumbers(text) {
+    var m = text.match(/주\s?(\d{1,2})\s?시간/);
+    if (m) { var h = +m[1]; return h >= 35 ? 'full' : h > 14 ? 'part' : 'welfare'; }
+    m = text.match(/하루\s?(\d{1,2})\s?시간/);
+    if (m) { var d = +m[1]; return d >= 7 ? 'full' : d >= 3 ? 'part' : 'welfare'; }
+    m = text.match(/주\s?(\d)\s?일/) || text.match(/일주일에\s?(\d)\s?일/);
+    if (m) { var n = +m[1]; return n >= 5 ? 'full' : n === 4 ? 'part' : 'welfare'; }
+    return null;
+  }
 
   function parseText(text) {
+    var t = String(text || '');
     var found = { severity: null, type: null, workType: null, envs: [] };
-    KEYWORDS.forEach(function (k) {
-      if (!k.re.test(text)) { return; }
-      if (k.key === 'env') {
-        if (found.envs.indexOf(k.v) === -1) { found.envs.push(k.v); }
-      } else if (!found[k.key]) {
-        found[k.key] = k.v;
-      }
+    var best = -1;
+    SEV_RULES.forEach(function (r) {
+      var i = firstHit(t, r.re, null);
+      if (i > -1 && (best === -1 || i < best)) { best = i; found.severity = r.v; }
     });
+    for (var k = 0; k < TYPE_RULES.length; k++) {
+      if (firstHit(t, TYPE_RULES[k].re, null) > -1) { found.type = TYPE_RULES[k].v; break; }
+    }
+    if (firstHit(t, WORK_RULES[0].re, NEG_WORK) > -1) { found.workType = 'remote'; }
+    if (!found.workType) { found.workType = workFromNumbers(t); }
+    if (!found.workType) {
+      for (var w = 1; w < WORK_RULES.length; w++) {
+        if (firstHit(t, WORK_RULES[w].re, NEG_WORK) > -1) { found.workType = WORK_RULES[w].v; break; }
+      }
+    }
+    ENV_RULES.forEach(function (r) {
+      if (firstHit(t, r.re, r.neg || NEG_ENV) > -1) { found.envs.push(r.v); }
+    });
+    /* 유형을 말하지 않았지만 휠체어를 쓴다고 하면 지체장애로 본다 */
+    if (!found.type && firstHit(t, /휠체어|하반신/, NEG_ENV) > -1) { found.type = 'physical'; }
     return found;
   }
 
+  var AFFIRM = /^(네|예|응|맞아|맞습니다|맞아요|좋아요|그래요|그대로|완료|선택\s?완료|됐어요|됐습니다)/;
+  var NONE_ENV = /^(없어요|없습니다|없음|해당\s?없|필요\s?없|괜찮아요|특별히\s?없)/;
+
   function applyText(text) {
-    var f = parseText(text);
+    var trimmed = String(text || '').trim();
+    var pend = nextUnanswered();
+    /* 근로환경 질문에서 '네/맞아요' 또는 '없어요'로 답하면 그대로 확정한다 */
+    if (pend === STEPS.length - 1 && (AFFIRM.test(trimmed) || NONE_ENV.test(trimmed))) {
+      if (NONE_ENV.test(trimmed)) { state.pendingEnvs.clear(); }
+      commitEnvs();
+      addMsg('user', esc(trimmed));
+      addMsg('bot', state.envs.size
+        ? '근로환경을 ' + esc(Array.from(state.envs).map(function (v) { return ENV_LABEL[v].split('(')[0].trim(); }).join(', ')) + '(으)로 확정했어요.'
+        : '특별히 필요한 근로환경은 없는 것으로 정리했어요.');
+      $('#chatLog').scrollTop = $('#chatLog').scrollHeight;
+      maybeSpeakChat();
+      return true;
+    }
+
+    var f = parseText(trimmed);
     var applied = [];
     if (f.severity) { state.severity = f.severity; applied.push('장애 정도 ' + SEVERITY_LABEL[f.severity]); }
     if (f.type) { state.type = f.type; applied.push('유형 ' + TYPE_LABEL[f.type]); }
     if (f.workType) { state.workType = f.workType; applied.push('근무 ' + WORK_LABEL[f.workType]); }
+    var envNote = '';
     if (f.envs.length) {
-      f.envs.forEach(function (v) { state.envs.add(v); });
-      state.envAnswered = true;
-      applied.push('환경 ' + f.envs.map(function (v) { return ENV_LABEL[v]; }).join(', '));
+      /* 말로 들은 근로환경은 바로 확정하지 않고, 근로환경 질문에 미리 골라 둔다 */
+      if (state.envAnswered) {
+        f.envs.forEach(function (v) { state.envs.add(v); });
+        applied.push('환경 ' + f.envs.map(function (v) { return ENV_LABEL[v]; }).join(', '));
+      } else {
+        f.envs.forEach(function (v) { state.pendingEnvs.add(v); });
+        envNote = '근로환경은 <b>' + esc(f.envs.map(function (v) { return ENV_LABEL[v].split('(')[0].trim(); }).join(', ')) +
+          '</b>(으)로 미리 골라 두었어요. 맞으면 마지막 질문에서 <b>선택 완료</b>를 눌러 주세요.';
+      }
     }
-    if (!applied.length) { return false; }
+    if (!applied.length && !envNote) { return false; }
 
+    state.draftShown = false;
     syncSelectedProgram();
     renderAll();
     renderChat();
-    addMsg('user', esc(text));
-    addMsg('bot', '말씀하신 내용을 조건에 넣었어요 — ' + esc(applied.join(' · ')) + '. ' +
+    addMsg('user', esc(trimmed));
+    addMsg('bot', (applied.length ? '말씀하신 내용을 조건에 넣었어요 — ' + esc(applied.join(' · ')) + '. ' : '') +
+      (envNote ? envNote + ' ' : '') +
       (isComplete() ? '결과를 다시 계산했으니 분석 화면을 봐 주세요.' : '이어서 몇 가지만 더 여쭤볼게요.'));
     var log = $('#chatLog');
     log.scrollTop = log.scrollHeight;

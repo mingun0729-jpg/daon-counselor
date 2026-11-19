@@ -64,7 +64,7 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 | 8. 대화 렌더링 | `addMsg`, `renderChat`, `renderChips` |
 | 9. 단계 판 렌더링 | `renderSummary`, `renderJobs`(`jobCardHtml`·`keyReason` — 카드는 핵심 근거 한 줄만 보이고 나머지는 `<details class="more">`로 접힘, 해당 없는 사업은 `.off-group`으로 접힘, 근로지원 제도는 `details.support`), `renderWorkplaces`, `renderDocs`(= `renderDocsPrep` 3단계 + `renderFormStage` 4단계 + `renderSubmitStage` 5단계), `docsCtx`, `needHtml`, `personaButtonsHtml`, `draftBoxHtml`, `orgCardHtml`, `attachFormStage`, `updateDocProgress`, `renderAll` |
 | 10. 신청서 초안 | `buildDraft()` (자기소개 5항목 초안), `generateDraft`, `copyText` |
-| 11. 직접 입력 해석 | `KEYWORDS`, `parseText`, `applyText` |
+| 11. 직접 입력 해석 | `TYPE_RULES`(구체적인 유형부터: 뇌병변→시각→청각·언어→발달·정신→기타→지체)·`SEV_RULES`·`WORK_RULES`·`ENV_RULES`, `NEG_ENV`/`NEG_WORK`(조건 낱말 뒤 12자 안의 부정 표현), `firstHit`, `workFromNumbers`(하루 N시간·주 N시간·주 N일), `parseText`, `AFFIRM`/`NONE_ENV`, `applyText` |
 | 12. 단계 이동·초기화·예시 | `STEP_META`, `stepIndex`, `docsProgress`, `stepAchieved`, `goStep`, `scrollToStepTop`, `renderStepBar`, `renderStepNavs`, `renderStepGuide`, `renderSubTabs`, `setSubTab`, `setTab`, `focusDashboard`, `resetState`, `resetAll`, `PERSONAS`, `applyPersona` |
 | 13. 이벤트 연결 | `init()` — 모든 이벤트 위임은 `#panel-docs`, `#cardStart`, `#personas`에 걸려 있음 |
 
@@ -90,10 +90,11 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 9. **접근성 3모드 유지** — 새 UI를 추가하면 `body.a11y-big`(큰 글씨)와 `body.a11y-contrast`(고대비) 대응 스타일을 같은 커밋에 넣는다. 고대비에서 새 색을 쓰면 흰 배경/흰 글씨가 남지 않도록 오버라이드하고, 대비 4.5:1을 확인한다. 인쇄는 고대비 모드에서도 `#printArea`를 흑백으로 강제한다.
 10. **서류 파일은 시연용 가상 문서** — 파일 카드·미리보기·저장(`Blob`+`URL.createObjectURL`)·ZIP(`buildZip`)은 모두 브라우저 안에서만 만들어지며 외부 전송이 없다. 문서 본문에는 항상 ‘시연용 가상 문서’ 워터마크와 고지, 가상 값(가명)만 넣고, 실제 발급 효력이 있는 것처럼 쓰지 않는다. ZIP은 무압축(store) 방식이며 파일명은 UTF-8 플래그(0x0800)로 기록한다.
 11. **큰 글씨·음성 안내 기준** — 큰 글씨 모드는 본문 22px·말풍선 20px·버튼 56px 이상을 기준으로 하고, 1280px·375px에서 가로 스크롤이 없어야 한다. 음성 대본은 민원인 응대용 구어체로 쓰고 단계 이름을 함께 말한다. 음성은 한국어 우선순위(SunHi→Yuna→Sora→Heami→Google 한국의)로 고르며, 속도는 **기본 `rate 0.82`(천천히)** 이고 헤더의 `천천히(0.82)`/`보통(0.93)` 버튼(`#btnRateSlow`/`#btnRateNormal`, 묶음 `#a11yRate` — 음성 안내를 켰거나 읽는 중에만 보임, 정지 버튼은 읽는 중에만 보임, `setSpeakUI`에서 관리)으로 바꿀 수 있다(`a11y.rate`에 저장). `pitch 1.04`는 유지한다. 속도 상수는 `TTS_RATE_SLOW`/`TTS_RATE_NORMAL` 한 곳에서만 관리한다.
-12. **localStorage 키 고정** — 접근성 설정 `daon.a11y.v1`(`big`·`contrast`·`voice`·`rate`), 자동 임시저장 `daon.state.v1`(내부 스키마 `v: 2` — `v:1`도 읽는다). 저장값은 브라우저 밖으로 나가지 않으며 `resetAll`/`resetState`(새로 시작)에서 비운다. 저장 스키마를 바꾸면 `v`를 올리고 `restoreSaved`에서 검증한다. 현재 단계(`step` 1~5)와 2단계 소탭(`subtab`)도 저장·복원하며, 단계 이동은 `goStep()`이 `state.step`과 pane 표시·단계 표시줄을 함께 맞춘다. `goStep()` 밖에서 pane을 직접 감추지 않는다.
+12. **localStorage 키 고정** — 접근성 설정 `daon.a11y.v1`(`big`·`contrast`·`voice`·`rate`), 자동 임시저장 `daon.state.v1`(내부 스키마 `v: 3` — `pendingEnvs` 추가, `v:1`·`v:2`도 읽는다). 저장값은 브라우저 밖으로 나가지 않으며 `resetAll`/`resetState`(새로 시작)에서 비운다. 저장 스키마를 바꾸면 `v`를 올리고 `restoreSaved`에서 검증한다. 현재 단계(`step` 1~5)와 2단계 소탭(`subtab`)도 저장·복원하며, 단계 이동은 `goStep()`이 `state.step`과 pane 표시·단계 표시줄을 함께 맞춘다. `goStep()` 밖에서 pane을 직접 감추지 않는다.
 13. **음성 안내** — 외부 TTS 라이브러리를 넣지 않고 `window.speechSynthesis`만 사용한다. 미지원 브라우저에서는 토스트로 안내하고 기능을 켜진 상태로 두지 않는다.
 14. **단계별(위저드) UI 원칙** — ① 상담·복지카드 → ② 추천 일자리·근무지 → ③ 서류 준비·자동 수집 → ④ 신청서 작성 → ⑤ 원클릭 접수·접수처의 5단계를 유지하고, 한 화면에는 한 단계만 보여 준다. 새 기능은 해당 단계의 판(`#pane-N`의 렌더 함수)에 넣고, 이전/다음 버튼(`data-nav-step`, 최소 44px·큰 글씨 56px)과 상단 단계 표시줄(`.stepbtn`)을 함께 갱신한다. 조건이 아직 없을 때 2~5단계는 `needHtml()`로 예시 3개를 안내하며, 단계 이동은 항상 `goStep()`을 거친다(스크롤을 길게 내리지 않아도 처음부터 접수증까지 넘어갈 수 있어야 한다).
 15. **화면 간추리기** — 카드·안내의 긴 설명은 `<details>`(`.more`, `.off-group`, `details.support`, `details.guide-box`, 4단계 ③ 자기소개 안의 5항목 초안 `details.draft-more`(초안을 만들면 열린 채 유지), 3단계 체크리스트 `details.doc-check#docCheck` — 열림 상태 `docCheckOpen` 유지, 5단계 '보완하기'에서 자동으로 펼침)로 접어 두고 첫 화면에는 핵심 한 줄만 둔다. 접기 버튼도 44px(큰 글씨 56px) 이상, 큰 글씨·고대비 스타일을 함께 넣고, 내용은 접어도 삭제하지 않는다. 목록 항목(`li`)에 `display:flex`를 주면 `<b>` 조각마다 칸이 쪼개지므로 쓰지 않는다.
+16. **직접 입력 해석 원칙** — 실제 사용자는 '지체'보다 '다리가 불편해요·하반신 마비·척수 손상', '청각'보다 '농인·보청기'처럼 말한다. 새 표현은 해당 `*_RULES`에 넣고, 더 구체적인 유형이 먼저 오도록 순서를 지킨다(예: '하반신 마비'가 뇌병변 '반신 마비'에 걸리지 않게). 조건 낱말 뒤의 '안/않/없이/괜찮/싫'은 부정으로 보되, '서서 하는 건 싫어요'처럼 뜻이 반대인 서있기 조건은 '괜찮'류만 부정으로 본다. 말로 들은 근로환경은 바로 확정하지 않고 `pendingEnvs`로 근로환경 질문에 미리 골라 둔 뒤 사용자가 `선택 완료`·'네'·'없어요'로 확정한다(상담을 마친 뒤 말한 환경은 바로 반영). 규칙을 바꾸면 기존 표현과 새 표현 모두로 회귀 점검한다.
 
 ## 5. Claude Code 협업 규칙
 
