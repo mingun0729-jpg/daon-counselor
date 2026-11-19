@@ -486,7 +486,7 @@ async function handleHealth(env, request) {
   return jsonResponse({
     ok: true,
     service: 'daon-codef-proxy',
-    version: '1.0.0',
+    version: '1.1.0',
     env: env.CODEF_ENV === 'api' ? 'api' : 'demo',
     configured: configured,
     mock: mock,
