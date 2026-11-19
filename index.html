@@ -792,6 +792,46 @@ body.a11y-big.easy .btn{font-size:20px}
 body.a11y-big.easy .stp b{font-size:15px}
 body.a11y-big.easy .hero h1{line-height:1.4}
 
+/* ---------- 실제 기관 연동(CODEF 프록시) ---------- */
+.cfgbar{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:0 0 12px; padding:12px 14px;
+  background:var(--surface); border:1px solid var(--line); border-radius:16px}
+.cfgbar .cbtxt{flex:1; min-width:180px; font-size:13.5px; font-weight:800; color:var(--ink-soft); line-height:1.5}
+.cfgbar .cbtxt b{display:block; font-size:14.5px; color:var(--ink)}
+.cfgbar .cdot{display:inline-block; width:9px; height:9px; border-radius:50%; background:#9AA79E; margin-right:6px; vertical-align:1px}
+.cfgbar.on .cdot{background:var(--grass)}
+.cfgbar.mock .cdot{background:var(--amber)}
+.cfgbar .btn{min-height:44px; padding:0 14px; font-size:14px; flex:0 0 auto}
+.cfgrow{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.cfgrow .field{margin-bottom:12px}
+@media (max-width:430px){.cfgrow{grid-template-columns:1fr}}
+.twbox{margin:6px 0 4px; padding:16px 16px 14px; border-radius:16px; background:var(--grass-soft); border:1px solid var(--grass-line)}
+.twbox b{display:block; font-size:16.5px; font-weight:900; color:#12452A; margin:0 0 6px}
+.twbox p{margin:0 0 8px; font-size:14px; line-height:1.6; color:#1F3A29; font-weight:700}
+.twbox .twtime{font-size:13px; font-weight:900; color:#12452A}
+.twbox.wait{background:var(--amber-soft); border-color:var(--amber-line)}
+.twbox.wait b,.twbox.wait .twtime{color:#6B4700}
+.twbox.err{background:var(--red-soft); border-color:var(--red-line)}
+.twbox.err b{color:#8A2019}
+.twlist{list-style:none; margin:8px 0 2px; padding:0; display:flex; flex-direction:column; gap:6px}
+.twlist li{display:flex; gap:8px; align-items:flex-start; font-size:13.5px; font-weight:700; color:var(--ink-soft); line-height:1.5}
+.twlist li .ti{flex:0 0 18px; text-align:center}
+.twlist li.ok{color:#12452A}
+.twlist li.err{color:var(--red)}
+.rsum{margin:6px 0 0; font-size:12.5px; font-weight:800; color:#12452A; line-height:1.5}
+.al-list li.warn{color:var(--red)}
+body.a11y-big .al-list li.warn{color:#8A2019}
+.fc-badge.real{background:var(--blue-soft); color:var(--blue); border-color:var(--blue-line)}
+body.a11y-big .cfgbar .cbtxt{font-size:16px}
+body.a11y-big .twbox p{font-size:16.5px}
+body.a11y-contrast .cfgbar{background:#141A16; border-color:#3A453C}
+body.a11y-contrast .cfgbar .cbtxt{color:#D3DBD4}
+body.a11y-contrast .cfgbar .cbtxt b{color:#F2F6F3}
+body.a11y-contrast .cfgbar.on .cdot{background:#8CE0AC}
+body.a11y-contrast .twbox{background:#16301F; border-color:#3E6F4F}
+body.a11y-contrast .twbox b,body.a11y-contrast .twbox p{color:#D8F5E4}
+body.a11y-contrast .rsum{color:#C8F3D8}
+body.easy .twbox p{font-size:16px}
+
 /* ---------- 인쇄 ---------- */
 #printArea{display:none}
 @media print{
@@ -977,11 +1017,16 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       </div>
 
       <div class="agentlog" id="agentLog" hidden>
-        <div class="al-head"><b>서류 자동 수집</b><span class="al-badge">시연</span></div>
+        <div class="al-head"><b>서류 자동 수집</b><span class="al-badge" id="agentLogBadge">시연</span></div>
         <ul class="al-list" id="alList" aria-live="polite"></ul>
       </div>
 
       <h2 class="sec">발급 기관</h2>
+      <div class="cfgbar" id="cfgBar">
+        <span class="cdot" aria-hidden="true"></span>
+        <span class="cbtxt" id="cfgBarTxt"><b>실제 기관 조회 꺼짐</b>시연용 예시 데이터로만 진행합니다.</span>
+        <button class="btn small" id="btnApiCfg" type="button">⚙️ 기관 API 연결 설정</button>
+      </div>
       <div class="joblist" id="agencyList"></div>
 
       <div id="fileBlock" hidden>
@@ -992,11 +1037,11 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       <details class="box" id="selfBox">
         <summary>서류 직접 준비</summary>
         <div class="inner">
-          <p>종이 서류 보유 시 자동 수집 생략 · 신청서 자동 작성.</p>
+          <p id="selfHint">종이 서류 보유 시 자동 수집 생략 · 신청서 자동 작성.</p>
           <button class="btn block small" id="btnSelfDocs" type="button">직접 준비 · 다음 단계</button>
         </div>
       </details>
-      <p class="micro">※ 이 시연판은 <b>기관 서버에 연결하지 않습니다.</b> 아래 서류는 다온이 이 브라우저 안에서 만든 예시 파일이며(전송·수집 없음), 실제 발급은 본인 인증 후 정부24·복지로·건강보험공단에서 직접 받습니다. 여기 담긴 서류는 신청서 묶음(ZIP)에 함께 저장됩니다.</p>
+      <p class="micro">※ <b>기관 API 연결 설정</b>을 하지 않으면 아래 서류는 다온이 이 브라우저 안에서 만든 <b>시연용 예시 파일</b>입니다(전송·수집 없음). 연결하면 정부24·건강보험공단 간편인증으로 받은 <b>실제 조회값</b>이 서류 카드·신청서에 반영됩니다. 어느 쪽이든 이 화면의 서류는 신청서 묶음(ZIP)에 함께 저장됩니다.</p>
     </section>
 
     <!-- ============ 4. 신청 ============ -->
@@ -1208,6 +1253,34 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     <div class="stickybtns">
       <button class="btn primary block" id="loginGo" type="button">시연 인증 · 서류 수집</button>
       <button class="btn ghost block" id="loginCancel" type="button">취소</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 기관 API 연결 설정(CODEF 프록시) ============ -->
+<div class="ov" id="apiCfg" hidden>
+  <div class="sheet sheetwrap" role="dialog" aria-modal="true" aria-labelledby="cfgTitle">
+    <div class="grab" aria-hidden="true"></div>
+    <button class="close" id="cfgClose" type="button" aria-label="닫기">✕</button>
+    <h2 id="cfgTitle">기관 API 연결 설정</h2>
+    <p class="sub" id="cfgSub">실제 정부24·건강보험공단 조회를 하려면, 다온용 프록시(Cloudflare Worker) 주소를 넣어 주세요.</p>
+    <div class="field">
+      <label for="cfgUrl">프록시 주소</label>
+      <span class="hint">예: https://daon-codef-proxy.내계정.workers.dev</span>
+      <input id="cfgUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://…workers.dev" />
+    </div>
+    <div class="field">
+      <label for="cfgToken">접속 토큰 <span class="hint" style="display:inline">(프록시에 PROXY_TOKEN을 걸었을 때만)</span></label>
+      <input id="cfgToken" type="password" autocomplete="off" spellcheck="false" placeholder="비워 두어도 됩니다" />
+    </div>
+    <p class="cfgbar" id="cfgState" style="margin:0 0 12px">
+      <span class="cdot" aria-hidden="true"></span><span class="cbtxt" id="cfgStateTxt"><b>아직 연결하지 않았습니다</b>연결 테스트를 눌러 확인해 주세요.</span>
+    </p>
+    <p id="cfgMsg" class="micro" role="status" aria-live="polite" style="min-height:20px"></p>
+    <div class="stickybtns">
+      <button class="btn block" id="cfgTest" type="button">연결 테스트</button>
+      <button class="btn primary block" id="cfgSave" type="button">저장</button>
+      <button class="btn ghost block" id="cfgOff" type="button">연결 해제</button>
     </div>
   </div>
 </div>
@@ -1541,7 +1614,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     type: '', severity: '', workType: '',
     envs: new Set(),
     selectedProgram: '', selectedWorkplace: '', workplaceRanks: ['', '', ''],
-    checked: {}, fetched: {},
+    checked: {}, fetched: {}, real: {},
     form: { name: '', birth: '', phone: '', email: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '', guardian: '', extra: {}, lic: '' },
     elig: eligDefault(),
     signature: { mode: '', data: '', name: '', at: '' },
@@ -2149,6 +2222,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     '.sheet{position:relative;max-width:800px;margin:0 auto;min-height:100vh;padding:30px 34px 46px;background:#fff;font-size:12.8px;overflow:hidden}',
     '.doc-head{position:relative;display:flex;flex-wrap:wrap;gap:5px 12px;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:2px solid #1B6438;margin-bottom:16px}',
     '.doc-badge{font-size:10.2px;font-weight:800;color:#7A4E00;background:#FDF1DA;border:1px solid #EFE4C8;border-radius:999px;padding:3px 9px}',
+    '.doc-badge.real{color:#21496F;background:#EAF2FB;border-color:#BBD3EB}',
     '.doc-no{font-size:10.2px;font-weight:700;color:#5C6B62}',
     'h1{margin:0 0 5px;font-size:19px;font-weight:800;text-align:center;letter-spacing:-.02em}',
     '.sub{margin:0 0 15px;text-align:center;font-size:10.8px;color:#5C6B62;line-height:1.5}',
@@ -2201,6 +2275,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   ].join('\n');
 
   var DOC_WM = '<div class="wm" aria-hidden="true"><i>시연용 가상 문서</i><i>시연용 가상 문서</i><i>시연용 가상 문서</i></div>';
+  var REAL_WM = '<div class="wm" aria-hidden="true"><i>기관 조회 요약본</i><i>원본 대체 아님</i><i>기관 조회 요약본</i></div>';
 
   var DOC_FILE_META = {
     form1: { base: '서식1_참여신청서', ext: 'html', kind: '신청서', who: 'name' },
@@ -2297,11 +2372,59 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     return '<p class="foot">※ ' + (extra ? esc(extra) + ' ' : '') +
       '이 문서는 공모전 시연용으로 다온(DAON)이 브라우저 안에서 만든 가상 문서입니다. 실제 발급·접수 효력이 없으며, 이름·번호·주소는 모두 예시(가명) 값입니다.</p>';
   }
-  function docShell(title, inner) {
+  function docShell(title, inner, wm) {
     return '<!doctype html>\n<html lang="ko">\n<head>\n<meta charset="utf-8">\n' +
       '<meta name="viewport" content="width=device-width, initial-scale=1">\n' +
-      '<title>' + esc(title) + ' (시연용)</title>\n<style>\n' + DOC_STYLE + '\n</style>\n</head>\n<body>\n' +
-      '<div class="sheet">\n' + DOC_WM + '\n' + inner + '\n</div>\n</body>\n</html>';
+      '<title>' + esc(title) + (wm === REAL_WM ? '' : ' (시연용)') + '</title>\n<style>\n' + DOC_STYLE + '\n</style>\n</head>\n<body>\n' +
+      '<div class="sheet">\n' + (wm || DOC_WM) + '\n' + inner + '\n</div>\n</body>\n</html>';
+  }
+
+  /* 실제 기관 조회 결과(CODEF) 요약 문서 — 시연용 가상 문서와 배지·고지를 바꿔 만든다.
+     기관이 발급한 원본 PDF를 대신하지 않으며, 화면에는 '원본 대체 아님'을 명시한다. */
+  function realHead(d) {
+    var n = state.real[d.id] || {};
+    return '<div class="doc-head"><span class="doc-badge real">● 실제 기관 조회 결과(요약) · CODEF 경유</span>' +
+      '<span class="doc-no">' + esc(n.docNo || n.issueNo || '') + ' · ' + esc(todayStr()) + ' 정리</span></div>';
+  }
+  function realCertDoc(d) {
+    var n = state.real[d.id] || {};
+    var rows = [];
+    if (d.id === 'insurance') {
+      rows = [['성명', n.name || ''], ['주민등록번호', n.maskedRrn || ''], ['가입자 구분', n.joinType || ''],
+        ['사업장명', n.company || '—'], ['자격취득일', fmtYmd(n.startDate)], ['자격상실일', n.endDate ? fmtYmd(n.endDate) : '—'],
+        ['발급번호', n.issueNo || ''], ['발급일자', fmtYmd(n.issueDate)]];
+    } else if (d.id === 'resident') {
+      rows = [['문서확인번호', n.docNo || ''], ['신청인', n.name || ''], ['생년월일', fmtYmd(n.birth)],
+        ['세대주', n.hhName || ''], ['세대구성사유', n.compositionReason || '—'], ['주소', n.address || ''],
+        ['발급일자', fmtYmd(n.reportedDate)], ['발급기관', n.issueOrg || '']];
+    } else if (d.id === 'disability') {
+      rows = [['문서확인번호', n.docNo || ''], ['발급번호', n.issueNo || ''], ['성명', n.name || ''],
+        ['주민등록번호', n.maskedRrn || ''], ['주소', n.address || ''], ['주 장애 및 정도', n.main || ''],
+        ['부 장애 및 정도', n.sub || '—'], ['종합 장애 정도', n.multiple || '—'], ['등록번호', n.regNumber || ''],
+        ['최초 등록일', fmtYmd(n.firstDate)], ['발급일자', fmtYmd(n.issueDate)], ['발급기관', n.issueOrg || '']];
+    }
+    var tbl = rows.map(function (r) { return docTr([{ h: esc(r[0]) }, { t: esc(r[1] || '—'), cs: 3 }]); }).join('');
+    var extra = '';
+    if (d.id === 'resident' && (n.members || []).length) {
+      extra = '<h2>세대원</h2><table><tr><th>성명</th><th>세대주와의 관계</th><th>등록상태</th><th>주민등록번호</th></tr>' +
+        (n.members || []).map(function (m) {
+          return '<tr><td>' + esc(m.name || '—') + '</td><td>' + esc(m.relation || '—') + '</td><td>' + esc(m.status || '—') + '</td><td>' + esc(m.name ? '******-*******' : '—') + '</td></tr>';
+        }).join('') + '</table>';
+    }
+    if (d.id === 'insurance' && (n.history || []).length > 1) {
+      extra = '<h2>자격 변동</h2><table><tr><th>가입자 구분</th><th>사업장</th><th>취득일</th><th>상실일</th></tr>' +
+        n.history.map(function (h) {
+          return '<tr><td>' + esc(h.joinType || '—') + '</td><td>' + esc(h.company || '—') + '</td><td>' + esc(fmtYmd(h.start)) + '</td><td>' + esc(h.end ? fmtYmd(h.end) : '—') + '</td></tr>';
+        }).join('') + '</table>';
+    }
+    var body = realHead(d) +
+      '<h1>' + esc(DOC_TITLE[d.id] || d.name) + '</h1>' +
+      '<p class="sub">' + esc((AGENT_DOC_META[d.id] || {}).summary || '') + ' · ' + esc(n.__mock ? '모의 응답(CODEF_MOCK)' : 'CODEF 간편인증 조회') + '</p>' +
+      '<table>' + tbl + '</table>' + extra +
+      '<p class="note">※ 이 파일은 다온이 기관 응답에서 항목을 추려 만든 <b>요약본</b>입니다. 기관이 발급한 원본 증명서(PDF)를 대신하지 않으며, 실제 제출처가 원본을 요구하면 기관에서 직접 발급받아 주세요.</p>' +
+      '<div class="issuer">' + esc((AGENT_DOC_META[d.id] || {}).agency || '') + ' <span class="stamp">조회<br>확인</span></div>' +
+      '<p class="foot">※ CODEF API 경유 조회값 · ' + esc(todayStr()) + ' 정리 · 다온(DAON) 프로토타입.</p>';
+    return docShell(DOC_TITLE[d.id] || d.name, body, REAL_WM);
   }
   function docTitleOf(d) { return DOC_TITLE[d.id] || d.name; }
   function docKindOf(d) { var m = DOC_FILE_META[d.id]; return (m && m.kind) || '서류'; }
@@ -2311,9 +2434,9 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     for (var i = 0; i < list.length; i++) { if (list[i].id === d.id) { return i + 1; } }
     return 1;
   }
-  function docFileName(d, seq) {
+  function docFileName(d, seq, baseOverride) {
     var m = DOC_FILE_META[d.id] || {};
-    var base = m.base || safeFileName(d.name).replace(/[()\s]/g, '');
+    var base = baseOverride || m.base || safeFileName(d.name).replace(/[()\s]/g, '');
     var who = m.who === 'sim' ? '시연' : safeFileName(applicantName());
     return (seq < 10 ? '0' + seq : String(seq)) + '_' + base + '_' + who + '.' + (m.ext || 'html');
   }
@@ -2325,19 +2448,22 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     return [state.selectedProgram, f.name, f.birth, f.phone, f.email, f.addr, f.motivation, f.job1, f.job2,
       (f.aids || []).join(','), f.transport, f.guardian, f.lic, JSON.stringify(f.extra || {}),
       JSON.stringify(state.elig || {}), sg.mode, sg.at,
+      JSON.stringify(state.real || {}),
       rankText(''), state.type, state.severity, checked].join('|');
   }
+  var REAL_DOC_BASE = { insurance: '건강보험자격득실확인서', resident: '주민등록등본', disability: '장애인증명서' };
   function docFileFor(d, seq) {
     var sig = docCacheSig();
     if (docCache.sig !== sig) { docCache = { sig: sig, map: {} }; }
     var key = d.id + '#' + (seq || seqOfDoc(d));
     if (docCache.map[key]) { return docCache.map[key]; }
     var m = DOC_FILE_META[d.id] || {};
-    var ext = m.ext || 'html';
-    var content = ext === 'svg' ? svgCardDoc(d) : htmlDoc(d);
-    var mime = ext === 'svg' ? 'image/svg+xml' : 'text/html';
+    var isReal = !!state.real[d.id];
+    var ext = isReal ? 'html' : (m.ext || 'html');
+    var content = isReal ? realCertDoc(d) : (ext === 'svg' ? svgCardDoc(d) : htmlDoc(d));
+    var mime = isReal ? 'text/html' : (ext === 'svg' ? 'image/svg+xml' : 'text/html');
     var file = {
-      id: d.id, doc: d, name: docFileName(d, seq || seqOfDoc(d)), content: content,
+      id: d.id, doc: d, name: docFileName(d, seq || seqOfDoc(d), isReal ? REAL_DOC_BASE[d.id] : null), content: content,
       mime: mime, ext: ext, kind: docKindOf(d), title: docTitleOf(d),
       size: new Blob([content], { type: mime }).size
     };
@@ -3940,6 +4066,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     setRanks(['', '', '']);
     state.checked = {};
     state.fetched = {};
+    state.real = {};
     fetchState.running = false;
     fetchState.agency = null;
     fetchState.phase = '';
@@ -4435,7 +4562,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   /* ============================================================
      8. 서류 화면 — 기관 연결(시연)과 파일
      ============================================================ */
-  var fetchState = { running: false, agency: null, phase: '', queue: [], idx: 0, log: [] };
+  var fetchState = { running: false, agency: null, phase: '', queue: [], idx: 0, log: [], mode: 'demo' };
 
   function shortDocName(n) {
     return String(n == null ? '' : n).replace(/\([^)]*\)/g, '').replace(/\s{2,}/g, ' ').trim();
@@ -4452,7 +4579,8 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if (fetchState.log.length > 14) { fetchState.log.shift(); }
   }
   function renderAgentLog() {
-    var box = $('#agentLog'), list = $('#alList');
+    var box = $('#agentLog'), list = $('#alList'), badge = $('#agentLogBadge');
+    if (badge) { badge.textContent = fetchState.mode === 'real' ? '실제 조회' : '시연'; }
     if (!box || !list) { return; }
     if (!fetchState.log.length) { box.hidden = true; list.innerHTML = ''; return; }
     box.hidden = false;
@@ -4547,15 +4675,256 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if (fb) { fb.hidden = !files.length; }
     if (fc) { fc.textContent = String(files.length); }
     if (fl) {
-      fl.innerHTML = files.map(function (d) { return docFileCard(d, { badge: '신청서에 자동 첨부됨' }); }).join('') +
+      fl.innerHTML = files.map(function (d) {
+        var r = state.real[d.id];
+        var opts = r
+          ? { badge: r.__mock ? '모의 응답' : '실제 조회 결과', badgeCls: 'real' }
+          : { badge: '신청서에 자동 첨부됨' };
+        return docFileCard(d, opts) + (r ? '<p class="rsum">' + esc(realSummary(d.id, r)) + '</p>' : '');
+      }).join('') +
         '<div class="attached"><span aria-hidden="true">📎</span><span>신청서와 함께 제출되는 서류</span></div>';
     }
     var selfBox = $('#selfBox');
     if (selfBox) { selfBox.hidden = st.done >= st.total; }
+    var selfHint = $('#selfHint');
+    if (selfHint && codef.url) {
+      var leftDocs = requiredFetchDocs().filter(function (d) { return !state.fetched[d.id] && !isRealDoc(d); });
+      if (leftDocs.length) {
+        selfHint.innerHTML = '자동 조회가 안 되는 서류 <b>' + leftDocs.length + '장</b>(' +
+          esc(leftDocs.map(function (d) { return shortDocName(d.name); }).join(', ')) +
+          ')은 직접 준비해 주세요. 종이 서류가 있으면 여기서 표시하고 넘어가면 됩니다.';
+      } else {
+        selfHint.textContent = '종이 서류 보유 시 자동 수집 생략 · 신청서 자동 작성.';
+      }
+    }
   }
 
-  /* 기관 로그인 모달 */
-  var loginState = { mode: 'one', agency: '', method: 'kakao' };
+  /* ============================================================
+     8-B. 실제 기관 연동(CODEF 간편인증) — 프록시가 연결됐을 때만
+     - 연결이 없으면 '연결 필요' 안내와 시연 미리보기를 분리해서 보여 준다.
+     - 어떤 경우에도 실제 조회를 시연으로 속이지 않는다.
+     ============================================================ */
+  var CODEF_KEY = 'daon.codef.v1';
+  var codef = { url: '', token: '', health: null, testing: false, checked: false };
+  var realState = {
+    running: false, phase: '', queue: [], idx: 0, doc: null, agency: '',
+    pending: null, profile: null, sid: {}, timer: null, left: 0, retry: 0, error: null, done: []
+  };
+  var AUTH_OPTIONS = [
+    { v: 'kakao', label: '카카오톡', icon: '💬' },
+    { v: 'naver', label: '네이버', icon: '🟢' },
+    { v: 'pass', label: 'PASS', icon: '📱' },
+    { v: 'toss', label: '토스', icon: '🔵' }
+  ];
+  var TELECOM_OPTIONS = [{ v: 'SKT', label: 'SKT' }, { v: 'KT', label: 'KT' }, { v: 'LGU', label: 'LG U+' }];
+
+  function digitsOf(v) { return String(v == null ? '' : v).replace(/[^0-9]/g, ''); }
+  function uuid() {
+    if (window.crypto && window.crypto.randomUUID) { return window.crypto.randomUUID(); }
+    return 'daon-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+  }
+  function fmtYmd(v) {
+    var d = digitsOf(v);
+    if (d.length !== 8) { return d || '—'; }
+    return d.slice(0, 4) + '. ' + d.slice(4, 6) + '. ' + d.slice(6, 8) + '.';
+  }
+
+  function loadCodef() {
+    try {
+      var v = JSON.parse(localStorage.getItem(CODEF_KEY) || '{}');
+      codef.url = String(v.url || '').replace(/\/+$/, '');
+      codef.token = String(v.token || '');
+    } catch (e) { codef.url = ''; codef.token = ''; }
+  }
+  function saveCodef() {
+    try { localStorage.setItem(CODEF_KEY, JSON.stringify({ url: codef.url, token: codef.token })); } catch (e) { /* 저장 불가 시 무시 */ }
+  }
+
+  function codefFetch(path, body) {
+    if (!codef.url) { return Promise.reject(makeErr('프록시 주소가 없습니다.')); }
+    var headers = { 'Content-Type': 'application/json' };
+    if (codef.token) { headers['X-Daon-Token'] = codef.token; }
+    var ctl = null, timer = null;
+    var opt = { method: 'POST', headers: headers, body: JSON.stringify(body || {}) };
+    if (window.AbortController) {
+      ctl = new AbortController();
+      opt.signal = ctl.signal;
+      timer = setTimeout(function () { ctl.abort(); }, 60000);
+    }
+    return fetch(codef.url + path, opt).then(function (r) {
+      if (timer) { clearTimeout(timer); }
+      return r.text().then(function (txt) {
+        var d = null;
+        try { d = JSON.parse(txt); } catch (e) { d = null; }
+        if (!d) { throw makeErr('프록시 응답을 읽지 못했습니다 (HTTP ' + r.status + ').', 'proxy_bad_body'); }
+        if (!r.ok || d.ok === false) {
+          var msg = d.message || (d.error === 'proxy_token' ? '접속 토큰이 맞지 않습니다.' : '요청이 실패했습니다.');
+          throw makeErr(msg, d.code || d.error || ('http_' + r.status));
+        }
+        return d;
+      });
+    }).catch(function (e) {
+      if (timer) { clearTimeout(timer); }
+      if (e && e.name === 'AbortError') { throw makeErr('응답이 늦어 요청을 멈췄습니다. 다시 시도해 주세요.', 'timeout'); }
+      if (e && e.code) { throw e; }
+      throw makeErr('프록시에 연결하지 못했습니다. 주소·네트워크를 확인해 주세요.', 'network');
+    });
+  }
+  function makeErr(msg, code) {
+    var e = new Error(msg);
+    e.code = code || '';
+    return e;
+  }
+
+  function updateCfgBar() {
+    var bar = $('#cfgBar'), txt = $('#cfgBarTxt');
+    if (!bar || !txt) { return; }
+    bar.classList.remove('on', 'mock');
+    if (!codef.url) {
+      txt.innerHTML = '<b>실제 기관 조회 꺼짐</b>시연용 예시 데이터로만 진행합니다.';
+      return;
+    }
+    var h = codef.health;
+    if (h && h.ok) {
+      if (h.mock) {
+        bar.classList.add('mock');
+        txt.innerHTML = '<b>프록시 연결됨 · 모의 모드</b>실제 기관 조회가 아닙니다(연결 시험용).';
+      } else if (!h.configured) {
+        txt.innerHTML = '<b>프록시 연결됨 · 키 미설정</b>Worker에 CODEF 키를 넣어야 실제 조회됩니다.';
+      } else {
+        bar.classList.add('on');
+        txt.innerHTML = '<b>실제 기관 조회 켜짐</b>' + esc(h.env === 'api' ? '정식' : '데모') + ' 서버 · 정부24·건강보험공단 간편인증 사용 가능.';
+      }
+    } else {
+      txt.innerHTML = '<b>프록시 주소 저장됨</b>연결 테스트로 상태를 확인해 주세요.';
+    }
+  }
+
+  function openCfg() {
+    if (overlayOpen('login')) { closeLogin(true); }
+    if (!overlayOpen('apiCfg')) { overlayReturn.cfg = document.activeElement; }
+    var u = $('#cfgUrl'), t = $('#cfgToken');
+    if (u) { u.value = codef.url; }
+    if (t) { t.value = codef.token; }
+    setCfgState(codef.health);
+    var msg = $('#cfgMsg');
+    if (msg) { msg.textContent = ''; }
+    var ov = $('#apiCfg');
+    if (ov) { ov.hidden = false; }
+    setPageInert(true);
+    document.body.style.overflow = 'hidden';
+    if (u) { u.focus(); }
+  }
+  function closeCfg() {
+    var ov = $('#apiCfg');
+    if (ov) { ov.hidden = true; }
+    setPageInert(false);
+    document.body.style.overflow = '';
+    focusBack(overlayReturn.cfg);
+    overlayReturn.cfg = null;
+  }
+  function setCfgState(h) {
+    var box = $('#cfgState'), txt = $('#cfgStateTxt');
+    if (!box || !txt) { return; }
+    box.classList.remove('on', 'mock');
+    if (!h) {
+      txt.innerHTML = '<b>아직 연결하지 않았습니다</b>연결 테스트를 눌러 확인해 주세요.';
+      return;
+    }
+    if (h.mock) {
+      box.classList.add('mock');
+      txt.innerHTML = '<b>연결됨 · 모의 모드</b>CODEF를 부르지 않고 모의 응답을 돌려줍니다.';
+      return;
+    }
+    if (!h.configured) {
+      txt.innerHTML = '<b>연결됨 · CODEF 키 미설정</b>Worker에 CODEF_CLIENT_ID·SECRET을 넣어 주세요.';
+      return;
+    }
+    box.classList.add('on');
+    txt.innerHTML = '<b>연결됨 · ' + esc(h.env === 'api' ? '정식' : '데모') + ' 서버</b>실제 기관 조회를 사용할 수 있습니다.';
+  }
+
+  function testCfg(showMsg) {
+    var fromForm = overlayOpen('apiCfg');
+    var u = $('#cfgUrl'), t = $('#cfgToken');
+    var url = (fromForm && u ? u.value : codef.url).trim().replace(/\/+$/, '');
+    var token = (fromForm && t ? t.value.trim() : codef.token);
+    var msg = $('#cfgMsg');
+    if (!url) {
+      if (msg) { msg.textContent = '프록시 주소를 입력해 주세요.'; }
+      if (u) { u.setAttribute('aria-invalid', 'true'); u.focus(); }
+      return Promise.resolve(false);
+    }
+    if (!/^https?:\/\//i.test(url)) {
+      if (msg) { msg.textContent = '주소는 https:// 로 시작해야 합니다.'; }
+      if (u) { u.setAttribute('aria-invalid', 'true'); u.focus(); }
+      return Promise.resolve(false);
+    }
+    if (u) { u.removeAttribute('aria-invalid'); }
+    codef.testing = true;
+    if (msg) { msg.textContent = '연결 확인 중…'; }
+    var headers = token ? { 'X-Daon-Token': token } : {};
+    return fetch(url + '/api/health', { method: 'GET', headers: headers }).then(function (r) {
+      return r.text().then(function (txt) {
+        var d = null;
+        try { d = JSON.parse(txt); } catch (e) { d = null; }
+        if (!r.ok || !d || d.service !== 'daon-codef-proxy') {
+          throw makeErr(r.status === 401 ? '접속 토큰이 맞지 않습니다.' : '다온 프록시가 아닌 응답입니다(HTTP ' + r.status + ').', 'health');
+        }
+        codef.health = d;
+        setCfgState(d);
+        if (msg) {
+          msg.textContent = d.mock ? '연결됨 · 모의 모드 (실제 조회 아님)'
+            : !d.configured ? '연결됨 · CODEF 키가 아직 없습니다.'
+            : '연결됨 · ' + (d.env === 'api' ? '정식' : '데모') + ' 서버 · 실제 조회 사용 가능';
+        }
+        return true;
+      });
+    }).catch(function (e) {
+      codef.health = null;
+      setCfgState(null);
+      if (msg) { msg.textContent = (e && e.message) || '연결하지 못했습니다.'; }
+      return false;
+    }).then(function (ok) {
+      codef.testing = false;
+      codef.checked = true;
+      if (showMsg && ok) { toast('프록시 연결 확인'); }
+      updateCfgBar();
+      return ok;
+    });
+  }
+
+  function saveCfg() {
+    var u = $('#cfgUrl'), t = $('#cfgToken');
+    var url = (u ? u.value : '').trim().replace(/\/+$/, '');
+    if (url && !/^https?:\/\//i.test(url)) {
+      toast('주소는 https:// 로 시작해야 합니다');
+      if (u) { u.setAttribute('aria-invalid', 'true'); u.focus(); }
+      return;
+    }
+    codef.url = url;
+    codef.token = t ? t.value.trim() : '';
+    saveCodef();
+    updateCfgBar();
+    toast(url ? '프록시 주소 저장' : '프록시 연결 해제');
+    closeCfg();
+    if (url && !codef.checked) { testCfg(false); }
+  }
+  function clearCfg() {
+    codef.url = '';
+    codef.token = '';
+    codef.health = null;
+    saveCodef();
+    var u = $('#cfgUrl'), t = $('#cfgToken');
+    if (u) { u.value = ''; }
+    if (t) { t.value = ''; }
+    setCfgState(null);
+    updateCfgBar();
+    toast('프록시 연결을 해제했습니다');
+  }
+
+  /* ---------- 로그인 모달: 실제 / 시연 분리 ---------- */
+  var loginState = { mode: 'one', agency: '', method: 'kakao', auth: 'kakao', telecom: 'SKT', view: 'form' };
   var LOGIN_METHODS = [
     { v: 'kakao', label: '카카오 간편인증', sub: '카카오톡으로 인증', icon: '💬' },
     { v: 'naver', label: '네이버 간편인증', sub: '네이버 앱으로 인증', icon: '🟢' },
@@ -4563,66 +4932,488 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     { v: 'id', label: '아이디 로그인', sub: '기관 아이디로 로그인', icon: '🆔' }
   ];
 
+  function loginDocs() {
+    var groups = agencyGroups();
+    var keys = loginState.mode === 'all' ? Object.keys(groups) : [loginState.agency];
+    var out = [];
+    keys.forEach(function (k) {
+      (groups[k] || []).forEach(function (d) { if (!state.fetched[d.id]) { out.push(d); } });
+    });
+    return out;
+  }
+  /* CODEF로 실제 조회할 수 있는 서류. 나머지는 직접 발급해야 한다(가짜로 채우지 않는다). */
+  var REAL_DOC_IDS = { insurance: 1, resident: 1, disability: 1 };
+  function isRealDoc(d) { return !!REAL_DOC_IDS[d.id]; }
+  function realDocs(docs) { return docs.filter(isRealDoc); }
+  function manualDocs(docs) { return docs.filter(function (d) { return !isRealDoc(d); }); }
+  function needsAddress(docs) {
+    return docs.some(function (d) { return d.id === 'disability'; });
+  }
+
+  function loginAgencySummary(docs) {
+    var byAg = {};
+    docs.forEach(function (d) {
+      var k = agencyOf(d.id);
+      if (!byAg[k]) { byAg[k] = []; }
+      byAg[k].push(d);
+    });
+    return Object.keys(byAg).map(function (k) {
+      return '<li>· ' + esc((AGENCY[k] || {}).name || k) + ' ' + byAg[k].length + '장 — ' +
+        esc(byAg[k].map(function (d) { return shortDocName(d.name); }).join(', ')) + '</li>';
+    }).join('');
+  }
+  function loginManualNote(docs) {
+    var rest = manualDocs(docs);
+    if (!rest.length) { return ''; }
+    return '<p class="micro" style="margin:8px 0 0">직접 준비(자동 조회 없음): ' +
+      esc(rest.map(function (d) { return shortDocName(d.name); }).join(', ')) + '</p>';
+  }
+
+  function cfField(id, label, hint, value, attrs) {
+    return '<div class="field">' +
+      '<label for="' + id + '">' + esc(label) + '</label>' +
+      (hint ? '<span class="hint">' + esc(hint) + '</span>' : '') +
+      '<input id="' + id + '" type="text" ' + (attrs || '') + ' value="' + esc(value || '') + '" />' +
+      '<span class="err" id="' + id + '-err" role="alert" hidden></span>' +
+      '</div>';
+  }
+
+  function renderLoginBody() {
+    var docs = loginDocs();
+    var sub = $('#loginSub');
+    var ag = AGENCY[loginState.agency] || null;
+    if (sub) {
+      sub.textContent = loginState.mode === 'all'
+        ? '한 번에 전체 기관 서류를 모읍니다. 기관마다 간편인증을 한 번씩 요청합니다.'
+        : (ag ? ag.name + ' · ' + ag.desc + ' 서류 자동 수집.' : '');
+    }
+    var body = '';
+    if (codef.url) {
+      var f = state.form;
+      var auto = realDocs(docs);
+      body += '<div class="note"><b>실제로 가져올 서류</b><ul style="margin:6px 0 0;padding:0;list-style:none">' +
+        (loginAgencySummary(auto) || '<li>· 이 기관은 자동 조회 서류가 없습니다</li>') + '</ul>' + loginManualNote(docs) + '</div>';
+      body += '<h3 style="font-size:15.5px;font-weight:900;margin:14px 0 8px">내 정보로 간편인증</h3>';
+      body += '<div class="cfgrow">' +
+        cfField('cfName', '성명', '', f.name, 'autocomplete="name" aria-required="true"') +
+        cfField('cfBirth', '생년월일 8자리', '예: 19990729', digitsOf(f.birth), 'inputmode="numeric" placeholder="19990729" aria-required="true"') +
+        '</div>' +
+        '<div class="cfgrow">' +
+        cfField('cfPhone', '휴대폰 번호', '인증 알림을 받을 번호', digitsOf(f.phone), 'inputmode="tel" autocomplete="tel" placeholder="01012345678" aria-required="true"') +
+        (needsAddress(docs) ? cfField('cfAddr', '주소', '장애인증명서 조회에 필요', f.addr, 'autocomplete="street-address"') : '') +
+        '</div>';
+      body += '<span class="lab" id="cfTelLab" style="display:block;font-size:14px;font-weight:800;margin:0 0 6px">통신사</span>' +
+        '<div class="chiprow" id="cfTelRow" role="group" aria-labelledby="cfTelLab">' +
+        TELECOM_OPTIONS.map(function (o) {
+          return '<button class="chip" type="button" data-cf-tel="' + o.v + '" aria-pressed="' + (loginState.telecom === o.v ? 'true' : 'false') + '">' + esc(o.label) + '</button>';
+        }).join('') + '</div>';
+      body += '<span class="lab" id="cfAuthLab" style="display:block;font-size:14px;font-weight:800;margin:14px 0 6px">인증 수단</span>' +
+        '<div class="chiprow" id="cfAuthRow" role="group" aria-labelledby="cfAuthLab">' +
+        AUTH_OPTIONS.map(function (o) {
+          return '<button class="chip" type="button" data-cf-auth="' + o.v + '" aria-pressed="' + (loginState.auth === o.v ? 'true' : 'false') + '">' + o.icon + ' ' + esc(o.label) + '</button>';
+        }).join('') + '</div>';
+      body += '<p class="note" style="margin-top:14px">🔒 입력한 성명·생년월일·휴대폰 번호는 <b>다온 프록시를 거쳐 CODEF·기관으로 전달</b>됩니다. 다온 서버에는 저장하지 않으며, 화면을 닫으면 사라집니다. 인증이 끝나면 휴대폰 앱에서 알림을 확인해 주세요.</p>';
+      body += '<button class="btn ghost block" type="button" data-demo="1" style="margin-top:2px">시연용 예시 데이터로 미리보기 (실제 조회 아님)</button>';
+    } else {
+      body += '<div class="twbox wait"><b>실제 기관 조회를 하려면 프록시 연결이 필요합니다</b>' +
+        '<p>다온은 정적 페이지라 기관 API 키를 브라우저에 둘 수 없습니다. <b>Cloudflare Worker 프록시</b> 주소를 연결하면 정부24·건강보험공단 간편인증으로 실제 서류를 받아옵니다.</p>' +
+        '<p style="font-size:13px">연결 전에는 아래 <b>시연용 예시 데이터</b>로만 진행합니다. 실제 조회가 아닙니다.</p></div>' +
+        '<button class="btn block" type="button" data-cfg-open="1" style="margin:6px 0 14px">⚙️ 기관 API 연결 설정</button>' +
+        '<div class="note"><b>가져올 서류</b><ul style="margin:6px 0 0;padding:0;list-style:none">' +
+        (loginAgencySummary(docs) || '<li>· 가져올 서류 없음</li>') + '</ul></div>' +
+        '<h3 style="font-size:15.5px;font-weight:900;margin:14px 0 8px">시연 인증 수단(연출)</h3>' +
+        LOGIN_METHODS.map(function (m) {
+          return '<button class="choice" type="button" data-method="' + m.v + '" aria-pressed="' + (loginState.method === m.v ? 'true' : 'false') + '">' +
+            '<span class="ci" aria-hidden="true">' + m.icon + '</span>' +
+            '<span><b>' + esc(m.label) + '</b><span>' + esc(m.sub) + '</span></span>' +
+            '<span class="rd" aria-hidden="true"></span></button>';
+        }).join('') +
+        '<p class="note">🔒 <b>시연용 가상 로그인</b> · 실제 아이디·비밀번호·인증번호 입력 불필요 · 기관 전송 없음.</p>' +
+        '<button class="btn ghost block" type="button" data-demo="1" style="margin-top:2px">시연용 예시 데이터로 미리보기 (실제 조회 아님)</button>';
+    }
+    var lb = $('#loginBody');
+    if (lb) { lb.innerHTML = body; }
+    setLoginButtons();
+  }
+
+  function setLoginButtons() {
+    var go = $('#loginGo'), cancel = $('#loginCancel');
+    if (!go || !cancel) { return; }
+    if (loginState.view === 'run') {
+      go.hidden = !(realState.phase === 'waiting' || realState.phase === 'error');
+      go.disabled = false;
+      go.textContent = realState.phase === 'error' ? '다시 인증 요청' : '인증 완료 확인';
+      cancel.textContent = realState.running ? '중단' : '닫기';
+      return;
+    }
+    go.hidden = false;
+    go.disabled = false;
+    go.textContent = codef.url ? '인증 요청 · 서류 가져오기' : '⚙️ 기관 API 연결 설정';
+    cancel.textContent = '취소';
+  }
+
   function openLogin(agency) {
     if (!overlayOpen('login')) { overlayReturn.login = document.activeElement; }
     loginState.mode = agency === 'all' ? 'all' : 'one';
     loginState.agency = agency === 'all' ? '' : agency;
+    loginState.view = 'form';
     var ag = AGENCY[loginState.agency] || null;
-    var title = $('#loginTitle'), sub = $('#loginSub');
+    var title = $('#loginTitle');
     if (title) { title.textContent = loginState.mode === 'all' ? '일괄 인증' : (ag ? ag.name + ' 로그인' : '기관 로그인'); }
-    if (sub) {
-      sub.textContent = loginState.mode === 'all'
-        ? '시연: 1회 인증으로 전체 기관 서류를 모읍니다 · 실제 서비스는 기관별 본인인증이 필요합니다.'
-        : (ag ? ag.name + ' · ' + ag.desc + ' 서류 자동 수집.' : '');
-    }
-    var groups = agencyGroups();
-    var keys = Object.keys(groups).filter(function (k) {
-      return groups[k].some(function (d) { return !state.fetched[d.id]; });
-    });
-    var body = '';
-    if (loginState.mode === 'all') {
-      body += '<div class="note"><b>가져올 곳</b><ul style="margin:6px 0 0;padding:0;list-style:none">' + keys.map(function (k) {
-        var left = groups[k].filter(function (d) { return !state.fetched[d.id]; }).length;
-        return '<li>· ' + esc((AGENCY[k] || {}).name || k) + ' ' + left + '장</li>';
-      }).join('') + '</ul></div>';
-    }
-    body += '<h3 style="font-size:15.5px;font-weight:900;margin:6px 0 8px">인증 수단 선택</h3>' +
-      LOGIN_METHODS.map(function (m) {
-        return '<button class="choice" type="button" data-method="' + m.v + '" aria-pressed="' + (loginState.method === m.v ? 'true' : 'false') + '">' +
-          '<span class="ci" aria-hidden="true">' + m.icon + '</span>' +
-          '<span><b>' + esc(m.label) + '</b><span>' + esc(m.sub) + '</span></span>' +
-          '<span class="rd" aria-hidden="true"></span></button>';
-      }).join('') +
-      '<p class="note">🔒 <b>시연용 가상 로그인</b> · 실제 아이디·비밀번호·인증번호 입력 불필요 · 기관 전송 없음.</p>';
-    var lb = $('#loginBody');
-    if (lb) { lb.innerHTML = body; }
+    renderLoginBody();
     var ov = $('#login');
     if (ov) { ov.hidden = false; }
     setPageInert(true);
     document.body.style.overflow = 'hidden';
-    var c = $('#loginClose');
-    if (c) { c.focus(); }
+    var first = $('#cfName') || $('#loginClose');
+    if (first) { first.focus(); }
   }
-  function closeLogin() {
+  function closeLogin(quiet) {
+    stopTwoWayTimer();
+    realState.running = false;
+    realState.pending = null;
+    realState.phase = '';
+    fetchState.running = false;
+    fetchState.agency = null;
+    loginState.view = 'form';
     var ov = $('#login');
     if (ov) { ov.hidden = true; }
     setPageInert(false);
     document.body.style.overflow = '';
-    focusBack(overlayReturn.login);
+    if (!quiet) { focusBack(overlayReturn.login); }
     overlayReturn.login = null;
+    render();
   }
   function confirmLogin() {
-    var keys = loginState.mode === 'all' ? Object.keys(agencyGroups()) : [loginState.agency];
-    var todo = [];
-    keys.forEach(function (k) {
-      (agencyGroups()[k] || []).forEach(function (d) { if (!state.fetched[d.id]) { todo.push(d); } });
-    });
-    closeLogin();
-    if (!todo.length) { toast('수집할 서류 없음'); return; }
-    fetchDocs(todo);
+    if (loginState.view === 'run') {
+      if (realState.phase === 'error') { realStep(); }
+      else if (realState.phase === 'waiting') { completeTwoWay(); }
+      return;
+    }
+    if (!codef.url) { openCfg(); return; }
+    startReal();
   }
 
+  /* ---------- 실제 조회 실행 ---------- */
+  function readProfile() {
+    var name = ($('#cfName') ? $('#cfName').value : '').trim();
+    var birth = digitsOf($('#cfBirth') ? $('#cfBirth').value : '');
+    var phone = digitsOf($('#cfPhone') ? $('#cfPhone').value : '');
+    var addr = $('#cfAddr') ? $('#cfAddr').value.trim() : (state.form.addr || '');
+    return { name: name, birth: birth, phone: phone, telecom: loginState.telecom, auth: loginState.auth, address: addr };
+  }
+  function validateProfile(p) {
+    var bad = null;
+    function mark(id, on) {
+      var el = $('#' + id), err = $('#' + id + '-err');
+      if (el) { if (on) { el.setAttribute('aria-invalid', 'true'); } else { el.removeAttribute('aria-invalid'); } }
+      if (err) { err.hidden = !on; err.textContent = on ? err.getAttribute('data-msg') || '' : ''; }
+    }
+    if (p.name.length < 2) { bad = ['cfName', '성명을 2자 이상 입력해 주세요.']; }
+    else if (p.birth.length !== 8) { bad = ['cfBirth', '생년월일 8자리를 입력해 주세요 (예: 19990729).']; }
+    else if (p.phone.length < 10 || p.phone.length > 11) { bad = ['cfPhone', '휴대폰 번호를 숫자로 입력해 주세요.']; }
+    ['cfName', 'cfBirth', 'cfPhone'].forEach(function (id) { mark(id, false); });
+    if (bad) {
+      var err = $('#' + bad[0] + '-err');
+      if (err) { err.setAttribute('data-msg', bad[1]); err.hidden = false; err.textContent = bad[1]; }
+      var el = $('#' + bad[0]);
+      if (el) { el.setAttribute('aria-invalid', 'true'); el.focus(); }
+      toast(bad[1]);
+      return false;
+    }
+    return true;
+  }
+
+  function sidFor(ag) {
+    if (!realState.sid[ag]) { realState.sid[ag] = uuid(); }
+    return realState.sid[ag];
+  }
+
+  function startReal() {
+    var docs = loginDocs();
+    var auto = realDocs(docs);
+    if (!auto.length) {
+      toast('이 기관 서류는 자동 조회가 없습니다 · 직접 발급해 주세요');
+      return;
+    }
+    if (manualDocs(docs).length) {
+      announce('자동 조회 ' + auto.length + '장을 가져옵니다. 나머지 ' + manualDocs(docs).length + '장은 직접 준비합니다.');
+    }
+    var p = readProfile();
+    if (!validateProfile(p)) { return; }
+    if (needsAddress(auto) && !p.address) {
+      var el = $('#cfAddr');
+      if (el) { el.setAttribute('aria-invalid', 'true'); el.focus(); }
+      toast('장애인증명서 조회에는 주소가 필요합니다');
+      return;
+    }
+    realState = {
+      running: true, phase: 'request', queue: auto, idx: 0, doc: null, agency: '',
+      pending: null, profile: p, sid: realState.sid, timer: null, left: 0, retry: 0, error: null, done: []
+    };
+    realState.sid = realState.sid || {};
+    fetchState.mode = 'real';
+    fetchState.running = true;
+    fetchState.log = [];
+    loginState.view = 'run';
+    renderLoginRun();
+    realStep();
+  }
+
+  function renderLoginRun() {
+    var lb = $('#loginBody');
+    if (!lb) { return; }
+    var sub = $('#loginSub');
+    if (sub) { sub.textContent = '실제 기관 조회 · ' + (codef.health && codef.health.env === 'api' ? '정식' : '데모') + ' 서버'; }
+    var total = realState.queue.length;
+    var cur = Math.min(realState.idx + 1, total);
+    var html = '<p class="micro" style="margin:0 0 10px">' + cur + ' / ' + total + ' · ' +
+      esc(realState.doc ? shortDocName(realState.doc.name) : '') + '</p>';
+    html += '<div class="twbox' + (realState.phase === 'error' ? ' err' : realState.phase === 'waiting' ? '' : ' wait') + '" id="twBox">';
+    if (realState.phase === 'request') {
+      html += '<b>기관에 인증을 요청하는 중…</b><p>잠시만 기다려 주세요.</p>';
+    } else if (realState.phase === 'waiting') {
+      html += '<b>휴대폰에서 인증을 완료해 주세요</b>' +
+        '<p>' + esc(authLabel(loginState.auth)) + ' 알림을 열어 인증을 마친 뒤, 아래 <b>[인증 완료 확인]</b>을 눌러 주세요.</p>' +
+        '<span class="twtime" id="twTime">남은 시간 ' + fmtLeft(realState.left) + '</span>';
+    } else if (realState.phase === 'verifying') {
+      html += '<b>기관 응답을 기다리는 중…</b><p>인증이 확인되면 서류를 받아옵니다.</p>';
+    } else if (realState.phase === 'error') {
+      html += '<b>' + esc((realState.error && realState.error.message) || '조회에 실패했습니다.') + '</b>' +
+        '<p>' + (realState.error && realState.error.code ? '응답 코드 ' + esc(realState.error.code) + ' · ' : '') +
+        '같은 문제가 계속되면 이 서류는 직접 발급해 주세요. 가짜 성공으로 넘기지 않습니다.</p>';
+    } else {
+      html += '<b>서류를 받아왔습니다</b><p>신청서에 반영했습니다.</p>';
+    }
+    html += '</div>';
+    if (realState.done.length || realState.error) {
+      html += '<ul class="twlist" aria-live="polite">' + realState.done.map(function (t) {
+        return '<li class="ok"><span class="ti" aria-hidden="true">✓</span><span>' + esc(t) + '</span></li>';
+      }).join('') + (realState.error
+        ? '<li class="err"><span class="ti" aria-hidden="true">!</span><span>' + esc(realState.error.message) + '</span></li>' : '') + '</ul>';
+    }
+    if (realState.phase === 'error') {
+      html += '<button class="btn ghost block" type="button" data-real-skip="1" style="margin-top:10px">이 서류는 직접 준비하고 넘어가기</button>';
+    }
+    lb.innerHTML = html;
+    setLoginButtons();
+  }
+
+  function authLabel(v) {
+    for (var i = 0; i < AUTH_OPTIONS.length; i++) { if (AUTH_OPTIONS[i].v === v) { return AUTH_OPTIONS[i].label; } }
+    return '간편인증';
+  }
+  function fmtLeft(s) {
+    s = Math.max(0, s | 0);
+    return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2);
+  }
+  function startTwoWayTimer(sec) {
+    stopTwoWayTimer();
+    realState.left = Math.max(30, sec || 270);
+    realState.timer = setInterval(function () {
+      realState.left -= 1;
+      var t = $('#twTime');
+      if (t) { t.textContent = '남은 시간 ' + fmtLeft(realState.left); }
+      if (realState.left <= 0) {
+        stopTwoWayTimer();
+        realFail(makeErr('인증 시간이 지났습니다. 인증 요청을 다시 보내 주세요.', 'twoway_timeout'));
+      }
+    }, 1000);
+  }
+  function stopTwoWayTimer() {
+    if (realState.timer) { clearInterval(realState.timer); realState.timer = null; }
+  }
+
+  function realStep() {
+    stopTwoWayTimer();
+    if (!realState.running) { return; }
+    if (realState.idx >= realState.queue.length) { finishReal(); return; }
+    var d = realState.queue[realState.idx];
+    var ag = agencyOf(d.id);
+    realState.doc = d;
+    realState.agency = ag;
+    realState.pending = null;
+    realState.error = null;
+    realState.retry = 0;
+    realState.phase = 'request';
+    fetchState.agency = ag;
+    renderLoginRun();
+    pushLog('🔐', ((AGENCY[ag] || {}).name || ag) + ' 간편인증 요청', 'run');
+    renderAgentLog();
+    codefFetch('/api/auth/request', { docId: d.id, profile: realState.profile, id: sidFor(ag) }).then(function (res) {
+      if (!realState.running) { return; }
+      if (res.status === 'twoWay') {
+        realState.pending = { doc: d, info: res.twoWayInfo, method: res.method || '' };
+        realState.phase = 'waiting';
+        startTwoWayTimer(res.timeoutSeconds || 270);
+        renderLoginRun();
+        pushLog('📲', authLabel(loginState.auth) + ' 인증 요청 전송 · 휴대폰 확인', 'run');
+        renderAgentLog();
+        announce('휴대폰에서 간편인증을 완료한 뒤 인증 완료 확인을 눌러 주세요.');
+        return;
+      }
+      if (res.status === 'done') {
+        applyRealDoc(d, res);
+        realState.idx += 1;
+        realStep();
+      }
+    }).catch(function (e) {
+      realFail(e);
+    });
+  }
+
+  function completeTwoWay() {
+    var p = realState.pending;
+    if (!p || realState.phase === 'verifying') { return; }
+    stopTwoWayTimer();
+    realState.phase = 'verifying';
+    renderLoginRun();
+    pushLog('🔄', '인증 완료 확인 · 기관 응답 대기', 'run');
+    renderAgentLog();
+    codefFetch('/api/auth/complete', {
+      docId: p.doc.id, profile: realState.profile, twoWayInfo: p.info, id: sidFor(agencyOf(p.doc.id))
+    }).then(function (res) {
+      if (!realState.running) { return; }
+      if (res.status === 'done') {
+        applyRealDoc(p.doc, res);
+        realState.pending = null;
+        realState.idx += 1;
+        realStep();
+        return;
+      }
+      realState.retry += 1;
+      if (realState.retry >= 2) {
+        realFail(makeErr('인증이 확인되지 않았습니다. 휴대폰에서 인증을 다시 마친 뒤 새로 요청해 주세요.', 'CF-12872'));
+        return;
+      }
+      realState.pending = { doc: p.doc, info: res.twoWayInfo || p.info };
+      realState.phase = 'waiting';
+      startTwoWayTimer((res.timeoutSeconds || 270));
+      renderLoginRun();
+      toast('아직 인증이 끝나지 않았습니다. 휴대폰 인증 후 다시 눌러 주세요');
+    }).catch(function (e) {
+      realFail(e);
+    });
+  }
+
+  function realFail(e) {
+    stopTwoWayTimer();
+    realState.phase = 'error';
+    realState.error = { code: (e && e.code) || '', message: (e && e.message) || '조회에 실패했습니다.' };
+    pushLog('⚠️', (realState.doc ? shortDocName(realState.doc.name) : '기관') + ' — ' + realState.error.message, 'warn');
+    renderLoginRun();
+    renderAgentLog();
+    toast(realState.error.message);
+  }
+
+  function skipRealDoc() {
+    if (!realState.doc) { return; }
+    pushLog('↷', shortDocName(realState.doc.name) + ' — 직접 준비로 넘김', 'run');
+    realState.idx += 1;
+    realState.error = null;
+    realStep();
+  }
+
+  function finishReal() {
+    stopTwoWayTimer();
+    realState.running = false;
+    realState.phase = 'done';
+    fetchState.running = false;
+    fetchState.agency = null;
+    var got = realState.done.length;
+    pushLog('✅', '실제 기관 조회 서류 ' + got + '장 반영', 'ok');
+    renderLoginRun();
+    render();
+    scheduleSave();
+    setTimeout(function () {
+      if (overlayOpen('login')) { closeLogin(); }
+      render();
+      toast(got ? '실제 조회 서류 ' + got + '장을 신청서에 반영했습니다' : '실제 조회로 받은 서류가 없습니다');
+      announce(got ? '실제 기관 조회 서류 ' + got + '장을 신청서에 반영했습니다.' : '실제 조회로 받은 서류가 없습니다.');
+    }, 650);
+  }
+
+  /* ---------- 실제 데이터 반영 ---------- */
+  function typeFromDisability(main) {
+    var s = String(main || '');
+    if (/지체/.test(s)) { return 'physical'; }
+    if (/뇌병변|뇌성마비/.test(s)) { return 'brain'; }
+    if (/시각/.test(s)) { return 'visual'; }
+    if (/청각|언어/.test(s)) { return 'hearing'; }
+    if (/지적/.test(s)) { return 'intellectual'; }
+    if (/자폐/.test(s)) { return 'autism'; }
+    if (/정신/.test(s)) { return 'mental'; }
+    return '';
+  }
+  function severityFromDisability(main, multiple) {
+    var s = String(main || '') + ' ' + String(multiple || '');
+    if (/심한|중증|[1-3]급/.test(s)) { return 'severe'; }
+    if (/심하지|경증|[4-6]급/.test(s)) { return 'mild'; }
+    return '';
+  }
+
+  function mergeRealIntoForm(docId, n) {
+    if (!n) { return; }
+    if (n.name && String(n.name).length >= 2) {
+      state.form.name = String(n.name);
+      if (state.card) { state.card.name = String(n.name); }
+    }
+    if (docId === 'resident' && n.birth && n.birth.length === 8) {
+      state.form.birth = n.birth.slice(0, 4) + '-' + n.birth.slice(4, 6) + '-' + n.birth.slice(6, 8);
+      if (state.card) { state.card.birth = state.form.birth; }
+    }
+    if (n.address) { state.form.addr = n.address; }
+    if (docId === 'disability') {
+      var t = typeFromDisability(n.main);
+      var sv = severityFromDisability(n.main, n.multiple);
+      var changed = false;
+      if (t && t !== state.type) { state.type = t; changed = true; }
+      if (sv && sv !== state.severity) { state.severity = sv; changed = true; }
+      if (state.card) { state.card.type = state.type; state.card.severity = state.severity; }
+      if (changed) { applyProfile(state.type); }
+    }
+    if (docId === 'insurance') {
+      if (typeof n.employed === 'boolean') { state.elig.emp = n.employed ? '취업' : '미취업'; }
+    }
+  }
+
+  function realSummary(docId, n) {
+    if (!n) { return ''; }
+    if (docId === 'insurance') {
+      var parts = [n.joinType || '', n.company || '', n.startDate ? '자격취득 ' + fmtYmd(n.startDate) : '', n.endDate ? '상실 ' + fmtYmd(n.endDate) : '재직 중'];
+      return parts.filter(Boolean).join(' · ');
+    }
+    if (docId === 'resident') {
+      return [n.hhName ? '세대주 ' + n.hhName : '', n.address || '', n.docNo ? '문서확인번호 ' + n.docNo : ''].filter(Boolean).join(' · ');
+    }
+    if (docId === 'disability') {
+      return [n.main || '', n.regNumber ? '등록번호 ' + n.regNumber : '', n.issueDate ? '발급 ' + fmtYmd(n.issueDate) : ''].filter(Boolean).join(' · ');
+    }
+    return '';
+  }
+
+  function applyRealDoc(d, res) {
+    var n = res.normalized || null;
+    if (!n) {
+      realFail(makeErr('기관이 빈 결과를 보냈습니다. 잠시 뒤 다시 시도해 주세요.', 'empty'));
+      return;
+    }
+    n.__mock = !!res.mock;
+    state.real[d.id] = n;
+    state.fetched[d.id] = {
+      at: nowStamp(), agency: agentMeta(d).agency, real: true, mock: !!res.mock,
+      summary: realSummary(d.id, n)
+    };
+    state.checked[(state.selectedProgram || '') + ':' + d.id] = true;
+    mergeRealIntoForm(d.id, n);
+    realState.done.push(shortDocName(d.name) + ' — ' + realSummary(d.id, n));
+    pushLog('📄', shortDocName(d.name) + ' 실제 조회 완료' + (res.mock ? ' (모의 응답)' : ''), 'ok');
+    renderAgentLog();
+  }
+
+
   function fetchDocs(list) {
+    fetchState.mode = 'demo';
     var steps = [];
     var lastAg = '';
     list.forEach(function (d) {
@@ -4672,6 +5463,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         pushLog('🔑', agName + ' 로그인 완료', 'ok');
       } else if (step.t === 'issue') {
         wait = 760;
+        delete state.real[step.doc.id];
         state.fetched[step.doc.id] = { at: nowStamp(), agency: agentMeta(step.doc).agency };
         state.checked[state.selectedProgram + ':' + step.doc.id] = true;
         pushLog('📄', shortDocName(step.doc.name) + ' 수집 완료', 'ok');
@@ -4754,8 +5546,10 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       var rk = rankList().filter(Boolean);
       if (rk.length) { parts.push('1순위 ' + rk[0]); }
       var attachN = requiredFetchDocs().filter(function (d) { return state.fetched[d.id]; }).length;
+      var realN = Object.keys(state.real || {}).length;
       ad.innerHTML = '서류에서 채운 값: <b>' + esc(parts.join(' · ')) + '</b>.' +
         (attachN ? ' 가져온 서류 <b>' + attachN + '장</b> 첨부 완료.' : '') +
+        (realN ? ' 기관 실제 조회값 <b>' + realN + '건</b>이 이름·생년월일·주소·장애 정보·자격 판정에 반영됐습니다.' : '') +
         (prog ? ' 이름·생년월일을 확인하고 연락처·계좌까지 채우면 신청서가 완성됩니다.' : '');
     }
     var phone = $('#inPhone'), addr = $('#inAddr'), bank = $('#inBank'), acct = $('#inAcct'), mot = $('#inMotiv');
@@ -5135,10 +5929,12 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       add('care', '장기요양등급 판정', '미판정', '가능', '');
     }
     /* ⑤ 미취업 (국민건강보험 직장가입자 제한 — 공고 4-①) */
+    var ins = state.real && state.real.insurance ? state.real.insurance : null;
+    var insNote = ins ? '건강보험 자격득실확인서 조회 결과: ' + (ins.joinType || '가입자 구분 없음') + (ins.endDate ? ' · 자격상실 ' + fmtYmd(ins.endDate) : ' · 상실일 없음') + '. ' : '';
     if (e.emp === '취업') {
-      add('emp', '미취업 상태', '취업(직장가입)', '제한', '국민건강보험 직장가입자는 참여 제한입니다. 사업 시작 전 근로종료일을 근로계약서로 입증하면 신청할 수 있습니다.');
+      add('emp', '미취업 상태', '취업(직장가입)', '제한', insNote + '국민건강보험 직장가입자는 참여 제한입니다. 사업 시작 전 근로종료일을 근로계약서로 입증하면 신청할 수 있습니다.');
     } else {
-      add('emp', '미취업 상태', '미취업', '가능', '');
+      add('emp', '미취업 상태', '미취업', '가능', insNote);
     }
     /* ⑥ 임직원 겸임 (공고 4-③) */
     if (e.staff === '해당') {
@@ -5677,6 +6473,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       setRanks(['', '', '']);
       state.checked = {};
       state.fetched = {};
+      state.real = {};
       state.form = { name: '', birth: '', phone: '', email: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '', guardian: '', extra: {}, lic: '' };
       state.elig = eligDefault();
       state.signature = { mode: '', data: '', name: '', at: '' };
@@ -5786,6 +6583,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     setRanks([pickDefaultWorkplace(pid), '', '']);
     state.checked = {};
     state.fetched = {};
+    state.real = {};
     fetchState.log = [];
     fetchState.running = false;
     state.form.job1 = JOB_DEFAULT[pid] || '';
@@ -5827,6 +6625,8 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   function markSelfDocs() {
     var need = requiredFetchDocs();
     need.forEach(function (d) {
+      if (state.fetched[d.id]) { return; }
+      delete state.real[d.id];
       state.fetched[d.id] = { at: nowStamp(), agency: '직접 준비' };
       state.checked[state.selectedProgram + ':' + d.id] = true;
     });
@@ -6092,6 +6892,24 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       });
     }
 
+    /* 기관 API 연결 설정(CODEF 프록시) */
+    var apiBtn = $('#btnApiCfg');
+    if (apiBtn) { apiBtn.addEventListener('click', openCfg); }
+    var cfgCloseBtn = $('#cfgClose');
+    if (cfgCloseBtn) { cfgCloseBtn.addEventListener('click', closeCfg); }
+    var cfgTestBtn = $('#cfgTest');
+    if (cfgTestBtn) { cfgTestBtn.addEventListener('click', function () { testCfg(true); }); }
+    var cfgSaveBtn = $('#cfgSave');
+    if (cfgSaveBtn) { cfgSaveBtn.addEventListener('click', saveCfg); }
+    var cfgOffBtn = $('#cfgOff');
+    if (cfgOffBtn) { cfgOffBtn.addEventListener('click', clearCfg); }
+    var cfgOv = $('#apiCfg');
+    if (cfgOv) { cfgOv.addEventListener('click', function (e) { if (e.target === cfgOv) { closeCfg(); } }); }
+    var cfgUrlEl = $('#cfgUrl');
+    if (cfgUrlEl) {
+      cfgUrlEl.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); testCfg(true); } });
+    }
+
     document.addEventListener('click', function (e) {
       var t = e.target;
       if (!t || !t.closest) { return; }
@@ -6202,6 +7020,33 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         $$('#loginBody [data-method]').forEach(function (b) { b.setAttribute('aria-pressed', b === method ? 'true' : 'false'); });
         return;
       }
+      var cfgOpen = t.closest('[data-cfg-open]');
+      if (cfgOpen) { openCfg(); return; }
+      var cfTel = t.closest('[data-cf-tel]');
+      if (cfTel) {
+        loginState.telecom = cfTel.getAttribute('data-cf-tel');
+        $$('#cfTelRow [data-cf-tel]').forEach(function (b) { b.setAttribute('aria-pressed', b === cfTel ? 'true' : 'false'); });
+        return;
+      }
+      var cfAuth = t.closest('[data-cf-auth]');
+      if (cfAuth) {
+        loginState.auth = cfAuth.getAttribute('data-cf-auth');
+        $$('#cfAuthRow [data-cf-auth]').forEach(function (b) { b.setAttribute('aria-pressed', b === cfAuth ? 'true' : 'false'); });
+        return;
+      }
+      var demoBtn = t.closest('[data-demo]');
+      if (demoBtn) {
+        var demoDocs = loginDocs();
+        stopTwoWayTimer();
+        closeLogin(true);
+        fetchState.mode = 'demo';
+        if (!demoDocs.length) { toast('수집할 서류 없음'); return; }
+        toast('시연용 예시 데이터로 진행합니다 (실제 조회 아님)');
+        fetchDocs(demoDocs);
+        return;
+      }
+      var skipReal = t.closest('[data-real-skip]');
+      if (skipReal) { skipRealDoc(); return; }
       var rescan = t.closest('[data-act="rescan"]');
       if (rescan) { closeSheet(); pickCard(); return; }
       var easyOff = t.closest('[data-act="easy-off"]');
@@ -6283,6 +7128,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
 
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') { return; }
+      if (overlayOpen('apiCfg')) { closeCfg(); return; }
       if (overlayOpen('fileView')) { closeFileView(true); return; }
       if (overlayOpen('login')) { closeLogin(); return; }
       if (overlayOpen('sheet')) { closeSheet(); return; }
@@ -6294,12 +7140,15 @@ body.a11y-big.easy .hero h1{line-height:1.4}
      ============================================================ */
   function init() {
     loadA11y();
+    loadCodef();
     applyA11y();
     bindEvents();
     var restored = restoreSaved();
     render();
+    updateCfgBar();
+    if (codef.url) { testCfg(false); }
     if (restored) {
-      toast('이전 진행 상태 복원 · 초기화는 상단 ‘처음부터’');
+      toast('이전 진행 상태를 복원했습니다 · 처음부터는 상단 ‘처음부터’');
     }
   }
 

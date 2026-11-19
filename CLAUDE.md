@@ -9,12 +9,26 @@
 - **앱(Application)처럼 동작하는 4개 화면**으로 이어진다.
   1. **복지카드** — 사진 업로드 시 **브라우저 로컬 OCR**(Tesseract.js `kor+eng`)로 성명·생년월일·장애유형·정도·등록일·발급기관을 실제 판독해 확인 화면에 채움 · 예시 인물 7종 · 내 정보 직접 입력(이름·유형·정도) 세 가지 길
   2. **할 수 있는 일자리** — 조건에 따라 신청 가능/확인 필요/지금은 어려움으로 나눈 8개 사업과 진주 지역 근무지 10곳
-  3. **서류** — 나라 기관(정부24·국민건강보험공단·복지로·고용24)에 AI가 대신 로그인해 서류를 받아 신청서에 붙이는 과정을 실시간 로그로 보여 줌
+  3. **서류** — 나라 기관(정부24·국민건강보험공단·복지로·고용24) 서류를 받아 신청서에 붙이는 화면. **기관 API(CODEF) 프록시를 연결하면 실제 간편인증 조회**, 연결하지 않으면 시연 연출. 둘을 화면에서 명확히 구분한다
   4. **신청** — 복지카드·기관 서류로 채운 정보는 그대로 두고, 빠진 칸(연락처·사는 곳·계좌·하고 싶은 말)만 적어 제출 → 접수번호와 접수증
 - 상담(대화형 질문) 단계와 5단계 위저드는 **없다.** 화면마다 큰 버튼 하나로 다음 화면에 간다.
-- 서버·빌드·패키지 없음. `index.html` **단일 파일**(HTML + CSS + JS)이며, 파일을 열면 바로 동작한다. 예외 하나 — 복지카드 OCR만 Tesseract.js 5.1.1을 CDN에서 지연 로드한다(엔진을 못 받으면 직접 입력으로 폴백).
+- 서버·빌드·패키지 없음. `index.html` **단일 파일**(HTML + CSS + JS)이며, 파일을 열면 바로 동작한다. 예외 둘 — 복지카드 OCR만 Tesseract.js 5.1.1을 CDN에서 지연 로드하고, 실제 기관 조회를 쓸 때만 사용자가 배포한 `proxy/`(Cloudflare Worker)를 부른다.
 - 배포: GitHub Pages — https://mingun0729-jpg.github.io/daon-counselor/
 - 출발점: 진주시지체장애인협회 일자리 업무 현장 경험(작성자 본인 근로 경험).
+
+## 1-B. 실제 기관 조회(CODEF) 연동 구조
+
+```
+브라우저(index.html) → proxy/cloudflare-worker.js (Cloudflare Workers) → CODEF → 정부24 · 국민건강보험공단
+```
+
+- **키는 절대 저장소·브라우저에 두지 않는다.** `CODEF_CLIENT_ID`·`CODEF_CLIENT_SECRET`은 Worker secret에만 넣는다(`proxy/README.md`).
+- 프론트엔드는 `daon.codef.v1`(localStorage)에 **프록시 주소·접속 토큰만** 저장한다. 본인확인 정보(성명·생년월일·휴대폰)는 메모리에만 두고 저장·복제하지 않는다.
+- 프록시 엔드포인트는 화이트리스트 3개뿐: `/api/health`, `/api/auth/request`(1차), `/api/auth/complete`(2차).
+- 2-Way 흐름: 1차 응답 `result.code === "CF-03002"` + `data.continue2Way === true` → `twoWayInfo`(`jobIndex`·`threadIndex`·`jti`·`twoWayTimestamp`)를 보관 → 사용자가 휴대폰에서 인증 → `[인증 완료 확인]` → `is2Way:true`, `simpleAuth:"1"`, `twoWayInfo`를 담아 같은 URL로 2차 요청. 추가인증 제한 270초, `simpleAuth:"1"` 반복은 2번까지(3번째 `CF-12872`).
+- 지원 상품(2026-11-19 개발가이드 확인): `insurance` `/v1/kr/public/pp/nhis-join/identify-confirmation`(org 0002), `resident` `/v1/kr/public/mw/resident-registration-copy/issuance`(0001), `disability` `/v1/kr/public/mw/certificate/disability`(0001). `REAL_DOC_IDS`가 이 셋이다.
+- **가짜 성공 금지** — 프록시가 없거나 기관이 거절하면 그 사실·응답 코드를 화면에 그대로 보여 주고 '직접 준비'로 넘긴다. 시연 데이터는 `[시연용 예시 데이터로 미리보기]` 버튼으로만 들어가고, 배지·로그도 `시연` / `실제 조회`로 구분한다.
+- 장애인증명서의 `identity`는 개발가이드상 주민등록번호를 요구하지만 다온은 주민등록번호를 받지 않으므로 **생년월일을 보낸다**. 거절되면 응답 코드를 보여 주고 직접 발급으로 안내한다(주석·README 참고).
 
 ## 2. 파일 구조
 
@@ -23,6 +37,8 @@ index.html    # 프로토타입 전체 (이 파일 하나가 배포본)
 README.md     # 기능·시연 방법 안내
 CLAUDE.md     # 이 문서 (작업 규칙)
 .nojekyll     # GitHub Pages Jekyll 처리 비활성화
+proxy/        # 실제 기관 조회용 백엔드 프록시 (Pages와 별개로 Cloudflare에 배포)
+  cloudflare-worker.js · wrangler.toml · README.md
 ```
 
 로컬 원본은 별도 작업 공간의 `prototypes/disability-job-counselor.html`이며, 배포 전에는 항상 이 원본과 `index.html`을 동일하게 맞춘다(MD5 비교).
@@ -41,7 +57,7 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 | `#view-submit` | 자동 채움 안내 `#autoDesc`, 희망 근무지 순위 `#confirmRanks`(+`#btnRankEdit`), 입력 칸(`#inPhone`, `#inEmail`, `#inAddr`, `#inBank`+`#inAcct`)과 `#inMotiv`(+`#btnDraft`), **추가 신청서 항목(선택)** `#extraBox`/`#extraFields`(서식 1의 성별·소득수준·최종학력·전산능력·자격면허·보호자 연락처 등), `#formDocList`, **자격 판정** `#eligResult`, **자필 서명** `#sigPad`/`#sigState`, **서식 3종 탭** `#formTabs`/`#formPreviewFrame`/`#formMeta` |
 | `#view-done` | 접수증 `#doneNo`·`#doneReceipt`, 인쇄 `#btnPrint`, ZIP `#btnZip`, 메일 `#btnMail` |
 | `.dock` | 화면마다 **큰 버튼 하나** `#ctaMain` + 안내 `#dockNote`. 카드 화면(인식 전)과 완료 화면에서는 숨긴다 |
-| 시트·모달 | `#sheet`(예시 카드·직접 고르기·조건 바꾸기·처음부터), `#ocr`(카드 읽기 4단계), `#login`(기관 로그인 시연), `#submitOv`(제출 4단계), `#fileView`(서류 미리보기 iframe) |
+| 시트·모달 | `#sheet`(예시 카드·직접 고르기·조건 바꾸기·처음부터), `#ocr`(카드 읽기 4단계), `#login`(기관 로그인 — 실제/시연 분리), `#apiCfg`(기관 API 연결 설정), `#submitOv`(제출 4단계), `#fileView`(서류 미리보기 iframe) |
 | `#printArea` | 인쇄용 컨테이너(화면에서는 `display:none`) |
 
 ### 스크립트 섹션 (IIFE 안, 주석의 번호와 대응)
@@ -60,7 +76,9 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 | 5(앱). 복지카드 | `CARD_SAMPLES`(7종), `OCR_STEPS`, `openSamples`/`openSampleConfirm`(예시 인물 확인), `startCardOcr`/`ensureOcrWorker`/`ocrPrepCanvas`/`ocrPass`(브라우저 로컬 OCR 파이프라인), `parseOcrText`/`mergeOcrPasses`(판독문 파싱·2패스 병합), `openOcrProgress`/`setOcrPct`/`cancelOcr`, `openOcrReview`/`applyOcrDraft`, `openOcrFailed`, `openManual`, `openOcr`/`finishOcr`, `applyCard`(`birth` 포함), `applyManual`, `applyProfile`(장애 유형별 배려: 시각=큰글씨+읽어주기, 지적·자폐성=쉬운 말, 정신=근무 시간·업무 조정 안내, 지체·뇌병변=큰 글씨·큰 버튼) |
 | 6(앱). 화면 흐름 | `VIEW_ORDER`, `go`, `render`, `renderSteps`, `renderCard`, `renderDock` |
 | 7(앱). 일자리 | `analyze` 결과를 `jobCardHtml`로, `kindOfProgram`·`workRows`·`pickDefaultWorkplace`, `renderWork`(진주 근무지 3장 + 더 보기)·`workCardHtml`(순위 버튼)·`renderRankSummary`, `renderSupports`, `openCond` |
-| 8(앱). 서류 | `fetchState`(진행 로그·phase), `requiredFetchDocs`, `assocDocs`, `docsStats`, `agencyGroups`, `renderDocs`, `renderAgentLog`/`pushLog`/`phaseLabel`, `openLogin`/`confirmLogin`, `fetchDocs`(접속→로그인→발급→첨부 단계별 실행) |
+| 8(앱). 서류 | `fetchState`(진행 로그·phase·mode), `requiredFetchDocs`, `assocDocs`, `docsStats`, `agencyGroups`, `renderDocs`, `renderAgentLog`/`pushLog`/`phaseLabel`, `openLogin`/`confirmLogin`, `fetchDocs`(시연 연출) |
+| 8-B. 실제 연동 | `codef`(프록시 주소·health), `realState`, `loadCodef`/`saveCodef`, `codefFetch`, `updateCfgBar`, `openCfg`/`closeCfg`/`testCfg`/`saveCfg`/`clearCfg`, `REAL_DOC_IDS`/`realDocs`, `renderLoginBody`/`setLoginButtons`, `startReal`/`realStep`/`completeTwoWay`/`realFail`/`finishReal`, `renderLoginRun`, `startTwoWayTimer`, `applyRealDoc`/`mergeRealIntoForm`/`realSummary`, `typeFromDisability`/`severityFromDisability` |
+| 서류 실데이터 렌더 | `realHead`/`realCertDoc`(CODEF 응답 요약 문서 — `REAL_WM` 워터마크), `docShell(title, inner, wm)` |
 | 9(앱). 신청 | `renderSubmit`(확인 카드 `#confirmCard` · 희망 근무지 순위 `renderConfirmRanks` · 필요 지원 칩 `aidChipsHtml`), `renderExtraFields`(서식 1 추가 항목 칩), `validateForm`(aria-invalid·role=alert), `readForm`, `clearFieldError`, `JOB_DEFAULT`, `buildDraftText`, `submitAll`, `makeReceipt`(순위 포함), `renderDone`, `birthText`/`maskedRrn`/`rrnMasked` |
 | 9-B. 포커스 | `focusViewHeading`(화면 전환 → 제목), `focusBack`/`overlayReturn`(모달을 열었던 버튼으로 복원), `selectProgram`·순위 버튼(`data-work-rank`)·순위 비우기(`data-clear-rank`)·추가 항목 칩(`data-xkey`)이 재렌더 뒤 같은 버튼으로 포커스 |
 | 10(앱). 인쇄·저장 | `printHtmlString`(새 탭 인쇄, 팝업 차단 시 `downloadHtml`), `printApp`, `saveAllZip`, `sendMail`, `allDocs` |
@@ -79,7 +97,7 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 - 수치를 바꿀 때는 **출처 연도를 함께 표기**하고, 화면 하단 고지의 "2026년 장애인일자리 사업안내 기준" 문구도 같이 갱신한다.
 - 근무지 10곳과 신청서 예시 값(성명·연락처·거주지·계좌)은 **가상 예시**다. 실제 기관·개인 정보로 바꾸지 않는다. 다만 **접수처 안내의 기관명·주소·대표전화**는 공개된 공식 정보(**(사)경남지체장애인연합회 진주시지회**, 경남 진주시 대신로 232번길 16, ☎ 055-755-0008)를 실제 값으로 쓰고 `ORG` 상수에서 관리한다.
 - 복지카드 인식은 **실제 브라우저 로컬 OCR**이다(`startCardOcr`). Tesseract.js 5.1.1(`kor+eng`)을 CDN에서 **필요할 때 한 번만** 불러오고, 사진은 그레이스케일·대비·이진화/샤프닝 두 가지로 전처리해 2패스(PSM 6)로 읽고, 6개 항목 중 3개 미만이면 원본에 가까운(이진화·샤프닝 없는) 세 번째 패스를 더 돌린 뒤 `mergeOcrPasses`로 항목별 최선값을 고른다. **사진 픽셀은 어디로도 전송하지 않는다**(내려받는 것은 엔진·언어 데이터뿐) — 이 고지를 지우지 않는다. 주민등록번호는 앞 6자리와 성별 숫자만 쓰고 뒷자리는 저장하지 않는다(`810716-1******`). 생년월일은 앞 6자리+성별숫자로 계산해 `state.form.birth`(YYYYMMDD)에 넣어 서식 1에 그대로 반영된다. 엔진을 못 받거나 글자를 못 읽으면 `openOcrFailed`가 안내 후 직접 입력·예시 인물로 잇는다. 예시 인물 경로(`openSampleConfirm` → `openOcr` 연출)는 그대로 남아 있다.
-- 기관 로그인·서류 자동 수집·자동 첨부·접수는 **실제 연동이 아니다.** 외부 요청 0건의 모의(Mock) 연출이며, 화면 고지("시연용 가상 로그인", "실제로는 본인이 직접 발급받아야 해요", "실제 기관으로 전송되지 않았습니다")를 지우지 않는다. 실제 연동을 붙일 때는 `fetchDocs`의 단계 실행을 실제 API 호출로 바꾸고, 개인정보 전송 고지를 함께 바꾼다.
+- 기관 로그인·서류 자동 수집·자동 첨부·접수는 **기본값이 시연 연출**이다. 외부 요청 0건의 모의(Mock)이며, 화면 고지("시연용 가상 로그인", "실제로는 본인이 직접 발급받아야 해요")를 지우지 않는다. **프록시를 연결했을 때만** `startReal`이 실제 API를 부른다. 실제 모드에서도 받지 못한 서류는 '직접 준비'로 남기고 가짜로 채우지 않는다.
 - 메일 보내기는 **빈 수신자 `mailto:`만** 쓴다. 특정 개인·기관 이메일 주소를 코드에 넣지 않는다.
 
 ## 4. 수정 시 주의사항
@@ -98,7 +116,7 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 12. **XSS 습관** — 사용자 입력은 반드시 `esc()`로 이스케이프한 뒤 `innerHTML`에 넣는다.
 13. **서류 파일은 시연용 가상 문서** — 파일 카드·미리보기·저장(`Blob`+`URL.createObjectURL`)·ZIP(`buildZip`)은 브라우저 안에서만 만들어지며 외부 전송이 없다. 문서 본문에는 항상 '시연용 가상 문서' 워터마크와 고지, 가상 값(가명)만 넣는다. ZIP은 무압축(store) 방식이며 파일명은 UTF-8 플래그(0x0800)로 기록한다.
 14. **큰 글씨·음성 안내 기준** — 큰 글씨 모드는 본문 20px 이상·버튼 64px 이상, 375px에서 가로 스크롤이 없어야 한다. 음성 대본은 민원인 응대용 구어체로 쓰고 화면 이름을 함께 말한다. 음성은 한국어 우선순위(SunHi→Yuna→Sora→Heami→Google 한국의)로 고르며, 속도는 **기본 `rate 0.82`(천천히)**, `0.93`(보통)으로 바꿀 수 있다. `pitch 1.04` 유지. 속도 상수는 `TTS_RATE_SLOW`/`TTS_RATE_NORMAL` 한 곳에서만 관리한다.
-15. **localStorage 키 고정** — 접근성 설정 `daon.a11y.v1`(`big`·`contrast`·`voice`·`rate`), 자동 임시저장 `daon.state.v1`(내부 스키마 `v: 4` — 화면 `view`·카드·조건·선택한 사업·근무지·서류 상태·신청서 입력·접수증). 저장값은 브라우저 밖으로 나가지 않으며 `resetAll`에서 비운다. 스키마를 바꾸면 `v`를 올리고 `restoreSaved`에서 검증한다.
+15. **localStorage 키 고정** — 접근성 설정 `daon.a11y.v1`(`big`·`contrast`·`voice`·`rate`), 자동 임시저장 `daon.state.v1`(내부 스키마 `v: 4`), 프록시 설정 `daon.codef.v1`(`url`·`token`). 저장값은 브라우저 밖으로 나가지 않으며 `resetAll`에서 앞의 둘을 비운다. 실제 조회값(`state.real`)은 저장하지 않는다(메모리에만). 스키마를 바꾸면 `v`를 올리고 `restoreSaved`에서 검증한다.
 16. **음성 안내** — 외부 TTS 라이브러리를 넣지 않고 `window.speechSynthesis`만 사용한다. 한국어 음성이 없는 기기에서는 음성 안내를 켜지 않고 `NO_KO_VOICE_MSG`로 안내한다.
 17. **단계 표시와 화면 이동** — 화면 이동은 항상 `go(view)`를 거쳐 `state.view`·화면 표시·단계 표시·하단 버튼을 함께 맞춘다. 화면을 직접 감추지 않는다. `go()`는 새 화면 제목(`h1`/`h2`)으로 포커스를 옮기고, 목록을 다시 그리는 함수는 재렌더 뒤 선택한 라디오로 포커스를 돌려준다(`focusBack`). 모달은 `overlayReturn`으로 열었던 버튼에 포커스를 돌린다.
 18. **입력 오류 연결** — 필수 입력은 `required`(aria-required)·`aria-describedby`(오류 span)·`aria-invalid`·오류 문구 `role="alert"`를 함께 쓴다. `validateForm`은 필드 안 모든 입력의 `aria-invalid`를 같이 맞춘다. 새 입력칸을 추가하면 label·오류 문구·연결을 같은 커밋에 넣는다.
@@ -110,12 +128,14 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 
 ## 5. Claude Code 협업 규칙
 
-- **개인정보 절대 커밋 금지** — 실명·주민등록번호·연락처·주소·계좌·복지카드 사진·스크린샷 원본을 저장소에 넣지 않는다. 이 저장소는 **공개(Public)** 이며 GitHub Pages로 누구나 볼 수 있다. 예시 값은 `김다온(가명)`, `010-1234-5678`, `경상남도 진주시 ○○로 12 (예시)` 같은 가상 값만 쓴다.
+- **개인정보 절대 커밋 금지** — 실명·주민등록번호·연락처·주소·계좌·복지카드 사진·스크린샷 원본을 저장소에 넣지 않는다. **CODEF 키·프록시 접속 토큰도 넣지 않는다.** 이 저장소는 **공개(Public)** 이며 GitHub Pages로 누구나 볼 수 있다. 예시 값은 `김다온(가명)`, `010-1234-5678`, `경상남도 진주시 ○○로 12 (예시)` 같은 가상 값만 쓴다.
 - **시연용 고지 유지** — 복지카드 인식·기관 로그인·서류 자동 첨부·접수는 시연 연출임을 화면과 코드 주석 모두에 남긴다.
 - 커밋 전 최소 확인:
   1. `index.html` 하나로 열리는지(콘솔 오류 0)
   2. 예시 카드 → 인식 → 일자리 → 서류(기관 로그인 모달·진행 로그·파일 카드) → 신청 → 접수증까지 이어지는지
   3. 되돌아가기(이전 화면·단계 표시·처음부터)가 동작하는지
   4. 모바일 폭(360~420px)에서 가로 스크롤이 없는지(큰 글씨·고대비·쉬운 말 모드 포함)
+  5. `proxy/`를 고쳤으면 Node 18+에서 `node --input-type=module -e "await import('./proxy/cloudflare-worker.js')"`로 로드되는지, `/api/health`·`/api/auth/request`·`/api/auth/complete` 응답 모양(`ok`·`status`·`twoWayInfo`·`normalized`)이 그대로인지 확인
+  6. 실제/시연 구분이 흐려지지 않았는지 — 프록시 미연결에서 실제 요청 0건, 실제 모드에서 받지 못한 서류는 '직접 준비'
 - 배포는 `main` 브랜치에 push하면 GitHub Pages가 자동 반영한다(1분 내외). 반영 후 실제 URL에서 새 기능 문구가 보이는지 확인한다.
 - 이 저장소는 공모전 제출·시연용이다. 기능을 늘리기보다 **시연 흐름이 끊기지 않는 것**을 우선한다.
