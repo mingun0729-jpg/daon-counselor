@@ -3291,10 +3291,10 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   }
 
   /* 판독용 캔버스 — 크기 맞추기 → 그레이스케일 → 대비 늘리기 → (이진화 또는 선명하게) */
-  function ocrPrepCanvas(img, mode) {
+  function ocrPrepCanvas(img, mode, targetW) {
     var w0 = img.naturalWidth || img.width || 1;
     var h0 = img.naturalHeight || img.height || 1;
-    var scale = Math.min(3, Math.max(0.35, OCR_TARGET_W / w0));
+    var scale = Math.min(3, Math.max(0.35, (targetW || OCR_TARGET_W) / w0));
     var w = Math.max(1, Math.round(w0 * scale));
     var h = Math.max(1, Math.round(h0 * scale));
     if (w * h > OCR_MAX_PIXELS) {
@@ -3347,7 +3347,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         v = p[i] > thr ? 255 : 0;
         p[i] = p[i + 1] = p[i + 2] = v;
       }
-    } else {
+    } else if (mode === 'gray') {
       /* 살짝 선명하게 — 테두리가 흐린 사진에서 글자 경계를 세운다 */
       var src = new Uint8ClampedArray(n);
       src.set(p);
@@ -3487,9 +3487,20 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     }).then(function (r2) {
       if (run !== ocrRunId) { throw new Error('canceled'); }
       ocrStepTo(2);
-      setOcrPct(97, '읽은 항목을 정리하고 있어요…');
       var res = mergeOcrPasses([p1, r2]);
-      finishOcrRun(run, res, null);
+      if (res.found >= 3) {
+        setOcrPct(97, '읽은 항목을 정리하고 있어요…');
+        finishOcrRun(run, res, null);
+        return null;
+      }
+      /* 두 번으로 부족하면, 글자를 건드리지 않은 원본에 가까운 상태로 한 번 더 읽는다. */
+      ocrEngine.passPhase = [80, 96];
+      setOcrPct(80, '한 번 더 읽어 보고 있어요…');
+      return ocrPass(ocrEngine.worker, ocrPrepCanvas(img, 'soft', 2600), '6').then(function (r3) {
+        if (run !== ocrRunId) { throw new Error('canceled'); }
+        setOcrPct(97, '읽은 항목을 정리하고 있어요…');
+        finishOcrRun(run, mergeOcrPasses([p1, r2, r3]), null);
+      });
     }).catch(function (err) {
       if (run !== ocrRunId) { return; }
       finishOcrRun(run, null, err);
