@@ -225,6 +225,41 @@ h2.sec .cnt{font-size:15px; font-weight:800; color:var(--grass); background:var(
 .telhint{font-size:12.5px; color:var(--ink-mute); font-weight:700; margin:7px 0 0; line-height:1.45}
 body.a11y-big .telhint{font-size:15px}
 
+/* ---------- 장애인증명서 포함 선택 · 인증 횟수 안내 ---------- */
+#disScopeBox{padding:14px 16px}
+.dsc-head{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:4px}
+.dsc-head b{font-size:16px; font-weight:900}
+.dsc-state{margin-left:auto; font-size:12.5px; font-weight:900; color:#12452A; background:var(--grass-soft); border:1px solid var(--grass-line); border-radius:999px; padding:4px 10px; white-space:nowrap}
+#disScopeHint{margin:0 0 10px}
+.swbox{display:flex; align-items:flex-start; gap:10px; min-height:48px; padding:10px 12px; border:1.5px solid var(--line-strong); border-radius:14px; background:var(--surface-2); cursor:pointer}
+.swbox input{width:24px; height:24px; margin:2px 0 0; accent-color:#1B6438; flex:0 0 auto}
+.swbox input:focus-visible{outline:3px solid #0E6B39; outline-offset:2px}
+.swbox .sw-txt{display:block; min-width:0}
+.swbox .sw-txt b{display:block; font-size:15px; font-weight:900; line-height:1.35}
+.swbox .sw-txt .micro{display:block; margin-top:2px}
+.authplan{margin:0 0 12px}
+.authplan b{display:block; font-size:15px; font-weight:900; color:#12452A}
+.authplan .ap-line{display:block; margin-top:3px; font-size:13px; font-weight:700; color:#2C4A36; line-height:1.5}
+.authplan ol{margin:8px 0 0; padding-left:18px; font-size:13.5px; font-weight:800; color:var(--ink-soft); line-height:1.6}
+.authplan li.now{color:#0E6B39; font-weight:900}
+.authplan li.done{color:var(--ink-mute)}
+body.a11y-big .dsc-head b{font-size:19px}
+body.a11y-big .dsc-state{font-size:15px}
+body.a11y-big #disScopeHint{font-size:16px}
+body.a11y-big .swbox{padding:12px 14px}
+body.a11y-big .swbox .sw-txt b{font-size:18px}
+body.a11y-big .swbox input{width:30px; height:30px}
+body.a11y-big .authplan b{font-size:18px}
+body.a11y-big .authplan .ap-line,body.a11y-big .authplan ol{font-size:16px}
+body.a11y-contrast #disScopeBox{background:#121814; border-color:#3E6F4F}
+body.a11y-contrast .dsc-head b{color:#EAF3EC}
+body.a11y-contrast .dsc-state{background:#1E3A28; border-color:#3E6F4F; color:#C8F3D8}
+body.a11y-contrast .swbox{background:#0E1310; border-color:#55665A}
+body.a11y-contrast .swbox .sw-txt b{color:#EAF3EC}
+body.a11y-contrast .authplan{background:#1E3A28; border-color:#3E6F4F}
+body.a11y-contrast .authplan b,body.a11y-contrast .authplan .ap-line,body.a11y-contrast .authplan ol{color:#EAF3EC}
+body.a11y-contrast .authplan li.now{color:#8FE8B4}
+
 /* ---------- 일자리 카드 ---------- */
 .joblist{display:flex; flex-direction:column; gap:12px}
 .job{
@@ -1052,6 +1087,17 @@ body.easy .twbox p{font-size:16px}
         <span class="cdot" aria-hidden="true"></span>
         <span class="cbtxt" id="cfgBarTxt"><b>실제 기관 조회 꺼짐</b>시연용 예시 데이터로만 진행합니다.</span>
         <button class="btn small" id="btnApiCfg" type="button">⚙️ 기관 API 연결 설정</button>
+      </div>
+      <div class="card" id="disScopeBox" aria-labelledby="disScopeTitle" hidden>
+        <div class="dsc-head">
+          <b id="disScopeTitle">장애인증명서(정부24)</b>
+          <span class="dsc-state" id="disScopeState">받지 않음</span>
+        </div>
+        <p class="micro" id="disScopeHint"></p>
+        <label class="swbox" for="disScopeToggle">
+          <input type="checkbox" id="disScopeToggle" />
+          <span class="sw-txt"><b>장애인증명서도 함께 조회하기</b><span class="micro">주민등록번호 뒷자리 7자리가 필요해요</span></span>
+        </label>
       </div>
       <div class="joblist" id="agencyList"></div>
 
@@ -4335,6 +4381,7 @@ body.easy .twbox p{font-size:16px}
   }
 
   function applyCard(d) {
+    docScope.disability = null;   /* 새 카드로 시작하면 '복지카드면 빼기' 자동 판단으로 돌아간다 */
     state.card = { key: d.key || 'upload', name: d.name, type: d.type, severity: d.severity, reg: d.reg, issue: d.issue, org: d.org, birth: d.birth || '', note: d.note || '', source: d.source || 'sample' };
     state.type = d.type;
     state.severity = d.severity === 'unsure' ? 'mild' : d.severity;
@@ -4519,7 +4566,11 @@ body.easy .twbox p{font-size:16px}
       var st = docsStats();
       if (fetchState.running) { label = '서류 수집 중…'; noteTxt = ''; disabled = true; }
       else if (st.done >= st.total && st.total > 0) { label = '신청서 작성'; noteTxt = ''; }
-      else { label = '기관 로그인 · ' + (st.total - st.done) + '장 수집'; noteTxt = '주민등록등본·장애인증명서 등'; }
+      else {
+        var needN = realDocs(requiredFetchDocs().filter(function (d) { return !state.fetched[d.id]; })).length;
+        label = '기관 로그인 · ' + (st.total - st.done) + '장 수집';
+        noteTxt = needN ? '기관마다 1번 · 인증 ' + needN + '번' : '';
+      }
     } else if (v === 'submit') {
       if (state.receipt && state.receipt.no) {
         label = '접수증 보기';
@@ -4850,6 +4901,55 @@ body.easy .twbox p{font-size:16px}
      ============================================================ */
   var fetchState = { running: false, agency: null, phase: '', queue: [], idx: 0, log: [], mode: 'demo' };
 
+  /* ---------- 장애인증명서를 이번 조회에 넣을지 (2026-11-20) ----------
+     복지카드(장애인등록증)가 확인됐으면 그 사본이 '장애인증명서 또는 복지카드 사본' 서류를
+     대신하므로, 정부24 장애인증명서 조회를 기본으로 빼서 인증을 기관마다 1번(모두 2번)으로 줄인다.
+     주민등록증만 올렸거나 장애인증명서가 필요하면 사용자가 화면에서 직접 켜서 포함한다
+     (주민등록번호 뒷자리 7자리가 필요 — 간편인증 창에서 한 번만 받고 저장하지 않는다).
+     이 선택은 localStorage·state.form에 저장하지 않는다(새로 고치면 자동 판단으로 돌아간다). */
+  var docScope = { disability: null };   /* null = 자동 / true = 켬 / false = 끔 */
+
+  function welfareCardConfirmed() {
+    /* 1단계에서 복지카드(장애인등록증)가 확인된 경우. 'idcard'는 주민등록증이라 복지카드가 아니다. */
+    return !!(state.card && state.card.source !== 'idcard');
+  }
+  function disabilityDocInProgram() {
+    var pid = state.selectedProgram;
+    if (!pid) { return false; }
+    return requiredDocs(docsFor(pid)).some(function (d) { return d.id === 'disability'; });
+  }
+  function disabilityInScope() {
+    if (!disabilityDocInProgram()) { return false; }
+    if (docScope.disability === true) { return true; }
+    if (docScope.disability === false) { return false; }
+    return !welfareCardConfirmed();
+  }
+  function setDisabilityScope(on) {
+    docScope.disability = on ? true : false;
+    /* 이미 받아 둔 장애인증명서를 빼면 첨부도 함께 뺀다(받은 값과 목록이 어긋나지 않게). */
+    if (!on && state.fetched && state.fetched.disability) {
+      delete state.fetched.disability;
+      if (state.real) { delete state.real.disability; }
+      if (state.checked) { delete state.checked[(state.selectedProgram || '') + ':disability']; }
+    }
+    scheduleSave();
+    render();
+  }
+  /* 실제 조회 1건 = 간편인증 1번. 일괄 인증에서 몇 번 인증하는지 세는 데 쓴다. */
+  function authPlan(docs) {
+    var auto = realDocs(docs);
+    return auto.map(function (d, i) {
+      return {
+        n: i + 1, total: auto.length,
+        agency: (AGENCY[agencyOf(d.id)] || {}).name || agentMeta(d).agency,
+        doc: shortDocName(d.name), id: d.id
+      };
+    });
+  }
+  function authPlanLine(steps) {
+    return steps.map(function (s) { return s.n + '/' + s.total + ' ' + s.agency + ' ' + s.doc; }).join(' → ');
+  }
+
   function shortDocName(n) {
     return String(n == null ? '' : n).replace(/\([^)]*\)/g, '').replace(/\s{2,}/g, ' ').trim();
   }
@@ -4881,7 +4981,10 @@ body.easy .twbox p{font-size:16px}
     if (!pid) { return []; }
     return requiredDocs(docsFor(pid)).filter(function (d) {
       var ag = agencyOf(d.id);
-      return ag !== 'assoc' && ag !== 'other';
+      if (ag === 'assoc' || ag === 'other') { return false; }
+      /* 복지카드 사본이 있으면 장애인증명서는 기본으로 빼고, 원할 때만 켜서 받는다. */
+      if (d.id === 'disability' && !disabilityInScope()) { return false; }
+      return true;
     });
   }
   function assocDocs() {
@@ -4927,6 +5030,32 @@ body.easy .twbox p{font-size:16px}
     if (bar) { bar.style.width = (st.total ? Math.round(st.done / st.total * 100) : 100) + '%'; }
 
     var groups = agencyGroups();
+
+    /* 장애인증명서 포함 여부 — 복지카드가 있으면 기본으로 빼고, 필요하면 여기서 켠다. */
+    var dsb = $('#disScopeBox');
+    if (dsb) {
+      var inProg = disabilityDocInProgram();
+      dsb.hidden = !inProg;
+      if (inProg) {
+        var disOn = disabilityInScope();
+        var wc = welfareCardConfirmed();
+        var tg = $('#disScopeToggle');
+        if (tg) { tg.checked = disOn; }
+        var leftN = realDocs(requiredFetchDocs().filter(function (d) { return !state.fetched[d.id]; })).length;
+        var stt = $('#disScopeState');
+        if (stt) { stt.textContent = disOn ? '함께 조회' : (wc ? '복지카드로 대신' : '받지 않음'); }
+        var hintEl = $('#disScopeHint');
+        if (hintEl) {
+          var nPhrase = leftN ? '남은 서류 ' + leftN + '건 기준 <b>' + leftN + '번</b>입니다' : '<b>0번</b>입니다(다 받았습니다)';
+          hintEl.innerHTML = disOn
+            ? '정부24에서 장애인증명서까지 받습니다. 간편인증은 기관마다 1번, ' + nPhrase + '. 뒷자리 7자리는 조회에만 쓰고 저장하지 않습니다.'
+            : (wc
+              ? '복지카드 사본이 이미 있어 장애인증명서는 받지 않습니다. 간편인증은 기관마다 1번, ' + nPhrase + ' — 정부24 등본과 건강보험공단 자격득실확인서뿐입니다.'
+              : '장애인증명서를 받지 않습니다. 필요하면 아래를 켜 주세요 — 주민등록번호 뒷자리 7자리가 필요합니다.');
+        }
+      }
+    }
+
     var al = $('#agencyList');
     if (al) {
       var html = '';
@@ -5360,6 +5489,47 @@ body.easy .twbox p{font-size:16px}
   function needsAddress(docs) {
     return docs.some(function (d) { return d.id === 'disability'; });
   }
+  /* 주민등록번호 뒷자리는 장애인증명서를 조회할 때만 받는다. */
+  function needsRrn(docs) {
+    return realDocs(docs).some(function (d) { return d.id === 'disability'; });
+  }
+  /**
+   * 주민등록번호 뒷자리 7자리 입력칸.
+   * 비밀번호 형태로 받고(inputmode=numeric, maxlength=7, autocomplete=off), 값을 state.form·
+   * localStorage에 넣지 않는다. 요청을 보낸 뒤에는 입력칸을 비우고, 인증이 끝나면 메모리의
+   * 값도 지운다(clearRrnProfile).
+   */
+  function rrnFieldHtml(id, value) {
+    return '<div class="field" id="' + id + 'Field">' +
+      '<label for="' + id + '">주민등록번호 뒷자리 <span class="req">(7자리)</span></label>' +
+      '<span class="hint">정부24 장애인증명서 조회에만 1회 쓰이고 저장되지 않습니다.</span>' +
+      '<input id="' + id + '" type="password" inputmode="numeric" maxlength="7" autocomplete="off" spellcheck="false" placeholder="숫자 7자리" aria-describedby="' + id + '-err" value="' + esc(value || '') + '" />' +
+      '<span class="err" id="' + id + '-err" role="alert" hidden></span>' +
+      '</div>';
+  }
+  /* 생년월일(세기)과 뒷자리 첫 숫자(성별)가 어긋나면 기관이 CF-12100으로 거절한다 — 보내기 전에 알려 준다. */
+  function rrnCenturyProblem(birth, back) {
+    var y = digitsOf(birth), d = digitsOf(back);
+    if (y.length !== 8 || d.length !== 7) { return ''; }
+    var year = Number(y.slice(0, 4)), g = d.charAt(0);
+    var ok = year >= 2000 ? /[3478]/.test(g) : /[1256]/.test(g);
+    return ok ? '' : '생년월일과 주민등록번호 뒷자리가 맞지 않습니다. 뒷자리 첫 숫자는 2000년 이후 출생이면 3·4·7·8, 1900년대 출생이면 1·2·5·6입니다.';
+  }
+  /* 일괄 인증 상단 안내 — 총 몇 번, 어떤 순서로 인증하는지. cur는 지금 차례(1부터, 0이면 아직 시작 전). */
+  function authPlanHtml(steps, cur) {
+    if (!steps || !steps.length) { return ''; }
+    var total = steps[0].total;
+    var html = '<div class="note authplan" role="note"><b>총 ' + total + '번 인증합니다</b>' +
+      '<span class="ap-line">기관마다 1회씩 · ' + esc(authPlanLine(steps)) + '</span>';
+    if (total > 1) {
+      html += '<ol aria-label="인증 순서">' + steps.map(function (s) {
+        var cls = cur ? (s.n < cur ? ' class="done"' : (s.n === cur ? ' class="now"' : '')) : '';
+        return '<li' + cls + '>' + s.n + '/' + s.total + ' · ' + esc(s.agency) + ' — ' + esc(s.doc) + '</li>';
+      }).join('') + '</ol>';
+    }
+    html += '</div>';
+    return html;
+  }
 
   function loginAgencySummary(docs) {
     var byAg = {};
@@ -5389,18 +5559,20 @@ body.easy .twbox p{font-size:16px}
       '</div>';
   }
 
+  var loginDraft = null;
   function renderLoginBody() {
     var docs = loginDocs();
     var sub = $('#loginSub');
     var ag = AGENCY[loginState.agency] || null;
+    var plan = authPlan(docs);
     if (sub) {
       sub.textContent = loginState.mode === 'all'
-        ? '한 번에 전체 기관 서류를 모읍니다. 기관마다 간편인증을 한 번씩 요청합니다.'
-        : (ag ? ag.name + ' · ' + ag.desc + ' 서류 자동 수집.' : '');
+        ? (plan.length ? '한 번에 전체 기관 서류를 모읍니다. 기관마다 한 번씩, 총 ' + plan.length + '번 인증합니다.' : '가져올 서류가 없습니다.')
+        : (ag ? ag.name + ' · ' + ag.desc + (plan.length ? ' · 인증 ' + plan.length + '번' : '') : '');
     }
     var body = '';
     if (codef.url) {
-      var f = state.form;
+      var f = loginDraft || state.form;
       var auto = realDocs(docs);
       if (codef.checked && !(codef.health && codef.health.ok)) {
         body += '<div class="twbox err"><b>지금 다온 프록시에 연결하지 못했습니다</b>' +
@@ -5408,8 +5580,17 @@ body.easy .twbox p{font-size:16px}
           '<b>시연용 예시 데이터로 미리보기</b>로 넘어갈 수 있습니다.</p>' +
           '<button class="btn small" type="button" data-cfg-open="1" style="margin-top:8px">‍⚙️ 기관 API 연결 설정</button></div>';
       }
+      /* 몇 번 인증하는지 맨 위에 먼저 알려 준다 — 반복 인증으로 오해하지 않게. */
+      body += authPlanHtml(plan, 0);
       body += '<div class="note"><b>실제로 가져올 서류</b><ul style="margin:6px 0 0;padding:0;list-style:none">' +
         (loginAgencySummary(auto) || '<li>· 이 기관은 자동 조회 서류가 없습니다</li>') + '</ul>' + loginManualNote(docs) + '</div>';
+      if (disabilityDocInProgram() && docs.some(function (d) { return agencyOf(d.id) === 'gov24'; })) {
+        body += '<label class="swbox" for="loginDisToggle" style="margin:0 0 14px">' +
+          '<input type="checkbox" id="loginDisToggle"' + (disabilityInScope() ? ' checked' : '') + ' />' +
+          '<span class="sw-txt"><b>장애인증명서도 함께 조회하기</b><span class="micro">주민등록번호 뒷자리 7자리가 필요해요 · 지금은 ' +
+          (disabilityInScope() ? '함께 받습니다' : '빼고 받습니다') + '</span></span>' +
+          '</label>';
+      }
       body += '<h3 style="font-size:15.5px;font-weight:900;margin:14px 0 8px">내 정보로 간편인증</h3>';
       body += '<div class="cfgrow">' +
         cfField('cfName', '성명', '', f.name, 'autocomplete="name" aria-required="true"') +
@@ -5426,7 +5607,8 @@ body.easy .twbox p{font-size:16px}
             '<span class="err" id="cfAddr-err" role="alert" hidden></span>' +
             '<p class="addrcheck" id="cfAddrOut" aria-live="polite"></p>' +
             '</div>'
-          : '');
+          : '') +
+        (needsRrn(docs) ? rrnFieldHtml('cfRrn', '') : '');
       body += '<span class="lab" id="cfTelLab" style="display:block;font-size:14px;font-weight:800;margin:0 0 6px">통신사</span>' +
         '<div class="chiprow" id="cfTelRow" role="group" aria-labelledby="cfTelLab">' +
         TELECOM_OPTIONS.map(function (o) {
@@ -5463,7 +5645,43 @@ body.easy .twbox p{font-size:16px}
       addrEl.addEventListener('input', updateAddrCheck);
       updateAddrCheck();
     }
+    /* 주민등록번호 뒷자리 — 숫자 7자리만 남기고, 오류 표시를 지운다. */
+    var rrnEl = $('#cfRrn');
+    if (rrnEl) {
+      rrnEl.addEventListener('input', function () {
+        var v = digitsOf(rrnEl.value).slice(0, 7);
+        if (rrnEl.value !== v) { rrnEl.value = v; }
+        rrnEl.removeAttribute('aria-invalid');
+        var err = $('#cfRrn-err');
+        if (err) { err.hidden = true; err.textContent = ''; }
+      });
+    }
+    /* 모달 안에서 장애인증명서 포함을 바꾸면 목록·인증 횟수·뒷자리 칸을 다시 그린다. */
+    var disTg = $('#loginDisToggle');
+    if (disTg) {
+      disTg.addEventListener('change', function () {
+        captureLoginDraft();
+        docScope.disability = !!disTg.checked;
+        renderLoginBody();
+        fitSheetFoot($('#login'));
+        toast(disTg.checked ? '장애인증명서도 함께 받습니다' : '장애인증명서는 빼고 받습니다');
+        announce(disTg.checked
+          ? '장애인증명서도 함께 조회합니다. 주민등록번호 뒷자리 7자리를 넣어 주세요.'
+          : '장애인증명서는 빼고 나머지 서류만 조회합니다.');
+      });
+    }
     setLoginButtons();
+  }
+
+  /* 모달을 다시 그릴 때 입력 중인 값이 사라지지 않게 잠시 들어 둔다(저장·전송 없음). */
+  function captureLoginDraft() {
+    var n = $('#cfName'), b = $('#cfBirth'), p = $('#cfPhone'), a = $('#cfAddr');
+    loginDraft = {
+      name: n ? n.value : '',
+      birth: b ? b.value : '',
+      phone: p ? p.value : '',
+      addr: a ? a.value : ''
+    };
   }
 
   /* 주소칸 아래에 '정부24에 보낼 주소'를 바로 보여 준다 — 보내기 전에 미리 고치게. */
@@ -5485,7 +5703,7 @@ body.easy .twbox p{font-size:16px}
     if (!go || !cancel) { return; }
     if (loginState.view === 'run') {
       /* 주소 오류일 때는 본문의 '주소 고쳐 다시 인증'만 눌러야 한다 — 초록 버튼이 둘이면 헷갈린다. */
-      go.hidden = !(realState.phase === 'waiting' || (realState.phase === 'error' && !isAddrError(realState.error)));
+      go.hidden = !(realState.phase === 'waiting' || (realState.phase === 'error' && !isAddrError(realState.error) && !isRrnError(realState.error)));
       go.disabled = false;
       go.textContent = realState.phase === 'error' ? '다시 인증 요청' : '인증 완료 확인';
       cancel.textContent = realState.running ? '중단' : '닫기';
@@ -5499,6 +5717,7 @@ body.easy .twbox p{font-size:16px}
 
   function openLogin(agency) {
     if (!overlayOpen('login')) { overlayReturn.login = document.activeElement; }
+    loginDraft = null;
     loginState.mode = agency === 'all' ? 'all' : 'one';
     loginState.agency = agency === 'all' ? '' : agency;
     loginState.view = 'form';
@@ -5527,6 +5746,8 @@ body.easy .twbox p{font-size:16px}
     realState.running = false;
     realState.pending = null;
     realState.phase = '';
+    clearRrnProfile();
+    loginDraft = null;
     fetchState.running = false;
     fetchState.agency = null;
     loginState.view = 'form';
@@ -5558,7 +5779,17 @@ body.easy .twbox p{font-size:16px}
     var birth = digitsOf($('#cfBirth') ? $('#cfBirth').value : '');
     var phone = digitsOf($('#cfPhone') ? $('#cfPhone').value : '');
     var addr = $('#cfAddr') ? $('#cfAddr').value.trim() : (state.form.addr || '');
-    return { name: name, birth: birth, phone: phone, telecom: loginState.telecom, auth: loginState.auth, address: addr };
+    var p = { name: name, birth: birth, phone: phone, telecom: loginState.telecom, auth: loginState.auth, address: addr };
+    /* 주민등록번호 뒷자리는 이 요청에만 쓴다 — state.form·localStorage에는 넣지 않는다. */
+    var rrn = $('#cfRrn') ? digitsOf($('#cfRrn').value).slice(0, 7) : '';
+    if (rrn) { p.rrnBack = rrn; }
+    return p;
+  }
+  /* 주민등록번호 뒷자리를 메모리에서도 지운다 — 인증이 끝나거나 창을 닫을 때 부른다. */
+  function clearRrnProfile() {
+    if (realState.profile) { delete realState.profile.rrnBack; }
+    var el = $('#cfRrn') || $('#runRrn');
+    if (el) { el.value = ''; }
   }
   function validateProfile(p) {
     var bad = null;
@@ -5567,14 +5798,17 @@ body.easy .twbox p{font-size:16px}
       if (el) { if (on) { el.setAttribute('aria-invalid', 'true'); } else { el.removeAttribute('aria-invalid'); } }
       if (err) { err.hidden = !on; err.textContent = on ? err.getAttribute('data-msg') || '' : ''; }
     }
+    var needR = !!$('#cfRrn');
     if (p.name.length < 2) { bad = ['cfName', '성명을 2자 이상 입력해 주세요.']; }
     else if (p.birth.length !== 8) { bad = ['cfBirth', '생년월일 8자리를 입력해 주세요 (예: 19990729).']; }
     else if (p.phone.length < 10 || p.phone.length > 11) { bad = ['cfPhone', '휴대폰 번호를 숫자로 입력해 주세요.']; }
+    else if (needR && (!p.rrnBack || p.rrnBack.length !== 7)) { bad = ['cfRrn', '주민등록번호 뒷자리 7자리를 숫자로 입력해 주세요.']; }
+    else if (needR && rrnCenturyProblem(p.birth, p.rrnBack)) { bad = ['cfRrn', rrnCenturyProblem(p.birth, p.rrnBack)]; }
     else if ($('#cfAddr')) {
       var ap = addrProblem(p.address);
       if (ap) { bad = ['cfAddr', ap.message]; }
     }
-    ['cfName', 'cfBirth', 'cfPhone', 'cfAddr'].forEach(function (id) { mark(id, false); });
+    ['cfName', 'cfBirth', 'cfPhone', 'cfAddr', 'cfRrn'].forEach(function (id) { mark(id, false); });
     if (bad) {
       var err = $('#' + bad[0] + '-err');
       if (err) { err.setAttribute('data-msg', bad[1]); err.hidden = false; err.textContent = bad[1]; }
@@ -5601,6 +5835,13 @@ body.easy .twbox p{font-size:16px}
     var p = readProfile();
     p.address = cleanAddr(p.address);
     if (!validateProfile(p)) { return; }
+    /* 입력칸은 바로 비운다 — 값은 이 조회(1차·2차 요청)에만 있고, 인증이 끝나면 지운다. */
+    var rrnField = $('#cfRrn');
+    if (rrnField) { rrnField.value = ''; }
+    if (!p.rrnBack) { delete p.rrnBack; }
+    if (auto.length > 1) {
+      announce('총 ' + auto.length + '번 인증합니다. 기관마다 한 번씩입니다.');
+    }
     if (manualDocs(docs).length) {
       announce('자동 조회 ' + auto.length + '장을 가져옵니다. 나머지 ' + manualDocs(docs).length + '장은 직접 준비합니다.');
     }
@@ -5624,7 +5865,9 @@ body.easy .twbox p{font-size:16px}
     if (sub) { sub.textContent = '실제 기관 조회 · ' + (codef.health && codef.health.env === 'api' ? '정식' : '데모') + ' 서버'; }
     var total = realState.queue.length;
     var cur = Math.min(realState.idx + 1, total);
-    var html = '<p class="micro" style="margin:0 0 10px">' + cur + ' / ' + total + ' · ' +
+    var html = '';
+    if (total > 1) { html += authPlanHtml(authPlan(realState.queue), realState.phase === 'done' ? 0 : cur); }
+    html += '<p class="micro" style="margin:0 0 10px">' + cur + ' / ' + total + ' · ' +
       esc(realState.doc ? shortDocName(realState.doc.name) : '') + '</p>';
     html += '<div class="twbox' + (realState.phase === 'error' ? ' err' : realState.phase === 'waiting' ? '' : ' wait') + '" id="twBox">';
     if (realState.phase === 'request') {
@@ -5638,7 +5881,17 @@ body.easy .twbox p{font-size:16px}
     } else if (realState.phase === 'error') {
       var eo = realState.error || {};
       var ec = eo.code ? String(eo.code) : '';
-      if (isAddrError(eo)) {
+      if (isRrnError(eo)) {
+        html += '<b>주민등록번호 뒷자리를 확인해 주세요' + (/^CF-/.test(ec) ? ' (' + esc(ec) + ')' : '') + '</b>' +
+          '<p>' + esc(eo.guide || '주민등록번호 13자리가 맞는지 확인해 주세요. 생년월일과 뒷자리 7자리를 다시 보면 대개 해결됩니다.') + '</p>' +
+          '<div class="field" id="runRrnField">' +
+          '<label for="runRrn">주민등록번호 뒷자리 <span class="req">(7자리)</span></label>' +
+          '<span class="hint">정부24 장애인증명서 조회에만 1회 쓰이고 저장되지 않습니다.</span>' +
+          '<input id="runRrn" type="password" inputmode="numeric" maxlength="7" autocomplete="off" spellcheck="false" placeholder="숫자 7자리" aria-describedby="runRrn-err" />' +
+          '<span class="err" id="runRrn-err" role="alert" hidden></span>' +
+          '</div>' +
+          '<p style="font-size:12.5px;margin-top:6px">※ 뒷자리를 고쳐 다시 요청하면 휴대폰 인증 알림이 한 번 더 옵니다.</p>';
+      } else if (isAddrError(eo)) {
         var tried = eo.address || (realState.profile && realState.profile.address) || '';
         html += '<b>주소를 찾지 못했습니다' + (/^CF-/.test(ec) ? ' (' + esc(ec) + ')' : '') + '</b>' +
           '<p>정부24가 <b>' + esc(tried || '입력한 주소') + '</b>로 주소검색 결과를 찾지 못했어요. ' +
@@ -5667,7 +5920,12 @@ body.easy .twbox p{font-size:16px}
         return '<li class="ok"><span class="ti" aria-hidden="true">✓</span><span>' + esc(t) + '</span></li>';
       }).join('') + '</ul>';
     }
-    if (realState.phase === 'error' && isAddrError(realState.error)) {
+    if (realState.phase === 'error' && isRrnError(realState.error)) {
+      html += '<button class="btn primary block" type="button" data-real-rrn-retry="1" style="margin-top:10px">주민번호 뒷자리 고쳐 다시 인증</button>';
+      html += '<button class="btn block" type="button" data-real-skip="1" style="margin-top:8px">이 서류는 직접 준비하고 넘어가기</button>';
+      html += '<button class="btn ghost block" type="button" data-real-stop="1" style="margin-top:8px">조회 그만두고 직접 준비</button>';
+      html += '<p style="font-size:12.5px;margin-top:6px">장애인 등록이 없으면 이 서류는 발급되지 않습니다. 그때는 3단계에서 <b>복지카드 사진</b>이나 직접 발급한 <b>장애인증명서</b>를 올려 주세요.</p>';
+    } else if (realState.phase === 'error' && isAddrError(realState.error)) {
       html += '<button class="btn primary block" type="button" data-real-addr-retry="1" style="margin-top:10px">주소 고쳐 다시 인증</button>';
       html += '<button class="btn block" type="button" data-real-skip="1" style="margin-top:8px">이 서류 빼고 나머지 계속</button>';
       html += '<button class="btn ghost block" type="button" data-real-stop="1" style="margin-top:8px">조회 그만두고 직접 준비</button>';
@@ -5695,6 +5953,16 @@ body.easy .twbox p{font-size:16px}
         }
       });
       if (!ra.value) { ra.focus(); }
+    }
+    var rr = $('#runRrn');
+    if (rr) {
+      rr.addEventListener('input', function () {
+        var v = digitsOf(rr.value).slice(0, 7);
+        if (rr.value !== v) { rr.value = v; }
+        rr.removeAttribute('aria-invalid');
+        var err = $('#runRrn-err');
+        if (err) { err.hidden = true; err.textContent = ''; }
+      });
     }
     setLoginButtons();
     fitSheetFoot($('#login'));
@@ -5768,6 +6036,40 @@ body.easy .twbox p{font-size:16px}
     if (e.hint === 'address_no_result') { return true; }
     if (/^CF-1300[0-9]$/.test(String(e.code || ''))) { return true; }
     return /주소|검색결과가 없습니다/.test(String(e.message || ''));
+  }
+  /* 주민등록번호 뒷자리가 틀렸거나 빠졌을 때 — 화면에서 다시 넣고 재요청하게 한다. */
+  function isRrnError(e) {
+    if (!e) { return false; }
+    if (e.hint === 'rrn_mismatch') { return true; }
+    return /^input_rrn_back/.test(String(e.code || ''));
+  }
+
+  /* 주민등록번호 뒷자리를 고쳐 같은 서류를 다시 요청한다 — 휴대폰 인증을 한 번 더 받는다. */
+  function retryWithRrn() {
+    var el = $('#runRrn');
+    if (!el) { return; }
+    var v = digitsOf(el.value).slice(0, 7);
+    var errEl = $('#runRrn-err');
+    var msg = '';
+    if (v.length !== 7) { msg = '주민등록번호 뒷자리 7자리를 숫자로 입력해 주세요.'; }
+    else { msg = rrnCenturyProblem((realState.profile || {}).birth, v); }
+    if (msg) {
+      el.setAttribute('aria-invalid', 'true');
+      if (errEl) { errEl.hidden = false; errEl.textContent = msg; }
+      el.focus();
+      toast(msg);
+      return;
+    }
+    el.removeAttribute('aria-invalid');
+    if (errEl) { errEl.hidden = true; errEl.textContent = ''; }
+    realState.profile = realState.profile || {};
+    realState.profile.rrnBack = v;
+    el.value = '';
+    realState.error = null;
+    realState.retry = 0;
+    pushLog('🔁', '장애인증명서 · 주민번호 뒷자리를 고쳐 다시 요청', 'run');
+    renderAgentLog();
+    realStep();
   }
 
   /* 주소를 고쳐 같은 서류를 다시 요청한다 — 휴대폰 인증을 한 번 더 받는다. */
@@ -5847,6 +6149,7 @@ body.easy .twbox p{font-size:16px}
 
   function skipRealDoc() {
     if (!realState.doc) { return; }
+    if (realState.doc.id === 'disability') { clearRrnProfile(); }
     pushLog('↷', shortDocName(realState.doc.name) + ' — 직접 준비로 넘김', 'run');
     realState.idx += 1;
     realState.error = null;
@@ -5855,6 +6158,7 @@ body.easy .twbox p{font-size:16px}
 
   function finishReal() {
     stopTwoWayTimer();
+    clearRrnProfile();
     realState.running = false;
     realState.phase = 'done';
     fetchState.running = false;
@@ -5939,6 +6243,8 @@ body.easy .twbox p{font-size:16px}
     }
     n.__mock = !!res.mock;
     state.real[d.id] = n;
+    /* 장애인증명서를 받았으면 주민등록번호 뒷자리는 더 쓸 일이 없다 — 바로 지운다. */
+    if (d.id === 'disability') { clearRrnProfile(); }
     state.fetched[d.id] = {
       at: nowStamp(), agency: agentMeta(d).agency, real: true, mock: !!res.mock
     };
@@ -6102,11 +6408,14 @@ body.easy .twbox p{font-size:16px}
       var docs = requiredDocs(docsFor(state.selectedProgram));
       fl.innerHTML = docs.map(function (d) {
         var on = !!state.checked[state.selectedProgram + ':' + d.id];
+        /* 복지카드 사본이 있으면 장애인증명서는 그 사본으로 대신한다(따로 받지 않는다). */
+        var byCard = d.id === 'disability' && welfareCardConfirmed() && !state.fetched.disability && !on;
+        var attached = on || byCard || agencyOf(d.id) === 'assoc';
         return '<div class="fcard">' +
           '<span class="fc-ico" aria-hidden="true">' + fileIconSvg(DOC_FILE_META[d.id] && DOC_FILE_META[d.id].ext === 'svg' ? 'svg' : 'html') + '</span>' +
           '<div class="fc-main"><div class="fc-name">' + esc(d.name) + '</div>' +
           '<div class="fc-meta"><span class="fc-ag">' + esc(agentMeta(d).agency) + '</span>' +
-          '<span class="fc-badge ' + (on || agencyOf(d.id) === 'assoc' ? '' : 'run') + '">' + (on || agencyOf(d.id) === 'assoc' ? '신청서에 첨부됨' : '직접 준비') + '</span></div></div>' +
+          '<span class="fc-badge ' + (attached ? '' : 'run') + '">' + (byCard ? '복지카드 사본으로 첨부' : (attached ? '신청서에 첨부됨' : '직접 준비')) + '</span></div></div>' +
           '<div class="fc-actions"><button class="fc-btn" type="button" data-file-preview="' + esc(d.id) + '">미리보기</button>' +
           '<button class="fc-btn primary" type="button" data-file-save="' + esc(d.id) + '">저장</button></div>' +
           '</div>';
@@ -6922,7 +7231,10 @@ body.easy .twbox p{font-size:16px}
       if (st.done >= st.total && st.total > 0) {
         return '서류 ' + st.total + '장을 모두 가져와 신청서에 붙였어요. 아래 큰 버튼을 누르면 빠진 것만 적는 화면으로 넘어가요.';
       }
+      var authN = realDocs(requiredFetchDocs().filter(function (d) { return !state.fetched[d.id]; })).length;
       return '서류 화면이에요. 정부24와 건강보험공단 같은 곳에서 서류 ' + st.total + '장을 가져오면 돼요. ' +
+        (authN ? '기관마다 한 번씩, 모두 ' + authN + '번 인증해요. ' : '') +
+        (disabilityDocInProgram() && !disabilityInScope() ? '복지카드 사본이 있어서 장애인증명서는 따로 받지 않아요. ' : '') +
         '아래 큰 버튼을 누르면 다온이 기관에 직접 들어가 로그인하고, 서류를 받아 신청서에 붙여 드려요. 실제로는 본인이 직접 발급받아야 해요.';
     }
     if (v === 'submit') {
@@ -7248,6 +7560,15 @@ body.easy .twbox p{font-size:16px}
         var f = idFileEl.files && idFileEl.files[0];
         handleIdFile(f);
         idFileEl.value = '';
+      });
+    }
+    var disToggle = $('#disScopeToggle');
+    if (disToggle) {
+      disToggle.addEventListener('change', function () {
+        var on = !!disToggle.checked;
+        setDisabilityScope(on);
+        toast(on ? '장애인증명서도 함께 받습니다 · 주민등록번호 뒷자리 필요' : '장애인증명서는 복지카드 사본으로 대신합니다');
+        announce(on ? '장애인증명서를 함께 조회합니다. 인증할 때 주민등록번호 뒷자리 7자리가 필요합니다.' : '장애인증명서는 받지 않고 복지카드 사본으로 대신합니다.');
       });
     }
     var sampleBtn = $('#btnSamples');
@@ -7680,6 +8001,8 @@ body.easy .twbox p{font-size:16px}
       if (skipReal) { skipRealDoc(); return; }
       var addrRetry = t.closest('[data-real-addr-retry]');
       if (addrRetry) { retryWithAddr(); return; }
+      var rrnRetry = t.closest('[data-real-rrn-retry]');
+      if (rrnRetry) { retryWithRrn(); return; }
       var realStop = t.closest('[data-real-stop]');
       if (realStop) { closeLogin(); return; }
       var rescan = t.closest('[data-act="rescan"]');

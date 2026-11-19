@@ -33,6 +33,15 @@
  *   · 주민등록등본  /v1/kr/public/mw/resident-registration-copy/issuance (organization 0001)
  *   · 장애인증명서  /v1/kr/public/mw/certificate/disability            (organization 0001)
  *
+ * 장애인증명서의 identity (2026-11-20 수정 — CF-12100)
+ *   이 상품은 loginType=5에서 identity로 '주민등록번호 13자리'를 요구한다. 생년월일 8자리만
+ *   보내면 기관이 CF-12100("사업자번호(주민등록번호)가 잘못되었습니다")으로 거절한다.
+ *   그래서 다온은 ① 생년월일 8자리에서 앞 6자리(YYMMDD)를 만들고 ② 사용자가 간편인증 창에서
+ *   한 번 입력한 주민등록번호 뒷자리 7자리를 받아 13자리를 완성해 보낸다(identity13For).
+ *   뒷자리 7자리가 없거나 숫자가 아니면 CODEF을 부르지 않고 400(input_rrn_back)으로 되돌린다.
+ *   받은 뒷자리는 이 요청 처리 안에서만 쓰고 저장·응답·로그에 남기지 않는다. 기관이 돌려준
+ *   주민등록번호는 maskRrn으로 가려서만 내보낸다.
+ *
  * 장애인증명서의 address (2026-11-20 정리)
  *   정부24 장애인증명서 발급 화면은 신청인의 주소를 주소검색으로 먼저 찾고, 그 결과로
  *   관할 발급기관(시·군·구)을 정한다. CODEF은 이 검색창에 address 값을 그대로 넣고
@@ -110,10 +119,10 @@ const PRODUCTS = {
     path: '/v1/kr/public/mw/certificate/disability',
     organization: '0001',
     // 개발가이드 표에는 loginType 3·5·6에서 identity 필수로 적혀 있고,
-    // 값 설명은 '주민등록번호 13자리(생년월일 미입력 시)'다. 다온은 주민등록번호를
-    // 받지 않으므로 생년월일을 보낸다. 기관이 거절하면 그 응답 코드를 화면에 그대로
-    // 보여주고, 사용자는 '직접 발급'으로 넘어간다(가짜 성공을 만들지 않는다).
-    identity: 'birth',
+    // 값 설명은 '주민등록번호 13자리'다. 생년월일 8자리만 보내면 CF-12100으로
+    // 거절되므로(2026-11-20 지인 테스트), 생년월일 앞 6자리 + 사용자가 한 번 입력한
+    // 뒷자리 7자리로 13자리를 만든다(buildParams의 identity: 'rrn13').
+    identity: 'rrn13',
     requiresAddress: true,
     defaults: {
       isIdentityViewYn: '0',
@@ -200,6 +209,45 @@ function maskRrn(v) {
   const d = s.replace(/[^0-9]/g, '');
   if (d.length >= 7) { return d.slice(0, 6) + '-' + d.slice(6, 7) + '******'; }
   return s;
+}
+
+/**
+ * 주민등록번호 뒷자리 7자리를 요청 본문에서 꺼낸다.
+ *   input.rrnBack     '1234567'            (화면이 보내는 값)
+ *   input.identity13  '9901011234567'      (13자리를 그대로 보낼 때 — 뒤 7자리만 쓴다)
+ * 값이 없거나 형태가 다르면 ''을 돌려주고, 부르는 쪽(buildParams)이 400으로 막는다.
+ * 여기서 받은 값은 응답·로그 어디에도 쓰지 않는다.
+ */
+function rrnBackDigits(input) {
+  const back = digits(input && input.rrnBack);
+  if (back) { return back; }
+  const full = digits(input && (input.identity13 || input.rrn));
+  return full.length === 13 ? full.slice(6) : full;
+}
+
+/* 생년월일(YYYYMMDD) 앞 6자리(YYMMDD) + 뒷자리 7자리 = 주민등록번호 13자리 */
+function identity13For(birth, back) {
+  return String(birth).slice(2, 8) + String(back);
+}
+
+/**
+ * 뒷자리 7자리 검사. 문제가 있으면 { code, message }, 없으면 null.
+ * 13자리 중 앞 6자리는 생년월일에서 만들고, 첫 숫자(성별)는 세기와 맞아야 한다
+ * (2000년 이후 3·4·7·8 / 1900년대 1·2·5·6). 어긋나면 기관이 CF-12100으로 거절하므로
+ * 간편인증을 한 번 헛되이 쓰지 않도록 CODEF을 부르기 전에 알려 준다.
+ */
+function rrnBackProblem(birth, back) {
+  const d = digits(back);
+  if (!d || d.length !== 7) {
+    return { code: 'input_rrn_back', message: '정부24 장애인증명서 조회에는 주민등록번호 뒷자리 7자리가 필요합니다. 숫자 7자리로 입력해 주세요.' };
+  }
+  const year = Number(String(birth).slice(0, 4));
+  const g = d.charAt(0);
+  const centuryOk = year >= 2000 ? /[3478]/.test(g) : /[1256]/.test(g);
+  if (!centuryOk) {
+    return { code: 'input_rrn_back_century', message: '생년월일과 주민등록번호 뒷자리가 맞지 않습니다. 뒷자리 첫 숫자는 2000년 이후 출생이면 3·4·7·8, 1900년대 출생이면 1·2·5·6입니다. 뒷자리 7자리를 다시 확인해 주세요.' };
+  }
+  return null;
 }
 
 /** URL-encoded 응답이면 풀어서 JSON으로. 실패하면 원문 일부를 담아 돌려준다. */
@@ -304,6 +352,8 @@ function buildProfile(input) {
   const telecom = String((input && input.telecom) || '').toUpperCase().replace(/\s+/g, '');
   const telecomKey = TELECOM_ALIAS[telecom] || telecom;
   const address = cleanAddress((input && input.address) || '');
+  /* 장애인증명서에만 쓰는 값. 응답·로그에 절대 넣지 않는다(내부 계산용). */
+  const rrnBack = rrnBackDigits(input);
 
   if (name.length < 2) { throw httpError(400, '성명을 2자 이상 입력해 주세요.', 'input_name'); }
   if (birth.length !== 8) { throw httpError(400, '생년월일 8자리(YYYYMMDD)를 입력해 주세요.', 'input_birth'); }
@@ -311,7 +361,7 @@ function buildProfile(input) {
   if (!AUTH_LEVEL[auth]) { throw httpError(400, '간편인증 수단을 골라 주세요(카카오톡·네이버·PASS·토스).', 'input_auth'); }
   if (telecom && !TELECOM_CODE[telecomKey]) { throw httpError(400, '통신사는 SKT·KT·LG U+ 또는 알뜰폰(SKT·KT·LG U+) 중에서 골라 주세요.', 'input_telecom'); }
 
-  return { name: name, birth: birth, phone: phone, auth: auth, telecom: telecomKey, address: address };
+  return { name: name, birth: birth, phone: phone, auth: auth, telecom: telecomKey, address: address, rrnBack: rrnBack };
 }
 
 function buildParams(docId, profile) {
@@ -330,6 +380,13 @@ function buildParams(docId, profile) {
   };
   if (profile.telecom) { params.telecom = TELECOM_CODE[profile.telecom]; }
   if (p.identity === 'birth') { params.identity = profile.birth; }
+  if (p.identity === 'rrn13') {
+    /* 주민등록번호 13자리 = 생년월일 앞 6자리 + 사용자가 한 번 입력한 뒷자리 7자리.
+       없거나 형태가 틀리면 CODEF을 부르지 않고 400으로 되돌린다. */
+    const bad = rrnBackProblem(profile.birth, profile.rrnBack);
+    if (bad) { throw httpError(400, bad.message, bad.code); }
+    params.identity = identity13For(profile.birth, profile.rrnBack);
+  }
   if (p.requiresAddress) {
     /* 정부24 주소검색에 그대로 들어가는 값 — 다듬은 주소를 보낸다. */
     params.address = cleanAddress(profile.address);
@@ -418,6 +475,13 @@ function normalize(docId, body) {
 
 /* 백엔드가 돌려준 오류 코드를 화면이 바로 쓸 수 있는 모양으로 만든다.
    주소 때문에 실패한 경우에는 어떤 주소를 보냈는지(address)와 고치는 법(hint)을 함께 준다. */
+/* 기관이 '주민등록번호가 잘못됐다'고 되돌린 경우(CF-12100)의 안내.
+   다온은 13자리를 만들어 보내므로, 앞 6자리(생년월일)와 뒷자리 7자리를 다시 보게 한다.
+   어떤 경우에도 보낸 13자리 원문은 응답에 넣지 않는다. */
+const RRN_ERROR_HINTS = {
+  'CF-12100': '주민등록번호 13자리가 맞는지 확인해 주세요. 다온은 생년월일 6자리(YYMMDD)와 간편인증 창에 입력한 뒷자리 7자리를 합쳐 기관에 보냅니다. [주민번호 뒷자리 고쳐 다시 인증]으로 다시 넣을 수 있습니다.'
+};
+
 const ADDRESS_ERROR_HINTS = {
   'CF-13006': '정부24가 이 주소로 주소검색 결과를 찾지 못했습니다(CF-13006). 동·번지까지 적은 지번주소(예: 진주시 가좌동 123-4)로 바꾸면 대개 해결됩니다.',
   'CF-13005': '정부24 주소검색이 응답하지 않았습니다. 주소를 동·번지로 바꾸거나 잠시 뒤 다시 시도해 주세요.'
@@ -434,6 +498,11 @@ function codefErrorBody(docId, r, params) {
     message: message,
     result: { code: code, message: r.message || '', extraMessage: r.extraMessage || '' }
   };
+  const rrnIssue = !!RRN_ERROR_HINTS[code];
+  if (rrnIssue) {
+    body.hint = 'rrn_mismatch';
+    body.guide = RRN_ERROR_HINTS[code];
+  }
   const addrIssue = !!ADDRESS_ERROR_HINTS[code] || /주소|검색결과가 없습니다/.test(String(message));
   if (addrIssue) {
     body.hint = 'address_no_result';
@@ -486,7 +555,7 @@ async function handleHealth(env, request) {
   return jsonResponse({
     ok: true,
     service: 'daon-codef-proxy',
-    version: '1.1.0',
+    version: '1.2.0',
     env: env.CODEF_ENV === 'api' ? 'api' : 'demo',
     configured: configured,
     mock: mock,
