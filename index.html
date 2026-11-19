@@ -3324,25 +3324,41 @@ body.easy .foot-note{font-size:13.5px}
   /* ============================================================
      10. 인쇄 · 메일 · ZIP
      ============================================================ */
-  function printHtmlString(html) {
-    var fr = document.createElement('iframe');
-    fr.setAttribute('aria-hidden', 'true');
-    fr.style.cssText = 'position:fixed;right:0;bottom:0;width:0;height:0;border:0;opacity:0';
-    document.body.appendChild(fr);
-    fr.onload = function () {
-      setTimeout(function () {
-        try { fr.contentWindow.focus(); fr.contentWindow.print(); }
-        catch (e) { toast('인쇄 창을 열 수 없어요. 저장한 파일을 열어 인쇄해 주세요.'); }
-        setTimeout(function () { if (fr.parentNode) { fr.parentNode.removeChild(fr); } }, 60000);
-      }, 120);
-    };
-    fr.srcdoc = html;
+  function downloadHtml(html, name) {
+    var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = (name || '다온_신청서') + '.html';
+    a.rel = 'noopener';
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () { if (a.parentNode) { a.parentNode.removeChild(a); } URL.revokeObjectURL(url); }, 1500);
+  }
+  /* 문서를 새 탭에 열어 그 탭에서 인쇄한다. 팝업이 막히면 파일로 저장해 준다. */
+  function printHtmlString(html, name) {
+    var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var w = null;
+    try { w = window.open(url, '_blank'); } catch (e) { w = null; }
+    if (!w) {
+      URL.revokeObjectURL(url);
+      downloadHtml(html, name);
+      toast('인쇄 창이 막혀 신청서 파일로 저장했어요. 파일을 열어 인쇄해 주세요.');
+      return;
+    }
+    setTimeout(function () {
+      try { w.focus(); w.print(); } catch (e) {}
+    }, 900);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 120000);
+    toast('새 탭에서 인쇄 창을 열어요. 인쇄 화면이 보이지 않으면 새 탭에서 인쇄를 눌러 주세요.');
+    announce('신청서를 새 탭에서 열어 인쇄합니다.');
   }
   function printApp() {
     var d = findDocById('form1');
     if (!d) { toast('신청서를 먼저 만들어 주세요'); return; }
-    printHtmlString(docFileFor(d, 1).content);
-    announce('신청서 인쇄 창을 엽니다.');
+    printHtmlString(docFileFor(d, 1).content, '신청서_' + (state.form.name || '김다온'));
   }
   function allDocs() {
     return requiredDocs(docsFor(state.selectedProgram));
