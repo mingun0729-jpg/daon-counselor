@@ -360,7 +360,8 @@ h2.sec .cnt{font-size:15px; font-weight:800; color:var(--grass); background:var(
 .autofill b{font-size:15.5px; font-weight:900; color:#12452A}
 .autofill p{font-size:14px; color:#2C4A36; margin-top:4px; line-height:1.55}
 .field{display:flex; flex-direction:column; gap:6px; margin-bottom:16px}
-.field label{font-size:16px; font-weight:900}
+.field label,.field .lab{font-size:16px; font-weight:900}
+.field .req{color:var(--red); font-weight:900}
 .field .hint{font-size:13.5px; color:var(--ink-mute); font-weight:700}
 .field input,.field textarea,.field select{
   width:100%; min-height:58px; padding:12px 14px; border-radius:14px;
@@ -514,8 +515,8 @@ body.a11y-big .agency .sub{font-size:16px}
 body.a11y-big .agency .btn{min-height:58px; font-size:17px}
 body.a11y-big .fc-name{font-size:17px}
 body.a11y-big .fc-btn{min-height:48px; font-size:15px}
-body.a11y-big .field label{font-size:19px}
-body.a11y-big .field input,body.a11y-big .field textarea{min-height:66px; font-size:20px}
+body.a11y-big .field label,body.a11y-big .field .lab{font-size:19px}
+body.a11y-big .field input,body.a11y-big .field textarea,body.a11y-big .field select{min-height:66px; font-size:20px}
 body.a11y-big .dock .cta{min-height:72px; font-size:22px}
 body.a11y-big .dock .sub{font-size:17px; min-height:52px}
 body.a11y-big .sheet h2{font-size:25px}
@@ -758,21 +759,21 @@ body.a11y-big.easy .hero h1{line-height:1.4}
           <button class="btn primary block" id="btnScan" type="button"><span aria-hidden="true">📷</span> 복지카드 찍기·올리기</button>
         </div>
         <div class="btnrow" style="margin-top:10px">
-          <button class="btn block" id="btnSamples" type="button"><span aria-hidden="true">🗂️</span> 예시 카드 선택</button>
-          <button class="btn ghost block" id="btnManual" type="button">카드 없이 직접 선택</button>
+          <button class="btn block" id="btnSamples" type="button"><span aria-hidden="true">🗂️</span> 예시 인물로 해 보기</button>
+          <button class="btn block" id="btnManual" type="button">내 정보 직접 입력</button>
         </div>
-        <p class="micro" style="text-align:center; margin-top:12px">사진 서버 전송 없음 · 시연용 가상 인식</p>
+        <p class="micro" style="text-align:center; margin-top:12px">사진은 서버로 보내지 않아요 · 이 시연판은 사진 글자를 <b>자동으로 판독하지 않습니다</b></p>
         <input type="file" id="cardFile" accept="image/*" hidden>
       </div>
 
       <div id="cardDone" hidden>
-        <h2 class="sec">복지카드 인식 완료</h2>
-        <p class="lead">카드 인식 결과 · 내용 확인 후 다음 단계</p>
+        <h2 class="sec">카드 정보 확인</h2>
+        <p class="lead">이름·장애 유형·정도가 본인과 같은지 확인해 주세요. 다르면 ‘내용 수정’에서 바꿀 수 있습니다.</p>
         <div class="cardarea" id="cardVisual"></div>
         <div class="card" id="cardHint" hidden></div>
         <div class="btnrow">
           <button class="btn" id="btnCardEdit" type="button"><span aria-hidden="true">✏️</span> 내용 수정</button>
-          <button class="btn ghost" id="btnCardAgain" type="button">카드 다시 인식</button>
+          <button class="btn ghost" id="btnCardAgain" type="button">카드 다시 고르기</button>
         </div>
       </div>
     </section>
@@ -805,6 +806,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
 
     <!-- ============ 3. 서류 ============ -->
     <section class="screen" id="view-docs" aria-label="서류 준비" hidden>
+      <h2 class="sec">서류 준비</h2>
       <div class="agentcard">
         <div class="row">
           <span class="bot" aria-hidden="true">
@@ -846,31 +848,71 @@ body.a11y-big.easy .hero h1{line-height:1.4}
 
     <!-- ============ 4. 신청 ============ -->
     <section class="screen" id="view-submit" aria-label="신청서 내기" hidden>
-      <h2 class="sec">필수 항목 입력</h2>
-      <div class="autofill">
-        <b id="autoTitle">🤖 서류에서 채운 정보</b>
-        <p id="autoDesc">복지카드·기관 서류 기반 자동 입력: 이름 · 장애 정보 · 주소</p>
+      <h2 class="sec">신청서 작성</h2>
+
+      <div class="card" id="confirmCard" aria-labelledby="confirmTitle">
+        <h3 id="confirmTitle" style="font-size:18px;font-weight:900;margin:0">1. 내 정보 확인·수정</h3>
+        <p class="note" style="margin:10px 0 14px">복지카드·서류에서 채운 값입니다. 틀린 곳은 여기서 고치면 <b>신청서·미리보기·인쇄·접수증</b>에 그대로 반영됩니다.</p>
+        <p class="micro" id="autoDesc" style="margin:-6px 0 14px"></p>
+
+        <div class="field" id="fName">
+          <label for="inName">이름 <span class="req" aria-hidden="true">*</span></label>
+          <input id="inName" name="name" type="text" autocomplete="name" placeholder="예: 김다온" aria-required="true" aria-describedby="eName" />
+          <span class="err" id="eName" role="alert" hidden>이름을 입력해 주세요.</span>
+        </div>
+        <div class="field" id="fBirth">
+          <label for="inBirth">생년월일 <span class="req" aria-hidden="true">*</span></label>
+          <span class="hint">예: 1999-07-29</span>
+          <input id="inBirth" name="birth" type="text" inputmode="numeric" placeholder="1999-07-29" aria-required="true" aria-describedby="eBirth" />
+          <span class="err" id="eBirth" role="alert" hidden>생년월일 8자리를 입력해 주세요 (예: 1999-07-29).</span>
+        </div>
+        <div class="field" id="fAddr">
+          <label for="inAddr">사는 곳 <span class="req" aria-hidden="true">*</span></label>
+          <span class="hint">동까지 입력 가능</span>
+          <input id="inAddr" name="addr" type="text" autocomplete="street-address" placeholder="예: 경상남도 진주시 ○○로 12" aria-required="true" aria-describedby="eAddr" />
+          <span class="err" id="eAddr" role="alert" hidden>주소 입력 필요</span>
+        </div>
+        <div class="field" id="fAids">
+          <span class="lab" id="aidsLab">필요 지원 (복수 선택)</span>
+          <span class="hint">신청서 ‘필요 지원’란에 그대로 들어갑니다.</span>
+          <div class="chiprow" id="aidChips" role="group" aria-labelledby="aidsLab"></div>
+        </div>
+        <div class="field" id="fTransport">
+          <label for="inTransport">이동 수단</label>
+          <select id="inTransport" name="transport"></select>
+        </div>
       </div>
+
+      <h2 class="sec" style="font-size:18px;margin-top:2px">2. 연락처와 계좌</h2>
 
       <form id="applyForm" novalidate>
         <div class="field" id="fPhone">
-          <label for="inPhone">연락처</label>
+          <label for="inPhone">연락처 <span class="req" aria-hidden="true">*</span></label>
           <span class="hint">휴대폰 번호</span>
-          <input id="inPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-1234-5678" />
-          <span class="err" id="ePhone" hidden>전화번호 형식 확인 (예: 010-1234-5678)</span>
-        </div>
-        <div class="field" id="fAddr">
-          <label for="inAddr">사는 곳</label>
-          <span class="hint">동까지 입력 가능</span>
-          <input id="inAddr" name="addr" type="text" autocomplete="street-address" placeholder="예: 경상남도 진주시 ○○로 12" />
-          <span class="err" id="eAddr" hidden>주소 입력 필요</span>
+          <input id="inPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-1234-5678" aria-required="true" aria-describedby="ePhone" />
+          <span class="err" id="ePhone" role="alert" hidden>전화번호 형식 확인 (예: 010-1234-5678)</span>
         </div>
         <div class="field" id="fAcct">
-          <label for="inBank">급여 받을 계좌</label>
-          <span class="hint">은행명 · 계좌번호</span>
-          <input id="inBank" name="bank" type="text" placeholder="○○은행" />
-          <input id="inAcct" name="account" type="tel" inputmode="numeric" placeholder="계좌번호 (숫자만)" style="margin-top:8px" />
-          <span class="err" id="eAcct" hidden>은행명·계좌번호 입력 필요</span>
+          <label for="inBank">은행</label>
+          <span class="hint">목록에서 고르거나 직접 입력</span>
+          <input id="inBank" name="bank" type="text" list="bankList" placeholder="예: ○○은행" aria-describedby="eAcct" />
+          <datalist id="bankList">
+            <option value="국민은행"></option>
+            <option value="신한은행"></option>
+            <option value="우리은행"></option>
+            <option value="하나은행"></option>
+            <option value="농협은행"></option>
+            <option value="기업은행"></option>
+            <option value="카카오뱅크"></option>
+            <option value="토스뱅크"></option>
+            <option value="우체국"></option>
+            <option value="부산은행"></option>
+            <option value="경남은행"></option>
+          </datalist>
+          <label for="inAcct" style="margin-top:8px">계좌번호 <span class="req" aria-hidden="true">*</span></label>
+          <span class="hint">숫자만 (6자리 이상)</span>
+          <input id="inAcct" name="account" type="tel" inputmode="numeric" placeholder="계좌번호 (숫자만)" aria-required="true" aria-describedby="eAcct" />
+          <span class="err" id="eAcct" role="alert" hidden>은행명과 계좌번호(6자리 이상)를 입력해 주세요.</span>
         </div>
         <div class="field" id="fMotiv">
           <label for="inMotiv">하고 싶은 말 <span style="font-weight:700;color:var(--ink-mute);font-size:14px">(선택)</span></label>
@@ -928,14 +970,14 @@ body.a11y-big.easy .hero h1{line-height:1.4}
 <div class="ov" id="ocr" hidden>
   <div class="sheet sheetwrap" role="dialog" aria-modal="true" aria-labelledby="ocrTitle">
     <div class="grab" aria-hidden="true"></div>
-    <h2 id="ocrTitle">복지카드 인식 중</h2>
-    <p class="sub" id="ocrSub">필요 항목만 인식 · 사진 서버 전송 없음</p>
+    <h2 id="ocrTitle" tabindex="-1">예시 카드 준비 중</h2>
+    <p class="sub" id="ocrSub">예시(가명) 인물 · 사진 판독 아님 · 서버 전송 없음</p>
     <div class="ocrstage">
       <div class="cardarea" id="ocrCard"></div>
       <span class="ocrline" aria-hidden="true"></span>
     </div>
     <div class="ocrsteps" id="ocrSteps"></div>
-    <p class="micro">※ 시연용 가상 인식. 카드 정보 저장·전송 없음.</p>
+    <p class="micro">※ 시연용 예시 값 · 입력한 내용은 이 브라우저에만 저장됩니다.</p>
   </div>
 </div>
 
@@ -1215,12 +1257,20 @@ body.a11y-big.easy .hero h1{line-height:1.4}
      ============================================================ */
   var TYPE_LABEL = {
     physical: '지체장애', brain: '뇌병변장애', visual: '시각장애',
-    hearing: '청각·언어장애', developmental: '발달·정신장애', other: '기타 장애'
+    hearing: '청각·언어장애', intellectual: '지적장애', autism: '자폐성장애',
+    mental: '정신장애', other: '기타 장애(내부기관·복합)'
   };
+  var TYPE_ORDER = ['physical', 'brain', 'visual', 'hearing', 'intellectual', 'autism', 'mental', 'other'];
   var TYPE_SHORT = {
-    physical: '지체', brain: '뇌병변', visual: '시각',
-    hearing: '청각', developmental: '발달', other: '기타'
+    physical: '지체', brain: '뇌병변', visual: '시각', hearing: '청각',
+    intellectual: '지적', autism: '자폐', mental: '정신', other: '기타'
   };
+  /* 지적·자폐성은 함께 다루는 지원이 많고, 정신장애는 다른 지원·직무 규칙을 쓴다. */
+  function isDevType(t) { return t === 'intellectual' || t === 'autism'; }
+  function normalizeType(t) {
+    if (t === 'developmental') { return 'intellectual'; }
+    return TYPE_LABEL[t] ? t : '';
+  }
   var SEVERITY_LABEL = { severe: '심한 장애', mild: '심하지 않은 장애', unsure: '확인 전' };
   var WORK_LABEL = { full: '전일제', part: '시간제', welfare: '복지형·참여형', remote: '재택·유연근무' };
   var WORK_SHORT = { full: '주 40시간', part: '주 20시간', welfare: '주 14시간', remote: '재택·유연' };
@@ -1266,7 +1316,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     envs: new Set(),
     selectedProgram: '', selectedWorkplace: '',
     checked: {}, fetched: {},
-    form: { name: '', phone: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '' },
+    form: { name: '', birth: '', phone: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '' },
     receipt: null,
     easy: false,
     showAllJobs: false,
@@ -1447,8 +1497,11 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if (s.severity === 'severe') {
       r.push({ k: 'ok', t: '2026년 확대 복지일자리 1,600개 · 심한 장애인 대상 · 기회 확대.' });
     }
-    if (s.type === 'developmental') {
-      r.push({ k: 'ok', t: '복지일자리 · 발달장애인 맞춤 직무(사서보조·환경정리·급식지원 등) 다수.' });
+    if (isDevType(s.type)) {
+      r.push({ k: 'ok', t: '복지일자리 · 지적·자폐성장애인 맞춤 직무(사서보조·환경정리·급식지원 등) 다수.' });
+    }
+    if (s.type === 'mental') {
+      r.push({ k: 'ok', t: '복지일자리 · 정신장애인 맞춤 직무(자료 정리·환경정리 등) 운영 · 근무 시간·업무량 조정은 담당자 확인 필요.' });
     }
     if (s.envs.has('wheelchair')) {
       r.push({ k: 'info', t: '실내 사무·사서보조·자료 감수 가능 · 환경정비·주차계도는 이동 부담 큼.' });
@@ -1479,17 +1532,19 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   function ruleCare(s) {
     var r = [];
     r.push({ k: 'info', t: '주 25시간(1일 5시간) · 월 1,351,920원(세전) · 노인요양시설·재가기관 요양보호사 업무 보조.' });
-    if (s.type === 'developmental') {
-      r.push({ k: 'check', t: '대상: 지적장애 또는 자폐성장애 · 정신장애만 있는 경우 제외 · 등록 유형 확인 필요.' });
+    if (isDevType(s.type)) {
+      r.push({ k: 'check', t: '대상: 지적장애 또는 자폐성장애인 · 등록 유형 확인 필요.' });
       r.push({ k: 'ok', t: '식사·이동 돕기 등 순서 정해진 보조 업무 · 반복 선호 일치.' });
+      if (s.envs.has('standing')) {
+        r.push({ k: 'check', t: '이동·식사 보조 시 서서 움직이는 시간 발생 · 1일 5시간 가능 여부 상담 필요.' });
+      }
+    } else if (s.type === 'mental') {
+      r.push({ k: 'no', t: '지적·자폐성 장애인 대상 특화형 · 정신장애는 신청 대상이 아닙니다.' });
     } else {
       r.push({ k: 'no', t: '지적·자폐성 장애인 전용 특화형 · 해당 없음.' });
     }
     if (s.workType === 'full') {
       r.push({ k: 'info', t: '주 25시간 · 전일제 희망 대비 차이.' });
-    }
-    if (s.envs.has('standing') && s.type === 'developmental') {
-      r.push({ k: 'check', t: '이동·식사 보조 시 서서 움직이는 시간 발생 · 1일 5시간 가능 여부 상담 필요.' });
     }
     return r.concat(unsureNote(s));
   }
@@ -1579,7 +1634,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       rule: ruleMassage
     },
     {
-      id: 'special_care', name: '특화형 · 발달장애인 요양보호사 보조',
+      id: 'special_care', name: '특화형 · 지적·자폐성장애인 요양보호사 보조',
       org: '노인요양시설, 재가 방문요양 기관',
       hours: '주 25시간 (1일 5시간)', pay: '월 1,351,920원',
       duty: '식사·이동 돕기, 주변 정리 등 요양보호사 업무 보조',
@@ -1631,12 +1686,15 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var list = [];
     var sev = s.severity;
 
-    if (sev === 'severe' && ['physical', 'brain', 'visual', 'hearing'].indexOf(s.type) > -1) {
+    if (s.type === 'mental') {
+      list.push({ badge: '확인', name: '근로지원인 · 직무조정 상담', org: '한국장애인고용공단 / 정신건강복지센터',
+        why: '정신장애는 근로지원인보다 업무량·근무시간 조정과 스트레스 요인 상담이 먼저인 경우가 많습니다 · 담당자 상담 권장.' });
+    } else if (sev === 'severe' && ['physical', 'brain', 'visual', 'hearing'].indexOf(s.type) > -1) {
       list.push({ badge: '추천', name: '근로지원인 서비스', org: '한국장애인고용공단 (사업주·근로자 신청)',
         why: '이동·서류 작성·의사소통 등 단독 수행 어려운 업무 지원. 배치 전 신청 시 첫 출근부터 지원.' });
     } else if (sev === 'severe') {
       list.push({ badge: '확인', name: '근로지원인 · 직무지도원', org: '한국장애인고용공단 / 직업재활시설',
-        why: '발달장애는 근로지원인보다 현장 훈련 직무지도원이 우선 적합한 경우 다수 · 담당자 상담 권장.' });
+        why: '지적·자폐성장애는 현장 훈련 직무지도원이 우선 적합한 경우 다수 · 담당자 상담 권장.' });
     } else {
       list.push({ badge: '확인', name: '근로지원인 서비스', org: '한국장애인고용공단',
         why: '근로지원인은 주로 심한(중증) 장애인 지원 · 장애 정도 확인 후 대상 여부 재확인.' });
@@ -1647,7 +1705,9 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       brain: '특수키보드·마우스 대체 장치·의사소통 보조기기(AAC).',
       visual: '화면읽기 프로그램·점자정보단말기·확대독서기.',
       hearing: '문자통역 앱·영상전화·호출 알림 기기.',
-      developmental: '그림 일정표·쉬운 글 안내판·음성 안내 기기.',
+      intellectual: '그림 일정표·쉬운 글 안내판·음성 안내 기기.',
+      autism: '그림 일정표·소음 저감 장비·휴게 알림 기기.',
+      mental: '업무 지시를 글로 남기는 노트·집중을 돕는 자리 배치.',
       other: '직무에 필요한 보조기기 상담 후 지원.'
     };
     list.push({ badge: '추천', name: '보조공학기기 지원', org: '한국장애인고용공단 고용지원',
@@ -1667,9 +1727,13 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         why: '청각·언어장애 아닌 경우 불필요 · 동료가 청각장애인 경우 사업장 지원으로 안내 가능.' });
     }
 
-    if (s.type === 'developmental') {
-      list.push({ badge: '추천', name: '발달장애인 직무개발 · 현장훈련', org: '한국장애인개발원, 직업재활시설',
+    if (isDevType(s.type)) {
+      list.push({ badge: '추천', name: '지적·자폐성장애인 직무개발 · 현장훈련', org: '한국장애인개발원, 직업재활시설',
         why: '직무를 잘게 나눈 훈련·취업 후 적응 지원.' });
+    }
+    if (s.type === 'mental') {
+      list.push({ badge: '추천', name: '정신장애인 취업지원 · 직무조정', org: '한국장애인고용공단 / 정신건강복지센터',
+        why: '업무량·근무시간 조정, 스트레스 요인 상담, 단계적인 업무 복귀 지원.' });
     }
 
     list.push({ badge: '안내', name: '장애인 고용장려금 (사업주)', org: '한국장애인고용공단',
@@ -1942,10 +2006,10 @@ body.a11y-big.easy .hero h1{line-height:1.4}
 
   function applicantName() {
     var n = String(state.form.name || (state.card && state.card.name) || '').trim();
-    return n || '김다온';
+    return n || '이름 미입력';
   }
   function safeFileName(s) {
-    return String(s == null ? '' : s).replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, '_').slice(0, 30) || '김다온';
+    return String(s == null ? '' : s).replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, '_').slice(0, 30) || '신청인';
   }
   function fmtBytes(n) {
     n = Number(n) || 0;
@@ -1963,13 +2027,17 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var h = docIdHash(prefix + applicantName() + todayStr());
     return prefix + '-' + new Date().getFullYear() + '-' + String(100000 + (h * 37) % 900000);
   }
-  function fictionBirth() {
-    var h = docIdHash(applicantName());
-    return (1975 + (h % 18)) + '. ' + pad2(1 + (h % 12)) + '. ' + pad2(1 + (h % 27)) + '.';
+  /* 4단계에서 입력·수정한 생년월일을 그대로 쓴다(가짜 생년월일 생성 없음). */
+  function birthDigits() { return String(state.form.birth || '').replace(/[^0-9]/g, ''); }
+  function birthText() {
+    var d = birthDigits();
+    if (d.length !== 8) { return '—'; }
+    return d.slice(0, 4) + '. ' + d.slice(4, 6) + '. ' + d.slice(6, 8) + '.';
   }
   function maskedRrn() {
-    var b = fictionBirth().replace(/[.\s]/g, '');
-    return b.slice(2) + '-1******';
+    var d = birthDigits();
+    if (d.length !== 8) { return '******-*******'; }
+    return d.slice(2) + '-1******';
   }
   function docTr(cells) {
     return '<tr>' + cells.map(function (c) {
@@ -2009,7 +2077,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   function docCacheSig() {
     var f = state.form;
     var checked = Object.keys(state.checked || {}).filter(function (k) { return state.checked[k]; }).join(',');
-    return [state.selectedProgram, f.name, f.phone, f.addr, f.motivation, f.job1, f.job2,
+    return [state.selectedProgram, f.name, f.birth, f.phone, f.addr, f.motivation, f.job1, f.job2,
       (f.aids || []).join(','), f.transport, state.type, state.severity, checked].join('|');
   }
   function docFileFor(d, seq) {
@@ -2062,7 +2130,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       '<p class="sub">「2026년 장애인일자리 사업안내」 서식 1 · ' + esc(ORG.short) + ' 접수용</p>' +
       '<div class="tobox"><b>수신</b> ' + esc(ORG.name) + '<br><span class="dim">' + esc(ORG.addr) + ' · ☎ ' + esc(ORG.tel) + '</span></div>' +
       '<table>' +
-      docTr([{ h: '성명' }, { t: esc(applicantName()) + ' (가명)' }, { h: '생년월일' }, { t: esc(fictionBirth()) }]) +
+      docTr([{ h: '성명' }, { t: esc(applicantName()) }, { h: '생년월일' }, { t: esc(birthText()) }]) +
       docTr([{ h: '연락처' }, { t: esc(f.phone || '010-1234-5678 (예시)') }, { h: '장애 정도' }, { t: esc(SEVERITY_LABEL[state.severity] || '확인 전') }]) +
       docTr([{ h: '주소' }, { t: esc(f.addr || '경상남도 진주시 ○○로 12 (예시)'), cs: 3 }]) +
       docTr([{ h: '장애 유형' }, { t: esc(TYPE_LABEL[state.type] || '지체장애') }, { h: '이동 수단' }, { t: esc(transportLabel()) }]) +
@@ -2090,7 +2158,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       '<h1>참여자 정보 확인서</h1>' +
       '<p class="sub">2026년 장애인일자리사업 서식 2 · 수행기관 확인용</p>' +
       '<table>' +
-      docTr([{ h: '성명' }, { t: esc(applicantName()) + ' (가명)' }, { h: '생년월일' }, { t: esc(fictionBirth()) }]) +
+      docTr([{ h: '성명' }, { t: esc(applicantName()) }, { h: '생년월일' }, { t: esc(birthText()) }]) +
       docTr([{ h: '연락처' }, { t: esc(f.phone || '010-1234-5678 (예시)'), cs: 3 }]) +
       docTr([{ h: '주소' }, { t: esc(f.addr || '경상남도 진주시 ○○로 12 (예시)'), cs: 3 }]) +
       docTr([{ h: '장애 유형' }, { t: esc(TYPE_LABEL[state.type] || '지체장애') }, { h: '장애 정도' }, { t: esc(SEVERITY_LABEL[state.severity] || '확인 전') }]) +
@@ -2117,7 +2185,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       '<h1>개인정보 수집·이용 및 제3자 제공 동의서</h1>' +
       '<p class="sub">2026년 장애인일자리사업 서식 3 · ' + esc(ORG.short) + '</p>' +
       '<table>' +
-      docTr([{ h: '성명' }, { t: esc(applicantName()) + ' (가명)' }, { h: '생년월일' }, { t: esc(fictionBirth()) }]) +
+      docTr([{ h: '성명' }, { t: esc(applicantName()) }, { h: '생년월일' }, { t: esc(birthText()) }]) +
       docTr([{ h: '연락처' }, { t: esc(state.form.phone || '010-1234-5678 (예시)'), cs: 3 }]) +
       docTr([{ h: '주소' }, { t: esc(state.form.addr || '경상남도 진주시 ○○로 12 (예시)'), cs: 3 }]) +
       '</table>' +
@@ -2154,7 +2222,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       '<table>' +
       docTr([{ h: '은행명' }, { t: '○○은행 (예시)' }, { h: '계좌 종류' }, { t: '입출금 자유예금' }]) +
       docTr([{ h: '계좌번호' }, { t: '302-XXXX-XXXX-XX (가림)' }, { h: '개설일' }, { t: '2021. 06. 11.' }]) +
-      docTr([{ h: '예금주' }, { t: esc(applicantName()) + ' (가명)', cs: 3 }]) +
+      docTr([{ h: '예금주' }, { t: esc(applicantName()), cs: 3 }]) +
       '</table>' +
       '<p class="note">통장 첫 장(예금주·계좌번호가 보이는 면)을 촬영해 붙이는 자리입니다. 급여는 신청인 본인 명의 계좌로만 지급됩니다.</p>' +
       docFoot('실제 제출 시에는 통장 사본 원본 또는 은행 앱의 계좌 확인 화면을 사용합니다.');
@@ -2167,7 +2235,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       '<h1>이력서 및 자기소개서</h1>' +
       '<p class="sub">표준 이력서 · 본인 작성 서류 (시연용)</p>' +
       '<table>' +
-      docTr([{ h: '성명' }, { t: esc(applicantName()) + ' (가명)' }, { h: '생년월일' }, { t: esc(fictionBirth()) }]) +
+      docTr([{ h: '성명' }, { t: esc(applicantName()) }, { h: '생년월일' }, { t: esc(birthText()) }]) +
       docTr([{ h: '연락처' }, { t: esc(f.phone || '010-1234-5678 (예시)') }, { h: '이동 수단' }, { t: esc(transportLabel()) }]) +
       docTr([{ h: '주소' }, { t: esc(f.addr || '경상남도 진주시 ○○로 12 (예시)'), cs: 3 }]) +
       docTr([{ h: '희망 직무' }, { t: esc(f.job1 || '사무보조'), cs: 3 }]) +
@@ -2189,7 +2257,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var body = docHead() +
       '<h1>' + esc(isPort ? '포트폴리오 · 작업 이력 메모' : '희망 직무 경험 메모') + '</h1>' +
       '<p class="sub">자유 양식 · 본인 작성 서류 (시연용)</p>' +
-      '<table>' + docTr([{ h: '작성자' }, { t: esc(applicantName()) + ' (가명)' }, { h: '작성일' }, { t: esc(todayStr()) }]) + '</table>' +
+      '<table>' + docTr([{ h: '작성자' }, { t: esc(applicantName()) }, { h: '작성일' }, { t: esc(todayStr()) }]) + '</table>' +
       '<h2>해 본 일</h2><ul class="memo">' + items.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>' +
       '<h2>잘하는 일</h2><ul class="memo"><li>순서대로 하나씩 끝내는 일</li><li>같은 자리에서 꾸준히 하는 일</li><li>안내와 확인이 필요한 일</li></ul>' +
       '<h2>희망하는 일</h2><p class="small">' + esc(state.form.job1 || '사무보조') + ' 업무를 희망합니다. ' +
@@ -2207,7 +2275,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         org: '행정안전부 정부24 · 진주시', prefix: 'RGN', title: '주민등록표 등본',
         sub: '주민등록법 제29조에 따라 발급한 등본입니다. (시연용 가상 발급본)',
         rows: [['발급번호', docNum('RGN')], ['발급일시', todayStr() + ' 09:14'], ['세대주', applicantName() + ' (가명)'], ['세대구성', '세대원 2명 (본인 포함)'], ['주소', addr], ['발급사유', '장애인일자리사업 참여신청 제출용']],
-        table: { head: ['관계', '성명', '생년월일', '전입일'], rows: [['본인', applicantName(), fictionBirth(), '2024. 02. 19.'], ['가족', '김○○', '1961. 08. 03.', '2024. 02. 19.']] },
+        table: { head: ['관계', '성명', '생년월일', '전입일'], rows: [['본인', applicantName(), birthText(), '2024. 02. 19.'], ['가족', '김○○', '1961. 08. 03.', '2024. 02. 19.']] },
         note: '주민등록번호 뒷자리는 개인정보 보호를 위해 가렸습니다. (시연용 가상 발급본)'
       },
       insurance: {
@@ -2311,7 +2379,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var soft = isId ? '#E7F0FB' : '#EAF6EE';
     var cardName = isId ? '주민등록증' : '장애인등록증';
     var fields = isId
-      ? [['생년월일', fictionBirth()], ['주소', (state.form.addr || '경상남도 진주시 ○○로 12 (예시)').slice(0, 22)], ['발급기관', '진주시 ○○동 주민센터']]
+      ? [['생년월일', birthText()], ['주소', (state.form.addr || '경상남도 진주시 ○○로 12 (예시)').slice(0, 22)], ['발급기관', '진주시 ○○동 주민센터']]
       : [['등록번호', maskedRrn()], ['장애유형', TYPE_LABEL[state.type] || '지체장애'], ['장애정도', (SEVERITY_LABEL[state.severity] || '심한 장애').replace(/\s*\(.*\)/, '')], ['등록일', '2024. 03. 12.']];
     var out = '';
     fields.forEach(function (r, i) {
@@ -2319,7 +2387,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       out += '<text x="272" y="' + (y - 12) + '" font-size="10.5" fill="#5C6B62" font-weight="700">' + esc(r[0]) + '</text>' +
         '<text x="272" y="' + y + '" font-size="13" fill="#16201A" font-weight="700">' + esc(r[1]) + '</text>';
     });
-    var rows = [['성명', nm], ['생년월일', fictionBirth()], ['주소', (state.form.addr || '경상남도 진주시 ○○로 12 (예시)')], ['발급기관', isId ? '진주시 ○○동 주민센터' : '진주시장'], ['문서번호', docNum(isId ? 'IDC' : 'WEL')]];
+    var rows = [['성명', nm], ['생년월일', birthText()], ['주소', (state.form.addr || '경상남도 진주시 ○○로 12 (예시)')], ['발급기관', isId ? '진주시 ○○동 주민센터' : '진주시장'], ['문서번호', docNum(isId ? 'IDC' : 'WEL')]];
     var detail = '';
     rows.forEach(function (r, i) {
       var y = 620 + i * 34;
@@ -2569,20 +2637,40 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     s2: {
       key: 's2', name: '이하늘', type: 'hearing', severity: 'mild',
       reg: '******-*******', issue: '2023. 09. 04.', org: '진주시', note: '수어·문자통역',
-      icon: '🤟', label: '청각장애 · 심하지 않은 장애', sub: '수어·문자 소통'
+      icon: '🤟', label: '청각·언어장애 · 심하지 않은 장애', sub: '수어·문자 소통'
     },
     s3: {
-      key: 's3', name: '박다온', type: 'developmental', severity: 'severe',
+      key: 's3', name: '박다온', type: 'intellectual', severity: 'severe',
       reg: '******-*******', issue: '2025. 01. 20.', org: '진주시', note: '쉬운 안내 필요',
-      icon: '🌱', label: '발달장애 · 심한 장애', sub: '쉬운 말 안내 필요'
+      icon: '🌱', label: '지적장애 · 심한 장애', sub: '쉬운 말 안내 필요'
+    },
+    s4: {
+      key: 's4', name: '장하람', type: 'autism', severity: 'mild',
+      reg: '******-*******', issue: '2022. 11. 08.', org: '진주시', note: '그림 일정표·조용한 환경',
+      icon: '🧩', label: '자폐성장애 · 심하지 않은 장애', sub: '그림 일정표·조용한 환경'
+    },
+    s5: {
+      key: 's5', name: '윤서진', type: 'mental', severity: 'mild',
+      reg: '******-*******', issue: '2024. 06. 21.', org: '진주시', note: '근무 시간 조정 필요',
+      icon: '💬', label: '정신장애 · 심하지 않은 장애', sub: '근무 시간 조정 필요'
+    },
+    s6: {
+      key: 's6', name: '한지우', type: 'visual', severity: 'severe',
+      reg: '******-*******', issue: '2021. 04. 15.', org: '진주시', note: '화면 낭독 사용',
+      icon: '👁️', label: '시각장애 · 심한 장애', sub: '화면 낭독 사용'
+    },
+    s7: {
+      key: 's7', name: '서도윤', type: 'brain', severity: 'severe',
+      reg: '******-*******', issue: '2023. 02. 27.', org: '진주시', note: '큰 글씨·큰 버튼',
+      icon: '🧠', label: '뇌병변장애 · 심한 장애', sub: '큰 글씨·큰 버튼'
     }
   };
 
   var OCR_STEPS = [
-    { t: '카드 찾기', d: '카드 모서리 검출 · 주민등록번호 뒷자리 마스킹' },
-    { t: '글자 읽기', d: '장애 유형·정도·성명만 선택 인식' },
-    { t: '내용 맞추기', d: '인식 결과 · 카드 원본 대조' },
-    { t: '화면에 채우기', d: '일자리 조회 필요 항목만 자동 입력' }
+    { t: '예시 카드 준비', d: '가명·가상 카드 불러오기 (사진 판독 아님)' },
+    { t: '항목 채우기', d: '이름·장애 유형·정도만 채움' },
+    { t: '내용 확인', d: '본인 정보와 다른지 대조' },
+    { t: '화면에 적용', d: '일자리 조회에 필요한 값만 적용' }
   ];
 
   var ocrState = { data: null, stage: 0, timers: [] };
@@ -2608,35 +2696,72 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       var s = CARD_SAMPLES[k];
       body += '<button class="sample" type="button" data-sample="' + esc(k) + '">' +
         '<span class="sico" aria-hidden="true">' + s.icon + '</span>' +
-        '<span><b>' + esc(s.label) + '</b><span>' + esc(s.sub) + '</span></span></button>';
+        '<span><b>' + esc(s.label) + '</b><span>' + esc(s.name) + ' · ' + esc(s.sub) + '</span></span></button>';
     });
-    body += '</div><p class="note" style="margin-top:12px">예시 카드: <b>가명·가상 정보</b>. 실제 카드와 동일한 인식 과정 시연.</p>';
-    openSheet('예시 카드 선택', '장애 유형별 화면 자동 조정.', body);
+    body += '</div><p class="note" style="margin-top:12px">예시 인물: <b>가명·가상 정보</b>. 고르면 본인 정보와 같은지 확인하는 화면이 먼저 나옵니다.</p>';
+    openSheet('예시 인물 고르기', '장애 유형별로 화면이 어떻게 바뀌는지 볼 수 있습니다.', body);
+  }
+
+  /* 예시 인물을 골랐을 때 — 본인 정보가 맞는지 먼저 확인시킨다. */
+  function openSampleConfirm(key) {
+    var s = CARD_SAMPLES[key];
+    if (!s) { return; }
+    var body = '<div style="max-width:340px;margin:0 auto 14px">' + buildCardVisual(s) + '</div>' +
+      '<div class="note" style="margin-bottom:14px"><b>예시(가명) 인물입니다.</b><br>' +
+      '이름 <b>' + esc(s.name) + '</b> · ' + esc(TYPE_LABEL[s.type]) + ' · ' + esc(SEVERITY_LABEL[s.severity]) + '.<br>' +
+      '본인 정보와 다르면 바꿔 주세요. 여기서 고른 값이 신청서·접수증에 그대로 들어갑니다.</div>' +
+      '<div class="stickybtns">' +
+      '<button class="btn primary block" type="button" data-act="sample-go" data-key="' + esc(key) + '">이 예시 정보로 계속</button>' +
+      '<button class="btn block" type="button" data-act="sample-manual">내 정보로 바꾸기</button>' +
+      '<button class="btn ghost block" type="button" data-act="sample-back">예시 목록으로</button>' +
+      '</div>';
+    openSheet('예시 인물 확인', '이 정보로 진행할지 확인해 주세요.', body);
+  }
+
+  /* 사진을 올렸을 때 — 이 시연판은 글자를 판독하지 않는다고 먼저 알리고 길을 고르게 한다. */
+  function openUploadNotice(fileName) {
+    var body = '<div class="note" role="note" style="margin-bottom:14px"><b>사진에서 글자를 자동으로 판독하지 않았습니다.</b><br>' +
+      '이 시연판은 브라우저 안에서 글자를 읽는 OCR을 넣지 않았습니다. 사진은 서버로 보내지 않고, 화면에도 저장하지 않습니다.' +
+      (fileName ? '<br><span style="color:var(--ink-mute)">고른 파일: ' + esc(fileName) + '</span>' : '') + '</div>' +
+      '<p class="lead" style="margin-bottom:12px">아래 두 가지 중에서 골라 주세요.</p>' +
+      '<div class="btnrow">' +
+      '<button class="btn primary block" type="button" data-act="upload-manual">내 정보 직접 입력</button>' +
+      '<button class="btn block" type="button" data-act="upload-sample">예시 인물로 계속</button>' +
+      '</div>';
+    openSheet('사진을 올렸습니다', '이 시연판은 사진 글자를 자동으로 읽지 않습니다.', body);
   }
 
   function openManual() {
     var s = manualSel;
-    var body = '<p class="note">카드 없이 진행: 두 항목만 선택.</p>' +
+    var body = '<p class="note">카드 없이 진행합니다. <b>본인 정보</b>를 직접 적어 주세요. 실제 확인은 협회 접수 때 합니다.</p>' +
+      '<div class="field">' +
+      '<label for="manName">이름 <span class="req" aria-hidden="true">*</span></label>' +
+      '<span class="hint">신청서에 들어갈 이름 (가명도 괜찮습니다)</span>' +
+      '<input id="manName" type="text" autocomplete="name" placeholder="예: 홍길동" value="' + esc(s.name || '') + '" />' +
+      '</div>' +
       '<h3 style="font-size:16px;font-weight:900;margin:4px 0 8px">장애 정도</h3><div class="chiprow" style="margin-bottom:16px">' +
       ['severe', 'mild'].map(function (v) {
         return '<button class="chip" type="button" data-man-sev="' + v + '" aria-pressed="' + (s.severity === v ? 'true' : 'false') + '">' + esc(SEVERITY_LABEL[v]) + '</button>';
       }).join('') + '</div>' +
-      '<h3 style="font-size:16px;font-weight:900;margin:4px 0 8px">장애 유형</h3><div class="chiprow">' +
-      Object.keys(TYPE_LABEL).map(function (v) {
+      '<h3 style="font-size:16px;font-weight:900;margin:4px 0 8px">장애 유형 <span class="req" aria-hidden="true">*</span></h3><div class="chiprow">' +
+      TYPE_ORDER.map(function (v) {
         return '<button class="chip" type="button" data-man-type="' + v + '" aria-pressed="' + (s.type === v ? 'true' : 'false') + '">' + esc(TYPE_LABEL[v]) + '</button>';
       }).join('') + '</div>' +
-      '<div class="stickybtns"><button class="btn primary block" id="manGo" type="button">이 조건으로 조회</button></div>';
-    openSheet('직접 고르기', '조건은 이후 변경 가능.', body);
+      '<div class="stickybtns"><button class="btn primary block" id="manGo" type="button">이 정보로 조회</button></div>';
+    openSheet('내 정보 직접 입력', '입력한 내용은 이 브라우저에만 저장됩니다.', body);
+    var nameEl = $('#manName');
     var go = $('#manGo');
     if (go) {
       go.addEventListener('click', function () {
+        var nm = (nameEl && nameEl.value || '').trim();
+        if (!nm) { toast('이름 입력 필요'); if (nameEl) { nameEl.focus(); } return; }
         if (!manualSel.type || !manualSel.severity) { toast('장애 정도·유형 선택 필요'); return; }
         closeSheet();
-        applyManual(manualSel.type, manualSel.severity);
+        applyManual(manualSel.type, manualSel.severity, nm);
       });
     }
   }
-  var manualSel = { type: '', severity: '' };
+  var manualSel = { type: '', severity: '', name: '' };
 
   function openOcr(data) {
     ocrState.data = data;
@@ -2652,7 +2777,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       }).join('');
     }
     var sub = $('#ocrSub');
-    if (sub) { sub.textContent = data.source === 'upload' ? '업로드 사진에서 필요 항목만 인식 · 사진 서버 전송 없음' : '필요 항목만 인식 · 사진 서버 전송 없음'; }
+    if (sub) { sub.textContent = '예시(가명) 인물 · 사진 판독 아님 · 서버 전송 없음'; }
     var ov = $('#ocr');
     if (ov) { ov.hidden = false; }
     setPageInert(true);
@@ -2668,7 +2793,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         $$('#ocrSteps .ocrstep').forEach(function (el, i) { el.classList.toggle('on', i <= n); });
         if (n >= 2) {
           var sub2 = $('#ocrSub');
-          if (sub2) { sub2.textContent = '인식 거의 완료'; }
+          if (sub2) { sub2.textContent = '거의 다 됐어요'; }
         }
         if (n === 3) {
           ocrState.timers.push(setTimeout(finishOcr, 520));
@@ -2704,23 +2829,25 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     fetchState.phase = '';
     fetchState.log = [];
     state.form.name = d.name;
+    state.form.birth = '';
     state.form.aids = suggestAids();
     state.form.transport = d.type === 'physical' ? 'special' : 'bus';
     applyProfile(d.type);
     go('card');
-    toast(d.source === 'upload'
-      ? '사진 인식 완료 · 시연용 예시 값 입력. ‘내용 수정’에서 확인.'
-      : '복지카드 인식 완료 · 내용 확인 후 다음 단계.');
+    toast(d.source === 'manual'
+      ? '입력한 정보로 조회합니다 · 내용은 4단계에서 다시 고칠 수 있어요.'
+      : '예시 인물로 진행합니다 · 4단계에서 이름·생년월일을 꼭 확인해 주세요.');
   }
 
-  function applyManual(type, severity) {
-    var nm = { physical: '김다온', brain: '김다온', visual: '김다온', hearing: '이하늘', developmental: '박다온', other: '김다온' }[type] || '김다온';
-    applyCard({ key: 'manual', name: nm, type: type, severity: severity, reg: '******-*******', issue: '—', org: '진주시', note: '', source: 'manual' });
+  function applyManual(type, severity, name) {
+    applyCard({ key: 'manual', name: String(name || '').trim() || '신청인', type: type, severity: severity,
+      reg: '******-*******', issue: '—', org: '진주시', note: '', source: 'manual' });
     go('jobs');
   }
 
   function defaultWorkType(sev, type) {
     if (type === 'visual') { return 'part'; }
+    if (type === 'mental') { return 'part'; }
     if (sev === 'severe') { return 'welfare'; }
     return 'part';
   }
@@ -2729,7 +2856,8 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if (type === 'physical' || type === 'brain') { s.add('wheelchair'); }
     if (type === 'visual') { s.add('vision'); }
     if (type === 'hearing') { s.add('communication'); }
-    if (type === 'developmental') { s.add('simple'); }
+    if (isDevType(type)) { s.add('simple'); }
+    if (type === 'mental') { s.add('flexible'); }
     return s;
   }
   function suggestAids() {
@@ -2737,8 +2865,10 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if (state.type === 'physical' || state.type === 'brain' || state.envs.has('wheelchair')) { out.push('wheel'); }
     if (state.severity === 'severe') { out.push('assist', 'device'); }
     if (state.type === 'hearing' || state.envs.has('communication')) { out.push('sign', 'manual'); }
+    if (isDevType(state.type)) { out.push('manual'); }
     if (state.envs.has('standing')) { out.push('desk', 'rest'); }
     if (state.type === 'visual' || state.envs.has('wheelchair')) { out.push('commute'); }
+    if (state.type === 'mental') { out.push('rest'); }
     var uniq = [];
     out.forEach(function (v) { if (uniq.indexOf(v) === -1) { uniq.push(v); } });
     return uniq;
@@ -2746,12 +2876,14 @@ body.a11y-big.easy .hero h1{line-height:1.4}
 
   /* 장애 유형에 맞춘 배려 — 화면·안내를 자동으로 맞춘다 */
   var PROFILE = {
-    physical: { msg: '지체장애 인식 · 큰 버튼 UI 적용. 화면당 주요 버튼 1개.', icon: '♿' },
-    brain: { msg: '뇌병변장애 인식 · 큰 버튼 UI 적용. 화면당 주요 버튼 1개.', icon: '🧠' },
-    visual: { msg: '시각장애 인식 · 큰 글씨·읽어주기 자동 활성.', icon: '👁️', big: true, voice: true },
-    hearing: { msg: '청각장애 인식 · 모든 안내 문자·큰 글씨 표시.', icon: '🤟' },
-    developmental: { msg: '발달장애 인식 · 쉬운 말 모드, 단계별 1개씩 표시.', icon: '🌱', easy: true },
-    other: { msg: '큰 버튼 UI 적용.', icon: '🙂' }
+    physical: { msg: '큰 글씨와 큰 버튼으로 보여 드리고, 접근성 안내를 함께 보여 드립니다.', icon: '♿' },
+    brain: { msg: '글씨와 버튼을 크게, 안내 문장은 짧게 보여 드립니다.', icon: '🧠' },
+    visual: { msg: '큰 글씨와 화면 읽어주기를 자동으로 켭니다.', icon: '👁️', big: true, voice: true },
+    hearing: { msg: '모든 안내를 글과 그림으로 함께 보여 드립니다.', icon: '🤟' },
+    intellectual: { msg: '쉬운 말 모드로 안내 문장을 짧고 쉽게 보여 드립니다.', icon: '🌱', easy: true },
+    autism: { msg: '쉬운 말 모드와 “다음에 할 일” 안내를 함께 보여 드립니다.', icon: '🧩', easy: true },
+    mental: { msg: '정신장애에 맞춰 근무 시간·업무 조정 안내를 함께 보여 드립니다.', icon: '💬' },
+    other: { msg: '버튼을 크게 보여 드립니다.', icon: '🙂' }
   };
   function applyProfile(type) {
     var p = PROFILE[type] || PROFILE.other;
@@ -2765,6 +2897,8 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       hint.hidden = false;
       hint.innerHTML = '<b style="display:block;font-size:16px;font-weight:900">' + (p.icon || '') + ' ' + esc(TYPE_LABEL[type] || '장애') + ' · 화면 자동 조정</b>' +
         '<p style="font-size:15px;color:var(--ink-soft);margin-top:4px;line-height:1.6">' + esc(p.msg) + '</p>' +
+        (state.card && state.card.source === 'sample'
+          ? '<p class="note" style="margin-top:8px">예시(가명) 인물 카드입니다. 내 정보와 다르면 ‘내용 수정’에서 이름·유형을 바꿔 주세요.</p>' : '') +
         (state.easy ? '<button class="btn small" type="button" data-act="easy-off" style="margin-top:8px">쉬운 말 모드 끄기</button>' : '');
     }
   }
@@ -2779,8 +2913,19 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     state.view = view;
     render();
     window.scrollTo(0, 0);
+    focusViewHeading(view);
     scheduleSave();
     if (a11y.voice) { setTimeout(function () { speak(screenSummaryText()); }, 420); }
+  }
+
+  /* 화면을 바꾸면 새 화면의 제목으로 포커스를 옮긴다(스크린리더가 화면을 알 수 있게). */
+  function focusViewHeading(view) {
+    var sec = document.getElementById('view-' + view);
+    if (!sec) { return; }
+    var h = sec.querySelector('h1, h2');
+    if (!h) { return; }
+    if (!h.hasAttribute('tabindex')) { h.setAttribute('tabindex', '-1'); }
+    try { h.focus({ preventScroll: true }); } catch (e) { try { h.focus(); } catch (e2) {} }
   }
 
   function render() {
@@ -2850,7 +2995,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       else { label = '기관 로그인 · ' + (st.total - st.done) + '장 수집'; noteTxt = '주민등록등본·장애인증명서 등'; }
     } else if (v === 'submit') {
       label = '신청서 제출';
-      noteTxt = '연락처 · 주소 · 계좌 입력';
+      noteTxt = '이름·생년월일·연락처·계좌 확인';
     } else if (v === 'done') {
       label = '처음부터 다시 하기';
     }
@@ -3034,7 +3179,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         return '<button class="chip" type="button" data-env="' + v + '" aria-pressed="' + (state.envs.has(v) ? 'true' : 'false') + '">' + esc(ENV_LABEL[v]) + '</button>';
       }).join('') + '</div>' +
       '<p class="note" style="margin-top:14px">선택 즉시 일자리·근무지 재조회.</p>' +
-      '<button class="btn block" type="button" data-act="rescan">복지카드 재인식</button>' +
+      '<button class="btn block" type="button" data-act="rescan">카드·정보 다시 고르기</button>' +
       '<div class="stickybtns"><button class="btn primary block" id="condGo" type="button">결과 보기</button></div>';
     openSheet('조건 바꾸기', '선택 즉시 재조회.', body);
     var go2 = $('#condGo');
@@ -3173,6 +3318,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   ];
 
   function openLogin(agency) {
+    if (!overlayOpen('login')) { overlayReturn.login = document.activeElement; }
     loginState.mode = agency === 'all' ? 'all' : 'one';
     loginState.agency = agency === 'all' ? '' : agency;
     var ag = AGENCY[loginState.agency] || null;
@@ -3180,7 +3326,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if (title) { title.textContent = loginState.mode === 'all' ? '일괄 인증' : (ag ? ag.name + ' 로그인' : '기관 로그인'); }
     if (sub) {
       sub.textContent = loginState.mode === 'all'
-        ? '1회 인증으로 전체 기관 서류 수집.'
+        ? '시연: 1회 인증으로 전체 기관 서류를 모읍니다 · 실제 서비스는 기관별 본인인증이 필요합니다.'
         : (ag ? ag.name + ' · ' + ag.desc + ' 서류 자동 수집.' : '');
     }
     var groups = agencyGroups();
@@ -3216,6 +3362,8 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if (ov) { ov.hidden = true; }
     setPageInert(false);
     document.body.style.overflow = '';
+    focusBack(overlayReturn.login);
+    overlayReturn.login = null;
   }
   function confirmLogin() {
     var keys = loginState.mode === 'all' ? Object.keys(agencyGroups()) : [loginState.agency];
@@ -3304,18 +3452,29 @@ body.a11y-big.easy .hero h1{line-height:1.4}
      ============================================================ */
   function renderSubmit() {
     var prog = progOf(state.selectedProgram);
+    if (!state.form.name && state.card && state.card.name) { state.form.name = state.card.name; }
+    var nm = $('#inName'), bt = $('#inBirth'), tr = $('#inTransport'), chips = $('#aidChips');
+    if (nm && document.activeElement !== nm) { nm.value = state.form.name || ''; }
+    if (bt && document.activeElement !== bt) { bt.value = state.form.birth || ''; }
+    if (chips) { chips.innerHTML = aidChipsHtml(); }
+    if (tr) {
+      var tv = state.form.transport || 'bus';
+      tr.innerHTML = TRANSPORTS.map(function (t) {
+        return '<option value="' + t.v + '"' + (tv === t.v ? ' selected' : '') + '>' + esc(t.label) + '</option>';
+      }).join('');
+    }
     var ad = $('#autoDesc');
     if (ad) {
       var parts = [state.form.name || '이름', TYPE_LABEL[state.type] || '장애 정보'];
       if (state.selectedWorkplace) { parts.push(state.selectedWorkplace); }
       var attachN = requiredFetchDocs().filter(function (d) { return state.fetched[d.id]; }).length;
-      ad.innerHTML = '복지카드·기관 서류 기반 자동 입력: <b>' + esc(parts.join(' · ')) + '</b>.' +
+      ad.innerHTML = '서류에서 채운 값: <b>' + esc(parts.join(' · ')) + '</b>.' +
         (attachN ? ' 가져온 서류 <b>' + attachN + '장</b> 첨부 완료.' : '') +
-        ' 아래 ' + (prog ? '3개 항목' : '') + ' 입력 시 신청서 완성.';
+        (prog ? ' 이름·생년월일을 확인하고 연락처·계좌까지 채우면 신청서가 완성됩니다.' : '');
     }
     var phone = $('#inPhone'), addr = $('#inAddr'), bank = $('#inBank'), acct = $('#inAcct'), mot = $('#inMotiv');
     if (phone && !phone.value) { phone.value = state.form.phone || ''; }
-    if (addr && !addr.value) { addr.value = state.form.addr || ''; }
+    if (addr && document.activeElement !== addr && !addr.value) { addr.value = state.form.addr || ''; }
     if (bank && !bank.value) { bank.value = state.form.bank || ''; }
     if (acct && !acct.value) { acct.value = state.form.account || ''; }
     if (mot && !mot.value) { mot.value = state.form.motivation || ''; }
@@ -3335,37 +3494,72 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     }
   }
 
+  function aidChipsHtml() {
+    var sel = state.form.aids || [];
+    return AIDS.map(function (a) {
+      return '<button class="chip" type="button" data-aid="' + a.v + '" aria-pressed="' +
+        (sel.indexOf(a.v) > -1 ? 'true' : 'false') + '">' + esc(a.label) + '</button>';
+    }).join('');
+  }
+
+  function clearFieldError(el) {
+    var field = el && el.closest ? el.closest('.field') : null;
+    if (!field) { return; }
+    field.classList.remove('bad');
+    Array.prototype.forEach.call(field.querySelectorAll('[aria-invalid]'), function (i) { i.removeAttribute('aria-invalid'); });
+    var err = field.querySelector('.err');
+    if (err) { err.hidden = true; }
+  }
+
   function validateForm() {
     var ok = true;
+    var name = ($('#inName') && $('#inName').value || '').trim();
+    var birth = ($('#inBirth') && $('#inBirth').value || '').replace(/[^0-9]/g, '');
     var phone = ($('#inPhone').value || '').replace(/[^\d]/g, '');
     var addr = ($('#inAddr').value || '').trim();
     var bank = ($('#inBank').value || '').trim();
     var acct = ($('#inAcct').value || '').replace(/[^\d-]/g, '');
-    function mark(id, err, bad) {
-      var f = $(id);
-      var e = $(err);
-      if (f) { f.classList.toggle('bad', bad); }
+    /* 오류를 화면 낭독기에 바로 전달한다: aria-invalid + role=alert + aria-describedby */
+    function mark(fid, eid, bad) {
+      var f = $(fid);
+      var e = $(eid);
+      if (f) {
+        f.classList.toggle('bad', bad);
+        Array.prototype.forEach.call(f.querySelectorAll('input,textarea,select'), function (el) {
+          if (bad) { el.setAttribute('aria-invalid', 'true'); } else { el.removeAttribute('aria-invalid'); }
+        });
+      }
       if (e) { e.hidden = !bad; }
       if (bad) { ok = false; }
     }
+    mark('#fName', '#eName', name.length < 1);
+    mark('#fBirth', '#eBirth', birth.length !== 8);
     mark('#fPhone', '#ePhone', phone.length < 9);
     mark('#fAddr', '#eAddr', addr.length < 2);
     mark('#fAcct', '#eAcct', bank.length < 1 || acct.length < 6);
     if (!ok) {
-      var first = $('.field.bad input, .field.bad textarea');
-      if (first) { first.focus(); }
+      var first = $('.field.bad input, .field.bad textarea, .field.bad select');
+      if (first) {
+        first.focus();
+        if (first.scrollIntoView) { try { first.scrollIntoView({ block: 'center' }); } catch (e) {} }
+      }
+      var badN = $$('.field.bad').length;
       toast('표시 항목 확인 필요');
+      announce('입력하지 않았거나 형식이 맞지 않는 항목이 ' + badN + '개 있습니다. 표시된 칸을 확인해 주세요.');
     }
     return ok;
   }
 
   function readForm() {
+    if ($('#inName')) { state.form.name = ($('#inName').value || '').trim(); }
+    if ($('#inBirth')) { state.form.birth = ($('#inBirth').value || '').trim(); }
+    if ($('#inTransport')) { state.form.transport = $('#inTransport').value || state.form.transport; }
     state.form.phone = ($('#inPhone').value || '').trim();
     state.form.addr = ($('#inAddr').value || '').trim();
     state.form.bank = ($('#inBank').value || '').trim();
     state.form.account = ($('#inAcct').value || '').trim();
     state.form.motivation = ($('#inMotiv').value || '').trim();
-    state.form.name = state.form.name || (state.card && state.card.name) || '김다온';
+    state.form.name = state.form.name || (state.card && state.card.name) || '';
     state.form.job1 = state.form.job1 || JOB_DEFAULT[state.selectedProgram] || '';
   }
 
@@ -3378,13 +3572,14 @@ body.a11y-big.easy .hero h1{line-height:1.4}
 
   function buildDraftText() {
     var t = state.type;
-    var who = state.form.name || '김다온';
     var wl = {
       physical: '몸이 조금 불편해도 앉아서 꾸준히 할 수 있는 일을 찾고 있어요.',
       brain: '천천히 배우면서 오래 할 수 있는 일을 찾고 있어요.',
       visual: '눈이 불편하지만 화면 읽기와 도움을 받으면 충분히 할 수 있어요.',
       hearing: '말소리 대신 글과 문자로 안내받으면 편하게 일할 수 있어요.',
-      developmental: '쉬운 말로 하나씩 알려 주시면 천천히 오래 할 수 있어요.',
+      intellectual: '쉬운 말로 하나씩 알려 주시면 천천히 오래 할 수 있어요.',
+      autism: '하는 일과 순서를 미리 알려 주시면 차분하게 오래 할 수 있어요.',
+      mental: '근무 시간과 업무량을 조절해 주시면 오래 일할 수 있어요.',
       other: '조금만 도움을 받으면 꾸준히 할 수 있어요.'
     }[t] || '꾸준히 할 수 있는 일을 찾고 있어요.';
     var job = JOB_DEFAULT[state.selectedProgram] || '사무보조';
@@ -3427,7 +3622,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   }
 
   function makeReceipt() {
-    var seed = (state.form.name || '김다온') + todayStr() + nowStamp();
+    var seed = (state.form.name || '신청인') + todayStr() + nowStamp();
     var h = 7;
     for (var i = 0; i < seed.length; i++) { h = (h * 31 + seed.charCodeAt(i)) % 99991; }
     var no = 'DAON-' + new Date().getFullYear() + '-' + String(1000 + (h * 7) % 9000);
@@ -3439,7 +3634,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       orgTel: ORG.tel,
       program: progOf(state.selectedProgram).name,
       workplace: state.selectedWorkplace || '협회에서 배정',
-      name: (state.form.name || '김다온') + ' (가명)'
+      name: state.form.name || '신청인'
     };
   }
 
@@ -3451,6 +3646,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if (box) {
       box.innerHTML = [
         ['접수처', r.org + ' <span class="org-meta">' + esc(r.orgAddr) + ' · ☎ ' + esc(r.orgTel) + '</span>'],
+        ['신청인', esc(r.name)],
         ['신청 사업', esc(r.program)],
         ['일할 곳', esc(r.workplace)],
         ['함께 낸 서류', '신청서 3장 포함 모두 ' + requiredDocs(docsFor(state.selectedProgram)).length + '장'],
@@ -3500,7 +3696,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   function printApp() {
     var d = findDocById('form1');
     if (!d) { toast('신청서 생성 필요'); return; }
-    printHtmlString(docFileFor(d, 1).content, '신청서_' + (state.form.name || '김다온'));
+    printHtmlString(docFileFor(d, 1).content, '신청서_' + (state.form.name || '신청인'));
   }
   function allDocs() {
     return requiredDocs(docsFor(state.selectedProgram));
@@ -3520,7 +3716,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
     a.href = url;
-    a.download = '다온_신청서_' + (state.form.name || '김다온') + '.zip';
+    a.download = '다온_신청서_' + (state.form.name || '신청인') + '.zip';
     a.rel = 'noopener';
     a.style.display = 'none';
     document.body.appendChild(a);
@@ -3535,7 +3731,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       '\n접수처: ' + ORG.name + '\n전화: ' + ORG.tel +
       '\n신청 사업: ' + progOf(state.selectedProgram).name +
       '\n일할 곳: ' + (state.selectedWorkplace || '협회 배정') +
-      '\n신청인: ' + (state.form.name || '김다온') + ' (가명)' +
+      '\n신청인: ' + (state.form.name || '신청인') + ' (가명)' +
       '\n연락처: ' + (state.form.phone || '') +
       '\n\n※ 실제 접수가 아닌 공모전 시연용 요약입니다.';
     var href = 'mailto:?subject=' + encodeURIComponent('[다온] 장애인일자리 참여신청 요약 ' + (r ? r.no : '')) + '&body=' + encodeURIComponent(body);
@@ -3557,10 +3753,10 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var p = [];
     if (v === 'card') {
       if (!state.card) {
-        return '안녕하세요, 다온입니다. 복지카드를 찍으면, 할 수 있는 일자리를 찾아 드리고 필요한 서류도 대신 모아 드려요. 화면의 복지카드 찍기 버튼을 눌러 주세요. 카드가 없으면 예시 카드로 해 볼 수 있어요.';
+        return '안녕하세요, 다온입니다. 복지카드를 찍으면, 할 수 있는 일자리를 찾아 드리고 필요한 서류도 대신 모아 드려요. 화면의 복지카드 찍기 버튼을 눌러 주세요. 카드가 없으면 내 정보 직접 입력이나 예시 인물로 해 볼 수 있어요.';
       }
-      return '복지카드를 읽었어요. ' + (TYPE_LABEL[state.card.type] || '') + ', ' + (SEVERITY_LABEL[state.card.severity] || '') +
-        '라고 적혀 있어요. 맞으면 아래 큰 버튼을 눌러 주세요.';
+      return '카드 정보 화면이에요. ' + (TYPE_LABEL[state.card.type] || '') + ', ' + (SEVERITY_LABEL[state.card.severity] || '') +
+        '로 적혀 있어요. 이름은 ' + state.card.name + '입니다. 본인 정보와 다르면 내용 수정을 눌러 주세요. 맞으면 아래 큰 버튼을 눌러 주세요.';
     }
     if (v === 'jobs') {
       var rows = analyze().filter(function (r) { return r.status !== '불가'; });
@@ -3579,7 +3775,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         '아래 큰 버튼을 누르면 다온이 기관에 직접 들어가 로그인하고, 서류를 받아 신청서에 붙여 드려요. 실제로는 본인이 직접 발급받아야 해요.';
     }
     if (v === 'submit') {
-      return '빠진 것만 적는 화면이에요. 연락처, 사는 곳, 급여 받을 계좌를 적고 아래 큰 버튼을 누르면 신청서를 내요. 하고 싶은 말은 AI가 초안을 써 줄 수 있어요.';
+      return '신청서 화면이에요. 먼저 이름·생년월일·사는 곳·필요 지원이 맞는지 확인하고, 틀리면 그 자리에서 고쳐 주세요. 이어서 연락처와 급여 받을 계좌를 적고 아래 큰 버튼을 누르면 신청서를 내요. 하고 싶은 말은 AI가 초안을 써 줄 수 있어요.';
     }
     if (v === 'done') {
       return '신청서를 냈어요. 접수 번호는 ' + (state.receipt ? state.receipt.no : '') + '입니다. 접수처는 ' + ORG.name + '이고, 전화는 ' + ORG.tel + '이에요. 실제로 기관에 보내진 것은 아닌 시연용 접수입니다.';
@@ -3621,16 +3817,19 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var raw = null;
     try { raw = JSON.parse(lsGet(STORE_KEY) || 'null'); } catch (e) { raw = null; }
     if (!raw || typeof raw !== 'object' || raw.v !== 4) { return false; }
-    if (raw.type) { state.type = raw.type; }
+    if (raw.type) { state.type = normalizeType(raw.type); }
     if (raw.severity) { state.severity = raw.severity; }
     if (raw.workType) { state.workType = raw.workType; }
     if (Array.isArray(raw.envs)) { state.envs = new Set(raw.envs); }
     state.card = raw.card || null;
+    if (state.card && state.card.type) { state.card.type = normalizeType(state.card.type); }
     state.selectedProgram = raw.selectedProgram || '';
     state.selectedWorkplace = raw.selectedWorkplace || '';
     state.checked = raw.checked && typeof raw.checked === 'object' ? raw.checked : {};
     state.fetched = raw.fetched && typeof raw.fetched === 'object' ? raw.fetched : {};
-    if (raw.form && typeof raw.form === 'object') { state.form = raw.form; }
+    if (raw.form && typeof raw.form === 'object') {
+      state.form = Object.assign({ name: '', birth: '', phone: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '' }, raw.form);
+    }
     state.receipt = raw.receipt || null;
     state.easy = !!raw.easy;
     document.body.classList.toggle('easy', state.easy);
@@ -3662,14 +3861,20 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       state.selectedWorkplace = '';
       state.checked = {};
       state.fetched = {};
-      state.form = { name: '', phone: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '' };
+      state.form = { name: '', birth: '', phone: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '' };
       state.receipt = null;
       state.easy = false;
       document.body.classList.remove('easy');
       clearSaved();
       var hint = $('#cardHint');
       if (hint) { hint.hidden = true; hint.innerHTML = ''; }
-      ['#inPhone', '#inAddr', '#inBank', '#inAcct', '#inMotiv'].forEach(function (sel) { var el = $(sel); if (el) { el.value = ''; } });
+      ['#inName', '#inBirth', '#inPhone', '#inAddr', '#inBank', '#inAcct', '#inMotiv'].forEach(function (sel) { var el = $(sel); if (el) { el.value = ''; } });
+      $$('.field.bad').forEach(function (f) {
+        f.classList.remove('bad');
+        Array.prototype.forEach.call(f.querySelectorAll('[aria-invalid]'), function (el) { el.removeAttribute('aria-invalid'); });
+        var err = f.querySelector('.err');
+        if (err) { err.hidden = true; }
+      });
       render();
       window.scrollTo(0, 0);
       toast('초기화 완료');
@@ -3681,10 +3886,13 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if (n) { n.addEventListener('click', closeSheet); }
   }
 
+  var overlayReturn = { sheet: null, login: null };
+
   /* ============================================================
      13. 시트 공통
      ============================================================ */
   function openSheet(title, sub, html) {
+    if (!overlayOpen('sheet')) { overlayReturn.sheet = document.activeElement; }
     var t = $('#sheetTitle'), s = $('#sheetSub'), b = $('#sheetBody');
     if (t) { t.textContent = title; }
     if (s) { s.textContent = sub || ''; s.hidden = !sub; }
@@ -3701,6 +3909,16 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if (ov) { ov.hidden = true; }
     setPageInert(false);
     document.body.style.overflow = '';
+    focusBack(overlayReturn.sheet);
+    overlayReturn.sheet = null;
+  }
+
+  /* 모달을 열었던 버튼으로 포커스를 돌려준다. */
+  function focusBack(el) {
+    if (!el || typeof el.focus !== 'function') { return; }
+    if (!document.documentElement.contains(el)) { return; }
+    if (el.closest && el.closest('[hidden]')) { return; }
+    try { el.focus({ preventScroll: false }); } catch (e) { try { el.focus(); } catch (e2) {} }
   }
   function closeAllOverlays() {
     [['#sheet'], ['#login'], ['#ocr'], ['#fileView'], ['#submitOv']].forEach(function (x) {
@@ -3728,11 +3946,8 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       toast('파일 12MB 초과 · 12MB 이하 이미지 사용');
       return;
     }
-    var d = {
-      key: 'upload', source: 'upload', name: CARD_SAMPLES.s1.name, type: CARD_SAMPLES.s1.type,
-      severity: CARD_SAMPLES.s1.severity, reg: '******-*******', issue: '—', org: '진주시', note: ''
-    };
-    openOcr(d);
+    /* 사진을 실제로 읽지 않는다. 예시값을 몰래 넣지 않고, 길을 사용자가 고르게 한다. */
+    openUploadNotice(file.name || '');
   }
 
   function selectProgram(pid) {
@@ -3745,11 +3960,18 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     fetchState.running = false;
     state.form.job1 = JOB_DEFAULT[pid] || '';
     render();
+    /* 목록을 다시 그리면 포커스가 사라진다 — 고른 항목으로 돌려준다. */
+    var radio = document.getElementById('job-' + pid);
+    if (radio) { focusBack(radio); }
     scheduleSave();
   }
   function selectWorkplace(name) {
     state.selectedWorkplace = name;
     render();
+    var list = $$('#workList input[name="work"]');
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].value === name) { focusBack(list[i]); break; }
+    }
     scheduleSave();
   }
 
@@ -3800,7 +4022,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var sampleBtn = $('#btnSamples');
     if (sampleBtn) { sampleBtn.addEventListener('click', openSamples); }
     var manualBtn = $('#btnManual');
-    if (manualBtn) { manualBtn.addEventListener('click', function () { manualSel = { type: state.type || '', severity: state.severity || '' }; openManual(); }); }
+    if (manualBtn) { manualBtn.addEventListener('click', function () { manualSel = { type: state.type || '', severity: state.severity || '', name: state.form.name || '' }; openManual(); }); }
     var fileEl = $('#cardFile');
     if (fileEl) {
       fileEl.addEventListener('change', function () {
@@ -3824,7 +4046,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var edit = $('#btnCardEdit');
     if (edit) {
       edit.addEventListener('click', function () {
-        manualSel = { type: state.type || '', severity: state.severity || '' };
+        manualSel = { type: state.type || '', severity: state.severity || '', name: state.form.name || '' };
         openManual();
       });
     }
@@ -3868,11 +4090,31 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         var key = map[t.id];
         if (!key) { return; }
         state.form[key] = t.value;
-        var field = t.closest('.field');
-        if (field) { field.classList.remove('bad'); var err = field.querySelector('.err'); if (err) { err.hidden = true; } }
+        clearFieldError(t);
         scheduleSave();
       });
       form.addEventListener('submit', function (e) { e.preventDefault(); submitAll(); });
+    }
+
+    /* 4단계 확인 카드 — 이름·생년월일·주소·이동 수단을 고치면 바로 저장·반영 */
+    var cc = $('#confirmCard');
+    if (cc) {
+      cc.addEventListener('input', function (e) {
+        var t = e.target;
+        if (!t || !t.id) { return; }
+        if (t.id === 'inName') { state.form.name = t.value; }
+        else if (t.id === 'inBirth') { state.form.birth = t.value; }
+        else if (t.id === 'inAddr') { state.form.addr = t.value; }
+        else { return; }
+        clearFieldError(t);
+        scheduleSave();
+      });
+      cc.addEventListener('change', function (e) {
+        var t = e.target;
+        if (!t) { return; }
+        if (t.id === 'inTransport') { state.form.transport = t.value; scheduleSave(); }
+        if (t.id === 'inAddr') { state.form.addr = t.value; clearFieldError(t); scheduleSave(); }
+      });
     }
 
     var jobList = $('#jobList');
@@ -3918,8 +4160,34 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       var sample = t.closest('[data-sample]');
       if (sample) {
         var key = sample.getAttribute('data-sample');
-        var s = CARD_SAMPLES[key];
-        if (s) { closeSheet(); openOcr(s); }
+        if (CARD_SAMPLES[key]) { openSampleConfirm(key); }
+        return;
+      }
+      var actEl = t.closest('[data-act]');
+      if (actEl) {
+        var act = actEl.getAttribute('data-act');
+        if (act === 'sample-go') {
+          var sKey = actEl.getAttribute('data-key');
+          closeSheet();
+          if (CARD_SAMPLES[sKey]) { openOcr(CARD_SAMPLES[sKey]); }
+          return;
+        }
+        if (act === 'sample-manual' || act === 'upload-manual') {
+          manualSel = { type: act === 'sample-manual' ? (state.type || '') : '', severity: act === 'sample-manual' ? (state.severity || '') : '', name: '' };
+          openManual();
+          return;
+        }
+        if (act === 'sample-back') { openSamples(); return; }
+        if (act === 'upload-sample') { openSamples(); return; }
+      }
+      var aidEl = t.closest('[data-aid]');
+      if (aidEl) {
+        var aidV = aidEl.getAttribute('data-aid');
+        var aidList = state.form.aids || (state.form.aids = []);
+        var wasOn = aidList.indexOf(aidV) > -1;
+        if (wasOn) { aidList.splice(aidList.indexOf(aidV), 1); } else { aidList.push(aidV); }
+        aidEl.setAttribute('aria-pressed', wasOn ? 'false' : 'true');
+        scheduleSave();
         return;
       }
       var msev = t.closest('[data-man-sev]');
