@@ -1107,6 +1107,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       <h2 class="sec" style="font-size:18px">5. 공식 서식 3종</h2>
       <div class="card">
         <p class="note" style="margin-top:0">원본과 같은 구조로 만든 <b>필수 서식 3종</b>입니다. 탭을 눌러 확인하고, 인쇄하면 A4 4쪽(서식1·서식2·서식3)으로 나옵니다.</p>
+        <p class="note" id="formProgNote" hidden></p>
         <div class="formtabs" id="formTabs" role="tablist" aria-label="공식 서식 고르기"></div>
         <div class="formpane" id="formPane" role="tabpanel" tabindex="0">
           <iframe id="formPreviewFrame" class="formframe" title="공식 서식 미리보기"></iframe>
@@ -4107,6 +4108,17 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       }).join('');
     }
     /* 자격 판정 · 서명 · 서식 3종 미리보기 */
+    var pn = $('#formProgNote');
+    if (pn) {
+      var pidN = state.selectedProgram;
+      var inOfficial = pidN === 'general_full' || pidN === 'general_part' || pidN === 'welfare' || pidN === 'edu_link';
+      if (pidN && !inOfficial) {
+        pn.hidden = false;
+        pn.innerHTML = '고른 사업은 <b>특화형·표준사업장·재택 직무</b>입니다. 공식 서식1의 신청분야 칸은 일반형·복지일자리만 있어 <b>비워 두고</b> 희망직무 ①에 적습니다. 지자체가 특화형 서식을 따로 받는 경우에는 그 서식을 함께 냅니다.';
+      } else {
+        pn.hidden = true;
+      }
+    }
     var em = $('#inEmail');
     if (em && document.activeElement !== em) { em.value = state.form.email || ''; }
     renderEligResult();
