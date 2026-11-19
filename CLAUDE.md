@@ -118,6 +118,9 @@ proxy/        # 실제 기관 조회용 백엔드 프록시 (Pages와 별개로 
 14. **큰 글씨·음성 안내 기준** — 큰 글씨 모드는 본문 20px 이상·버튼 64px 이상, 375px에서 가로 스크롤이 없어야 한다. 음성 대본은 민원인 응대용 구어체로 쓰고 화면 이름을 함께 말한다. 음성은 한국어 우선순위(SunHi→Yuna→Sora→Heami→Google 한국의)로 고르며, 속도는 **기본 `rate 0.82`(천천히)**, `0.93`(보통)으로 바꿀 수 있다. `pitch 1.04` 유지. 속도 상수는 `TTS_RATE_SLOW`/`TTS_RATE_NORMAL` 한 곳에서만 관리한다.
 15. **localStorage 키 고정** — 접근성 설정 `daon.a11y.v1`(`big`·`contrast`·`voice`·`rate`), 자동 임시저장 `daon.state.v1`(내부 스키마 `v: 4`), 프록시 설정 `daon.codef.v1`(`url`·`token`). 저장값은 브라우저 밖으로 나가지 않으며 `resetAll`에서 앞의 둘을 비운다. 실제 조회값(`state.real`)은 저장하지 않는다(메모리에만). 스키마를 바꾸면 `v`를 올리고 `restoreSaved`에서 검증한다.
 16. **음성 안내** — 외부 TTS 라이브러리를 넣지 않고 `window.speechSynthesis`만 사용한다. 한국어 음성이 없는 기기에서는 음성 안내를 켜지 않고 `NO_KO_VOICE_MSG`로 안내한다.
+16-B. **낭독은 한 곳에서** — 화면 낭독 안내는 `#a11yStatus` 라이브 리전 한 곳만 쓴다. `toast()`는 보이는 안내만 담당하고(80ms 뒤 announce로 넘김), `announce()`가 바로 오면 같은 말을 두 번 읽지 않는다. `#toast`에 `role=status`를 다시 붙이지 않는다.
+16-C. **하단 고정 버튼과 시트 여백** — 시트 안 `.stickybtns`는 화면 아래에 붙어 마지막 내용을 가릴 수 있다. 내용을 바꾼 뒤 `fitSheetFoot(오버레이)`를 불러, 내용이 넘칠 때만 시트에 아래 여백(`.hasfoot`)을 준다. 새 시트를 만들면 같은 처리를 넣는다.
+16-D. **실제/시연 로그 분리** — `fetchDocs`(시연)는 시작할 때 `fetchState.log`를 비우고, 실제 조회를 중단하면 `closeLogin`이 `⏹ 중단` 항목을 남긴다. 한 로그에 실제·시연 기록이 섮이면 안 된다.
 17. **단계 표시와 화면 이동** — 화면 이동은 항상 `go(view)`를 거쳐 `state.view`·화면 표시·단계 표시·하단 버튼을 함께 맞춘다. 화면을 직접 감추지 않는다. `go()`는 새 화면 제목(`h1`/`h2`)으로 포커스를 옮기고, 목록을 다시 그리는 함수는 재렌더 뒤 선택한 라디오로 포커스를 돌려준다(`focusBack`). 모달은 `overlayReturn`으로 열었던 버튼에 포커스를 돌린다.
 18. **입력 오류 연결** — 필수 입력은 `required`(aria-required)·`aria-describedby`(오류 span)·`aria-invalid`·오류 문구 `role="alert"`를 함께 쓴다. `validateForm`은 필드 안 모든 입력의 `aria-invalid`를 같이 맞춘다. 새 입력칸을 추가하면 label·오류 문구·연결을 같은 커밋에 넣는다.
 19. **4단계 확인 카드** — `#view-submit` 맨 위 `#confirmCard`에서 이름·생년월일·주소·필요 지원·이동 수단을 확인·수정하게 하고, 값은 `state.form`에 저장되어 `form1Doc`~`form3Doc`·인쇄·ZIP·접수증·미리보기에 그대로 들어간다. 이름·생년월일을 가짜로 만들지 않는다(`birthText()`는 입력값만 쓰고 비어 있으면 `—`).

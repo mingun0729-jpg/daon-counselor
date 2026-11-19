@@ -6011,13 +6011,14 @@ body.easy .twbox p{font-size:16px}
     }
     /* ⑧ 특수교육-복지연계형은 전공과 재학생 전용 — 신청 자격에서 받은 답으로 판단 */
     var specOn = e.spec === '재학';
-    add('spec', '특수교육 전공과 재학', specOn ? '재학' : '아니오', specOn ? '가능' : '정보',
+    add('spec', '특수교육 전공과 재학', specOn ? '재학' : '아니오', specOn ? '가능' : '참고',
       specOn ? '특수교육-복지연계형(edu_link) 신청 대상입니다.' : '특수교육-복지연계형은 전공과 재학생만 신청하는 사업입니다.');
     return { level: level, rows: rows };
   }
   function eligBadge(lvl) {
     if (lvl === '제한') { return '<span class="badge bad">신청 제한</span>'; }
     if (lvl === '확인') { return '<span class="badge check">확인 필요</span>'; }
+    if (lvl === '참고') { return '<span class="badge no" style="background:var(--surface-2);color:var(--ink-soft)">참고</span>'; }
     if (lvl === '정보') { return '<span class="badge no">입력 전</span>'; }
     return '<span class="badge ok">신청 가능</span>';
   }
@@ -6168,6 +6169,7 @@ body.easy .twbox p{font-size:16px}
     if (hint) { hint.hidden = s.mode === 'draw'; }
     var clearBtn = $('#btnSigErase');
     if (clearBtn) { clearBtn.hidden = !s.mode; }
+    renderDock();
   }
   function sigClear() {
     state.signature = { mode: '', data: '', name: '', at: '' };
