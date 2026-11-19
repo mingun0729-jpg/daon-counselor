@@ -2705,7 +2705,7 @@ body.easy .foot-note{font-size:13.5px}
     var dock = $('.dock'), cta = $('#ctaMain'), sub = $('#ctaSub'), note = $('#dockNote');
     var v = state.view;
     var label = '', subLabel = '', noteTxt = '', disabled = false;
-    if (v === 'card' && !state.card) {
+    if ((v === 'card' && !state.card) || v === 'done') {
       if (dock) { dock.hidden = true; }
       return;
     }
@@ -3311,7 +3311,7 @@ body.easy .foot-note{font-size:13.5px}
         ['접수처', r.org + '<br><span style="color:var(--ink-mute);font-size:13px">' + esc(r.orgAddr) + ' · ☎ ' + esc(r.orgTel) + '</span>'],
         ['신청한 일', esc(r.program)],
         ['일할 곳', esc(r.workplace)],
-        ['함께 낸 서류', '신청서 3장 + 붙인 서류 ' + requiredDocs(docsFor(state.selectedProgram)).length + '장'],
+        ['함께 낸 서류', '신청서 3장 포함 모두 ' + requiredDocs(docsFor(state.selectedProgram)).length + '장'],
         ['접수 일시', esc(r.at)],
         ['상태', '<b style="color:var(--grass)">접수 완료 (시연)</b>']
       ].map(function (row) {
