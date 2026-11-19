@@ -245,7 +245,7 @@ h2.sec .cnt{font-size:15px; font-weight:800; color:var(--grass); background:var(
 .job[data-state="picked"] .tick{background:var(--btn); border-color:var(--btn); color:#fff}
 .job input:focus-visible + label.jbody{outline:3px solid #0E6B39; outline-offset:-3px}
 .job .jbody{display:block}
-.job .top{display:flex}
+.job .top{display:flex; padding-right:30px}
 .job .name,.job .pay,.job .meta,.job .why{display:block}
 .job .pay small{font-weight:700}
 .badge{
@@ -571,6 +571,23 @@ body.easy .foot-note{font-size:13.5px}
   body>*:not(#printArea){display:none !important}
   #printArea{display:block !important}
   #printArea .sheet{box-shadow:none !important}
+}
+@media (max-width:430px){
+  .a11ybar{gap:6px; padding:8px 12px}
+  .abtn{min-height:46px; padding:0 10px; font-size:14px; gap:5px}
+  .abtn .ico{font-size:17px}
+  .rate{padding:2px}
+  .rate button{min-height:38px; padding:0 9px; font-size:13.5px}
+  .stopbtn{min-height:46px; padding:0 12px; font-size:14px}
+  .hdr{padding:10px 12px 8px}
+  .brand .avatar{width:42px;height:42px;min-width:42px}
+  .brand b{font-size:19px}
+  .brand small{font-size:12px}
+  .linkbtn{padding:0 10px; font-size:13px; min-height:42px}
+  main{padding:12px 12px calc(var(--dock-h) + 24px)}
+  .stp b{font-size:12px}
+  .dock{padding:8px 12px calc(10px + env(safe-area-inset-bottom))}
+  .dock .cta{min-height:58px; font-size:18px; border-radius:16px}
 }
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important}
@@ -2916,6 +2933,9 @@ body.easy .foot-note{font-size:13.5px}
      ============================================================ */
   var fetchState = { running: false, agency: null, phase: '', queue: [], idx: 0, log: [] };
 
+  function shortDocName(n) {
+    return String(n == null ? '' : n).replace(/\([^)]*\)/g, '').replace(/\s{2,}/g, ' ').trim();
+  }
   function phaseLabel(phase) {
     if (phase === 'connect') { return '접속 중…'; }
     if (phase === 'login') { return '로그인 완료'; }
@@ -2977,7 +2997,11 @@ body.easy .foot-note{font-size:13.5px}
       t.textContent = !st.total ? '서류 준비를 도와드릴게요'
         : (st.done >= st.total ? '서류 ' + st.total + '장을 다 모았어요' : '서류 ' + st.total + '장을 모아 드릴게요');
     }
-    if (lead) { lead.textContent = prog.name + ' 신청에 필요한 서류예요. 기관에 들어가서 대신 가져와요.'; }
+    if (lead) {
+      lead.textContent = (st.total && st.done >= st.total)
+        ? prog.name + ' 신청에 필요한 서류예요. 기관에서 받아 신청서에 붙여 두었어요.'
+        : prog.name + ' 신청에 필요한 서류예요. 기관에 들어가서 대신 가져와요.';
+    }
     var txt = $('#docProgTxt'), pct = $('#docProgPct'), bar = $('#docBar');
     if (txt) { txt.textContent = st.done + '장 / ' + st.total + '장'; }
     if (pct) { pct.textContent = (st.total ? Math.round(st.done / st.total * 100) : 100) + '%'; }
@@ -2995,7 +3019,7 @@ body.easy .foot-note{font-size:13.5px}
         html += '<div class="agency' + (done === docs.length ? ' done' : '') + '" data-ag="' + esc(key) + '">' +
           '<span class="agico ' + esc(ag.cls) + '" aria-hidden="true">' + esc(ag.short || ag.name) + '</span>' +
           '<div class="agmain"><b>' + esc(ag.name) + '</b>' +
-          '<span class="sub">' + docs.map(function (d) { return esc(d.name.replace(/\s*\(.*?\)\s*/g, '')); }).join(' · ') + ' (' + docs.length + '장)</span></div>' +
+          '<span class="sub">' + docs.map(function (d) { return esc(shortDocName(d.name)); }).join(' · ') + ' (' + docs.length + '장)</span></div>' +
           (done === docs.length
             ? '<span class="status">가져왔어요 ✓</span>'
             : running
@@ -3007,7 +3031,7 @@ body.easy .foot-note{font-size:13.5px}
       if (ad.length) {
         html += '<div class="agency done">' +
           '<span class="agico assoc" aria-hidden="true">AI</span>' +
-          '<div class="agmain"><b>협회 서식</b><span class="sub">' + ad.map(function (d) { return esc(d.name.replace(/\s*\(.*?\)\s*/g, '')); }).join(' · ') + ' — 다온이 대신 써요</span></div>' +
+          '<div class="agmain"><b>협회 서식</b><span class="sub">' + ad.map(function (d) { return esc(shortDocName(d.name)); }).join(' · ') + ' — 다온이 대신 써요</span></div>' +
           '<span class="status">준비됨 ✓</span></div>';
       }
       al.innerHTML = html;
@@ -3136,10 +3160,10 @@ body.easy .foot-note{font-size:13.5px}
         wait = 760;
         state.fetched[step.doc.id] = { at: nowStamp(), agency: agentMeta(step.doc).agency };
         state.checked[state.selectedProgram + ':' + step.doc.id] = true;
-        pushLog('📄', step.doc.name.replace(/\s*\(.*?\)\s*/g, '') + ' 서류를 받았어요', 'ok');
+        pushLog('📄', shortDocName(step.doc.name) + ' 받았어요', 'ok');
       } else if (step.t === 'attach') {
         wait = 380;
-        pushLog('📎', step.doc.name.replace(/\s*\(.*?\)\s*/g, '') + ' — 신청서에 붙였어요', 'ok');
+        pushLog('📎', shortDocName(step.doc.name) + ' — 신청서에 붙였어요', 'ok');
       }
       render();
       scheduleSave();
