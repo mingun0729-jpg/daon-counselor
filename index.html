@@ -1222,7 +1222,8 @@ body.easy .foot-note{font-size:13.5px}
   function setPageInert(on) {
     Array.prototype.forEach.call(document.body.children, function (el) {
       if (!el || el.tagName === 'SCRIPT' || el.tagName === 'NOSCRIPT') { return; }
-      if (el.id && /^(ocr|login|fileView|printArea|submitOv|toast|a11yStatus)$/.test(el.id)) { return; }
+      if (el.classList && el.classList.contains('ov')) { return; }
+      if (el.id && /^(ocr|login|fileView|printArea|submitOv|toast|a11yStatus|sheet)$/.test(el.id)) { return; }
       if (on) { el.setAttribute('inert', ''); } else { el.removeAttribute('inert'); }
     });
   }
