@@ -3583,11 +3583,11 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var first = name.charAt(0);
     if (K_SURNAME.indexOf(first) !== -1) { return name; }
     var a = korParts(first);
-    if (!a || a.jong !== 0) { return name; }
+    if (!a) { return name; }
     var found = '';
     for (var i = 0; i < K_SURNAME.length; i++) {
       var b = korParts(K_SURNAME[i]);
-      if (!b || b.jong !== 0) { continue; }
+      if (!b || b.jong !== a.jong) { continue; }
       if (CHO_GROUP[CHO_LIST[b.cho]] !== CHO_GROUP[CHO_LIST[a.cho]]) { continue; }
       var vowelNear = (a.jung === b.jung) ||
         (a.jung >= 1 && a.jung <= 5 && b.jung >= 1 && b.jung <= 5) ||
@@ -3691,11 +3691,11 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if (org) { out.push({ field: 'org', value: org, strength: orgRest ? 3 : 2 }); }
     var validRest = ocrRestOf(lines, /유효\s*기간/);
     if (validRest) {
-      var d1 = ocrDateOf(validRest), d2 = '';
-      var cut = validRest.search(/[~\-–—]/);
-      if (cut > -1) { d2 = ocrDateOf(validRest.slice(cut + 1)); }
-      var vv = d1 ? (d1 + (d2 ? ' ~ ' + d2 : '')) : validRest.slice(0, 24);
-      out.push({ field: 'valid', value: vv, strength: 2 });
+      var vdates = validRest.match(/((?:19|20)\d{2})\s*[.\-\/년]\s*(\d{1,2})\s*[.\-\/월]\s*(\d{1,2})/g) || [];
+      var vv = vdates.length
+        ? vdates.slice(0, 2).map(ocrDateOf).filter(function (v) { return !!v; }).join(' ~ ')
+        : validRest.slice(0, 24);
+      if (vv) { out.push({ field: 'valid', value: vv, strength: 2 }); }
     }
     if (!rrn) {
       var birthRest = ocrRestOf(lines, /생년\s*월\s*일/);
