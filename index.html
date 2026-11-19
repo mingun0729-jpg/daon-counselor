@@ -539,6 +539,20 @@ details.box .inner{padding:0 16px 16px; font-size:15px; color:var(--ink-soft); l
 .ocrstep b{font-size:14.5px; font-weight:800; display:block; line-height:1.4}
 .ocrstep span{font-size:12.5px; color:var(--ink-mute); display:block; line-height:1.45}
 
+/* ---------- 사진 판독 진행 ---------- */
+.ocrstage .ocrpreview{display:block; width:100%; height:auto; border-radius:10px}
+.ocrprog{margin:2px 0 8px}
+.ocrbar{height:12px; border-radius:99px; background:var(--surface-2); border:1px solid var(--line-strong); overflow:hidden}
+.ocrbar span{display:block; height:100%; width:0; border-radius:99px; background:linear-gradient(90deg,var(--grass),#7BE3A5); transition:width .25s ease}
+.ocrpct{font-size:14.5px; font-weight:900; color:var(--ink); margin:10px 0 12px; line-height:1.5}
+.ocrtag{display:inline-block; font-size:11.5px; font-weight:900; padding:2px 8px; border-radius:99px; margin-left:6px; vertical-align:2px; white-space:nowrap}
+.ocrtag.high{background:var(--grass-soft); color:var(--ink); border:1px solid var(--grass-line)}
+.ocrtag.mid{background:var(--amber-soft); color:var(--ink); border:1px solid var(--amber-line)}
+.ocrtag.low{background:var(--red-soft); color:var(--ink); border:1px solid var(--red-line)}
+.ocrraw{margin:8px 0 12px; border:1px solid var(--line); border-radius:12px; padding:8px 12px; background:var(--surface-2)}
+.ocrraw summary{font-size:13.5px; font-weight:800; color:var(--ink-soft); cursor:pointer; min-height:28px}
+.ocrraw pre{margin:8px 0 0; font-size:12.5px; line-height:1.55; white-space:pre-wrap; word-break:break-all; color:var(--ink-soft); max-height:190px; overflow:auto; font-family:ui-monospace,Menlo,Consolas,monospace}
+
 /* ---------- 파일 미리보기 ---------- */
 #fileView{align-items:stretch; padding:0}
 .fvwrap{width:100%; max-width:860px; margin:0 auto; background:var(--bg); display:flex; flex-direction:column; height:100vh; height:100dvh}
@@ -869,7 +883,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
           <button class="btn block" id="btnSamples" type="button"><span aria-hidden="true">🗂️</span> 예시 인물로 해 보기</button>
           <button class="btn block" id="btnManual" type="button">내 정보 직접 입력</button>
         </div>
-        <p class="micro" style="text-align:center; margin-top:12px">사진은 이 브라우저 안에서만 처리하고 서버로 보내지 않아요 · 이 시연판은 사진 글자를 <b>자동으로 판독하지 않습니다</b> · 올린 사진은 서류 묶음(ZIP)에 원본 그대로 첨부됩니다</p>
+        <p class="micro" style="text-align:center; margin-top:12px">사진은 이 브라우저 안에서만 처리하고 서버로 보내지 않아요 · 카드 사진에서 글자를 <b>자동으로 읽어</b> 이름·장애유형·등록일을 채웁니다 · 올린 사진은 서류 묶음(ZIP)에 원본 그대로 첨부됩니다</p>
         <input type="file" id="cardFile" accept="image/*" hidden>
       </div>
 
@@ -1174,7 +1188,12 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       <span class="ocrline" aria-hidden="true"></span>
     </div>
     <div class="ocrsteps" id="ocrSteps"></div>
-    <p class="micro">※ 시연용 예시 값 · 입력한 내용은 이 브라우저에만 저장됩니다.</p>
+    <div class="ocrprog" id="ocrProgress" hidden>
+      <div class="ocrbar" id="ocrBar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-labelledby="ocrPct"><span id="ocrBarFill"></span></div>
+      <p class="ocrpct" id="ocrPct" role="status" aria-live="polite">복지카드 글자를 읽고 있어요… 0%</p>
+      <button class="btn ghost block" type="button" data-act="ocr-cancel">그만 읽고 직접 입력하기</button>
+    </div>
+    <p class="micro" id="ocrFoot">※ 시연용 예시 값 · 입력한 내용은 이 브라우저에만 저장됩니다.</p>
   </div>
 </div>
 
@@ -3164,17 +3183,652 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     openSheet('예시 인물 확인', '이 정보로 진행할지 확인해 주세요.', body);
   }
 
-  /* 사진을 올렸을 때 — 이 시연판은 글자를 판독하지 않는다고 먼저 알리고 길을 고르게 한다. */
-  function openUploadNotice(fileName) {
-    var body = '<div class="note" role="note" style="margin-bottom:14px"><b>사진에서 글자를 자동으로 판독하지 않았습니다.</b><br>' +
-      '이 시연판은 브라우저 안에서 글자를 읽는 OCR을 넣지 않았습니다. 사진은 서버로 보내지 않고, 이 브라우저 안에서만 처리됩니다. 올린 사진 원본 1장은 서류 묶음(ZIP)에 그대로 첨부됩니다.' +
-      (fileName ? '<br><span style="color:var(--ink-mute)">고른 파일: ' + esc(fileName) + '</span>' : '') + '</div>' +
-      '<p class="lead" style="margin-bottom:12px">아래 두 가지 중에서 골라 주세요.</p>' +
-      '<div class="btnrow">' +
-      '<button class="btn primary block" type="button" data-act="upload-manual">내 정보 직접 입력</button>' +
-      '<button class="btn block" type="button" data-act="upload-sample">예시 인물로 계속</button>' +
+  /* ============================================================
+     5-B. 복지카드 OCR — 이 브라우저 안에서 사진 글자를 실제로 읽는다
+     · Tesseract.js(한국어+영어)를 필요할 때 한 번만 내려받아 재사용한다.
+     · 사진(픽셀)은 어디로도 전송되지 않는다. 내려받는 것은 글자 읽기 엔진뿐이다.
+     ============================================================ */
+  var OCR_LIB_URL = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js';
+  var OCR_LANG = 'kor+eng';
+  var OCR_TARGET_W = 2200;          /* 판독용으로 키울 가로 폭 */
+  var OCR_MAX_PIXELS = 9e6;         /* 메모리 상한 */
+  var ocrEngine = { lib: null, worker: null, workerP: null, running: false, passPhase: [40, 68], lastStatus: '' };
+  var ocrRunId = 0;
+  var ocrDraft = null;
+  var ocrPreviewUrl = null;
+  var OCR_STEPS_REAL = [
+    { t: '인식 엔진 준비', d: '브라우저에서 쓰는 글자 읽기 엔진(처음 한 번만 내려받기)' },
+    { t: '사진에서 글자 찾기', d: '이름·주민등록번호·장애유형·등록일·발급기관' },
+    { t: '항목 정리', d: '읽은 값을 확인 화면의 빈칸에 채우기' }
+  ];
+
+  function ocrStepTo(n) {
+    $$('#ocrSteps .ocrstep').forEach(function (el, i) { el.classList.toggle('on', i <= n); });
+  }
+
+  function setOcrPct(pct, label) {
+    var v = Math.max(0, Math.min(100, Math.round(pct)));
+    var fill = $('#ocrBarFill'), bar = $('#ocrBar'), txt = $('#ocrPct');
+    if (fill) { fill.style.width = v + '%'; }
+    if (bar) { bar.setAttribute('aria-valuenow', String(v)); }
+    if (txt) { txt.textContent = (label || '복지카드 글자를 읽고 있어요…') + ' ' + v + '%'; }
+  }
+
+  function ocrHandleLog(m) {
+    if (!ocrEngine.running) { return; }
+    var st = String((m && m.status) || '');
+    var pr = (m && typeof m.progress === 'number') ? m.progress : 0;
+    if (/recognizing/i.test(st)) {
+      var ph = ocrEngine.passPhase || [40, 68];
+      setOcrPct(ph[0] + pr * (ph[1] - ph[0]), '복지카드 글자를 읽고 있어요…');
+      return;
+    }
+    if (/loading|initializing/i.test(st)) {
+      ocrEngine.lastStatus = st;
+      setOcrPct(3 + pr * 37, '인식 엔진을 준비하고 있어요…');
+    }
+  }
+
+  function ensureOcrLib() {
+    if (window.Tesseract) { return Promise.resolve(window.Tesseract); }
+    if (ocrEngine.lib) { return ocrEngine.lib; }
+    ocrEngine.lib = new Promise(function (resolve, reject) {
+      var s = document.createElement('script');
+      var done = false;
+      var timer = setTimeout(function () {
+        if (done) { return; }
+        done = true;
+        reject(new Error('cdn-timeout'));
+      }, 25000);
+      s.src = OCR_LIB_URL;
+      s.async = true;
+      s.onload = function () {
+        if (done) { return; }
+        done = true; clearTimeout(timer);
+        if (window.Tesseract) { resolve(window.Tesseract); } else { reject(new Error('no-lib')); }
+      };
+      s.onerror = function () {
+        if (done) { return; }
+        done = true; clearTimeout(timer);
+        reject(new Error('cdn-blocked'));
+      };
+      document.head.appendChild(s);
+    }).catch(function (e) {
+      ocrEngine.lib = null;   /* 다음 시도에서 다시 받아 본다 */
+      throw e;
+    });
+    return ocrEngine.lib;
+  }
+
+  function ensureOcrWorker() {
+    if (ocrEngine.worker) { return Promise.resolve(ocrEngine.worker); }
+    if (ocrEngine.workerP) { return ocrEngine.workerP; }
+    ocrEngine.workerP = ensureOcrLib().then(function (T) {
+      return T.createWorker(OCR_LANG, 1, {
+        logger: function (m) { ocrHandleLog(m); },
+        errorHandler: function () {}
+      });
+    }).then(function (w) {
+      ocrEngine.worker = w;
+      ocrEngine.workerP = null;
+      return w;
+    }).catch(function (e) {
+      ocrEngine.workerP = null;
+      ocrEngine.lib = null;
+      throw e;
+    });
+    return ocrEngine.workerP;
+  }
+
+  function loadImageFile(file) {
+    return new Promise(function (resolve, reject) {
+      var url = URL.createObjectURL(file);
+      var img = new Image();
+      img.onload = function () { resolve({ img: img, url: url }); };
+      img.onerror = function () { URL.revokeObjectURL(url); reject(new Error('image-decode')); };
+      img.src = url;
+    });
+  }
+
+  /* 판독용 캔버스 — 크기 맞추기 → 그레이스케일 → 대비 늘리기 → (이진화 또는 선명하게) */
+  function ocrPrepCanvas(img, mode) {
+    var w0 = img.naturalWidth || img.width || 1;
+    var h0 = img.naturalHeight || img.height || 1;
+    var scale = Math.min(3, Math.max(0.35, OCR_TARGET_W / w0));
+    var w = Math.max(1, Math.round(w0 * scale));
+    var h = Math.max(1, Math.round(h0 * scale));
+    if (w * h > OCR_MAX_PIXELS) {
+      var k = Math.sqrt(OCR_MAX_PIXELS / (w * h));
+      w = Math.max(1, Math.round(w * k));
+      h = Math.max(1, Math.round(h * k));
+    }
+    var c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    var ctx = c.getContext('2d');
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    ctx.drawImage(img, 0, 0, w, h);
+    var d = ctx.getImageData(0, 0, w, h);
+    var p = d.data, i, n = p.length;
+    /* 그레이스케일 */
+    for (i = 0; i < n; i += 4) {
+      var g = 0.299 * p[i] + 0.587 * p[i + 1] + 0.114 * p[i + 2];
+      p[i] = p[i + 1] = p[i + 2] = g;
+    }
+    /* 대비 늘리기(2%·98% 지점 기준) — 사진이 어둡거나 노랗게 찍혀도 글자가 살아난다 */
+    var hist = new Uint32Array(256), px = n / 4, v, acc, lo = 0, hi = 255;
+    for (i = 0; i < n; i += 4) { hist[p[i]]++; }
+    acc = 0;
+    for (v = 0; v < 256; v++) { acc += hist[v]; if (acc >= px * 0.02) { lo = v; break; } }
+    acc = 0;
+    for (v = 255; v >= 0; v--) { acc += hist[v]; if (acc >= px * 0.02) { hi = v; break; } }
+    var span = Math.max(1, hi - lo);
+    for (i = 0; i < n; i += 4) {
+      v = (p[i] - lo) * 255 / span;
+      p[i] = p[i + 1] = p[i + 2] = v < 0 ? 0 : (v > 255 ? 255 : v);
+    }
+    if (mode === 'bin') {
+      /* 오츠(Otsu) 이진화 — 숫자·이름처럼 또렷한 글자에 강하다 */
+      var h2 = new Uint32Array(256);
+      for (i = 0; i < n; i += 4) { h2[p[i] | 0]++; }
+      var sum = 0;
+      for (v = 0; v < 256; v++) { sum += v * h2[v]; }
+      var sumB = 0, wB = 0, best = 0, thr = 127;
+      for (v = 0; v < 256; v++) {
+        wB += h2[v];
+        if (!wB) { continue; }
+        var wF = px - wB;
+        if (!wF) { break; }
+        sumB += v * h2[v];
+        var mB = sumB / wB, mF = (sum - sumB) / wF, between = wB * wF * (mB - mF) * (mB - mF);
+        if (between > best) { best = between; thr = v; }
+      }
+      for (i = 0; i < n; i += 4) {
+        v = p[i] > thr ? 255 : 0;
+        p[i] = p[i + 1] = p[i + 2] = v;
+      }
+    } else {
+      /* 살짝 선명하게 — 테두리가 흐린 사진에서 글자 경계를 세운다 */
+      var src = new Uint8ClampedArray(n);
+      src.set(p);
+      var x, y, idx, s2, acc2, ky, kx;
+      for (y = 0; y < h; y++) {
+        for (x = 0; x < w; x++) {
+          idx = (y * w + x) * 4;
+          s2 = 5 * src[idx];
+          acc2 = s2;
+          acc2 -= src[idx - (x > 0 ? 4 : 0)];
+          acc2 -= src[idx - ((y > 0 ? w : 0) * 4)];
+          acc2 -= src[idx + ((y < h - 1 ? w : 0) * 4)];
+          acc2 -= src[idx + (x < w - 1 ? 4 : 0)];
+          v = 0.45 * src[idx] + 0.55 * acc2;
+          p[idx] = p[idx + 1] = p[idx + 2] = v < 0 ? 0 : (v > 255 ? 255 : v);
+        }
+      }
+    }
+    ctx.putImageData(d, 0, 0);
+    return c;
+  }
+
+  function ocrPass(worker, canvas, psm) {
+    return worker.setParameters({ tessedit_pageseg_mode: psm, preserve_interword_spaces: '1' })
+      .then(function () { return worker.recognize(canvas.toDataURL('image/png')); })
+      .then(function (r) {
+        var data = (r && r.data) || {};
+        return { text: String(data.text || ''), conf: Number(data.confidence) || 0 };
+      });
+  }
+
+  /* ---------- 진행 화면 ---------- */
+  function openOcrProgress(file) {
+    var ov = $('#ocr');
+    if (!ov) { return; }
+    var t = $('#ocrTitle'), sub = $('#ocrSub'), steps = $('#ocrSteps'), foot = $('#ocrFoot');
+    if (t) { t.textContent = '복지카드 글자를 읽고 있어요'; }
+    if (sub) { sub.textContent = '사진은 서버로 보내지 않아요 · 이 브라우저 안에서만 읽습니다'; }
+    if (steps) {
+      steps.innerHTML = OCR_STEPS_REAL.map(function (s, i) {
+        return '<div class="ocrstep' + (i === 0 ? ' on' : '') + '">' +
+          '<span class="dot" aria-hidden="true">' + (i + 1) + '</span>' +
+          '<div><b>' + esc(s.t) + '</b><span>' + esc(s.d) + '</span></div></div>';
+      }).join('');
+    }
+    var prog = $('#ocrProgress');
+    if (prog) { prog.hidden = false; }
+    if (foot) { foot.textContent = '※ 처음 한 번만 글자 읽기 엔진(약 15MB)을 내려받아요. 사진 자체는 어디로도 보내지 않습니다.'; }
+    var card = $('#ocrCard');
+    if (card) { card.innerHTML = ''; }
+    setOcrPct(3, '준비하고 있어요…');
+    ov.hidden = false;
+    setPageInert(true);
+    document.body.style.overflow = 'hidden';
+    if (t && t.focus) { t.focus(); }
+    announce('복지카드 사진에서 글자를 읽고 있습니다.');
+  }
+
+  function showOcrPreview(obj) {
+    var card = $('#ocrCard');
+    if (!card) { return; }
+    ocrPreviewUrl = obj.url;
+    card.innerHTML = '<img class="ocrpreview" alt="올린 복지카드 사진" src="' + esc(obj.url) + '">';
+  }
+
+  function revokeOcrPreview() {
+    if (ocrPreviewUrl) {
+      try { URL.revokeObjectURL(ocrPreviewUrl); } catch (e) {}
+      ocrPreviewUrl = null;
+    }
+  }
+
+  function clearOcrPreview() {
+    revokeOcrPreview();
+    var card = $('#ocrCard');
+    if (card) { card.innerHTML = ''; }
+  }
+
+  function closeOcrProgress() {
+    var ov = $('#ocr');
+    if (ov) { ov.hidden = true; }
+    clearOcrPreview();
+    var prog = $('#ocrProgress');
+    if (prog) { prog.hidden = true; }
+    var steps = $('#ocrSteps');
+    if (steps) { steps.innerHTML = ''; }
+    var foot = $('#ocrFoot');
+    if (foot) { foot.textContent = '※ 시연용 예시 값 · 입력한 내용은 이 브라우저에만 저장됩니다.'; }
+    setPageInert(false);
+    document.body.style.overflow = '';
+  }
+
+  function cancelOcr() {
+    ocrRunId++;
+    ocrEngine.running = false;
+    closeOcrProgress();
+    manualSel = { type: '', severity: '', name: '' };
+    openManual();
+    toast('직접 입력으로 진행합니다.');
+  }
+
+  function finishOcrRun(run, res, err) {
+    if (run !== ocrRunId) { return; }
+    ocrEngine.running = false;
+    closeOcrProgress();
+    if (err || !res || !res.found || !(res.name || res.type || res.rrn)) {
+      openOcrFailed(res, err);
+      return;
+    }
+    openOcrReview(res);
+  }
+
+  function startCardOcr(file) {
+    if (ocrEngine.running) { toast('이미 사진을 읽고 있어요'); return; }
+    var run = ++ocrRunId;
+    ocrEngine.running = true;
+    var img = null, p1 = null;
+    openOcrProgress(file);
+    loadImageFile(file).then(function (obj) {
+      if (run !== ocrRunId) { throw new Error('canceled'); }
+      img = obj.img;
+      showOcrPreview(obj);
+      setOcrPct(8, '인식 엔진을 준비하고 있어요…');
+      return ensureOcrWorker();
+    }).then(function (w) {
+      if (run !== ocrRunId) { throw new Error('canceled'); }
+      ocrStepTo(1);
+      ocrEngine.passPhase = [40, 68];
+      setOcrPct(40, '복지카드 글자를 읽고 있어요…');
+      return ocrPass(w, ocrPrepCanvas(img, 'bin'), '6');
+    }).then(function (r1) {
+      if (run !== ocrRunId) { throw new Error('canceled'); }
+      p1 = r1;
+      ocrEngine.passPhase = [68, 96];
+      setOcrPct(68, '복지카드 글자를 읽고 있어요…');
+      return ocrPass(ocrEngine.worker, ocrPrepCanvas(img, 'gray'), '6');
+    }).then(function (r2) {
+      if (run !== ocrRunId) { throw new Error('canceled'); }
+      ocrStepTo(2);
+      setOcrPct(97, '읽은 항목을 정리하고 있어요…');
+      var res = mergeOcrPasses([p1, r2]);
+      finishOcrRun(run, res, null);
+    }).catch(function (err) {
+      if (run !== ocrRunId) { return; }
+      finishOcrRun(run, null, err);
+    });
+  }
+
+  /* ============================================================
+     5-C. 읽은 글자에서 복지카드 항목 뽑기 (파싱)
+     ============================================================ */
+  function ocrNormLine(s) {
+    return String(s == null ? '' : s)
+      .replace(/[|｜_\[\]{}<>~`^=·•・、。※‘’“”"'′]/g, ' ')
+      .replace(/[：]/g, ':')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+  function ocrLines(text) {
+    return String(text || '').split(/\n+/).map(ocrNormLine).filter(function (l) { return l.length > 0; });
+  }
+  function pad2(v) { return (Number(v) < 10 ? '0' : '') + Number(v); }
+
+  var OCR_DATE_RE = /((?:19|20)\d{2})\s*[.\-\/년]\s*(\d{1,2})\s*[.\-\/월]\s*(\d{1,2})/;
+  function ocrDateOf(s) {
+    var str = String(s || '');
+    var m = OCR_DATE_RE.exec(str);
+    if (m) {
+      var mm = Number(m[2]), dd = Number(m[3]);
+      if (mm >= 1 && mm <= 12 && dd >= 1 && dd <= 31) { return m[1] + '.' + pad2(mm) + '.' + pad2(dd); }
+    }
+    m = /((?:19|20)\d{2})(\d{2})(\d{2})/.exec(str);
+    if (m) {
+      var m2 = Number(m[2]), d2 = Number(m[3]);
+      if (m2 >= 1 && m2 <= 12 && d2 >= 1 && d2 <= 31) { return m[1] + '.' + m[2] + '.' + m[3]; }
+    }
+    return '';
+  }
+
+  /* 주민등록번호 → 생년월일·마스킹 값 (뒷자리는 저장하지 않는다) */
+  function ocrRrnOf(text) {
+    var t = String(text || '').replace(/[\u2010-\u2015\u2212]/g, '-');
+    var re = /(\d{2})(\d{2})(\d{2})\s*-?\s*([1-8])\s*([0-9*kKxXoO●○◎ㅁ-ㅎ가-힣]{2,8})?/g;
+    var m;
+    while ((m = re.exec(t)) !== null) {
+      var yy = Number(m[1]), mm = Number(m[2]), dd = Number(m[3]);
+      var g = Number(m[4]);
+      var mask = (m[5] || '').replace(/\s+/g, '');
+      if (mm < 1 || mm > 12 || dd < 1 || dd > 31) { continue; }
+      if (!mask && m.index + m[0].length < t.length && /[0-9]/.test(t.charAt(m.index + m[0].length))) { continue; }
+      var century = (g === 3 || g === 4 || g === 7 || g === 8) ? 2000 : 1900;
+      var birth = String(century + yy) + pad2(mm) + pad2(dd);
+      return { birth: birth, masked: m[1] + m[2] + m[3] + '-' + g + '******', strength: mask.length >= 3 ? 3 : 2 };
+    }
+    return null;
+  }
+
+  var OCR_TYPE_RULES = [
+    ['physical', /지체|지채|신체\s*불편/],
+    ['brain', /뇌병변|뇌병|뇌\s*병변/],
+    ['visual', /시각|맹인|저시력/],
+    ['hearing', /청각|언어|수어|농인/],
+    ['intellectual', /지적/],
+    ['autism', /자폐/],
+    ['mental', /정신/],
+    ['other', /신장|심장|호흡기|간\s*장애|안면|장루|요루|뇌전증|내부\s*기관|복합/]
+  ];
+  function ocrTypeOf(s) {
+    var t = String(s || '').replace(/\s+/g, '');
+    for (var i = 0; i < OCR_TYPE_RULES.length; i++) {
+      if (OCR_TYPE_RULES[i][1].test(t)) { return OCR_TYPE_RULES[i][0]; }
+    }
+    return '';
+  }
+  function ocrSeverityOf(s) {
+    var t = String(s || '').replace(/\s+/g, '');
+    if (/심하지않|심하지안|경증|[456]\s*급/.test(t)) { return 'mild'; }
+    if (/심한|중증|[123]\s*급/.test(t)) { return 'severe'; }
+    return '';
+  }
+
+  var K_SURNAME = ('김이박최정강조윤장임한오서신권황안송전홍유고문양손배백허남심노하곽성차주우구민류나진지만원천방공현함변염여추도소석선설마길연위표명기반왕금옥육인맹제모탁국어은편제갈선우남궁독고황보').match(/[가-힣]/g) || [];
+  var CHO_LIST = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ'.match(/[ㄱ-ㅎ]/g) || [];
+  var CHO_GROUP = { 'ㄱ': 1, 'ㄲ': 1, 'ㅋ': 1, 'ㄷ': 2, 'ㄸ': 2, 'ㅌ': 2, 'ㅂ': 3, 'ㅃ': 3, 'ㅍ': 3, 'ㅅ': 4, 'ㅆ': 4, 'ㅈ': 5, 'ㅉ': 5, 'ㅊ': 5, 'ㅇ': 6, 'ㅎ': 6, 'ㄴ': 7, 'ㄹ': 7, 'ㅁ': 8 };
+  function korParts(ch) {
+    var code = ch.charCodeAt(0) - 0xAC00;
+    if (code < 0 || code > 11171) { return null; }
+    return { cho: Math.floor(code / 588), jung: Math.floor((code % 588) / 28), jong: code % 28 };
+  }
+  /* OCR이 성을 비슷한 소리로 잘못 읽었을 때(예: 킴→김)만 바로잡는다 */
+  function ocrFixSurname(name) {
+    if (!name) { return name; }
+    var first = name.charAt(0);
+    if (K_SURNAME.indexOf(first) !== -1) { return name; }
+    var a = korParts(first);
+    if (!a || a.jong !== 0) { return name; }
+    var found = '';
+    for (var i = 0; i < K_SURNAME.length; i++) {
+      var b = korParts(K_SURNAME[i]);
+      if (!b || b.jong !== 0) { continue; }
+      if (CHO_GROUP[CHO_LIST[b.cho]] !== CHO_GROUP[CHO_LIST[a.cho]]) { continue; }
+      var vowelNear = (a.jung === b.jung) ||
+        (a.jung >= 1 && a.jung <= 5 && b.jung >= 1 && b.jung <= 5) ||
+        ((a.jung === 20 || a.jung <= 5) && (b.jung === 20 || b.jung <= 5));
+      if (vowelNear) { found = K_SURNAME[i]; break; }
+    }
+    return found ? found + name.slice(1) : name;
+  }
+
+  var OCR_NAME_STOP = ['성명', '이름', '주민등록번호', '주민등록', '장애유형', '장애정도', '장애인', '등록증',
+    '복지카드', '보건복지부', '등록일', '발급기관', '발급일', '대한민국', '진주시장', '주소', '생년월일', '유효기간'];
+  function ocrNameTokens(rest) {
+    var out = [];
+    String(rest || '').replace(/[^가-힣 ]+/g, ' ').split(/\s+/).forEach(function (w) {
+      if (w.length < 2 || w.length > 4) { return; }
+      if (OCR_NAME_STOP.indexOf(w) !== -1) { return; }
+      if (/장애|등록|번호|기관|발급|주민|카드|복지|시장|시청|구청|군수|생년/.test(w)) { return; }
+      out.push(w);
+    });
+    return out;
+  }
+  function ocrPickName(rest) {
+    var toks = ocrNameTokens(rest);
+    var best = '', bestScore = 0;
+    toks.forEach(function (w, i) {
+      var fixed = ocrFixSurname(w);
+      var score = K_SURNAME.indexOf(fixed.charAt(0)) !== -1 ? 4 : 0;
+      score += w.length === 3 ? 3 : (w.length === 2 || w.length === 4 ? 2 : 1);
+      score += fixed === w ? 0 : 1;
+      score -= i;   /* 앞에 나온 값을 먼저 믿는다 */
+      if (score > bestScore) { bestScore = score; best = fixed; }
+    });
+    return best;
+  }
+  var OCR_LABEL_HEAD = /^(주민|장애|등록|발급|생년|주소|유효|성명|이름|보건)/;
+  function ocrFindName(lines) {
+    for (var i = 0; i < lines.length; i++) {
+      var L = lines[i];
+      var m = /(성\s*[명면]|이\s*름)\s*:?\s*/.exec(L);
+      if (!m) { continue; }
+      var rest = L.slice(m.index + m[0].length);
+      var cand = ocrPickName(rest);
+      if (!cand && i + 1 < lines.length && !OCR_LABEL_HEAD.test(lines[i + 1])) {
+        cand = ocrPickName(lines[i + 1]);
+      }
+      if (cand) { return cand; }
+    }
+    return '';
+  }
+
+  function ocrRestOf(lines, re) {
+    for (var i = 0; i < lines.length; i++) {
+      var m = re.exec(lines[i]);
+      if (!m) { continue; }
+      var rest = lines[i].slice(m.index + m[0].length).trim();
+      if (rest) { return rest; }
+      if (i + 1 < lines.length && !OCR_LABEL_HEAD.test(lines[i + 1])) { return lines[i + 1]; }
+      return '';
+    }
+    return '';
+  }
+
+  var OCR_ORG_RE = /([가-힣]{2,5}(?:시장|군수|구청장|도지사|시청|군청|구청))/;
+  function ocrOrgOf(s) {
+    var t = String(s || '').replace(/발급\s*기관|발급\s*처|발급자/g, ' ').replace(/\s+/g, ' ');
+    var m = OCR_ORG_RE.exec(t);
+    if (!m) { return ''; }
+    var v = m[1];
+    if (v.length > 5) { v = v.slice(-5); }
+    if (/^(기관|발급|시장|군수)/.test(v)) { return ''; }
+    return v;
+  }
+
+  function parseOcrText(text) {
+    var out = [];
+    var lines = ocrLines(text);
+    var flat = lines.join('\n');
+    var name = ocrFindName(lines);
+    if (name) { out.push({ field: 'name', value: name, strength: 3 }); }
+    var rrn = ocrRrnOf(flat);
+    if (rrn) {
+      out.push({ field: 'rrn', value: rrn.masked, strength: rrn.strength });
+      out.push({ field: 'birth', value: rrn.birth, strength: rrn.strength });
+    }
+    var typeRest = ocrRestOf(lines, /장애\s*(?:유형|종류|구분|정도)/);
+    var typeSrc = typeRest || flat;
+    var tp = ocrTypeOf(typeSrc) || ocrTypeOf(flat);
+    if (tp) { out.push({ field: 'type', value: tp, strength: typeRest ? 3 : 2 }); }
+    var sv = ocrSeverityOf(typeSrc) || ocrSeverityOf(flat);
+    if (sv) { out.push({ field: 'severity', value: sv, strength: typeRest ? 3 : 2 }); }
+    var regRest = ocrRestOf(lines, /등록\s*(?:일|일자|년월일)/);
+    var reg = regRest ? ocrDateOf(regRest) : '';
+    if (!reg) {
+      var idx = flat.search(/등록\s*일/);
+      if (idx > -1) { reg = ocrDateOf(flat.slice(idx, idx + 48)); }
+    }
+    if (reg) { out.push({ field: 'reg', value: reg, strength: regRest ? 3 : 2 }); }
+    var orgRest = ocrRestOf(lines, /발급\s*(?:기관|처)?/);
+    var org = orgRest ? ocrOrgOf(orgRest) : '';
+    if (!org) { org = ocrOrgOf(flat); }
+    if (org) { out.push({ field: 'org', value: org, strength: orgRest ? 3 : 2 }); }
+    var validRest = ocrRestOf(lines, /유효\s*기간/);
+    if (validRest) {
+      var d1 = ocrDateOf(validRest), d2 = '';
+      var cut = validRest.search(/[~\-–—]/);
+      if (cut > -1) { d2 = ocrDateOf(validRest.slice(cut + 1)); }
+      var vv = d1 ? (d1 + (d2 ? ' ~ ' + d2 : '')) : validRest.slice(0, 24);
+      out.push({ field: 'valid', value: vv, strength: 2 });
+    }
+    if (!rrn) {
+      var birthRest = ocrRestOf(lines, /생년\s*월\s*일/);
+      var bd = birthRest ? ocrDateOf(birthRest) : '';
+      if (bd) {
+        var dig = bd.replace(/[^0-9]/g, '');
+        out.push({ field: 'birth', value: dig, strength: 2 });
+      }
+    }
+    return out;
+  }
+
+  function mergeOcrPasses(passes) {
+    var list = (passes || []).filter(function (p) { return p && p.text; });
+    var byField = {};
+    list.forEach(function (p, i) {
+      var w = Math.max(0.2, Math.min(1, (p.conf || 0) / 100));
+      parseOcrText(p.text).forEach(function (c) {
+        (byField[c.field] = byField[c.field] || []).push({ value: c.value, strength: c.strength || 1, pass: i, w: w });
+      });
+    });
+    function best(k) {
+      var a = byField[k];
+      if (!a || !a.length) { return null; }
+      a.sort(function (x, y) {
+        return (y.strength - x.strength) || (y.w - x.w) || (x.pass - y.pass);
+      });
+      return a[0];
+    }
+    var out = { name: best('name'), birth: best('birth'), rrn: best('rrn'), type: best('type'),
+      severity: best('severity'), reg: best('reg'), org: best('org'), valid: best('valid') };
+    var top = list.slice().sort(function (a, b) { return (b.conf || 0) - (a.conf || 0); })[0];
+    out.raw = top ? top.text : '';
+    out.conf = top ? top.conf : 0;
+    out.found = ['name', 'birth', 'type', 'severity', 'reg', 'org'].filter(function (k) { return !!out[k]; }).length;
+    return out;
+  }
+
+  function ocrConfLevel(c) {
+    if (!c) { return ''; }
+    if (c.strength >= 3 && c.w >= 0.5) { return 'high'; }
+    if (c.strength >= 2) { return 'mid'; }
+    return 'low';
+  }
+  function ocrTag(c) {
+    var lv = ocrConfLevel(c);
+    if (!lv) { return '<span class="ocrtag low">직접 입력</span>'; }
+    var t = lv === 'high' ? '인식 양호' : (lv === 'mid' ? '확인 필요' : '다시 확인');
+    return '<span class="ocrtag ' + lv + '">' + t + '</span>';
+  }
+
+  /* ---------- 읽은 내용 확인·수정 ---------- */
+  function openOcrReview(res) {
+    var nm = res.name ? res.name.value : '';
+    var birth = res.birth ? String(res.birth.value) : '';
+    var birthTxt = /^\d{8}$/.test(birth) ? birth.slice(0, 4) + '-' + birth.slice(4, 6) + '-' + birth.slice(6, 8) : '';
+    var tp = res.type ? res.type.value : '';
+    var sv = res.severity ? res.severity.value : '';
+    ocrDraft = { type: tp, severity: sv, data: res };
+    var chips = function (kind, order, labelFn, cur) {
+      return '<div class="chiprow">' + order.map(function (v) {
+        return '<button class="chip" type="button" data-ocr-' + kind + '="' + v + '" aria-pressed="' + (cur === v ? 'true' : 'false') + '">' +
+          esc(labelFn(v)) + '</button>';
+      }).join('') + '</div>';
+    };
+    var body = '<div class="note" role="note"><b>카드에서 글자를 읽었어요.</b><br>' +
+      '사진은 서버로 보내지 않고 이 브라우저 안에서만 읽었습니다. 읽은 값이 맞는지 보고 <b>틀린 칸만</b> 고쳐 주세요.' +
+      (res.found < 4 ? '<br><b>일부 항목은 읽지 못했어요.</b> 빈칸은 직접 채워 주세요.' : '') + '</div>' +
+      '<div class="field"><label for="ocrName">성명 <span class="req" aria-hidden="true">*</span>' + ocrTag(res.name) + '</label>' +
+      '<input id="ocrName" type="text" autocomplete="name" placeholder="예: 김다온" value="' + esc(nm) + '" />' +
+      '<span class="hint">카드에 적힌 이름 그대로</span></div>' +
+      '<div class="field"><label for="ocrBirth">생년월일' + ocrTag(res.birth) + '</label>' +
+      '<input id="ocrBirth" type="text" inputmode="numeric" placeholder="1981-07-16" value="' + esc(birthTxt) + '" />' +
+      '<span class="hint">주민등록번호 앞 6자리로 계산했습니다. 신청서에 그대로 들어갑니다.</span></div>' +
+      '<div class="field" style="margin-bottom:10px"><span class="lab">장애 정도 <span class="req" aria-hidden="true">*</span>' + ocrTag(res.severity) + '</span>' +
+      chips('sev', ['severe', 'mild'], function (v) { return SEVERITY_LABEL[v]; }, sv) + '</div>' +
+      '<div class="field"><span class="lab">장애 유형 <span class="req" aria-hidden="true">*</span>' + ocrTag(res.type) + '</span>' +
+      chips('type', TYPE_ORDER, function (v) { return TYPE_LABEL[v]; }, tp) + '</div>' +
+      '<div class="field"><label for="ocrReg">등록일' + ocrTag(res.reg) + '</label>' +
+      '<input id="ocrReg" type="text" inputmode="numeric" placeholder="2024.05.10" value="' + esc(res.reg ? res.reg.value : '') + '" /></div>' +
+      '<div class="field"><label for="ocrOrg">발급기관' + ocrTag(res.org) + '</label>' +
+      '<input id="ocrOrg" type="text" placeholder="예: 진주시장" value="' + esc(res.org ? res.org.value : '') + '" /></div>' +
+      (res.valid ? '<p class="note" style="margin-top:-4px">카드에 적힌 유효기간: <b>' + esc(res.valid.value) + '</b></p>' : '') +
+      '<details class="ocrraw"><summary>사진에서 읽은 글자 그대로 보기</summary><pre>' + esc(res.raw || '') + '</pre></details>' +
+      '<div class="stickybtns">' +
+      '<button class="btn primary block" type="button" data-act="ocr-apply">이 내용으로 등록</button>' +
+      '<button class="btn block" type="button" data-act="ocr-retry">사진 다시 고르기</button>' +
+      '<button class="btn ghost block" type="button" data-act="ocr-manual">직접 입력으로</button>' +
       '</div>';
-    openSheet('사진을 올렸습니다', '이 시연판은 사진 글자를 자동으로 읽지 않습니다.', body);
+    openSheet('카드에서 읽은 내용', '맞는지 확인하고, 틀린 칸만 고쳐 주세요.', body);
+    announce('복지카드에서 읽은 내용을 확인하는 화면입니다.');
+  }
+
+  function openOcrFailed(res, err) {
+    var why = '';
+    var code = err ? String(err.message || err) : '';
+    if (code === 'cdn-blocked' || code === 'cdn-timeout' || code === 'no-lib') {
+      why = '글자 읽기 엔진을 불러오지 못했어요. 인터넷 연결을 확인하거나, 아래에서 직접 입력해 주세요.';
+    } else if (code === 'image-decode') {
+      why = '사진 파일을 열지 못했어요. 다른 사진(jpg·png)으로 다시 시도해 주세요.';
+    } else {
+      why = '사진에서 글자를 또렷이 읽지 못했어요. 카드를 밝은 곳에서 반듯하게 다시 찍으면 잘 읽힙니다.';
+    }
+    var body = '<div class="note" role="note"><b>글자를 또렷이 읽지 못했어요.</b><br>' + esc(why) +
+      '<br>사진은 그대로 서류 묶음(ZIP)에 첨부됩니다.</div>' +
+      '<div class="stickybtns">' +
+      '<button class="btn primary block" type="button" data-act="ocr-retry">사진 다시 고르기</button>' +
+      '<button class="btn block" type="button" data-act="ocr-manual">내 정보 직접 입력</button>' +
+      '<button class="btn ghost block" type="button" data-act="upload-sample">예시 인물로 계속</button>' +
+      '</div>';
+    openSheet('사진에서 글자를 못 읽었어요', '다른 방법으로 이어서 진행할 수 있어요.', body);
+    announce('사진에서 글자를 읽지 못했습니다. 직접 입력하거나 다시 촬영할 수 있습니다.');
+  }
+
+  function applyOcrDraft() {
+    var d = ocrDraft;
+    if (!d) { return; }
+    var nameEl = $('#ocrName'), birthEl = $('#ocrBirth'), regEl = $('#ocrReg'), orgEl = $('#ocrOrg');
+    var nm = ((nameEl && nameEl.value) || '').trim();
+    var birth = ((birthEl && birthEl.value) || '').replace(/[^0-9]/g, '');
+    var reg = ((regEl && regEl.value) || '').trim();
+    var org = ((orgEl && orgEl.value) || '').trim();
+    if (!nm) { toast('성명 확인 필요'); if (nameEl) { nameEl.focus(); } return; }
+    if (!d.type) { toast('장애 유형 선택 필요'); return; }
+    if (!d.severity) { toast('장애 정도 선택 필요'); return; }
+    if (birth.length !== 8) { birth = ''; }
+    var masked = d.data && d.data.rrn ? d.data.rrn.value : (birth ? birth.slice(2) + '-1******' : '******-*******');
+    closeSheet();
+    applyCard({
+      key: 'upload-ocr', name: nm, type: d.type, severity: d.severity,
+      reg: masked, issue: reg || '—', org: org || '발급기관 확인 필요',
+      birth: birth, note: '', source: 'ocr'
+    });
   }
 
   function openManual() {
@@ -3224,6 +3878,11 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     }
     var sub = $('#ocrSub');
     if (sub) { sub.textContent = '예시(가명) 인물 · 사진 판독 아님 · 서버 전송 없음'; }
+    var prog = $('#ocrProgress');
+    if (prog) { prog.hidden = true; }
+    var foot = $('#ocrFoot');
+    if (foot) { foot.textContent = '※ 시연용 예시 값 · 입력한 내용은 이 브라우저에만 저장됩니다.'; }
+    revokeOcrPreview();
     var ov = $('#ocr');
     if (ov) { ov.hidden = false; }
     setPageInert(true);
@@ -3261,7 +3920,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   }
 
   function applyCard(d) {
-    state.card = { key: d.key || 'upload', name: d.name, type: d.type, severity: d.severity, reg: d.reg, issue: d.issue, org: d.org, note: d.note || '', source: d.source || 'sample' };
+    state.card = { key: d.key || 'upload', name: d.name, type: d.type, severity: d.severity, reg: d.reg, issue: d.issue, org: d.org, birth: d.birth || '', note: d.note || '', source: d.source || 'sample' };
     state.type = d.type;
     state.severity = d.severity === 'unsure' ? 'mild' : d.severity;
     state.workType = defaultWorkType(state.severity, d.type);
@@ -3275,7 +3934,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     fetchState.phase = '';
     fetchState.log = [];
     state.form.name = d.name;
-    state.form.birth = '';
+    state.form.birth = d.birth || '';
     state.form.extra = {};
     state.form.lic = '';
     state.form.guardian = '';
@@ -3285,7 +3944,9 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     go('card');
     toast(d.source === 'manual'
       ? '입력한 정보로 조회합니다 · 내용은 4단계에서 다시 고칠 수 있어요.'
-      : '예시 인물로 진행합니다 · 4단계에서 이름·생년월일을 꼭 확인해 주세요.');
+      : d.source === 'ocr'
+        ? '카드에서 읽은 정보로 조회합니다 · 틀린 내용은 4단계에서 고칠 수 있어요.'
+        : '예시 인물로 진행합니다 · 4단계에서 이름·생년월일을 꼭 확인해 주세요.');
   }
 
   function applyManual(type, severity, name) {
@@ -5095,7 +5756,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       toast('파일 12MB 초과 · 12MB 이하 이미지 사용');
       return;
     }
-    /* 글자는 읽지 않지만, 올린 사진 원본은 서류 묶음(ZIP)에 그대로 담는다. */
+    /* 올린 사진 원본은 서류 묶음(ZIP)에 그대로 담고, 같은 사진으로 글자를 읽는다. */
     try {
       var rd = new FileReader();
       rd.onload = function () {
@@ -5105,7 +5766,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       };
       rd.readAsArrayBuffer(file);
     } catch (err) { state.uploads = []; }
-    openUploadNotice(file.name || '');
+    startCardOcr(file);
   }
 
   function selectProgram(pid) {
@@ -5452,6 +6113,12 @@ body.a11y-big.easy .hero h1{line-height:1.4}
           if (CARD_SAMPLES[sKey]) { openOcr(CARD_SAMPLES[sKey]); }
           return;
         }
+        if (act === 'ocr-manual') {
+          closeSheet();
+          manualSel = { type: '', severity: '', name: '' };
+          openManual();
+          return;
+        }
         if (act === 'sample-manual' || act === 'upload-manual') {
           manualSel = { type: act === 'sample-manual' ? (state.type || '') : '', severity: act === 'sample-manual' ? (state.severity || '') : '', name: '' };
           openManual();
@@ -5459,6 +6126,9 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         }
         if (act === 'sample-back') { openSamples(); return; }
         if (act === 'upload-sample') { openSamples(); return; }
+        if (act === 'ocr-cancel') { cancelOcr(); return; }
+        if (act === 'ocr-retry') { closeSheet(); pickCard(); return; }
+        if (act === 'ocr-apply') { applyOcrDraft(); return; }
       }
       var aidEl = t.closest('[data-aid]');
       if (aidEl) {
@@ -5468,6 +6138,24 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         if (wasOn) { aidList.splice(aidList.indexOf(aidV), 1); } else { aidList.push(aidV); }
         aidEl.setAttribute('aria-pressed', wasOn ? 'false' : 'true');
         scheduleSave();
+        return;
+      }
+      var otype = t.closest('[data-ocr-type]');
+      if (otype) {
+        var tv = otype.getAttribute('data-ocr-type');
+        if (ocrDraft) { ocrDraft.type = tv; }
+        $$('[data-ocr-type]').forEach(function (b) {
+          b.setAttribute('aria-pressed', b.getAttribute('data-ocr-type') === tv ? 'true' : 'false');
+        });
+        return;
+      }
+      var osev = t.closest('[data-ocr-sev]');
+      if (osev) {
+        var svv = osev.getAttribute('data-ocr-sev');
+        if (ocrDraft) { ocrDraft.severity = svv; }
+        $$('[data-ocr-sev]').forEach(function (b) {
+          b.setAttribute('aria-pressed', b.getAttribute('data-ocr-sev') === svv ? 'true' : 'false');
+        });
         return;
       }
       var msev = t.closest('[data-man-sev]');
