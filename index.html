@@ -518,6 +518,8 @@ details.box .inner{padding:0 16px 16px; font-size:15px; color:var(--ink-soft); l
 }
 .note b{color:var(--ink)}
 .stickybtns{position:sticky; bottom:0; background:var(--surface); padding-top:10px; margin-top:6px}
+/* 마지막 버튼이 하단 고정 버튼 밑에 가리지 않도록 시트 아래에 여백을 둔다 */
+.sheet.hasfoot{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
 
 /* ---------- OCR 인식 ---------- */
 #ocr .sheet{text-align:center}
@@ -784,7 +786,7 @@ body.easy .lead,body.easy .job .why,body.easy .micro{line-height:1.75}
 body.easy .hero h1{line-height:1.45}
 body.easy .btn{font-size:18px}
 body.easy .stp b{font-size:13.5px}
-body.easy .job details{display:none}
+body.easy .job details summary{font-size:15.5px}
 body.easy .foot-note{font-size:13.5px}
 /* 큰 글씨와 쉬운 말을 함께 켜면 글씨 크기는 큰 글씨를 따르고 줄 간격만 넉넉히 */
 body.a11y-big.easy{font-size:20px; line-height:1.72}
@@ -1313,7 +1315,7 @@ body.easy .twbox p{font-size:16px}
   </div>
 </div>
 
-<div id="toast" role="status" aria-live="polite"></div>
+<div id="toast" aria-hidden="true"></div>
 <div id="a11yStatus" class="sr-only" role="status" aria-live="polite"></div>
 <div id="printArea" aria-hidden="true"></div>
 
@@ -1332,13 +1334,17 @@ body.easy .twbox p{font-size:16px}
     });
   }
   var toastTimer = null;
+  var announceSeq = 0;
   function toast(msg) {
     var el = $('#toast');
     if (!el) { return; }
     el.textContent = msg;
     el.classList.add('show');
     if (toastTimer) { clearTimeout(toastTimer); }
-    toastTimer = setTimeout(function () { el.classList.remove('show'); }, 2600);
+    /* 낭독은 #a11yStatus 한 곳에서만 한다. 바로 뒤에 announce()가 오면 그 문장만 읽는다. */
+    var seq = announceSeq;
+    setTimeout(function () { if (announceSeq === seq) { announce(msg); } }, 80);
+    toastTimer = setTimeout(function () { el.classList.remove('show'); el.textContent = ''; }, 2600);
   }
 
   /* ============================================================
@@ -1366,7 +1372,7 @@ body.easy .twbox p{font-size:16px}
     return storageOK;
   }
 
-  function announce(msg) { var el = $('#a11yStatus'); if (el) { el.textContent = msg; } }
+  function announce(msg) { var el = $('#a11yStatus'); if (!el) { return; } announceSeq += 1; el.textContent = msg; }
 
   function loadA11y() {
     var s = null;
@@ -1853,9 +1859,14 @@ body.easy .twbox p{font-size:16px}
 
   function ruleEduLink(s) {
     var r = [];
-    r.push({ k: 'check', t: '특수교육 전공과 재학생 한정(고3은 실습 가능 시점부터) · 해당 여부 확인 필요.' });
+    var spec = !!(s.elig && s.elig.spec === '재학');
+    if (spec) {
+      r.push({ k: 'ok', t: '특수교육 전공과(고3은 실습 가능 시점부터) 재학생 대상 사업입니다.' });
+    } else {
+      r.push({ k: 'no', t: '특수교육 전공과 재학생만 신청할 수 있습니다 · 해당되면 신청 자격에서 ‘특수교육 전공과 재학’을 ‘재학’으로 바꿔 주세요.' });
+    }
     r.push({ k: 'info', t: '주 14시간 이내 · 월 577,920원 안팎(세전) 운영.' });
-    if (s.workType === 'welfare') {
+    if (spec && s.workType === 'welfare') {
       r.push({ k: 'ok', t: '희망 주 14시간 내외 일치.' });
     }
     return r.concat(unsureNote(s));
@@ -2079,6 +2090,9 @@ body.easy .twbox p{font-size:16px}
         out.push({ k: 'ok', t: '재택 근무 · 건물 이동 부담 없음.' });
       } else if (has('ramp') && has('elevator') && has('toilet')) {
         out.push({ k: 'ok', t: '경사로·승강기·장애인 화장실 구비 · 휠체어 이동 가능.' });
+        if (has('standing') && !has('seated')) {
+          out.push({ k: 'check', t: '서서 하는 일이 많음 · 휠체어로는 어려울 수 있어 앉아서 할 수 있는지 확인 필요.' });
+        }
       } else {
         out.push({ k: 'no', t: '경사로·승강기·장애인 화장실 중 일부 없음 · 휠체어 이동 어려움.' });
       }
@@ -2775,7 +2789,7 @@ body.easy .twbox p{font-size:16px}
       '<p class="bn">※ 위 근거 법령에 의거하여 개인정보 제3자 제공에 대하여 안내드립니다.</p>' +
       '<p class="f3read">본인은 본 “개인정보의 수집·이용 및 목적외 이용·제3자 제공 안내·동의서” 내용을 읽고 명확히 이해하였습니다.</p>' +
       '<div class="f2date">' + esc(ofToday()) + '</div>' +
-      '<div class="f3sign"><span>성    명:</span>' + sigMark('big') + '<span>(성명 또는 인)</span></div>' +
+      '<div class="f3sign"><span>성    명: ' + esc(applicantName()) + '</span>' + sigMark('big') + '<span>(성명 또는 인)</span></div>' +
       '<p class="srcnote">원본 대조: 기장군 2027년 모집공고 [서식3] · 진주시 참여신청서식 개인정보 동의서</p>';
 
     return [p1, p2];
@@ -3273,10 +3287,15 @@ body.easy .twbox p{font-size:16px}
   var ocrState = { data: null, stage: 0, timers: [] };
 
   function buildCardVisual(d) {
-    return '<div class="idcard" role="img" aria-label="시연용 가상 복지카드 — ' +
+    var src = (d && d.source) || 'sample';
+    var head = src === 'ocr' ? '카드에서 읽은 정보 — '
+      : src === 'manual' ? '내가 입력한 정보 — '
+        : '시연용 가상 복지카드 — ';
+    var cap = src === 'sample' ? '사진<br>(가명)' : (src === 'ocr' ? '카드<br>사진' : '직접<br>입력');
+    return '<div class="idcard" role="img" aria-label="' + head +
       esc(TYPE_LABEL[d.type] || '') + ' ' + esc(SEVERITY_LABEL[d.severity] || '') + ' ' + esc(d.name) + '">' +
       '<div class="idcard-top"><span>대한민국 · 장애인등록증</span><span class="idchip" aria-hidden="true"></span></div>' +
-      '<div class="idcard-body"><div class="idphoto">사진<br>(가명)</div><div class="idcard-fields">' +
+      '<div class="idcard-body"><div class="idphoto">' + cap + '</div><div class="idcard-fields">' +
       '<div><b>성명</b><span>' + esc(d.name) + '</span></div>' +
       '<div><b>장애유형</b><span>' + esc(TYPE_LABEL[d.type] || '') + '</span></div>' +
       '<div><b>장애정도</b><span>' + esc(SEVERITY_LABEL[d.severity] || '') + '</span></div>' +
@@ -3905,7 +3924,8 @@ body.easy .twbox p{font-size:16px}
       }).join('') + '</div>';
     };
     var body = '<div class="note" role="note"><b>카드에서 글자를 읽었어요.</b><br>' +
-      '사진은 서버로 보내지 않고 이 브라우저 안에서만 읽었습니다. 읽은 값이 맞는지 보고 <b>틀린 칸만</b> 고쳐 주세요.' +
+      '사진은 서버로 보내지 않고 이 브라우저 안에서만 읽었습니다. 읽은 값이 맞는지 보고 <b>틀린 칸만</b> 고쳐 주세요.<br>' +
+      '올린 사진 원본은 ‘서류 전체 저장(ZIP)’에 복지카드 사본으로 함께 담깁니다.' +
       (res.found < 4 ? '<br><b>일부 항목은 읽지 못했어요.</b> 빈칸은 직접 채워 주세요.' : '') + '</div>' +
       '<div class="field"><label for="ocrName">성명 <span class="req" aria-hidden="true">*</span>' + ocrTag(res.name) + '</label>' +
       '<input id="ocrName" type="text" autocomplete="name" placeholder="예: 김다온" value="' + esc(nm) + '" />' +
@@ -4248,11 +4268,16 @@ body.easy .twbox p{font-size:16px}
       else if (st.done >= st.total && st.total > 0) { label = '신청서 작성'; noteTxt = ''; }
       else { label = '기관 로그인 · ' + (st.total - st.done) + '장 수집'; noteTxt = '주민등록등본·장애인증명서 등'; }
     } else if (v === 'submit') {
-      var jd = eligibility();
-      label = '신청서 제출';
-      noteTxt = jd.level === '제한' ? '신청 제한 항목이 있어 접수할 수 없습니다'
-        : !(state.signature || {}).mode ? '자필 서명을 먼저 해 주세요'
-          : '준비됐습니다 · 서식 3종 함께 제출';
+      if (state.receipt && state.receipt.no) {
+        label = '접수증 보기';
+        noteTxt = '이미 접수했습니다 · 접수번호 ' + state.receipt.no;
+      } else {
+        var jd = eligibility();
+        label = '신청서 제출';
+        noteTxt = jd.level === '제한' ? '신청 제한 항목이 있어 접수할 수 없습니다'
+          : !(state.signature || {}).mode ? '자필 서명을 먼저 해 주세요'
+            : '준비됐습니다 · 서식 3종 함께 제출';
+      }
     } else if (v === 'done') {
       label = '처음부터 다시 하기';
     }
@@ -4423,7 +4448,8 @@ body.easy .twbox p{font-size:16px}
     var picked = !off && state.selectedProgram === p.id;
     var wpName = off ? '' : (picked ? state.selectedWorkplace : pickDefaultWorkplace(p.id));
     var why = keyReason(row);
-    var reasons = (row.reasons || []).map(function (r) {
+    var easyCut = state.easy ? 2 : 99;
+    var reasons = (row.reasons || []).slice(0, easyCut).map(function (r) {
       return '<li class="' + (r.k === 'ok' ? 'ok' : r.k === 'check' ? 'check' : r.k === 'no' ? 'no' : 'info') + '">' +
         '<i aria-hidden="true">' + (r.k === 'ok' ? '✓' : r.k === 'check' ? '!' : r.k === 'no' ? '×' : '·') + '</i>' +
         '<span><span class="sr-only">' + (r.k === 'ok' ? '충족 ' : r.k === 'check' ? '확인 필요 ' : r.k === 'no' ? '제한 ' : '참고 ') + '</span>' + esc(r.t) + '</span></li>';
@@ -4447,7 +4473,7 @@ body.easy .twbox p{font-size:16px}
         '<span class="meta">' + esc(p.hours) + ' · ' + esc(payShort(p.pay)) + '</span>' +
         (why ? '<span class="why">' + esc(why) + '</span>' : '') + '</div>';
     }
-    html += '<details><summary>판정 근거</summary><div class="inner"><ul class="reasonlist">' + reasons + '</ul>' +
+    html += '<details><summary>' + (state.easy ? '이유' : '판정 근거') + '</summary><div class="inner"><ul class="reasonlist">' + reasons + '</ul>' +
       '<p style="margin-top:8px;color:var(--ink-mute)">근무 시간·직무 변경 시 결과 변동 가능 · 담당자 상담 권장.</p></div></details>';
     html += '</div>';
     return html;
@@ -4817,6 +4843,7 @@ body.easy .twbox p{font-size:16px}
     if (msg) { msg.textContent = ''; }
     var ov = $('#apiCfg');
     if (ov) { ov.hidden = false; }
+    fitSheetFoot(ov);
     setPageInert(true);
     document.body.style.overflow = 'hidden';
     if (u) { u.focus(); }
@@ -4891,7 +4918,11 @@ body.easy .twbox p{font-size:16px}
     }).catch(function (e) {
       codef.health = null;
       setCfgState(null);
-      if (msg) { msg.textContent = (e && e.message) || '연결하지 못했습니다.'; }
+      var raw = (e && e.message) || '';
+      var why = /failed to fetch|networkerror|load failed|network request failed/i.test(raw)
+        ? '주소에 연결하지 못했어요. 주소가 맞는지, https:// 로 시작하는지 확인해 주세요.'
+        : (raw || '연결하지 못했습니다.');
+      if (msg) { msg.textContent = why; }
       return false;
     }).then(function (ok) {
       codef.testing = false;
@@ -5070,13 +5101,22 @@ body.easy .twbox p{font-size:16px}
     renderLoginBody();
     var ov = $('#login');
     if (ov) { ov.hidden = false; }
+    fitSheetFoot(ov);
     setPageInert(true);
     document.body.style.overflow = 'hidden';
     var first = $('#cfName') || $('#loginClose');
     if (first) { first.focus(); }
   }
   function closeLogin(quiet) {
+    var wasRunning = !!(realState.running && realState.phase && realState.phase !== 'done');
     stopTwoWayTimer();
+    if (wasRunning) {
+      /* 중단한 사실과 남은 일을 남긴다 — 실제 조회 로그가 시연 로그와 섞이지 않게. */
+      var leftN = Math.max(0, realState.queue.length - realState.idx);
+      fetchState.mode = 'real';
+      pushLog('⏹️', '사용자가 실제 조회를 중단함 · 남은 서류 ' + leftN + '장은 직접 준비', 'warn');
+      realState.error = null;
+    }
     realState.running = false;
     realState.pending = null;
     realState.phase = '';
@@ -5090,6 +5130,10 @@ body.easy .twbox p{font-size:16px}
     if (!quiet) { focusBack(overlayReturn.login); }
     overlayReturn.login = null;
     render();
+    if (wasRunning) {
+      toast('조회를 중단했습니다 · 남은 서류는 직접 준비');
+      announce('실제 기관 조회를 중단했습니다. 남은 서류는 직접 준비로 표시됩니다.');
+    }
   }
   function confirmLogin() {
     if (loginState.view === 'run') {
@@ -5204,6 +5248,7 @@ body.easy .twbox p{font-size:16px}
     }
     lb.innerHTML = html;
     setLoginButtons();
+    fitSheetFoot($('#login'));
   }
 
   function authLabel(v) {
@@ -5420,6 +5465,7 @@ body.easy .twbox p{font-size:16px}
 
   function fetchDocs(list) {
     fetchState.mode = 'demo';
+    fetchState.log = [];
     var steps = [];
     var lastAg = '';
     list.forEach(function (d) {
@@ -5879,10 +5925,11 @@ body.easy .twbox p{font-size:16px}
     { key: 'care', label: '장기요양등급 판정', opts: ['유', '무'] },
     { key: 'emp', label: '미취업 상태', opts: ['미취업', '취업'] },
     { key: 'staff', label: '임직원 겸임', opts: ['미해당', '해당'] },
-    { key: 'cont', label: '최근 2년 연속 참여', opts: ['없음', '1년 참여', '2년 연속 참여'] }
+    { key: 'cont', label: '최근 2년 연속 참여', opts: ['없음', '1년 참여', '2년 연속 참여'] },
+    { key: 'spec', label: '특수교육 전공과 재학', opts: ['아니오', '재학'] }
   ];
   function eligDefault() {
-    return { reg: '유', biz: '무', uniq: '무', care: '무', emp: '미취업', staff: '미해당', cont: '없음' };
+    return { reg: '유', biz: '무', uniq: '무', care: '무', emp: '미취업', staff: '미해당', cont: '없음', spec: '아니오' };
   }
   function eligibility() {
     var e = state.elig || eligDefault();
@@ -5961,6 +6008,10 @@ body.easy .twbox p{font-size:16px}
     } else {
       add('cont', '2년 연속 참여', '없음', '가능', '');
     }
+    /* ⑧ 특수교육-복지연계형은 전공과 재학생 전용 — 신청 자격에서 받은 답으로 판단 */
+    var specOn = e.spec === '재학';
+    add('spec', '특수교육 전공과 재학', specOn ? '재학' : '아니오', specOn ? '가능' : '정보',
+      specOn ? '특수교육-복지연계형(edu_link) 신청 대상입니다.' : '특수교육-복지연계형은 전공과 재학생만 신청하는 사업입니다.');
     return { level: level, rows: rows };
   }
   function eligBadge(lvl) {
@@ -6004,6 +6055,7 @@ body.easy .twbox p{font-size:16px}
     state.elig[key] = val;
     renderElig();
     renderEligResult();
+    if (key === 'spec') { renderJobs(); }
     renderDock();
     scheduleSave();
   }
@@ -6529,6 +6581,7 @@ body.easy .twbox p{font-size:16px}
     if (s) { s.textContent = sub || ''; s.hidden = !sub; }
     if (b) { b.innerHTML = html; }
     var ov = $('#sheet');
+    fitSheetFoot(ov);
     if (ov) { ov.hidden = false; }
     setPageInert(true);
     document.body.style.overflow = 'hidden';
@@ -6542,6 +6595,18 @@ body.easy .twbox p{font-size:16px}
     document.body.style.overflow = '';
     focusBack(overlayReturn.sheet);
     overlayReturn.sheet = null;
+  }
+
+  /* 하단 고정 버튼이 마지막 내용을 가리면 시트에 아래 여백을 준다.
+     내용 높이(여백 제외)가 시트 높이보다 클 때만 켜서 짧은 시트는 그대로 둔다. */
+  function fitSheetFoot(ov) {
+    if (!ov || !ov.querySelector) { return; }
+    var sh = ov.querySelector('.sheet');
+    if (!sh) { return; }
+    if (!sh.querySelector('.stickybtns')) { sh.classList.remove('hasfoot'); return; }
+    var pad = sh.classList.contains('hasfoot') ? 150 : 0;
+    var contentH = sh.scrollHeight - pad;
+    sh.classList.toggle('hasfoot', contentH > sh.clientHeight + 4);
   }
 
   /* 모달을 열었던 버튼으로 포커스를 돌려준다. */
@@ -6631,7 +6696,11 @@ body.easy .twbox p{font-size:16px}
       openLogin('all');
       return;
     }
-    if (v === 'submit') { submitAll(); return; }
+    if (v === 'submit') {
+      if (state.receipt && state.receipt.no) { go('done'); return; }
+      submitAll();
+      return;
+    }
     if (v === 'done') { resetAll(false); return; }
   }
 
