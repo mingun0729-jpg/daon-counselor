@@ -101,7 +101,7 @@ npx wrangler deploy
 - 토큰: `POST https://oauth.codef.io/oauth/token`, `grant_type=client_credentials&scope=read`, Basic 인증. **약 7일 유효** → 메모리에 캐시.
 - 요청 본문: JSON을 `encodeURIComponent` 한 문자열로 보냅니다. 응답이 URL 인코딩되어 오면 풀어서 읽습니다.
 - 2-Way: 1차 응답 `result.code === "CF-03002"` + `data.continue2Way === true` → `data`의 `jobIndex`·`threadIndex`·`jti`·`twoWayTimestamp`를 `twoWayInfo`로 담아 `is2Way:true`, `simpleAuth:"1"`과 함께 같은 URL로 재요청.
-- 간편인증: `loginType="5"`, `loginTypeLevel` `1`카카오 `5`PASS `6`네이버 `8`토스. PASS면 `telecom` `0`SKT `1`KT `2`LGU+ 필수.
+- 간편인증: `loginType="5"`, `loginTypeLevel` `1`카카오 `5`PASS `6`네이버 `8`토스. PASS면 `telecom` 필수 — CODEF 코드는 `0`SKT(알뜰폰 포함) `1`KT(알뜰폰 포함) `2`LG U+(알뜰폰 포함) 세 가지뿐이고 알뜰폰은 별도 코드가 없어 쓰는 망의 코드로 보냅니다. 화면에서는 통신사 6가지(SKT·KT·LG U+·SKT 알뜰폰·KT 알뜰폰·LG U+ 알뜰폰)를 고를 수 있고, 알뜰폰 선택은 같은 망 코드로 매핑됩니다. 통신사 값은 `SKT`·`KT`·`LGU`·`SKT_MVNO`·`KT_MVNO`·`LGU_MVNO`(별칭 `LGU+`·`LGT`·`LG`도 허용).
 - 추가인증 제한시간 **270초(4분 30초)**, 상품 전체 300초. 인증을 마치지 않고 `simpleAuth:"1"`을 반복하면 2번까지 재시도되고 3번째에 `CF-12872`.
 
 | 다온 서류 | CODEF 상품 | 엔드포인트 | organization |

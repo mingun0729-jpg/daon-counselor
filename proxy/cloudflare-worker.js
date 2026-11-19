@@ -46,8 +46,16 @@ const BASE_URL = {
 /* 간편인증 수단 → CODEF loginTypeLevel */
 const AUTH_LEVEL = { kakao: '1', naver: '6', pass: '5', toss: '8' };
 const AUTH_LABEL = { kakao: '카카오톡', naver: '네이버', pass: 'PASS', toss: '토스' };
-/* 통신사 → CODEF telecom (PASS 인증에서 필수) */
-const TELECOM_CODE = { SKT: '0', KT: '1', LGU: '2' };
+/* 통신사 → CODEF telecom (PASS 인증에서 필수)
+   CODEF 간편인증 공식 스펙: 0 = SKT(알뜰폰 포함), 1 = KT(알뜰폰 포함), 2 = LG U+(알뜰폰 포함).
+   (CODEF 공식 예제 코드 주석: "통신사 String (SKT/알뜰폰: '0', KT/알뜰폰: '1', LGU+/알뜰폰: '2')")
+   알뜰폰은 별도 코드가 없어 쓰는 망의 코드로 보낸다. */
+const TELECOM_CODE = {
+  SKT: '0', KT: '1', LGU: '2',
+  SKT_MVNO: '0', KT_MVNO: '1', LGU_MVNO: '2'
+};
+/* 프론트엔드가 보낼 수 있는 별칭도 같은 코드로 받아 준다. */
+const TELECOM_ALIAS = { 'LGU+': 'LGU', LGT: 'LGU', LG: 'LGU', 'SKT알뜰폰': 'SKT_MVNO', 'KT알뜰폰': 'KT_MVNO', 'LGU+알뜰폰': 'LGU_MVNO' };
 
 /**
  * 지원 서류. path·organization·기본 파라미터는 CODEF 개발가이드에서 확인한 값이다.
@@ -241,16 +249,17 @@ function buildProfile(input) {
   const birth = digits(input && input.birth);
   const phone = digits(input && input.phone);
   const auth = String((input && input.auth) || 'kakao');
-  const telecom = String((input && input.telecom) || '').toUpperCase();
+  const telecom = String((input && input.telecom) || '').toUpperCase().replace(/\s+/g, '');
+  const telecomKey = TELECOM_ALIAS[telecom] || telecom;
   const address = String((input && input.address) || '').trim();
 
   if (name.length < 2) { throw httpError(400, '성명을 2자 이상 입력해 주세요.', 'input_name'); }
   if (birth.length !== 8) { throw httpError(400, '생년월일 8자리(YYYYMMDD)를 입력해 주세요.', 'input_birth'); }
   if (phone.length < 10 || phone.length > 11) { throw httpError(400, '휴대폰 번호를 숫자로 입력해 주세요.', 'input_phone'); }
   if (!AUTH_LEVEL[auth]) { throw httpError(400, '간편인증 수단을 골라 주세요(카카오톡·네이버·PASS·토스).', 'input_auth'); }
-  if (telecom && !TELECOM_CODE[telecom]) { throw httpError(400, '통신사는 SKT·KT·LGU+ 중에서 골라 주세요.', 'input_telecom'); }
+  if (telecom && !TELECOM_CODE[telecomKey]) { throw httpError(400, '통신사는 SKT·KT·LG U+ 또는 알뜰폰(SKT·KT·LG U+) 중에서 골라 주세요.', 'input_telecom'); }
 
-  return { name: name, birth: birth, phone: phone, auth: auth, telecom: telecom, address: address };
+  return { name: name, birth: birth, phone: phone, auth: auth, telecom: telecomKey, address: address };
 }
 
 function buildParams(docId, profile) {

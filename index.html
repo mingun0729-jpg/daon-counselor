@@ -221,6 +221,9 @@ h2.sec .cnt{font-size:15px; font-weight:800; color:var(--grass); background:var(
 }
 .chip[aria-pressed="true"]{background:var(--grass-soft); border-color:var(--grass); color:#12452A}
 .chiprow{display:flex; flex-wrap:wrap; gap:8px}
+#cfTelRow .chip{white-space:nowrap; max-width:100%}
+.telhint{font-size:12.5px; color:var(--ink-mute); font-weight:700; margin:7px 0 0; line-height:1.45}
+body.a11y-big .telhint{font-size:15px}
 
 /* ---------- 일자리 카드 ---------- */
 .joblist{display:flex; flex-direction:column; gap:12px}
@@ -4753,7 +4756,17 @@ body.easy .twbox p{font-size:16px}
     { v: 'pass', label: 'PASS', icon: '📱' },
     { v: 'toss', label: '토스', icon: '🔵' }
   ];
-  var TELECOM_OPTIONS = [{ v: 'SKT', label: 'SKT' }, { v: 'KT', label: 'KT' }, { v: 'LGU', label: 'LG U+' }];
+  /* 통신사 6가지 — 알뜰폰(SKT·KT·LG U+ 계열 MVNO)도 따로 고를 수 있게 둔다.
+     CODEF 간편인증의 telecom 값은 0:SKT(알뜰폰 포함) 1:KT(알뜰폰 포함) 2:LG U+(알뜰폰 포함) 세 가지라,
+     알뜰폰 선택은 프록시에서 쓰는 망의 코드(0·1·2)로 매핑해 보낸다. */
+  var TELECOM_OPTIONS = [
+    { v: 'SKT', label: 'SKT' },
+    { v: 'KT', label: 'KT' },
+    { v: 'LGU', label: 'LG U+' },
+    { v: 'SKT_MVNO', label: 'SKT 알뜰폰' },
+    { v: 'KT_MVNO', label: 'KT 알뜰폰' },
+    { v: 'LGU_MVNO', label: 'LG U+ 알뜰폰' }
+  ];
 
   function digitsOf(v) { return String(v == null ? '' : v).replace(/[^0-9]/g, ''); }
   function uuid() {
@@ -5091,7 +5104,8 @@ body.easy .twbox p{font-size:16px}
         '<div class="chiprow" id="cfTelRow" role="group" aria-labelledby="cfTelLab">' +
         TELECOM_OPTIONS.map(function (o) {
           return '<button class="chip" type="button" data-cf-tel="' + o.v + '" aria-pressed="' + (loginState.telecom === o.v ? 'true' : 'false') + '">' + esc(o.label) + '</button>';
-        }).join('') + '</div>';
+        }).join('') + '</div>' +
+        '<p class="telhint" id="cfTelHint">알뜰폰은 쓰고 계신 알뜰폰 항목(SKT·KT·LG U+ 알뜰폰)을 골라 주세요.</p>';
       body += '<span class="lab" id="cfAuthLab" style="display:block;font-size:14px;font-weight:800;margin:14px 0 6px">인증 수단</span>' +
         '<div class="chiprow" id="cfAuthRow" role="group" aria-labelledby="cfAuthLab">' +
         AUTH_OPTIONS.map(function (o) {
