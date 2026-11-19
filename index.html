@@ -5406,8 +5406,7 @@ body.easy .twbox p{font-size:16px}
     n.__mock = !!res.mock;
     state.real[d.id] = n;
     state.fetched[d.id] = {
-      at: nowStamp(), agency: agentMeta(d).agency, real: true, mock: !!res.mock,
-      summary: realSummary(d.id, n)
+      at: nowStamp(), agency: agentMeta(d).agency, real: true, mock: !!res.mock
     };
     state.checked[(state.selectedProgram || '') + ':' + d.id] = true;
     mergeRealIntoForm(d.id, n);
@@ -6439,6 +6438,12 @@ body.easy .twbox p{font-size:16px}
     rankSync();
     state.checked = raw.checked && typeof raw.checked === 'object' ? raw.checked : {};
     state.fetched = raw.fetched && typeof raw.fetched === 'object' ? raw.fetched : {};
+    /* 실제 조회값(state.real)은 저장하지 않는다 — 새로 고친 뒤에는 시연용 가상 문서를
+       실제 조회 결과처럼 보여 주지 않도록, 실제 표시가 붙어 있던 첨부는 다시 받게 한다. */
+    var droppedReal = 0;
+    Object.keys(state.fetched).forEach(function (k) {
+      if (state.fetched[k] && state.fetched[k].real) { delete state.fetched[k]; droppedReal += 1; }
+    });
     if (raw.form && typeof raw.form === 'object') {
       state.form = Object.assign({ name: '', birth: '', phone: '', email: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '', guardian: '', extra: {}, lic: '' }, raw.form);
       if (!state.form.extra || typeof state.form.extra !== 'object') { state.form.extra = {}; }
@@ -6463,6 +6468,7 @@ body.easy .twbox p{font-size:16px}
     var gotN = 0;
     Object.keys(state.fetched || {}).forEach(function (k) { if (state.fetched[k]) { gotN += 1; } });
     if (gotN) { fetchState.log = [{ icon: '✅', text: '서류 ' + gotN + '장 첨부 상태 복원', tone: 'ok' }]; }
+    if (droppedReal) { fetchState.log.unshift({ icon: '🔄', text: '실제 조회 서류 ' + droppedReal + '장은 새로 고침 후 다시 받아야 합니다', tone: 'run' }); }
     return true;
   }
 
