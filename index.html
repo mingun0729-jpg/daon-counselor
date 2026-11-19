@@ -1044,7 +1044,7 @@ body.easy .twbox p{font-size:16px}
           <button class="btn block small" id="btnSelfDocs" type="button">직접 준비 · 다음 단계</button>
         </div>
       </details>
-      <p class="micro">※ <b>기관 API 연결 설정</b>을 하지 않으면 아래 서류는 다온이 이 브라우저 안에서 만든 <b>시연용 예시 파일</b>입니다(전송·수집 없음). 연결하면 정부24·건강보험공단 간편인증으로 받은 <b>실제 조회값</b>이 서류 카드·신청서에 반영됩니다. 어느 쪽이든 이 화면의 서류는 신청서 묶음(ZIP)에 함께 저장됩니다.</p>
+      <p class="micro">※ 처음 열면 <b>다온 기본 프록시</b>에 연결되어 있어, 정부24·건강보험공단 간편인증으로 받은 <b>실제 조회값</b>이 서류 카드·신청서에 반영됩니다. <b>기관 API 연결 설정</b>에서 연결을 해제하면 다온이 이 브라우저 안에서 만든 <b>시연용 예시 파일</b>로 진행됩니다(전송·수집 없음). 어느 쪽이든 이 화면의 서류는 신청서 묶음(ZIP)에 함께 저장됩니다.</p>
     </section>
 
     <!-- ============ 4. 신청 ============ -->
@@ -1266,11 +1266,12 @@ body.easy .twbox p{font-size:16px}
     <div class="grab" aria-hidden="true"></div>
     <button class="close" id="cfgClose" type="button" aria-label="닫기">✕</button>
     <h2 id="cfgTitle">기관 API 연결 설정</h2>
-    <p class="sub" id="cfgSub">실제 정부24·건강보험공단 조회를 하려면, 다온용 프록시(Cloudflare Worker) 주소를 넣어 주세요.</p>
+    <p class="sub" id="cfgSub">다온 기본 프록시 주소가 미리 들어 있습니다. 그대로 쓰거나, 직접 만든 Cloudflare Worker 주소로 바꿀 수 있어요.</p>
     <div class="field">
       <label for="cfgUrl">프록시 주소</label>
-      <span class="hint">예: https://daon-codef-proxy.내계정.workers.dev</span>
-      <input id="cfgUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://…workers.dev" />
+      <span class="hint">기본 주소: https://daon-codef-proxy.mingun29.workers.dev</span>
+      <input id="cfgUrl" type="url" inputmode="url" autocomplete="off" spellcheck="false" placeholder="https://daon-codef-proxy.mingun29.workers.dev" />
+      <button class="btn small" id="cfgUrlDefault" type="button" style="margin-top:8px">기본 주소로 채우기</button>
     </div>
     <div class="field">
       <label for="cfgToken">접속 토큰 <span class="hint" style="display:inline">(프록시에 PROXY_TOKEN을 걸었을 때만)</span></label>
@@ -4738,7 +4739,10 @@ body.easy .twbox p{font-size:16px}
      - 어떤 경우에도 실제 조회를 시연으로 속이지 않는다.
      ============================================================ */
   var CODEF_KEY = 'daon.codef.v1';
-  var codef = { url: '', token: '', health: null, testing: false, checked: false };
+  /* 배포해 둔 다온 전용 프록시(Cloudflare Worker) — 처음 여는 사람도 바로 실제 조회를 쓸 수 있게 기본 주소로 둔다.
+     사용자가 [기관 API 연결 설정]에서 직접 해제하거나 다른 주소로 바꾸면 그 선택을 따른다(빈 값 = 직접 끔). */
+  var DEFAULT_PROXY_URL = 'https://daon-codef-proxy.mingun29.workers.dev';
+  var codef = { url: DEFAULT_PROXY_URL, token: '', health: null, testing: false, checked: false, isDefault: true };
   var realState = {
     running: false, phase: '', queue: [], idx: 0, doc: null, agency: '',
     pending: null, profile: null, sid: {}, timer: null, left: 0, retry: 0, error: null, done: []
@@ -4763,11 +4767,21 @@ body.easy .twbox p{font-size:16px}
   }
 
   function loadCodef() {
-    try {
-      var v = JSON.parse(localStorage.getItem(CODEF_KEY) || '{}');
-      codef.url = String(v.url || '').replace(/\/+$/, '');
-      codef.token = String(v.token || '');
-    } catch (e) { codef.url = ''; codef.token = ''; }
+    var raw = null, v = null;
+    try { raw = localStorage.getItem(CODEF_KEY); } catch (e) { raw = null; }
+    if (raw) { try { v = JSON.parse(raw); } catch (e) { v = null; } }
+    /* 저장된 설정이 없으면(첫 방문) 기본 프록시로 연결한다.
+       저장된 설정이 있으면 url이 비어 있어도 그대로 따른다 — 사용자가 직접 해제한 상태다. */
+    var saved = !!(v && typeof v === 'object' && Object.prototype.hasOwnProperty.call(v, 'url'));
+    if (!saved) {
+      codef.url = DEFAULT_PROXY_URL;
+      codef.token = '';
+      codef.isDefault = true;
+      return;
+    }
+    codef.url = String(v.url || '').replace(/\/+$/, '');
+    codef.token = String(v.token || '');
+    codef.isDefault = codef.url === DEFAULT_PROXY_URL;
   }
   function saveCodef() {
     try { localStorage.setItem(CODEF_KEY, JSON.stringify({ url: codef.url, token: codef.token })); } catch (e) { /* 저장 불가 시 무시 */ }
@@ -4814,7 +4828,7 @@ body.easy .twbox p{font-size:16px}
     if (!bar || !txt) { return; }
     bar.classList.remove('on', 'mock');
     if (!codef.url) {
-      txt.innerHTML = '<b>실제 기관 조회 꺼짐</b>시연용 예시 데이터로만 진행합니다.';
+      txt.innerHTML = '<b>실제 기관 조회 꺼짐</b>연결을 직접 해제했습니다 · 시연용 예시 데이터로 진행합니다.';
       return;
     }
     var h = codef.health;
@@ -4828,8 +4842,13 @@ body.easy .twbox p{font-size:16px}
         bar.classList.add('on');
         txt.innerHTML = '<b>실제 기관 조회 켜짐</b>' + esc(h.env === 'api' ? '정식' : '데모') + ' 서버 · 정부24·건강보험공단 간편인증 사용 가능.';
       }
+    } else if (codef.checked) {
+      txt.innerHTML = '<b>프록시에 연결하지 못했습니다</b>' +
+        (codef.isDefault ? '다온 기본 주소' : '저장된 주소') +
+        '가 응답하지 않습니다 · 시연용 예시 데이터로 진행할 수 있습니다.';
     } else {
-      txt.innerHTML = '<b>프록시 주소 저장됨</b>연결 테스트로 상태를 확인해 주세요.';
+      txt.innerHTML = '<b>' + (codef.isDefault ? '다온 기본 프록시 연결 중…' : '프록시 주소 저장됨') +
+        '</b>연결 상태를 확인하고 있습니다.';
     }
   }
 
@@ -4841,7 +4860,11 @@ body.easy .twbox p{font-size:16px}
     if (t) { t.value = codef.token; }
     setCfgState(codef.health);
     var msg = $('#cfgMsg');
-    if (msg) { msg.textContent = ''; }
+    if (msg) {
+      msg.textContent = (codef.url && codef.checked && !(codef.health && codef.health.ok))
+        ? '지금 연결하지 못했습니다. 연결 테스트로 다시 확인해 주세요.'
+        : '';
+    }
     var ov = $('#apiCfg');
     if (ov) { ov.hidden = false; }
     fitSheetFoot(ov);
@@ -4863,8 +4886,10 @@ body.easy .twbox p{font-size:16px}
     box.classList.remove('on', 'mock');
     if (!h) {
       txt.innerHTML = codef.url
-        ? '<b>주소는 저장되어 있습니다</b>연결 테스트로 지금 상태를 확인해 주세요.'
-        : '<b>아직 연결하지 않았습니다</b>연결 테스트를 눌러 확인해 주세요.';
+        ? (codef.isDefault
+          ? '<b>다온 기본 프록시 주소</b>연결 테스트를 눌러 지금 상태를 확인해 주세요.'
+          : '<b>주소는 저장되어 있습니다</b>연결 테스트로 지금 상태를 확인해 주세요.')
+        : '<b>연결을 꺼 두었습니다</b>주소를 넣고 저장하면 실제 조회를 다시 켭니다.';
       return;
     }
     if (h.mock) {
@@ -4944,16 +4969,30 @@ body.easy .twbox p{font-size:16px}
     }
     codef.url = url;
     codef.token = t ? t.value.trim() : '';
+    codef.isDefault = url === DEFAULT_PROXY_URL;
+    codef.checked = false;
+    codef.health = null;
     saveCodef();
     updateCfgBar();
     toast(url ? '프록시 주소 저장' : '프록시 연결 해제');
     closeCfg();
-    if (url && !codef.checked) { testCfg(false); }
+    if (url) { testCfg(false); }
+  }
+  function fillDefaultUrl() {
+    var u = $('#cfgUrl');
+    if (!u) { return; }
+    u.value = DEFAULT_PROXY_URL;
+    u.removeAttribute('aria-invalid');
+    var msg = $('#cfgMsg');
+    if (msg) { msg.textContent = '다온 기본 주소를 채웠습니다. 저장을 누르면 다시 연결합니다.'; }
+    u.focus();
   }
   function clearCfg() {
     codef.url = '';
     codef.token = '';
     codef.health = null;
+    codef.isDefault = false;
+    codef.checked = true;
     saveCodef();
     var u = $('#cfgUrl'), t = $('#cfgToken');
     if (u) { u.value = ''; }
@@ -5031,7 +5070,13 @@ body.easy .twbox p{font-size:16px}
     if (codef.url) {
       var f = state.form;
       var auto = realDocs(docs);
-      body += '<div class="note"><b>실제로 가져올 서류</b><ul style="margin:6px 0 0;padding:0;list-style:none">' +
+      if (codef.checked && !(codef.health && codef.health.ok)) {
+        body += '<div class="twbox err"><b>지금 다온 프록시에 연결하지 못했습니다</b>' +
+          '<p>기관 서버·네트워크 상태에 따라 잠시 뒤 다시 될 수 있습니다. 아래 <b>[기관 API 연결 설정]</b>에서 연결 테스트를 하거나, ' +
+          '<b>시연용 예시 데이터로 미리보기</b>로 넘어갈 수 있습니다.</p>' +
+          '<button class="btn small" type="button" data-cfg-open="1" style="margin-top:8px">‍⚙️ 기관 API 연결 설정</button></div>';
+      }
+      body += '<div class="note"><b>실제로 가져올 서류</b><ul style="margin:6px 0 0;padding:0;list-style:none">' + +
         (loginAgencySummary(auto) || '<li>· 이 기관은 자동 조회 서류가 없습니다</li>') + '</ul>' + loginManualNote(docs) + '</div>';
       body += '<h3 style="font-size:15.5px;font-weight:900;margin:14px 0 8px">내 정보로 간편인증</h3>';
       body += '<div class="cfgrow">' +
@@ -5055,9 +5100,9 @@ body.easy .twbox p{font-size:16px}
       body += '<p class="note" style="margin-top:14px">🔒 입력한 성명·생년월일·휴대폰 번호는 <b>다온 프록시를 거쳐 CODEF·기관으로 전달</b>됩니다. 다온 서버에는 저장하지 않으며, 화면을 닫으면 사라집니다. 인증이 끝나면 휴대폰 앱에서 알림을 확인해 주세요.</p>';
       body += '<button class="btn ghost block" type="button" data-demo="1" style="margin-top:2px">시연용 예시 데이터로 미리보기 (실제 조회 아님)</button>';
     } else {
-      body += '<div class="twbox wait"><b>실제 기관 조회를 하려면 프록시 연결이 필요합니다</b>' +
-        '<p>다온은 정적 페이지라 기관 API 키를 브라우저에 둘 수 없습니다. <b>Cloudflare Worker 프록시</b> 주소를 연결하면 정부24·건강보험공단 간편인증으로 실제 서류를 받아옵니다.</p>' +
-        '<p style="font-size:13px">연결 전에는 아래 <b>시연용 예시 데이터</b>로만 진행합니다. 실제 조회가 아닙니다.</p></div>' +
+      body += '<div class="twbox wait"><b>실제 기관 조회가 꺼져 있습니다</b>' +
+        '<p>다온은 정적 페이지라 기관 API 키를 브라우저에 둘 수 없습니다. <b>Cloudflare Worker 프록시</b>를 연결하면 정부24·건강보험공단 간편인증으로 실제 서류를 받아옵니다.</p>' +
+        '<p style="font-size:13px"><b>[기관 API 연결 설정] → [기본 주소로 채우기] → [저장]</b>을 누르면 다온 기본 프록시로 다시 연결됩니다. 연결 전에는 아래 <b>시연용 예시 데이터</b>로만 진행합니다. 실제 조회가 아닙니다.</p></div>' +
         '<div class="note"><b>가져올 서류</b><ul style="margin:6px 0 0;padding:0;list-style:none">' +
         (loginAgencySummary(docs) || '<li>· 가져올 서류 없음</li>') + '</ul></div>' +
         '<h3 style="font-size:15.5px;font-weight:900;margin:14px 0 8px">시연 인증 수단(연출)</h3>' +
@@ -5234,7 +5279,10 @@ body.easy .twbox p{font-size:16px}
       var ec = realState.error && realState.error.code ? String(realState.error.code) : '';
       html += '<b>' + esc((realState.error && realState.error.message) || '조회에 실패했습니다.') + '</b>' +
         '<p>' + (/^CF-/.test(ec) ? '응답 코드 ' + esc(ec) + ' · ' : '') +
-        '같은 문제가 계속되면 이 서류는 직접 발급해 주세요. 가짜 성공으로 넘기지 않습니다.</p>';
+        '같은 문제가 계속되면 이 서류는 직접 발급해 주세요. 가짜 성공으로 넘기지 않습니다.</p>' +
+        (!(codef.health && codef.health.env === 'api')
+          ? '<p style="font-size:12.5px;margin-top:6px">※ 다온은 지금 CODEF <b>데모 서버</b>로 연결되어 있습니다. 데모는 하루 100회까지만 조회할 수 있어, 한도를 넘기면 이 안내가 나옵니다.</p>'
+          : '');
     } else {
       html += '<b>서류를 받아왔습니다</b><p>신청서에 반영했습니다.</p>';
     }
@@ -5246,6 +5294,7 @@ body.easy .twbox p{font-size:16px}
     }
     if (realState.phase === 'error') {
       html += '<button class="btn ghost block" type="button" data-real-skip="1" style="margin-top:10px">이 서류는 직접 준비하고 넘어가기</button>';
+      html += '<button class="btn ghost block" type="button" data-demo="1" style="margin-top:8px">시연용 예시 데이터로 미리보기 (실제 조회 아님)</button>';
     }
     lb.innerHTML = html;
     setLoginButtons();
@@ -6988,6 +7037,8 @@ body.easy .twbox p{font-size:16px}
     if (cfgSaveBtn) { cfgSaveBtn.addEventListener('click', saveCfg); }
     var cfgOffBtn = $('#cfgOff');
     if (cfgOffBtn) { cfgOffBtn.addEventListener('click', clearCfg); }
+    var cfgDefaultBtn = $('#cfgUrlDefault');
+    if (cfgDefaultBtn) { cfgDefaultBtn.addEventListener('click', fillDefaultUrl); }
     var cfgOv = $('#apiCfg');
     if (cfgOv) { cfgOv.addEventListener('click', function (e) { if (e.target === cfgOv) { closeCfg(); } }); }
     var cfgUrlEl = $('#cfgUrl');

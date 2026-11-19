@@ -9,7 +9,7 @@
 - **앱(Application)처럼 동작하는 4개 화면**으로 이어진다.
   1. **복지카드** — 사진 업로드 시 **브라우저 로컬 OCR**(Tesseract.js `kor+eng`)로 성명·생년월일·장애유형·정도·등록일·발급기관을 실제 판독해 확인 화면에 채움 · 예시 인물 7종 · 내 정보 직접 입력(이름·유형·정도) 세 가지 길
   2. **할 수 있는 일자리** — 조건에 따라 신청 가능/확인 필요/지금은 어려움으로 나눈 8개 사업과 진주 지역 근무지 10곳
-  3. **서류** — 나라 기관(정부24·국민건강보험공단·복지로·고용24) 서류를 받아 신청서에 붙이는 화면. **기관 API(CODEF) 프록시를 연결하면 실제 간편인증 조회**, 연결하지 않으면 시연 연출. 둘을 화면에서 명확히 구분한다
+  3. **서류** — 나라 기관(정부24·국민건강보험공단·복지로·고용24) 서류를 받아 신청서에 붙이는 화면. **기본 프록시(`https://daon-codef-proxy.mingun29.workers.dev`)가 미리 연결되어 있어 실제 간편인증 조회**가 동작하고, 사용자가 `연결 해제`를 누르면 시연 연출로 돌아간다. 둘을 화면에서 명확히 구분한다
   4. **신청** — 복지카드·기관 서류로 채운 정보는 그대로 두고, 빠진 칸(연락처·사는 곳·계좌·하고 싶은 말)만 적어 제출 → 접수번호와 접수증
 - 상담(대화형 질문) 단계와 5단계 위저드는 **없다.** 화면마다 큰 버튼 하나로 다음 화면에 간다.
 - 서버·빌드·패키지 없음. `index.html` **단일 파일**(HTML + CSS + JS)이며, 파일을 열면 바로 동작한다. 예외 둘 — 복지카드 OCR만 Tesseract.js 5.1.1을 CDN에서 지연 로드하고, 실제 기관 조회를 쓸 때만 사용자가 배포한 `proxy/`(Cloudflare Worker)를 부른다.
@@ -23,7 +23,7 @@
 ```
 
 - **키는 절대 저장소·브라우저에 두지 않는다.** `CODEF_CLIENT_ID`·`CODEF_CLIENT_SECRET`은 Worker secret에만 넣는다(`proxy/README.md`).
-- 프론트엔드는 `daon.codef.v1`(localStorage)에 **프록시 주소·접속 토큰만** 저장한다. 본인확인 정보(성명·생년월일·휴대폰)는 메모리에만 두고 저장·복제하지 않는다.
+- 프론트엔드는 `daon.codef.v1`(localStorage)에 **프록시 주소·접속 토큰만** 저장한다. 저장된 설정이 없으면 `DEFAULT_PROXY_URL`(`https://daon-codef-proxy.mingun29.workers.dev`)을 써서 **처음 여는 사람도 바로 실제 조회**가 되고, `url`이 빈 값이면 사용자가 직접 해제한 상태로 보고 기본 주소를 다시 넣지 않는다(`기본 주소로 채우기` 버튼으로만 되돌린다). 본인확인 정보(성명·생년월일·휴대폰)는 메모리에만 두고 저장·복제하지 않는다.
 - 프록시 엔드포인트는 화이트리스트 3개뿐: `/api/health`, `/api/auth/request`(1차), `/api/auth/complete`(2차).
 - 2-Way 흐름: 1차 응답 `result.code === "CF-03002"` + `data.continue2Way === true` → `twoWayInfo`(`jobIndex`·`threadIndex`·`jti`·`twoWayTimestamp`)를 보관 → 사용자가 휴대폰에서 인증 → `[인증 완료 확인]` → `is2Way:true`, `simpleAuth:"1"`, `twoWayInfo`를 담아 같은 URL로 2차 요청. 추가인증 제한 270초, `simpleAuth:"1"` 반복은 2번까지(3번째 `CF-12872`).
 - 지원 상품(2026-11-19 개발가이드 확인): `insurance` `/v1/kr/public/pp/nhis-join/identify-confirmation`(org 0002), `resident` `/v1/kr/public/mw/resident-registration-copy/issuance`(0001), `disability` `/v1/kr/public/mw/certificate/disability`(0001). `REAL_DOC_IDS`가 이 셋이다.
@@ -116,7 +116,7 @@ proxy/        # 실제 기관 조회용 백엔드 프록시 (Pages와 별개로 
 12. **XSS 습관** — 사용자 입력은 반드시 `esc()`로 이스케이프한 뒤 `innerHTML`에 넣는다.
 13. **서류 파일은 시연용 가상 문서** — 파일 카드·미리보기·저장(`Blob`+`URL.createObjectURL`)·ZIP(`buildZip`)은 브라우저 안에서만 만들어지며 외부 전송이 없다. 문서 본문에는 항상 '시연용 가상 문서' 워터마크와 고지, 가상 값(가명)만 넣는다. ZIP은 무압축(store) 방식이며 파일명은 UTF-8 플래그(0x0800)로 기록한다.
 14. **큰 글씨·음성 안내 기준** — 큰 글씨 모드는 본문 20px 이상·버튼 64px 이상, 375px에서 가로 스크롤이 없어야 한다. 음성 대본은 민원인 응대용 구어체로 쓰고 화면 이름을 함께 말한다. 음성은 한국어 우선순위(SunHi→Yuna→Sora→Heami→Google 한국의)로 고르며, 속도는 **기본 `rate 0.82`(천천히)**, `0.93`(보통)으로 바꿀 수 있다. `pitch 1.04` 유지. 속도 상수는 `TTS_RATE_SLOW`/`TTS_RATE_NORMAL` 한 곳에서만 관리한다.
-15. **localStorage 키 고정** — 접근성 설정 `daon.a11y.v1`(`big`·`contrast`·`voice`·`rate`), 자동 임시저장 `daon.state.v1`(내부 스키마 `v: 4`), 프록시 설정 `daon.codef.v1`(`url`·`token`). 저장값은 브라우저 밖으로 나가지 않으며 `resetAll`에서 앞의 둘을 비운다. 실제 조회값(`state.real`)은 저장하지 않는다(메모리에만). 스키마를 바꾸면 `v`를 올리고 `restoreSaved`에서 검증한다.
+15. **localStorage 키 고정** — 접근성 설정 `daon.a11y.v1`(`big`·`contrast`·`voice`·`rate`), 자동 임시저장 `daon.state.v1`(내부 스키마 `v: 4`), 프록시 설정 `daon.codef.v1`(`url`·`token` — 저장값이 없으면 기본 프록시, 빈 `url`은 직접 해제). 저장값은 브라우저 밖으로 나가지 않으며 `resetAll`에서 앞의 둘을 비운다. 실제 조회값(`state.real`)은 저장하지 않는다(메모리에만). 스키마를 바꾸면 `v`를 올리고 `restoreSaved`에서 검증한다.
 16. **음성 안내** — 외부 TTS 라이브러리를 넣지 않고 `window.speechSynthesis`만 사용한다. 한국어 음성이 없는 기기에서는 음성 안내를 켜지 않고 `NO_KO_VOICE_MSG`로 안내한다.
 16-B. **낭독은 한 곳에서** — 화면 낭독 안내는 `#a11yStatus` 라이브 리전 한 곳만 쓴다. `toast()`는 보이는 안내만 담당하고(80ms 뒤 announce로 넘김), `announce()`가 바로 오면 같은 말을 두 번 읽지 않는다. `#toast`에 `role=status`를 다시 붙이지 않는다.
 16-C. **하단 고정 버튼과 시트 여백** — 시트 안 `.stickybtns`는 화면 아래에 붙어 마지막 내용을 가릴 수 있다. 내용을 바꾼 뒤 `fitSheetFoot(오버레이)`를 불러, 내용이 넘칠 때만 시트에 아래 여백(`.hasfoot`)을 준다. 새 시트를 만들면 같은 처리를 넣는다.
