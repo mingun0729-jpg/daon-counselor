@@ -31,6 +31,7 @@ body{
   margin:0; background:var(--bg); color:var(--ink);
   font-family:"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","맑은 고딕",system-ui,-apple-system,sans-serif;
   font-size:17px; line-height:1.6; letter-spacing:-.01em;
+  word-break:keep-all; overflow-wrap:break-word;
   -webkit-font-smoothing:antialiased;
 }
 img,svg{max-width:100%}
@@ -133,9 +134,9 @@ main{padding:16px 16px calc(var(--dock-h) + 28px)}
 }
 .hero .bigface{width:96px; height:96px; margin:0 auto 8px; border-radius:28px; background:var(--grass-soft); display:grid; place-items:center; border:1px solid var(--grass-line)}
 .hero .bigface svg{width:66px; height:66px}
-.hero h1{font-size:25px; line-height:1.34; font-weight:900; letter-spacing:-.03em}
-.hero p{margin-top:10px; font-size:16.5px; color:var(--ink-soft); line-height:1.62}
-h2.sec{font-size:22px; font-weight:900; letter-spacing:-.03em; display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+.hero h1{font-size:25px; line-height:1.34; font-weight:900; letter-spacing:-.03em; text-wrap:balance}
+.hero p{margin-top:10px; font-size:16.5px; color:var(--ink-soft); line-height:1.62; text-wrap:pretty}
+h2.sec{font-size:22px; font-weight:900; letter-spacing:-.03em; display:flex; align-items:center; gap:8px; flex-wrap:wrap; text-wrap:balance}
 h2.sec .cnt{font-size:15px; font-weight:800; color:var(--grass); background:var(--grass-soft); border:1px solid var(--grass-line); border-radius:999px; padding:2px 10px}
 .lead{font-size:15.5px; color:var(--ink-soft); line-height:1.6}
 .micro{font-size:13.5px; color:var(--ink-mute); line-height:1.55}
@@ -230,7 +231,7 @@ h2.sec .cnt{font-size:15px; font-weight:800; color:var(--grass); background:var(
 .job[data-state="picked"]{border-color:var(--grass); box-shadow:0 0 0 3px var(--grass-soft), var(--shadow-soft)}
 .job label.jbody{display:block; padding:16px; cursor:pointer; position:relative}
 .job .top{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:8px}
-.job .name{font-size:19.5px; font-weight:900; letter-spacing:-.03em; line-height:1.35; padding-right:28px}
+.job .name{font-size:19.5px; font-weight:900; letter-spacing:-.03em; line-height:1.35; padding-right:28px; text-wrap:balance}
 .job .pay{font-size:17px; font-weight:900; color:var(--btn); margin-top:6px}
 .job .meta{font-size:14.5px; color:var(--ink-soft); font-weight:700; margin-top:4px}
 .job .why{
@@ -384,6 +385,7 @@ h2.sec .cnt{font-size:15px; font-weight:800; color:var(--grass); background:var(
 .receipt{margin-top:14px; text-align:left; border-top:1px solid var(--line); padding-top:14px; display:grid; gap:8px}
 .receipt div{display:flex; gap:10px; font-size:14.5px; line-height:1.5}
 .receipt b{min-width:76px; color:var(--ink-mute); font-size:13.5px; font-weight:800}
+.receipt .org-meta{display:block; margin-top:2px; color:var(--ink-mute); font-size:13px; line-height:1.5}
 .barcode{height:44px; margin:12px 0 2px; background:repeating-linear-gradient(90deg,#1F2A22 0 2px,transparent 2px 4px,#1F2A22 4px 7px,transparent 7px 10px,#1F2A22 10px 11px,transparent 11px 14px)}
 
 /* ---------- 접기 ---------- */
@@ -534,6 +536,74 @@ body.a11y-big .ocrstep b{font-size:17px}
 body.a11y-big .ocrstep span{font-size:14.5px}
 body.a11y-big .donebox .no{font-size:24px}
 
+/* 큰 글씨 모드 — 본문에 딸린 작은 글씨도 같은 비율로 키워 크기 균형 유지 */
+body.a11y-big .hero h1{line-height:1.3}
+body.a11y-big .hero p{line-height:1.6}
+body.a11y-big h2.sec .cnt{font-size:17px; padding:3px 12px}
+body.a11y-big .autofill b{font-size:18px}
+body.a11y-big .autofill p{font-size:17px}
+body.a11y-big .field .hint,body.a11y-big .field .err{font-size:16px; line-height:1.5}
+body.a11y-big .note{font-size:16px}
+body.a11y-big .sample b{font-size:19px}
+body.a11y-big .sample span{font-size:16px}
+body.a11y-big .sample .sico{font-size:29px}
+body.a11y-big .wcard b{font-size:19px}
+body.a11y-big .wcard span{font-size:16px}
+body.a11y-big .agentcard b{font-size:20px}
+body.a11y-big .agentcard p{font-size:17px}
+body.a11y-big .progress .txt{font-size:16px}
+body.a11y-big .job details .inner{font-size:17px}
+body.a11y-big details.box>summary{font-size:19px}
+body.a11y-big details.box .inner{font-size:18px}
+body.a11y-big .condbar .who{font-size:18px}
+body.a11y-big .condbar .who small{font-size:15px}
+body.a11y-big .sheet .sub{font-size:17px}
+body.a11y-big #toast{font-size:17px}
+body.a11y-big .fc-size,body.a11y-big .fc-ext{font-size:12.5px}
+body.a11y-big .fc-badge{font-size:13px; padding:3px 9px}
+body.a11y-big .idcard-top,body.a11y-big .idcard-foot{font-size:13.5px}
+body.a11y-big .idcard-top .idchip{width:38px; height:27px}
+body.a11y-big .idcard-fields b{font-size:13.5px; min-width:64px}
+body.a11y-big .idcard-fields .masked{font-size:14.5px; letter-spacing:0}
+body.a11y-big .fvtop b{font-size:18px}
+body.a11y-big .fvtop span{font-size:15px}
+body.a11y-big .fvmeta{font-size:15px; row-gap:8px}
+body.a11y-big .fvfoot .btn{font-size:18px}
+body.a11y-big .idphoto{width:84px; height:108px; font-size:13px}
+body.a11y-big .al-head b{font-size:19px}
+body.a11y-big .al-badge{font-size:13px}
+body.a11y-big .dock .note{font-size:16px}
+body.a11y-big .dock .cta{line-height:1.25; padding:10px 14px}
+body.a11y-big .dock .sub{line-height:1.3}
+body.a11y-big .linkbtn{font-size:15px; padding:0 10px}
+body.a11y-big .brand small{line-height:1.25}
+body.a11y-big .receipt .org-meta{font-size:15.5px}
+body.a11y-big .receipt div>span{min-width:0}
+
+/* 큰 글씨 + 좁은 화면: 여러 칸으로 나뉘어 글자가 눌리던 줄을 1열로 펼친다 */
+@media (max-width:480px){
+  body.a11y-big .a11ybar .abtn{flex:1 1 auto; justify-content:center}
+  body.a11y-big .a11ybar .rate{flex:1 1 150px; display:flex}
+  body.a11y-big .a11ybar .rate button{flex:1}
+  body.a11y-big .a11ybar .stopbtn{flex:0 0 auto}
+  body.a11y-big .agency{flex-wrap:wrap; align-items:flex-start; row-gap:10px; padding:16px}
+  body.a11y-big .agency .agico{width:56px; min-width:56px; height:56px; font-size:14px}
+  body.a11y-big .agency .agmain{flex:1 1 150px}
+  body.a11y-big .agency .btn{flex:1 1 100%; width:100%; margin-top:2px; min-height:56px; font-size:18px}
+  body.a11y-big .agency .status{align-self:center}
+  body.a11y-big .fcard{flex-wrap:wrap; row-gap:10px; padding:14px}
+  body.a11y-big .fcard .fc-main{flex:1 1 calc(100% - 58px)}
+  body.a11y-big .fcard .fc-actions{flex-direction:row; gap:8px; width:100%}
+  body.a11y-big .fcard .fc-btn{flex:1 1 0; min-height:52px; font-size:16px}
+  body.a11y-big .receipt div{flex-direction:column; gap:2px}
+  body.a11y-big .receipt b{min-width:0}
+  body.a11y-big .job .top{row-gap:6px}
+  body.a11y-big .job .name{padding-right:34px}
+  body.a11y-big .sheet .choice{padding:14px}
+  body.a11y-big .sheet .choice b{line-height:1.35}
+  body.a11y-big .hero h1 .hb,body.a11y-big .hero h1 .hc{display:block}
+}
+
 /* ============================================================
    고대비 모드
    ============================================================ */
@@ -553,6 +623,8 @@ body.a11y-contrast .badge.check{background:#33260C; color:#FFD479}
 body.a11y-contrast .badge.no{background:#1B211C; color:#D3DBD4; border-color:#3A453C}
 body.a11y-contrast .badge.ai{background:#132333; color:#A9CDF5}
 body.a11y-contrast .idcard{background:#121814; border-color:#3E6F4F}
+body.a11y-contrast .agentcard{background:var(--surface); border-color:#3E6F4F}
+body.a11y-contrast .fcard.gen{background:#121814}
 body.a11y-contrast .idphoto{background:#1B211C; border-color:#55635A; color:#BCC7BE}
 body.a11y-contrast .job .why{background:#0F1511; border-left-color:#3E6F4F}
 body.a11y-contrast .progress .bar{background:#1B211C}
@@ -592,6 +664,11 @@ body.easy .btn{font-size:18px}
 body.easy .stp b{font-size:13.5px}
 body.easy .job details{display:none}
 body.easy .foot-note{font-size:13.5px}
+/* 큰 글씨와 쉬운 말을 함께 켜면 글씨 크기는 큰 글씨를 따르고 줄 간격만 넉넉히 */
+body.a11y-big.easy{font-size:20px; line-height:1.72}
+body.a11y-big.easy .btn{font-size:20px}
+body.a11y-big.easy .stp b{font-size:15px}
+body.a11y-big.easy .hero h1{line-height:1.4}
 
 /* ---------- 인쇄 ---------- */
 #printArea{display:none}
@@ -673,8 +750,8 @@ body.easy .foot-note{font-size:13.5px}
           <div class="bigface" aria-hidden="true">
             <svg viewBox="0 0 48 48" role="presentation" focusable="false"><g fill="none" stroke="#1B6438" stroke-width="4.4" stroke-linecap="round"><path d="M15 14v20"/><path d="M15 14h18v14a6 6 0 0 1-6 6H15"/></g><circle cx="11.6" cy="12" r="2.4" fill="#1B6438"/><circle cx="19.6" cy="12" r="2.4" fill="#1B6438"/></svg>
           </div>
-          <h1>복지카드만 있으면<br>할 수 있는 일을 찾아 드려요</h1>
-          <p>복지카드를 찍으면 <b>할 수 있는 일자리</b>를 골라 드리고,<br>필요한 서류는 나라 기관에서 <b>대신 모아</b> 드려요.</p>
+          <h1><span class="hl">복지카드만 있으면</span><br><span class="hb">할 수 있는 일을</span> <span class="hc">찾아 드려요</span></h1>
+          <p>복지카드를 찍으면 <b>할 수 있는 일자리</b>를 골라 드리고, 필요한 서류는 나라 기관에서 <b>대신 모아</b> 드려요.</p>
         </div>
 
         <div class="btnrow" style="margin-top:14px">
@@ -2420,10 +2497,16 @@ body.easy .foot-note{font-size:13.5px}
   }
 
   function previewDocContent(f) {
-    if (!a11y.big) { return f.content; }
+    var c = f.content || '';
+    // SVG 로 만든 서류는 고정 너비(760px)라 좁은 화면에서 잘린다. 화면 너비에 따라 줄여 보여 준다.
+    if (/<svg[\s>]/.test(c.slice(0, 400))) {
+      var fit = '<style>svg{width:100%;max-width:760px;height:auto;display:block;margin:0 auto}html{margin:0;background:#E9EDE9}</style>';
+      return c.replace(/<svg\b([^>]*)>/, '<svg$1>' + fit);
+    }
+    if (!a11y.big) { return c; }
     var extra = '<style>.sheet{font-size:14.6px}h1{font-size:22px}th,td{font-size:13.6px}.txt,.small,.memo{font-size:13.6px}' +
       '.doc-badge,.doc-no,.sub{font-size:11.8px}.sub{font-size:12.4px}</style>';
-    return f.content.indexOf('</head>') >= 0 ? f.content.replace('</head>', extra + '</head>') : f.content;
+    return c.indexOf('</head>') >= 0 ? c.replace('</head>', extra + '</head>') : c;
   }
   function openFileView(id, opener) {
     var d = findDocById(id);
@@ -3367,7 +3450,7 @@ body.easy .foot-note{font-size:13.5px}
     if (no) { no.textContent = r.no; }
     if (box) {
       box.innerHTML = [
-        ['접수처', r.org + ' <br><span style="color:var(--ink-mute);font-size:13px">' + esc(r.orgAddr) + ' · ☎ ' + esc(r.orgTel) + '</span>'],
+        ['접수처', r.org + ' <span class="org-meta">' + esc(r.orgAddr) + ' · ☎ ' + esc(r.orgTel) + '</span>'],
         ['신청한 일', esc(r.program)],
         ['일할 곳', esc(r.workplace)],
         ['함께 낸 서류', '신청서 3장 포함 모두 ' + requiredDocs(docsFor(state.selectedProgram)).length + '장'],
