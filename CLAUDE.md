@@ -5,9 +5,13 @@
 
 ## 1. 프로젝트 개요
 
-- **다온(DAON)** — 장애인 일자리 맞춤형 AI 카운셀러 **공모전 시연용 웹 프로토타입**.
-- 장애 당사자가 몇 번의 선택만으로 ① 신청 가능한 일자리 사업·지원제도 판별, ② 근로환경에 맞는 근무지 예시, ③ 사업별 구비서류, ④ 신청서 작성까지 한 화면에서 끝내는 흐름을 보여 준다.
-- **복지카드(장애인등록증) 촬영·업로드 → OCR 인식 → 자격 판별 → 세부 신청서 작성** 흐름이 대표 시연 시나리오다.
+- **다온(DAON)** — 장애인 일자리 맞춤형 AI 도우미 **공모전 시연용 웹 프로토타입**.
+- **앱(Application)처럼 동작하는 4개 화면**으로 이어진다.
+  1. **복지카드** — 카드 촬영·업로드 또는 예시 카드 3종으로 장애 유형·정도 인식(시연)
+  2. **할 수 있는 일자리** — 조건에 따라 신청 가능/확인 필요/지금은 어려움으로 나눈 8개 사업과 진주 지역 근무지 10곳
+  3. **서류** — 나라 기관(정부24·국민건강보험공단·복지로·고용24)에 AI가 대신 로그인해 서류를 받아 신청서에 붙이는 과정을 실시간 로그로 보여 줌
+  4. **신청** — 복지카드·기관 서류로 채운 정보는 그대로 두고, 빠진 칸(연락처·사는 곳·계좌·하고 싶은 말)만 적어 제출 → 접수번호와 접수증
+- 상담(대화형 질문) 단계와 5단계 위저드는 **없다.** 화면마다 큰 버튼 하나로 다음 화면에 간다.
 - 서버·빌드·패키지 없음. `index.html` **단일 파일**(HTML + CSS + JS, 외부 CDN·라이브러리 0개)이며, 파일을 열면 바로 동작한다.
 - 배포: GitHub Pages — https://mingun0729-jpg.github.io/daon-counselor/
 - 출발점: 진주시지체장애인협회 일자리 업무 현장 경험(작성자 본인 근로 경험).
@@ -27,84 +31,81 @@ CLAUDE.md     # 이 문서 (작업 규칙)
 
 | 위치 | 내용 |
 | --- | --- |
-| `<style>` | 디자인 토큰(`:root`) · 단계 표시줄/판 레이아웃 · 접근성 툴바/큰 글씨/고대비 테마 · 복지카드 인식 오버레이 · 신청서 4단계 · 신청·접수 가이드 · 인쇄 스타일 |
-| `<body>` 맨 앞 | 본문 바로가기 2개 — `#skipToAnswer`(상담 답변으로 바로 가기: 1단계로 가서 첫 답변 버튼, 없으면 입력창에 포커스), 진행 단계로 바로 가기 |
-| `<body>` 헤더 | 로고(눈 달린 ㅍ) · 접근성 툴바(`#btnBigText`, `#btnHighContrast`, `#btnVoice`, `#btnRateSlow`, `#btnRateNormal`, `#btnSpeak`, `#btnStopSpeak`) |
-| `.stepbar` (sticky) | 5단계 버튼 `.stepbtn[data-step="1"~"5"]` + 진행 막대 `#stepFill` + `#stepPos`. 클릭하면 `goStep()` |
-| `#stepNavTop` / `#stepNavBottom` | `data-nav-step` 이전·다음 버튼 자리 — `renderStepNavs()`가 두 곳을 같은 내용으로 그린다 |
-| `#pane-1` 1단계 상담·복지카드 | `.chat`(`#cardStart` → `#chatLog` → `#chips` → `#composer`) + `.side`(예시 `#personas`, 조건 요약 `#sumStrip`, 진행 안내 `#stepGuide`) |
-| `#pane-2` 2단계 추천 일자리·근무지 | 소탭 `#tab-jobs`/`#tab-work` + `#panel-jobs`(`#jobsBody`) · `#panel-work`(`#workBody`) |
-| `#pane-3` 3단계 서류 준비·자동 수집 | `#docsBody` — 사업 선택(`#programSelect`), 진행률(`#docBar`), 자동 수집(`#docAgent`), 체크리스트(`#docList`). 상단 배지 `#count-docs` |
-| `#pane-4` 4단계 신청서 작성 | `#formBody` — 신청서 4단계 마법사(`#formFlow`) + 5항목 초안(`#draftOut`) |
-| `#pane-5` 5단계 원클릭 접수·접수처 | `#submitBody` — 자동 접수 CTA(`#btnAutoSubmit`), 가상 접수증, 메일(`#btnAppMail`), 접수처 카드, 접수 가이드(`#applyGuide`) |
-| `#ocr` | 복지카드 인식 시연 오버레이(4단계·추출값 확인·개인정보 고지) |
-| `#auto` | 원클릭 자동 접수 시연 오버레이(4단계·점검·패키지·전송·가상 접수증). `.ocr` 계열 클래스를 재사용하고 `auto-*`/`ag-*`/`receipt` 스타일을 쓴다 |
-| `#fileView` | 서류 파일 미리보기 모달(iframe) |
-| `#printArea` | 인쇄용 신청서·가상 접수증 출력 전용 컨테이너(화면에서는 `display:none`) |
-
-한 번에 한 단계(`.pane`)만 보인다. 단계 판은 `hidden` 속성으로 감추고, 각 판 안의 내용은 렌더 함수가 채운다.
+| `<style>` | 디자인 토큰(`:root`) · 앱 틀(헤더·편하게 보기·단계 표시·하단 큰 버튼) · 화면별 카드 · 접근성 3모드(큰 글씨·고대비·쉬운 말) · 시트/모달 · 인쇄 |
+| `.topbar` | 로고(눈 달린 ㅍ) · `#btnBack` · `#btnStartOver`(처음부터) + 편하게 보기 줄(`#btnBigText`, `#btnHighContrast`, `#btnVoice`, `#a11yRate`의 `#btnRateSlow`/`#btnRateNormal`, `#btnStopSpeak`) |
+| `.steps` | 4단계 표시 `button.stp[data-goto="card|jobs|docs|submit"]` — 지나온 단계는 `✓`, 지금 단계는 `aria-current="step"` |
+| `main` 안 5개 화면 | `#view-card`(카드 인식) · `#view-jobs` · `#view-docs` · `#view-submit` · `#view-done`. 한 번에 하나만 보이고 나머지는 `hidden` |
+| `#view-card` | `#cardHome`(시작: `#btnScan`, `#btnSamples`, `#btnManual`, `#cardFile`) / `#cardDone`(인식 결과 `#cardVisual`, 배려 안내 `#cardHint`, `#btnCardEdit`, `#btnCardAgain`) |
+| `#view-jobs` | `#condWho`·`#btnCond`(조건 바꾸기), `#jobList`(라디오 카드), `#btnJobMore`, `#offBox`(지금은 어려운 일자리), `#workList`(근무지), `#supportBox`(근로지원 제도) |
+| `#view-docs` | 진행 카드(`#docsTitle`·`#docProgTxt`·`#docBar`), **실시간 진행 로그** `#agentLog`/`#alList`, 기관 카드 `#agencyList`, 파일 카드 `#fileList`, `#selfBox`(직접 준비) |
+| `#view-submit` | 자동 채움 안내 `#autoDesc`, 입력 3칸(`#inPhone`, `#inAddr`, `#inBank`+`#inAcct`)과 `#inMotiv`(+`#btnDraft`), `#formDocList` |
+| `#view-done` | 접수증 `#doneNo`·`#doneReceipt`, 인쇄 `#btnPrint`, ZIP `#btnZip`, 메일 `#btnMail` |
+| `.dock` | 화면마다 **큰 버튼 하나** `#ctaMain` + 안내 `#dockNote`. 카드 화면(인식 전)과 완료 화면에서는 숨긴다 |
+| 시트·모달 | `#sheet`(예시 카드·직접 고르기·조건 바꾸기·처음부터), `#ocr`(카드 읽기 4단계), `#login`(기관 로그인 시연), `#submitOv`(제출 4단계), `#fileView`(서류 미리보기 iframe) |
+| `#printArea` | 인쇄용 컨테이너(화면에서는 `display:none`) |
 
 ### 스크립트 섹션 (IIFE 안, 주석의 번호와 대응)
 
 | 섹션 | 주요 심볼 |
 | --- | --- |
 | 0. 공통 유틸 | `$`, `$$`, `esc`, `toast` |
-| 0-B. 접근성·임시저장 | `a11y` 상태(`big`·`contrast`·`voice`·`rate`), `applyA11y`, `setA11y`, `setRate`, `TTS_RATE_SLOW(0.82)`/`TTS_RATE_NORMAL(0.93)`, `speak`/`speakScreen`/`stopSpeak`(TTS), `screenSummaryText`, `snapshot`(v2), `saveNow`/`scheduleSave`/`restoreSaved`/`clearSaved`, `updateSaveBadge` |
-| 1. 조건 라벨 | `SEVERITY_LABEL`, `TYPE_LABEL`, `WORK_LABEL`, `ENV_LABEL` |
-| 2. 상태 | `state` — 상담 조건 + `card`(카드 인식 결과) + `form`(신청서 입력) + `formStep` + `ocr` |
-| 3. 질문 정의 | `STEPS` (장애 정도 → 유형 → 근무형태 → 근로환경 7개: 휠체어·서있기·단순 반복·의사소통·시각 보조(`vision`)·조용한 환경(`quiet`)·통원 일정(`flexible`)) |
-| 4. 판별 규칙 | `ruleGeneralFull` ~ `ruleRemote`, `statusOf`, `PROGRAMS`(8개 사업), `analyze()` |
-| 5. 근로지원 제도 | `buildSupports()` (7개 제도) |
-| 6. 근무지 예시 | `WORKPLACES`(10곳, 태그 `TAG_LABEL` — `assist` 보조기기 설치 가능·`flex` 근무시간 조정 가능 포함), `matchWorkplace(wp, envs, workType)` — 근로환경 + 희망 근무시간으로 판정(환경 조건이 없어도 근무시간으로 잘 맞음/확인 필요가 나뉨, 재택 근무지는 휠체어 접근 문제 없음), `scoredWorkplaces` |
-| 7. 서류 체크리스트 | `COMMON_DOCS`, `EXTRA_DOCS`, `ALWAYS_EXTRA`, `docsFor(pid)` |
-| 7-B. 복지카드 인식 | `CARD_SAMPLES`, `OCR_STEPS`, `openOcr`, `setOcrStage`, `renderOcr`, `confirmOcr`, `applyCard`, `handleCardFile`, `renderCardStart` |
-| 7-C. 신청서 4단계 | `ORG`(접수처 기관 정보: 기관명·주소·대표전화), `WIZARD_STEPS`, `TRANSPORTS`, `AIDS`, `JOB_OPTIONS`, `wizardHtml`, `step1Html`~`step4Html`, `appSheetHtml`(신청일·수신처·접수처·서류 현황 표·동의·서명란), `guideHtml`(실제 신청·접수 가이드), `todayStr`, `jurisdiction`/`submissionPlace`, `buildAppText`, `buildFormMotivation`, `printApp`, `toggleAid`, `onFieldChange` |
-| 7-D. 자동 접수 시연·메일 | `AUTO_STEPS`, `AUTO_FIELDS`, `autoState`, `autoCheck`, `openAuto`/`closeAuto`/`setAutoStage`/`renderAuto`, `issueReceipt`/`receiptInner`/`printReceipt`/`barcodeBars`, `buildMail`/`launchMailto`/`openMailApp` |
-| 7-E. 서류 자동 수집 에이전트 | `AGENT_DOC_META`, `MockDocAgentAPI`(`fetchDocument` — 실제 연동 시 `fetch()`로 교체), `fetchDocumentFromAgent`, `AGENT_STATE`, `agentPanelInner`, `renderAgentPanels`, `runDocAgent`/`agentStep` |
-| 7-F. 서류 파일 생성·미리보기·저장 | `DOC_STYLE`/`DOC_WM`(문서 공통 서식·워터마크), `DOC_FILE_META`/`DOC_TITLE`, `docFileFor`(HTML/SVG 본문 + 실제 Blob 크기, 입력값 캐시), `form1Doc`~`form3Doc`, `certSpec`/`certDoc`, `svgCardDoc`, `docFileCard`/`docPendingCard`, `fmtBytes`, `buildZip`(무압축 ZIP), `autoPkgStart`/`pkgFinish`, `openFileView`/`closeFileView`/`printDocFile`, `saveDocFile`/`savePackage` |
-| 8. 대화 렌더링 | `addMsg`, `renderChat`, `renderChips`, `answerSingle`/`commitEnvs`/`afterAnswer(was)`, `maybeAdvance` — 버튼·말로 상담을 방금 마치면 1.2초 뒤 2단계로 자동 이동(예시 버튼과 같은 흐름, 이미 마친 뒤 조건을 고칠 때는 이동하지 않음) |
-| 9. 단계 판 렌더링 | `renderSummary`, `renderJobs`(`jobCardHtml`·`keyReason` — 카드는 핵심 근거 한 줄만 보이고 나머지는 `<details class="more">`로 접힘, 해당 없는 사업은 `.off-group`으로 접힘, 근로지원 제도는 `details.support`), `renderWorkplaces`, `renderDocs`(= `renderDocsPrep` 3단계 + `renderFormStage` 4단계 + `renderSubmitStage` 5단계), `docsCtx`, `needHtml`, `personaButtonsHtml`, `draftBoxHtml`, `orgCardHtml`, `attachFormStage`, `updateDocProgress`, `renderAll` |
-| 10. 신청서 초안 | `buildDraft()` (자기소개 5항목 초안), `generateDraft`, `copyText` |
-| 11. 직접 입력 해석 | `TYPE_RULES`(구체적인 유형부터: 뇌병변→시각→청각·언어→발달·정신→기타→지체)·`SEV_RULES`·`WORK_RULES`·`ENV_RULES`, `NEG_ENV`/`NEG_WORK`(조건 낱말 뒤 12자 안의 부정 표현), `firstHit`, `workFromNumbers`(하루 N시간·주 N시간·주 N일), `parseText`, `AFFIRM`/`NONE_ENV`, `applyText` |
-| 12. 단계 이동·초기화·예시 | `STEP_META`, `stepIndex`, `docsProgress`, `stepAchieved`, `goStep`, `scrollToStepTop`, `renderStepBar`, `renderStepNavs`, `renderStepGuide`, `renderSubTabs`, `setSubTab`, `setTab`, `focusDashboard`, `resetState`, `resetAll`, `PERSONAS`, `applyPersona` |
-| 13. 이벤트 연결 | `init()` — 모든 이벤트 위임은 `#panel-docs`, `#cardStart`, `#personas`에 걸려 있음 |
+| 0-B. 접근성·임시저장 | `a11y`(`big`·`contrast`·`voice`·`rate`), `applyA11y`, `setA11y`, `setRate`, `TTS_RATE_SLOW(0.82)`/`TTS_RATE_NORMAL(0.93)`, `speak`/`stopSpeak`(TTS), `setSpeakUI`, `checkKoreanVoice`, `announce` |
+| 1. 이름표 | `TYPE_LABEL`, `TYPE_SHORT`, `SEVERITY_LABEL`, `WORK_LABEL`, `WORK_SHORT`, `ENV_LABEL`, `TRANSPORTS`, `AIDS`/`AIDS_LABEL`, `ORG` |
+| 2. 상태 | `state` — `view`·`card`·`type`·`severity`·`workType`·`envs(Set)`·`selectedProgram`·`selectedWorkplace`·`checked`·`fetched`·`form`·`receipt`·`easy` |
+| 3. 기관 | `AGENCY`(정부24·건강보험·복지로·고용24·협회), `DOC_AGENCY`, `AGENT_DOC_META`/`agentMeta` |
+| 4. 판별 규칙 | `ruleGeneralFull` ~ `ruleRemote`, `statusOf`, `PROGRAMS`(8개), `analyze()` |
+| 5. 근로지원 | `buildSupports()`(7개 제도) |
+| 6. 근무지 | `WORKPLACES`(10곳), `TAG_LABEL`, `WARN_TAGS`, `matchWorkplace`, `scoredWorkplaces` |
+| 7. 서류 목록 | `COMMON_DOCS`, `EXTRA_DOCS`, `ALWAYS_EXTRA`, `docsFor` |
+| 5(앱). 복지카드 | `CARD_SAMPLES`(3종), `OCR_STEPS`, `openSamples`, `openManual`, `openOcr`/`finishOcr`, `applyCard`, `applyProfile`(장애 유형별 배려: 시각=큰글씨+읽어주기, 발달=쉬운 말, 지체·뇌병변=큰 버튼) |
+| 6(앱). 화면 흐름 | `VIEW_ORDER`, `go`, `render`, `renderSteps`, `renderCard`, `renderDock` |
+| 7(앱). 일자리 | `analyze` 결과를 `jobCardHtml`로, `kindOfProgram`·`workRows`·`pickDefaultWorkplace`, `renderWork`(진주 근무지), `renderSupports`, `openCond` |
+| 8(앱). 서류 | `fetchState`(진행 로그·phase), `requiredFetchDocs`, `assocDocs`, `docsStats`, `agencyGroups`, `renderDocs`, `renderAgentLog`/`pushLog`/`phaseLabel`, `openLogin`/`confirmLogin`, `fetchDocs`(접속→로그인→발급→첨부 단계별 실행) |
+| 9(앱). 신청 | `renderSubmit`, `validateForm`, `readForm`, `JOB_DEFAULT`, `buildDraftText`, `submitAll`, `makeReceipt`, `renderDone` |
+| 10(앱). 인쇄·저장 | `printHtmlString`(새 탭 인쇄, 팝업 차단 시 `downloadHtml`), `printApp`, `saveAllZip`, `sendMail`, `allDocs` |
+| 11(앱). 읽어주기 | `screenSummaryText`(화면별 대본), `speakScreen` |
+| 12(앱). 저장·복원 | `snapshot`(v4), `saveNow`/`scheduleSave`/`restoreSaved`/`clearSaved`, `resetAll` |
+| 13~15. 시트·이벤트·시작 | `openSheet`/`closeSheet`, `bindEvents`(이벤트 위임), `init` |
+| 7-F. 서류 파일 | `DOC_STYLE`/`DOC_WM`, `DOC_FILE_META`/`DOC_TITLE`, `docFileFor`(HTML/SVG + 실제 Blob 크기), `form1Doc`~`form3Doc`, `certSpec`/`certDoc`, `svgCardDoc`, `docFileCard`/`docPendingCard`, `buildZip`(무압축 ZIP), `openFileView`/`saveDocFile`/`printDocFile` |
 
 ## 3. 데이터·수치 출처
 
-- 모든 사업 종류·근무시간·보수·서류·선발 기준은 **2026년 장애인일자리 사업안내(보건복지부)** 기준으로 작성했다. 예: 일반형 전일제 주 40시간(12월 37.5시간) 월 2,156,880원(12월 2,022,720원, 세전), 시간제 주 20시간 월 1,078,440원, 복지일자리 참여형 주 14시간 이내 월 577,920원.
-- 수치를 바꿀 때는 **출처 연도를 함께 표기**하고, 화면 하단 고지(`.disclaimer`, `.fine`)의 "2026년 장애인일자리 사업안내 기준" 문구도 같이 갱신한다.
-- 근무지 10곳과 신청서 예시 값(성명·연락처·거주지 등)은 **가상 예시**다. 실제 기관·개인 정보로 바꾸지 않는다. 다만 **접수처 안내의 기관명·주소·대표전화**는 공개된 공식 정보(**(사)경남지체장애인연합회 진주시지회**, 경남 진주시 대신로 232번길 16, ☎ 055-755-0008)를 실제 값으로 쓰고, 코드의 `ORG` 상수에서 관리한다. 신청인 예시 값은 계속 가상 값만 쓴다.
-- 복지카드 인식은 **실제 OCR이 아니다.** 브라우저 안에서 미리 정한 `CARD_SAMPLES` 값을 단계별로 보여 주는 시연용 연출이다. 실제 OCR·서버 전송 기능을 넣는 것처럼 문구를 바꾸지 말 것.
-- 자동 접수 시연·가상 접수증·필요서류 자동 수집(`MockDocAgentAPI`)도 **실제 전송·실제 발급이 아니다.** 외부 요청 0건의 모의(Mock) 응답이며, 화면 고지(‘실제 기관으로 전송되지 않습니다’, ‘시연용 모의 API(Mock) 응답입니다’)를 지우지 않는다. 실제 연동은 `MockDocAgentAPI.fetchDocument`를 `fetch()`로 바꾸는 것으로 시작하되, 그때도 개인정보 전송 고지를 같이 바꾼다.
+- 모든 사업 종류·근무시간·보수·서류·선발 기준은 **2026년 장애인일자리 사업안내(보건복지부)** 기준이다. 예: 일반형 전일제 주 40시간(12월 37.5시간) 월 2,156,880원(12월 2,022,720원, 세전), 시간제 주 20시간 월 1,078,440원, 복지일자리 참여형 주 14시간 이내 월 577,920원.
+- 수치를 바꿀 때는 **출처 연도를 함께 표기**하고, 화면 하단 고지의 "2026년 장애인일자리 사업안내 기준" 문구도 같이 갱신한다.
+- 근무지 10곳과 신청서 예시 값(성명·연락처·거주지·계좌)은 **가상 예시**다. 실제 기관·개인 정보로 바꾸지 않는다. 다만 **접수처 안내의 기관명·주소·대표전화**는 공개된 공식 정보(**(사)경남지체장애인연합회 진주시지회**, 경남 진주시 대신로 232번길 16, ☎ 055-755-0008)를 실제 값으로 쓰고 `ORG` 상수에서 관리한다.
+- 복지카드 인식은 **실제 OCR이 아니다.** `CARD_SAMPLES` 값을 단계별로 보여 주는 시연용 연출이다. 사진을 올려도 서버로 전송하지 않으며, 올린 사진은 읽지 않고 예시 값으로 채운 뒤 "고치기"를 안내한다.
+- 기관 로그인·서류 자동 수집·자동 첨부·접수는 **실제 연동이 아니다.** 외부 요청 0건의 모의(Mock) 연출이며, 화면 고지("시연용 가상 로그인", "실제로는 본인이 직접 발급받아야 해요", "실제 기관으로 전송되지 않았습니다")를 지우지 않는다. 실제 연동을 붙일 때는 `fetchDocs`의 단계 실행을 실제 API 호출로 바꾸고, 개인정보 전송 고지를 함께 바꾼다.
 - 메일 보내기는 **빈 수신자 `mailto:`만** 쓴다. 특정 개인·기관 이메일 주소를 코드에 넣지 않는다.
 
 ## 4. 수정 시 주의사항
 
-1. **단일 파일 유지** — 외부 CDN·폰트·라이브러리·이미지 파일을 추가하지 않는다(오프라인 시연 가능해야 함). 아이콘은 이모지 또는 인라인 SVG만 사용.
-2. **색 대비 4.5:1 이상 유지** — 본문 텍스트는 `--ink`/`--ink-soft`/`--ink-mute`를 쓰고, 잔디색 위 흰 글씨는 `--grass(#25854B)` 이상 진한 색만 사용. 새 색을 넣으면 명도 대비를 확인한다.
-3. **터치 영역 44px 이상** — 버튼·칩·입력·체크박스는 `min-height:44px` 규칙을 지킨다(`.btn`, `.chip`, `.cs-btn`, `.wstep`, `.pick`, `.aid`, `.field input` 등).
-4. **접근성** — 키보드 포커스(`:focus-visible`), `aria-*`(탭은 `role="tab"`/`aria-selected`, 단계는 `aria-current="step"`), 스크린리더용 `.sr-only`, `prefers-reduced-motion` 대응을 유지한다.
-5. **기존 기능 보존** — 8개 일자리 사업·근로지원 제도·10개 근무지·예시 3개·대화형 상담·직접 입력 해석은 시연의 핵심이므로 삭제·축소하지 않는다. 단계별 UI로 옮겨도 기능은 단계 안에서 그대로 살린다(예: 5항목 초안은 4단계 ③ 자기소개 안, 접수 가이드는 5단계).
-6. **프로토타입 고지 유지** — 화면 하단 `공모전 시연용 프로토타입입니다` 문구, 복지카드 화면과 시작 영역의 "사진은 서버로 전송되지 않습니다" 문구, 신청서 미리보기의 "제출 전 실제 양식 확인" 안내를 지우지 않는다.
-7. **인쇄** — 신청서·가상 접수증 인쇄는 `#printArea`만 출력된다(`@media print`의 `body > *:not(#printArea)` 규칙). 새 요소를 인쇄에 넣으려면 `#printArea` 안에 생성해야 한다.
-8. **XSS 습관** — 사용자 입력은 반드시 `esc()`로 이스케이프한 뒤 `innerHTML`에 넣는다.
-9. **접근성 3모드 유지** — 새 UI를 추가하면 `body.a11y-big`(큰 글씨)와 `body.a11y-contrast`(고대비) 대응 스타일을 같은 커밋에 넣는다. 고대비에서 새 색을 쓰면 흰 배경/흰 글씨가 남지 않도록 오버라이드하고, 대비 4.5:1을 확인한다. 인쇄는 고대비 모드에서도 `#printArea`를 흑백으로 강제한다.
-10. **서류 파일은 시연용 가상 문서** — 파일 카드·미리보기·저장(`Blob`+`URL.createObjectURL`)·ZIP(`buildZip`)은 모두 브라우저 안에서만 만들어지며 외부 전송이 없다. 문서 본문에는 항상 ‘시연용 가상 문서’ 워터마크와 고지, 가상 값(가명)만 넣고, 실제 발급 효력이 있는 것처럼 쓰지 않는다. ZIP은 무압축(store) 방식이며 파일명은 UTF-8 플래그(0x0800)로 기록한다.
-11. **큰 글씨·음성 안내 기준** — 큰 글씨 모드는 본문 22px·말풍선 20px·버튼 56px 이상을 기준으로 하고, 1280px·375px에서 가로 스크롤이 없어야 한다. 음성 대본은 민원인 응대용 구어체로 쓰고 단계 이름을 함께 말한다. 음성은 한국어 우선순위(SunHi→Yuna→Sora→Heami→Google 한국의)로 고르며, 속도는 **기본 `rate 0.82`(천천히)** 이고 헤더의 `천천히(0.82)`/`보통(0.93)` 버튼(`#btnRateSlow`/`#btnRateNormal`, 묶음 `#a11yRate` — 음성 안내를 켰거나 읽는 중에만 보임, 정지 버튼은 읽는 중에만 보임, `setSpeakUI`에서 관리)으로 바꿀 수 있다(`a11y.rate`에 저장). `pitch 1.04`는 유지한다. 속도 상수는 `TTS_RATE_SLOW`/`TTS_RATE_NORMAL` 한 곳에서만 관리한다.
-12. **localStorage 키 고정** — 접근성 설정 `daon.a11y.v1`(`big`·`contrast`·`voice`·`rate`), 자동 임시저장 `daon.state.v1`(내부 스키마 `v: 3` — `pendingEnvs` 추가, `v:1`·`v:2`도 읽는다). 저장값은 브라우저 밖으로 나가지 않으며 `resetAll`/`resetState`(새로 시작)에서 비운다. 저장 스키마를 바꾸면 `v`를 올리고 `restoreSaved`에서 검증한다. 현재 단계(`step` 1~5)와 2단계 소탭(`subtab`)도 저장·복원하며, 단계 이동은 `goStep()`이 `state.step`과 pane 표시·단계 표시줄을 함께 맞춘다. `goStep()` 밖에서 pane을 직접 감추지 않는다.
-13. **음성 안내** — 외부 TTS 라이브러리를 넣지 않고 `window.speechSynthesis`만 사용한다. 미지원 브라우저에서는 토스트로 안내하고 기능을 켜진 상태로 두지 않는다. **한국어 음성이 없는 기기**(`checkKoreanVoice` — 크롬처럼 목록이 늦게 오면 `voiceschanged`를 최대 1.5초 기다림)에서도 음성 안내·화면 읽기를 켜지 않고 `NO_KO_VOICE_MSG`로 안내하며, 저장된 '음성 켬'도 시작할 때 끈다. 다른 언어 음성으로 한국어를 읽게 두지 않는다.
-14. **단계별(위저드) UI 원칙** — ① 상담·복지카드 → ② 추천 일자리·근무지 → ③ 서류 준비·자동 수집 → ④ 신청서 작성 → ⑤ 원클릭 접수·접수처의 5단계를 유지하고, 한 화면에는 한 단계만 보여 준다. 새 기능은 해당 단계의 판(`#pane-N`의 렌더 함수)에 넣고, 이전/다음 버튼(`data-nav-step`, 최소 44px·큰 글씨 56px)과 상단 단계 표시줄(`.stepbtn`)을 함께 갱신한다. 조건이 아직 없을 때 2~5단계는 `needHtml()`로 예시 3개를 안내하며, 단계 이동은 항상 `goStep()`을 거친다(스크롤을 길게 내리지 않아도 처음부터 접수증까지 넘어갈 수 있어야 한다).
-15. **화면 간추리기** — 카드·안내의 긴 설명은 `<details>`(`.more`, `.off-group`, `details.support`, `details.guide-box`, 4단계 ③ 자기소개 안의 5항목 초안 `details.draft-more`(초안을 만들면 열린 채 유지), 3단계 체크리스트 `details.doc-check#docCheck` — 열림 상태 `docCheckOpen` 유지, 5단계 '보완하기'에서 자동으로 펼침)로 접어 두고 첫 화면에는 핵심 한 줄만 둔다. 접기 버튼도 44px(큰 글씨 56px) 이상, 큰 글씨·고대비 스타일을 함께 넣고, 내용은 접어도 삭제하지 않는다. 목록 항목(`li`)에 `display:flex`를 주면 `<b>` 조각마다 칸이 쪼개지므로 쓰지 않는다.
-16. **직접 입력 해석 원칙** — 실제 사용자는 '지체'보다 '다리가 불편해요·하반신 마비·척수 손상', '청각'보다 '농인·보청기'처럼 말한다. 새 표현은 해당 `*_RULES`에 넣고, 더 구체적인 유형이 먼저 오도록 순서를 지킨다(예: '하반신 마비'가 뇌병변 '반신 마비'에 걸리지 않게). 조건 낱말 뒤의 '안/않/없이/괜찮/싫'은 부정으로 보되, '서서 하는 건 싫어요'처럼 뜻이 반대인 서있기 조건은 '괜찮'류만 부정으로 본다. 말로 들은 근로환경은 바로 확정하지 않고 `pendingEnvs`로 근로환경 질문에 미리 골라 둔 뒤 사용자가 `선택 완료`·'네'·'없어요'로 확정한다(상담을 마친 뒤 말한 환경은 바로 반영). 규칙을 바꾸면 기존 표현과 새 표현 모두로 회귀 점검한다.
+1. **단일 파일 유지** — 외부 CDN·폰트·라이브러리·이미지 파일을 추가하지 않는다(오프라인 시연 가능해야 함). 아이콘은 이모지 또는 인라인 SVG만 사용한다.
+2. **간편함이 1원칙** — 한 화면에 큰 버튼은 하나. 화면마다 "지금 눌러야 할 것"이 분명해야 한다. 새 요소를 넣을 때는 (a) 지금 화면에서 꼭 필요한가 (b) 쉬운 말인가 (c) 손가락으로 누르기 큰가를 먼저 본다. 표·작은 글씨·긴 문단을 쌓지 않는다.
+3. **쉬운 말 우선** — 화면 문구는 "복지카드 찍기", "할 수 있는 일자리", "나라에서 서류 가져오기", "빠진 것만 적고 내기"처럼 일상어로 쓴다. 행정 용어가 필요하면 괄호로 짧게 덧붙인다.
+4. **색 대비 4.5:1 이상** — 본문은 `--ink`/`--ink-soft`/`--ink-mute`, 초록 버튼은 `--btn(#1B6438)` 위 흰 글씨를 쓴다.
+5. **터치 영역 44px 이상** — 기본 버튼 `.btn` 56px, 하단 `.cta` 62px, 큰 글씨 모드에서는 64~72px. 칩·입력·저장 버튼도 44px 이상.
+6. **접근성** — 키보드 포커스(`:focus-visible`), `aria-*`(누른 상태 `aria-pressed`, 단계 `aria-current="step"`, 진행 로그 `aria-live`), `.sr-only`, `prefers-reduced-motion` 대응을 유지한다. 고정 헤더가 입력칸을 가리지 않도록 `scroll-margin-top`을 유지한다.
+7. **접근성 3모드** — `body.a11y-big`(큰 글씨), `body.a11y-contrast`(고대비), `body.easy`(발달장애 인식 시 쉬운 말 모드). 새 UI를 추가하면 세 모드의 스타일을 같은 커밋에 넣는다.
+8. **장애 유형별 배려** — `applyProfile()`이 카드 인식 뒤 자동으로 맞춘다. 시각=큰 글씨+읽어주기, 청각=글자 안내, 지체·뇌병변=큰 버튼, 발달=쉬운 말 모드. 이 동작을 없애거나 문구를 바꾸지 않는다.
+9. **기존 기능 보존** — 8개 사업·근로지원 제도 7개·근무지 10곳·예시 카드 3종·서류 파일 생성·미리보기·저장·ZIP·인쇄·메일·읽어주기는 시연의 핵심이므로 삭제·축소하지 않는다.
+10. **프로토타입 고지 유지** — 신청서·서류의 "시연용 가상 문서" 워터마크, 카드 화면의 "사진은 서버로 보내지 않아요", 접수 완료의 "실제로 전송되지 않은 시연용 접수" 문구를 지우지 않는다.
+11. **인쇄** — 신청서 인쇄는 `printHtmlString()`이 문서를 새 탭(Blob URL)으로 열어 인쇄하고, 팝업이 막히면 HTML 파일로 저장한다. 인쇄용 문서는 `docShell()`(7-F)이 만든 완성 HTML이어야 한다.
+12. **XSS 습관** — 사용자 입력은 반드시 `esc()`로 이스케이프한 뒤 `innerHTML`에 넣는다.
+13. **서류 파일은 시연용 가상 문서** — 파일 카드·미리보기·저장(`Blob`+`URL.createObjectURL`)·ZIP(`buildZip`)은 브라우저 안에서만 만들어지며 외부 전송이 없다. 문서 본문에는 항상 '시연용 가상 문서' 워터마크와 고지, 가상 값(가명)만 넣는다. ZIP은 무압축(store) 방식이며 파일명은 UTF-8 플래그(0x0800)로 기록한다.
+14. **큰 글씨·음성 안내 기준** — 큰 글씨 모드는 본문 20px 이상·버튼 64px 이상, 375px에서 가로 스크롤이 없어야 한다. 음성 대본은 민원인 응대용 구어체로 쓰고 화면 이름을 함께 말한다. 음성은 한국어 우선순위(SunHi→Yuna→Sora→Heami→Google 한국의)로 고르며, 속도는 **기본 `rate 0.82`(천천히)**, `0.93`(보통)으로 바꿀 수 있다. `pitch 1.04` 유지. 속도 상수는 `TTS_RATE_SLOW`/`TTS_RATE_NORMAL` 한 곳에서만 관리한다.
+15. **localStorage 키 고정** — 접근성 설정 `daon.a11y.v1`(`big`·`contrast`·`voice`·`rate`), 자동 임시저장 `daon.state.v1`(내부 스키마 `v: 4` — 화면 `view`·카드·조건·선택한 사업·근무지·서류 상태·신청서 입력·접수증). 저장값은 브라우저 밖으로 나가지 않으며 `resetAll`에서 비운다. 스키마를 바꾸면 `v`를 올리고 `restoreSaved`에서 검증한다.
+16. **음성 안내** — 외부 TTS 라이브러리를 넣지 않고 `window.speechSynthesis`만 사용한다. 한국어 음성이 없는 기기에서는 음성 안내를 켜지 않고 `NO_KO_VOICE_MSG`로 안내한다.
+17. **단계 표시와 화면 이동** — 화면 이동은 항상 `go(view)`를 거쳐 `state.view`·화면 표시·단계 표시·하단 버튼을 함께 맞춘다. 화면을 직접 감추지 않는다.
+18. **진행 로그** — 기관 서류 수집은 `fetchState.log`에 쌓고 `renderAgentLog()`가 최신 순으로 그린다. 단계는 `connect → login → issue → attach`이며, 새 단계를 넣으면 `phaseLabel()`과 기관 카드 상태 문구를 함께 고친다.
 
 ## 5. Claude Code 협업 규칙
 
 - **개인정보 절대 커밋 금지** — 실명·주민등록번호·연락처·주소·계좌·복지카드 사진·스크린샷 원본을 저장소에 넣지 않는다. 이 저장소는 **공개(Public)** 이며 GitHub Pages로 누구나 볼 수 있다. 예시 값은 `김다온(가명)`, `010-1234-5678`, `경상남도 진주시 ○○로 12 (예시)` 같은 가상 값만 쓴다.
-- **시연용 고지 유지** — 복지카드 인식은 시연 연출임을 화면과 코드 주석 모두에 남긴다.
+- **시연용 고지 유지** — 복지카드 인식·기관 로그인·서류 자동 첨부·접수는 시연 연출임을 화면과 코드 주석 모두에 남긴다.
 - 커밋 전 최소 확인:
   1. `index.html` 하나로 열리는지(콘솔 오류 0)
-  2. 단계 표시줄로 1→5단계를 오가며 이전/다음 버튼이 동작하는지, 예시 3개 → 2단계 소탭 → 3단계 자동 수집 → 4단계 신청서 마법사 → 5단계 자동 접수·가상 접수증까지 이어지는지
-  3. 복지카드 샘플 1·2 → 인식 4단계 → 확인 → 상담·신청서 1단계 자동 입력이 되는지
-  4. 모바일 폭(360~420px)에서 가로 스크롤이 없는지(큰 글씨·고대비 포함)
+  2. 예시 카드 → 인식 → 일자리 → 서류(기관 로그인 모달·진행 로그·파일 카드) → 신청 → 접수증까지 이어지는지
+  3. 되돌아가기(이전 화면·단계 표시·처음부터)가 동작하는지
+  4. 모바일 폭(360~420px)에서 가로 스크롤이 없는지(큰 글씨·고대비·쉬운 말 모드 포함)
 - 배포는 `main` 브랜치에 push하면 GitHub Pages가 자동 반영한다(1분 내외). 반영 후 실제 URL에서 새 기능 문구가 보이는지 확인한다.
 - 이 저장소는 공모전 제출·시연용이다. 기능을 늘리기보다 **시연 흐름이 끊기지 않는 것**을 우선한다.
