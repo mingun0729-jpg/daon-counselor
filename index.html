@@ -288,6 +288,46 @@ h2.sec .cnt{font-size:15px; font-weight:800; color:var(--grass); background:var(
 .wtag{font-size:12.5px; font-weight:800; padding:3px 8px; border-radius:999px; background:var(--grass-soft); color:#12452A; border:1px solid var(--grass-line)}
 .wtag.warn{background:var(--amber-soft); color:var(--amber); border-color:var(--amber-line)}
 
+/* ---------- 근무지 1·2·3순위 · 배정 기준 ---------- */
+.rankbox{background:var(--surface); border:1.5px solid var(--grass-line); border-radius:var(--r); padding:14px; margin:0 0 12px; box-shadow:var(--shadow-soft)}
+.rb-head{display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px}
+.rb-head h3{font-size:16.5px; font-weight:900; letter-spacing:-.02em}
+.rb-count{font-size:13px; font-weight:900; color:#12452A; background:var(--grass-soft); border:1px solid var(--grass-line); border-radius:999px; padding:2px 9px; white-space:nowrap}
+.rb-list{display:flex; flex-direction:column; gap:6px}
+.rb-row{display:flex; align-items:center; gap:8px; min-height:46px; padding:5px 8px; border-radius:12px; background:var(--surface-2); border:1px solid var(--line)}
+.rb-row.empty{background:transparent; border-style:dashed}
+.rb-no{font-size:13px; font-weight:900; color:#12452A; background:var(--grass-soft); border:1px solid var(--grass-line); border-radius:8px; padding:2px 7px; white-space:nowrap}
+.rb-row.empty .rb-no{color:var(--ink-mute); background:#F1F3F0; border-color:#DEE3DD}
+.rb-name{flex:1; min-width:0; font-size:14.5px; font-weight:800; line-height:1.4; overflow-wrap:anywhere}
+.rb-row.empty .rb-name{color:var(--ink-mute); font-weight:700}
+.rb-clear{min-height:44px; padding:0 12px; border-radius:10px; border:1px solid var(--line-strong); background:var(--surface); font-size:13.5px; font-weight:800; color:var(--ink-soft); white-space:nowrap}
+.rb-clear:hover{border-color:var(--grass)}
+.rankbadge{display:inline-flex; align-items:center; padding:4px 10px; border-radius:999px; font-size:13px; font-weight:900; background:var(--btn); color:var(--btn-ink); border:1px solid var(--btn); white-space:nowrap}
+.badge.fit{background:#F1F4F0; color:var(--ink-soft); border-color:#DEE3DD}
+.job.wp .jbody{cursor:default}
+.rankrow{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap}
+.rankbtn{flex:1 1 0; min-width:86px; min-height:48px; padding:0 8px; border-radius:12px; border:1.5px solid var(--line-strong); background:var(--surface); font-size:14.5px; font-weight:900; color:var(--ink-soft); display:inline-flex; align-items:center; justify-content:center; gap:3px}
+.rankbtn:hover{border-color:var(--grass)}
+.rankbtn[aria-pressed="true"]{background:var(--grass-soft); border-color:var(--grass); color:#12452A}
+.rankbtn[data-taken="true"]{border-style:dashed; color:var(--ink-mute)}
+.rankhint{display:block; margin-top:8px; font-size:13px; font-weight:700; color:var(--ink-mute); line-height:1.5}
+.rulebox{padding:16px; margin-top:14px}
+.rulebox h3{font-size:16.5px; font-weight:900; letter-spacing:-.02em}
+.rulelist{display:flex; flex-direction:column; gap:10px; margin:4px 0 10px}
+.rulelist li{display:flex; gap:10px; align-items:flex-start}
+.rulelist .rn{width:26px; min-width:26px; height:26px; border-radius:50%; background:var(--grass-soft); border:1px solid var(--grass-line); color:#12452A; font-size:13px; font-weight:900; display:grid; place-items:center; margin-top:1px}
+.rulelist .rt{flex:1; min-width:0}
+.rulelist b{display:block; font-size:15px; font-weight:900; line-height:1.4}
+.rulelist .t{display:block; font-size:14px; font-weight:700; color:var(--ink-soft); line-height:1.55; margin-top:2px}
+.rulelist em{font-style:normal; font-weight:900; color:var(--ink)}
+.rankread{margin:14px 0 6px; padding:14px; border-radius:var(--r); background:var(--grass-soft); border:1px solid var(--grass-line)}
+.rankread .lab{display:block; font-size:16px; font-weight:900; color:#12452A; margin-bottom:8px}
+.rankread ol{display:flex; flex-direction:column; gap:6px}
+.rankread li{display:flex; gap:10px; align-items:flex-start; font-size:14.5px; line-height:1.5}
+.rankread li b{min-width:46px; color:#12452A; font-weight:900}
+.rankread li span{flex:1; min-width:0; color:var(--ink-soft); font-weight:700; overflow-wrap:anywhere}
+.rankread .rankedit{margin-top:10px; min-height:44px; padding:0 14px; border-radius:10px; border:1.5px solid var(--grass-line); background:var(--surface); font-size:14px; font-weight:900; color:#12452A}
+
 /* ---------- 서류 ---------- */
 .agentcard{
   background:linear-gradient(180deg,#F1FAF4 0%,#FFFFFF 70%); border:1.5px solid var(--grass-line);
@@ -530,6 +570,18 @@ body.a11y-big .receipt div{font-size:17px}
 body.a11y-big .receipt b{font-size:15.5px; min-width:88px}
 body.a11y-big .badge{font-size:15px; padding:5px 11px}
 body.a11y-big .wtag{font-size:14px}
+body.a11y-big .rb-head h3{font-size:19px}
+body.a11y-big .rb-name{font-size:17px}
+body.a11y-big .rb-no{font-size:14.5px}
+body.a11y-big .rb-clear{min-height:50px; font-size:15.5px}
+body.a11y-big .rankbtn{font-size:17px; min-height:56px; min-width:92px}
+body.a11y-big .rankhint{font-size:15px}
+body.a11y-big .rulebox h3{font-size:19px}
+body.a11y-big .rulelist b{font-size:17px}
+body.a11y-big .rulelist .t{font-size:16px}
+body.a11y-big .rankread .lab{font-size:18px}
+body.a11y-big .rankread li{font-size:16.5px}
+body.a11y-big .rankread .rankedit{min-height:52px; font-size:16px}
 body.a11y-big .fc-meta{font-size:13.5px}
 body.a11y-big .agency .status{font-size:15px}
 body.a11y-big .al-list li{font-size:17px}
@@ -653,6 +705,15 @@ body.a11y-contrast .badge.ok{color:#C8F3D8}
 body.a11y-contrast .fc-badge.run{background:#33260C; color:#FFD479; border-color:#6E5518}
 body.a11y-contrast .agency .status{color:#7FE0A4}
 body.a11y-contrast .agentlog{border-color:#3E6F4F}
+body.a11y-contrast .rankbtn[aria-pressed="true"]{background:#16301F; border-color:#7FE0A4; color:#C8F3D8}
+body.a11y-contrast .badge.fit{background:#1B211C; color:#D3DBD4; border-color:#3A453C}
+body.a11y-contrast .rb-no{background:#16301F; color:#C8F3D8; border-color:#3E6F4F}
+body.a11y-contrast .rb-row.empty .rb-no{background:#1B211C; color:#BCC7BE; border-color:#3A453C}
+body.a11y-contrast .rankread{background:#16301F; border-color:#3E6F4F}
+body.a11y-contrast .rankread .lab,body.a11y-contrast .rankread li b{color:#C8F3D8}
+body.a11y-contrast .rankread li span{color:#DDE9E0}
+body.a11y-contrast .rulelist .rn{background:#16301F; color:#C8F3D8; border-color:#3E6F4F}
+body.a11y-contrast .rankread .rankedit{background:#121814; border-color:#7FE0A4; color:#C8F3D8}
 body.a11y-contrast .al-list li.ok{color:#C8F3D8}
 body.a11y-contrast .donebox .check{background:#16301F; border-color:#3E6F4F}
 body.a11y-contrast .toast{background:#F2F5F0; color:#0A0E0B}
@@ -794,9 +855,29 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       </details>
       <div id="workSection">
         <h2 class="sec" style="margin-top:6px">근무지 매칭</h2>
-        <p class="lead">진주 지역 · 조건 일치 근무지</p>
+        <p class="lead">진주 지역 · 조건 일치 근무지 · 1·2·3순위</p>
+        <div class="rankbox" id="rankBox" aria-labelledby="rankBoxTitle">
+          <div class="rb-head">
+            <h3 id="rankBoxTitle" tabindex="-1">희망 근무지 순위</h3>
+            <span class="rb-count" id="rankCount">0/3</span>
+          </div>
+          <ol class="rb-list" id="rankList"></ol>
+        </div>
+        <p class="note" id="workNote" hidden></p>
         <div class="joblist" id="workList"></div>
         <button class="btn ghost block" id="btnWorkMore" type="button">근무지 더 보기</button>
+        <div class="card rulebox" id="assignRule" aria-labelledby="assignRuleTitle">
+          <h3 id="assignRuleTitle">근무지 배정 기준</h3>
+          <p class="note">1·2·3순위를 적어 내면 담당자가 이 순서로 배정합니다.</p>
+          <ol class="rulelist">
+            <li><span class="rn" aria-hidden="true">1</span><div class="rt"><b>희망 순위 우선</b><span class="t">1순위 → 2순위 → 3순위 순으로 모집 정원 안에서 먼저 배정.</span></div></li>
+            <li><span class="rn" aria-hidden="true">2</span><div class="rt"><b>선발 우선순위</b><span class="t">기초생활수급자·차상위, 심한 장애, 여성가장 등 사업 기준 가점 반영.</span></div></li>
+            <li><span class="rn" aria-hidden="true">3</span><div class="rt"><b>직무·환경 적합도</b><span class="t">장애 유형, 근무 형태, 경사로·승강기·장애인 화장실·좌식·재택 등 편의시설 일치. 카드의 <em>적합도 점수</em>가 이 기준을 반영합니다.</span></div></li>
+            <li><span class="rn" aria-hidden="true">4</span><div class="rt"><b>출퇴근·이동 편의</b><span class="t">거주지 권역 접근성, 특별교통수단·이동지원 연계 가능 여부.</span></div></li>
+            <li><span class="rn" aria-hidden="true">5</span><div class="rt"><b>정원 마감·부적합 시 전환</b><span class="t">1순위가 마감됐거나 현장 동선이 맞지 않으면 2순위 → 3순위로 이어 배정하고 담당자가 유선으로 확인.</span></div></li>
+          </ol>
+          <p class="micro">시연용 기준 · 실제 배정은 「2026년 장애인일자리 사업안내」와 수행기관 심사에 따릅니다.</p>
+        </div>
       </div>
       <details class="box" id="supportBox">
         <summary>추가 지원 제도</summary>
@@ -854,6 +935,12 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         <h3 id="confirmTitle" style="font-size:18px;font-weight:900;margin:0">1. 내 정보 확인·수정</h3>
         <p class="note" style="margin:10px 0 14px">복지카드·서류에서 채운 값입니다. 틀린 곳은 여기서 고치면 <b>신청서·미리보기·인쇄·접수증</b>에 그대로 반영됩니다.</p>
         <p class="micro" id="autoDesc" style="margin:-6px 0 14px"></p>
+
+        <div class="rankread" id="confirmRanks">
+          <span class="lab" id="confirmRankLab">희망 근무지 순위</span>
+          <ol id="confirmRankList" aria-labelledby="confirmRankLab"></ol>
+          <button class="rankedit" type="button" id="btnRankEdit">근무지 순위 바꾸기</button>
+        </div>
 
         <div class="field" id="fName">
           <label for="inName">이름 <span class="req" aria-hidden="true">*</span></label>
@@ -921,6 +1008,14 @@ body.a11y-big.easy .hero h1{line-height:1.4}
           <button class="btn small" id="btnDraft" type="button" style="align-self:flex-start;margin-top:8px"><span aria-hidden="true">✍️</span> AI 초안 생성</button>
         </div>
       </form>
+
+      <details class="box" id="extraBox">
+        <summary>추가 신청서 항목 (선택)</summary>
+        <div class="inner">
+          <p class="note" style="margin:0 0 14px">실제 참여신청서(서식 1)에 있는 항목입니다. 고르지 않으면 신청서에 빈칸(□)으로 인쇄되어 직접 표시할 수 있습니다.</p>
+          <div id="extraFields"></div>
+        </div>
+      </details>
 
       <details class="box" id="formDocs">
         <summary>함께 제출할 서류</summary>
@@ -1297,6 +1392,20 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   ];
   var AIDS_LABEL = {};
   AIDS.forEach(function (a) { AIDS_LABEL[a.v] = a.label; });
+  /* 실제 참여신청서(서식 1)에 있는 항목 — 4단계에서 접어 두고 선택만 한다 */
+  var EXTRA_FIELDS = [
+    { key: 'gender', label: '성별', opts: ['남', '여'] },
+    { key: 'income', label: '소득수준', opts: ['기초생활수급자', '차상위계층', '해당사항 없음'] },
+    { key: 'care', label: '장기요양등급 판정', opts: ['유', '무'] },
+    { key: 'femaleHead', label: '여성가장', opts: ['해당', '비해당'] },
+    { key: 'jobTarget', label: '취업지원대상자', opts: ['해당', '비해당'] },
+    { key: 'device', label: '보조기기 사용', opts: ['사용', '미사용'] },
+    { key: 'edu', label: '최종학력', opts: ['무학', '초졸', '중졸', '고졸', '전문대졸', '대졸 이상'] },
+    { key: 'it', label: '전산능력 (여러 개 가능)', opts: ['문서작성', '표계산', '인터넷', '기타'], multi: true },
+    { key: 'biz', label: '사업자등록', opts: ['유', '무'] },
+    { key: 'emp', label: '취업상태', opts: ['취업상태', '미취업상태'] },
+    { key: 'exp', label: '장애인일자리 참여경험', opts: ['유', '무'] }
+  ];
 
   /* 접수처 — 공개된 공식 정보. 신청인 값은 모두 가명·예시다. */
   var ORG = {
@@ -1314,9 +1423,9 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     card: null,
     type: '', severity: '', workType: '',
     envs: new Set(),
-    selectedProgram: '', selectedWorkplace: '',
+    selectedProgram: '', selectedWorkplace: '', workplaceRanks: ['', '', ''],
     checked: {}, fetched: {},
-    form: { name: '', birth: '', phone: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '' },
+    form: { name: '', birth: '', phone: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '', guardian: '', extra: {}, lic: '' },
     receipt: null,
     easy: false,
     showAllJobs: false,
@@ -1936,6 +2045,17 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     '.txt{border:1px solid #D8E2D9;border-radius:8px;padding:11px 12px;background:#FCFDFB;font-size:11.8px;line-height:1.78;white-space:pre-wrap}',
     '.small{font-size:11.2px;color:#3F4E44;line-height:1.7;margin:0 0 8px}',
     '.checks{font-size:11.6px;font-weight:800;color:#11462A;background:#F3F9F5;border:1px dashed #B7D9C3;border-radius:8px;padding:8px 10px;margin:4px 0 0}',
+    '.chk{display:inline-block;margin:0 12px 0 0;white-space:nowrap}',
+    '.cbline{margin:0 0 5px;font-size:11.8px;line-height:1.85}',
+    '.docrow{display:flex;justify-content:flex-end;margin:-4px 0 2px}',
+    '.rcptbox{border:1px solid #D8E2D9;border-radius:6px;padding:4px 10px;font-size:10.6px;color:#5C6B62;background:#FCFDFB}',
+    '.rcptbox b{color:#11462A;font-weight:800;margin-right:6px}',
+    '.serve{border:1px solid #D8E2D9;border-radius:8px;background:#FCFDFB;padding:10px 12px;font-size:11.4px;line-height:1.75;margin:8px 0 0}',
+    '.attach{font-size:11.2px;line-height:1.85;margin:10px 0 0}',
+    '.attach b{font-weight:800;color:#11462A}',
+    '.addr{text-align:center;font-size:12.4px;font-weight:800;color:#11462A;margin:14px 0 0}',
+    'table.rank th{width:52px;white-space:nowrap}',
+    'table.rank td.c{text-align:center}',
     '.sign{display:flex;flex-wrap:wrap;gap:8px 24px;justify-content:center;align-items:flex-end;margin:20px 0 4px;font-size:12px}',
     '.sign .line{display:inline-block;min-width:124px;border-bottom:1.5px solid #6F7C74;text-align:center;font-size:10px;color:#5C6B62;padding:0 8px 3px;margin-left:6px}',
     '.issuer{display:flex;align-items:center;justify-content:center;gap:10px;margin:16px 0 6px;font-size:12.4px;font-weight:800;color:#11462A}',
@@ -2078,7 +2198,8 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var f = state.form;
     var checked = Object.keys(state.checked || {}).filter(function (k) { return state.checked[k]; }).join(',');
     return [state.selectedProgram, f.name, f.birth, f.phone, f.addr, f.motivation, f.job1, f.job2,
-      (f.aids || []).join(','), f.transport, state.type, state.severity, checked].join('|');
+      (f.aids || []).join(','), f.transport, f.guardian, f.lic, JSON.stringify(f.extra || {}),
+      rankText(''), state.type, state.severity, checked].join('|');
   }
   function docFileFor(d, seq) {
     var sig = docCacheSig();
@@ -2115,39 +2236,113 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   }
 
   /* --- 문서 본문: 신청서·확인서·동의서 --- */
+  /* 실제 「장애인일자리사업 참여신청서 [서식 1]」 구조 */
+  var EDU_OPTS = ['무학', '초졸', '중졸', '고졸', '전문대졸', '대졸 이상'];
+  var IT_OPTS = ['문서작성', '표계산', '인터넷', '기타'];
+
+  function cbx(on, label) {
+    return '<span class="chk">' + (on ? '☑' : '□') + ' ' + esc(label) + '</span>';
+  }
+  function opBox(opts, val, multiVals) {
+    return opts.map(function (o) {
+      var on = multiVals ? multiVals.indexOf(o) > -1 : val === o;
+      return cbx(on, o);
+    }).join('');
+  }
+  function workDuty(name) {
+    for (var i = 0; i < WORKPLACES.length; i++) { if (WORKPLACES[i].name === name) { return WORKPLACES[i].duty; } }
+    return '';
+  }
+  function rrnMasked() {
+    var d = birthDigits();
+    if (d.length !== 8) { return '******-*******'; }
+    var g = (state.form.extra || {}).gender || '';
+    var digit = g === '여' ? '2' : g === '남' ? '1' : '○';
+    return d.slice(2) + '-' + digit + '******';
+  }
+
   function form1Doc() {
     var f = state.form;
     var pid = state.selectedProgram || 'general_full';
     var prog = progOf(pid);
     var aids = (f.aids || []).map(function (v) { return AIDS_LABEL[v]; }).filter(Boolean);
-    var docs = requiredDocs(docsFor(pid));
-    var docRows = docs.map(function (d) {
-      var on = !!state.checked[pid + ':' + d.id];
-      return docTr([{ t: esc(d.name) }, { t: esc(d.where) }, { t: on ? '✓ 제출' : '미제출', cls: 'c' }]);
+    var ex = f.extra || {};
+    var licTxt = String(f.lic || '').trim();
+    var r = rankList();
+    var rk = r.filter(Boolean);
+    var rankRows = [0, 1, 2].map(function (i) {
+      var nm = r[i] || '';
+      var duty = nm ? workDuty(nm) : '';
+      var cert = i === 0 ? (licTxt ? '☑ 있음 · ' + esc(licTxt) : '□ 있음　□ 없음') : '—';
+      return docTr([{ h: (i + 1) + '순위', cls: 'c' },
+        { t: nm ? esc(nm) + (duty ? '<br><span class="dim">' + esc(duty) + '</span>' : '') : '미기재' },
+        { t: cert, cls: 'c' }]);
     }).join('');
+
+    var catGeneral = pid === 'general_full' || pid === 'general_part';
+    var catWelfare = pid === 'welfare' || pid === 'edu_link';
+    var catSpecial = pid === 'special_care' || pid === 'special_massage';
+    var catOther = pid === 'standard' || pid === 'remote';
+
+    var tv = f.transport || 'bus';
+    var tWalk = tv === 'wheel' || tv === 'walk';
+    var tBus = tv === 'bus';
+    var tCar = tv === 'car';
+    var tEtc = !tWalk && !tBus && !tCar;
+    var etcNote = tv === 'special' ? ' (특별교통수단)' : tv === 'family' ? ' (보호자 동행)' : tv === 'wheel' ? ' (전동휠체어)' : '';
+
     var body = docHead() +
-      '<h1>2026년 장애인일자리사업 참여신청서</h1>' +
-      '<p class="sub">「2026년 장애인일자리 사업안내」 서식 1 · ' + esc(ORG.short) + ' 접수용</p>' +
-      '<div class="tobox"><b>수신</b> ' + esc(ORG.name) + '<br><span class="dim">' + esc(ORG.addr) + ' · ☎ ' + esc(ORG.tel) + '</span></div>' +
+      '<div class="docrow"><span class="rcptbox"><b>접수번호</b> 미기재</span></div>' +
+      '<h1>장애인일자리사업 참여신청서</h1>' +
+      '<p class="sub">2026년 장애인일자리사업 · 「2026년 장애인일자리 사업안내」 [서식 1] · ' + esc(ORG.short) + ' 접수용</p>' +
+
+      '<h2>1. 신청분야 (일자리 유형)</h2>' +
+      '<div class="cbline">' + cbx(catGeneral, '일반형일자리') + '(' + cbx(pid === 'general_full', '전일제') + cbx(pid === 'general_part', '시간제') + ')</div>' +
+      '<div class="cbline">' + cbx(catWelfare, '복지일자리') + '(' + cbx(pid === 'welfare', '참여형') + cbx(pid === 'edu_link', '특수교육-복지연계형') + ')</div>' +
+      '<div class="cbline">' + cbx(catSpecial, '특화형일자리') + '(' + cbx(pid === 'special_care', '발달장애인 요양보호사 보조') + cbx(false, '장애인편의시설 모니터링') + cbx(pid === 'special_massage', '시각장애인 안마사 파견') + ')</div>' +
+      '<div class="cbline">' + cbx(catOther, '그 외') + '(' + cbx(pid === 'standard', '장애인 표준사업장') + cbx(pid === 'remote', '민간·재택 직무') + ')</div>' +
+
+      '<h2>2. 희망 근무지 및 직무</h2>' +
+      '<table class="rank"><tr><th class="c">순위</th><th>희망 근무지 (직무)</th><th class="c">관련 자격증·경험</th></tr>' + rankRows + '</table>' +
+      '<p class="note">※ 희망 근무지에 배치되지 않을 수도 있으며 배치기관은 변경될 수 있음.</p>' +
+
+      '<h2>3. 기본 인적사항</h2>' +
       '<table>' +
-      docTr([{ h: '성명' }, { t: esc(applicantName()) }, { h: '생년월일' }, { t: esc(birthText()) }]) +
-      docTr([{ h: '연락처' }, { t: esc(f.phone || '010-1234-5678 (예시)') }, { h: '장애 정도' }, { t: esc(SEVERITY_LABEL[state.severity] || '확인 전') }]) +
+      docTr([{ h: '성명' }, { t: esc(applicantName()) }, { h: '생년월일' }, { t: esc(rrnMasked()) }]) +
+      docTr([{ h: '성별' }, { t: cbx(ex.gender === '남', '남') + cbx(ex.gender === '여', '여'), cls: 'c' }, { h: '연락처' }, { t: esc(f.phone || '010-1234-5678 (예시)') }]) +
+      docTr([{ h: '보호자 연락처' }, { t: esc(f.guardian || '—'), cs: 3 }]) +
       docTr([{ h: '주소' }, { t: esc(f.addr || '경상남도 진주시 ○○로 12 (예시)'), cs: 3 }]) +
-      docTr([{ h: '장애 유형' }, { t: esc(TYPE_LABEL[state.type] || '지체장애') }, { h: '이동 수단' }, { t: esc(transportLabel()) }]) +
-      docTr([{ h: '희망 사업' }, { t: esc(prog.name), cs: 3 }]) +
-      docTr([{ h: '근무 시간' }, { t: esc(prog.hours) }, { h: '보수' }, { t: esc(prog.pay) }]) +
-      docTr([{ h: '희망 직무' }, { t: '1지망 ' + esc(f.job1 || '—') + (f.job2 ? ' / 2지망 ' + esc(f.job2) : ''), cs: 3 }]) +
+      '</table>' +
+
+      '<h2>4. 자격·선발·지원 정보</h2>' +
+      '<table>' +
+      docTr([{ h: '소득수준' }, { t: opBox(['기초생활수급자', '차상위계층', '해당사항 없음'], ex.income || ''), cs: 3 }]) +
+      docTr([{ h: '장애유형' }, { t: esc(TYPE_LABEL[state.type] || '지체장애') + ' (' + esc(SEVERITY_LABEL[state.severity] || '심하지 않은 장애') + ')' }, { h: '장애정도' }, { t: cbx(state.severity === 'severe', '심한 장애') + cbx(state.severity !== 'severe', '심하지 않은 장애') }]) +
+      docTr([{ h: '장기요양등급 판정' }, { t: opBox(['유', '무'], ex.care || '') }, { h: '여성가장' }, { t: opBox(['해당', '비해당'], ex.femaleHead || '') }]) +
+      docTr([{ h: '취업지원대상자' }, { t: opBox(['해당', '비해당'], ex.jobTarget || '') }, { h: '이동수단' }, { t: cbx(tWalk, '도보') + cbx(tBus, '대중교통') + cbx(tCar, '자가용') + cbx(tEtc, '기타' + etcNote) }]) +
+      docTr([{ h: '보조기기 사용' }, { t: opBox(['사용', '미사용'], ex.device || ''), cs: 3 }]) +
       docTr([{ h: '필요 지원' }, { t: esc(aids.length ? aids.join(', ') : '없음'), cs: 3 }]) +
       '</table>' +
-      '<h2>자기소개 및 지원동기</h2>' +
+
+      '<h2>5. 주요 이력 및 적격 확인</h2>' +
+      '<table>' +
+      docTr([{ h: '최종학력' }, { t: opBox(EDU_OPTS, ex.edu || ''), cs: 3 }]) +
+      docTr([{ h: '전산능력' }, { t: opBox(IT_OPTS, '', Array.isArray(ex.it) ? ex.it : []), cs: 3 }]) +
+      docTr([{ h: '자격면허·경력' }, { t: esc(licTxt || '—'), cs: 3 }]) +
+      docTr([{ h: '사업자등록' }, { t: opBox(['유', '무'], ex.biz || '') }, { h: '취업상태' }, { t: opBox(['취업상태', '미취업상태'], ex.emp || '') }]) +
+      docTr([{ h: '장애인일자리사업 참여경험' }, { t: opBox(['유', '무'], ex.exp || ''), cs: 3 }]) +
+      '</table>' +
+
+      '<h2>6. 지원동기 (다온 작성 · 참고)</h2>' +
       '<div class="txt">' + esc((f.motivation || '').trim() || '성실하게 배우며 오래 일하고 싶습니다.') + '</div>' +
-      '<h2>제출 서류</h2>' +
-      '<table class="docs"><tr><th>서류명</th><th>발급처</th><th class="c">제출</th></tr>' + docRows + '</table>' +
-      '<h2>개인정보 수집·이용 동의</h2>' +
-      '<p class="small">본인은 장애인일자리사업 참여 신청과 자격 확인을 위해 개인정보를 수집·이용하고, 접수처에 제공하는 것에 동의합니다. 동의 내용은 ‘개인정보 동의서(서식 3)’와 같습니다.</p>' +
-      '<div class="checks">☑ 개인정보 수집·이용 동의　　☑ 제3자 제공 동의　　☑ 고유식별정보 처리 동의</div>' +
+
+      '<h2>7. 서약</h2>' +
+      '<div class="serve">위와 같이 장애인일자리사업에 참여하고자 신청합니다. 기재사항은 사실과 다름이 없으며, 상기 개인정보 중 일부는 장애인일자리 사업관리를 위한 전산시스템에 등록됨에 동의합니다.</div>' +
       '<div class="sign"><span>신청일 ' + esc(todayStr()) + '</span><span>신청인 <b>' + esc(applicantName()) + '</b><span class="line">(서명 또는 인)</span></span></div>' +
-      docFoot('실제 접수 때는 협회 비치 서식에 자필로 작성하고 서명해야 합니다.');
+      '<p class="addr">진주시장(사업수행기관장) 귀하</p>' +
+      '<p class="attach"><b>붙임</b> 1. 참여자 정보 확인서 1부. 2. 개인정보 수집·이용 및 제3자 제공 동의서 1부. 3. 행정정보 공동이용 사전동의서 1부.</p>' +
+      '<p class="small dim" style="margin-top:10px">접수처 ' + esc(ORG.name) + ' · ' + esc(ORG.addr) + ' · ☎ ' + esc(ORG.tel) + ' · 신청 사업 ' + esc(prog.name) + '</p>' +
+      docFoot('실제 접수 때는 협회 비치 서식에 자필로 작성·서명해야 합니다.');
     return docShell(docTitleOf({ id: 'form1' }), body);
   }
 
@@ -2821,7 +3016,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     state.workType = defaultWorkType(state.severity, d.type);
     state.envs = defaultEnvs(d.type);
     state.selectedProgram = '';
-    state.selectedWorkplace = '';
+    setRanks(['', '', '']);
     state.checked = {};
     state.fetched = {};
     fetchState.running = false;
@@ -2830,6 +3025,9 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     fetchState.log = [];
     state.form.name = d.name;
     state.form.birth = '';
+    state.form.extra = {};
+    state.form.lic = '';
+    state.form.guardian = '';
     state.form.aids = suggestAids();
     state.form.transport = d.type === 'physical' ? 'special' : 'bus';
     applyProfile(d.type);
@@ -3053,6 +3251,73 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     return rows.length ? rows[0].wp.name : '';
   }
 
+  /* 희망 근무지 1·2·3순위 — state.workplaceRanks[0..2] 하나만 진짜 값으로 둔다 */
+  function rankList() {
+    if (!Array.isArray(state.workplaceRanks)) { state.workplaceRanks = ['', '', '']; }
+    var r = state.workplaceRanks;
+    while (r.length < 3) { r.push(''); }
+    if (r.length > 3) { r.length = 3; }
+    return r;
+  }
+  function rankSync() {
+    var r = rankList(), i, j;
+    for (i = 0; i < 3; i++) {
+      r[i] = r[i] || '';
+      for (j = i + 1; j < 3; j++) { if (r[i] && r[i] === r[j]) { r[j] = ''; } }
+    }
+    state.selectedWorkplace = r[0] || '';
+    return r;
+  }
+  function setRanks(arr) {
+    state.workplaceRanks = [arr[0] || '', arr[1] || '', arr[2] || ''];
+    rankSync();
+  }
+  function rankOf(name) {
+    var r = rankList();
+    for (var i = 0; i < 3; i++) { if (r[i] && r[i] === name) { return i + 1; } }
+    return 0;
+  }
+  function rankText(sep) {
+    var r = rankList(), out = [];
+    for (var i = 0; i < 3; i++) { if (r[i]) { out.push((i + 1) + '순위 ' + r[i]); } }
+    return out.join(sep || ' · ');
+  }
+  /* 한 카드에서 순위를 누를 때 — 같은 순위를 다시 누르면 해제, 다른 순위는 자리 바꿈 */
+  function setRank(name, rank) {
+    var r = rankList(), ti = rank - 1, from = r.indexOf(name), holder = r[ti], msg;
+    if (from === ti) {
+      r[ti] = '';
+      msg = rank + '순위에서 뺐습니다. ' + name;
+    } else if (from > -1 && holder) {
+      r[from] = holder;
+      r[ti] = name;
+      msg = (from + 1) + '순위 ' + holder + '와 ' + rank + '순위 자리를 바꿨습니다.';
+    } else if (from > -1) {
+      r[from] = '';
+      r[ti] = name;
+      msg = name + '을(를) ' + rank + '순위로 옮겼습니다.';
+    } else if (holder) {
+      r[ti] = name;
+      msg = rank + '순위를 ' + name + '(으)로 바꿨습니다. ' + holder + '은(는) 순위에서 빠졌습니다.';
+    } else {
+      r[ti] = name;
+      msg = name + '을(를) ' + rank + '순위로 정했습니다.';
+    }
+    rankSync();
+    scheduleSave();
+    return msg;
+  }
+  /* 조건 적합도 — 배정 기준 3·4번(직무·환경, 출퇴근)을 점수로 보여 준다 */
+  function fitScore(m) {
+    var ok = 0, check = 0, no = 0;
+    (m.reasons || []).forEach(function (r) {
+      if (r.k === 'ok') { ok += 1; } else if (r.k === 'check') { check += 1; } else if (r.k === 'no') { no += 1; }
+    });
+    var n = ok + check + no;
+    if (!n) { return 70; }
+    return Math.max(0, Math.round((ok * 100 + check * 55) / n));
+  }
+
   function renderJobs() {
     var rows = analyze();
     var top = [], rest = [], off = [];
@@ -3064,11 +3329,10 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if (!state.selectedProgram || !rows.some(function (r) { return r.p.id === state.selectedProgram && r.status !== '불가'; })) {
       var first = top[0] || null;
       state.selectedProgram = first ? first.p.id : (rows[0] ? rows[0].p.id : '');
-      state.selectedWorkplace = pickDefaultWorkplace(state.selectedProgram);
+      setRanks([pickDefaultWorkplace(state.selectedProgram), '', '']);
       state.checked = {};
       state.fetched = {};
     }
-    if (!state.selectedWorkplace) { state.selectedWorkplace = pickDefaultWorkplace(state.selectedProgram); }
 
     var who = $('#condWho');
     if (who) {
@@ -3132,30 +3396,83 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   function renderWork() {
     var box = $('#workSection'), list = $('#workList');
     if (!box || !list) { return; }
-    var rows = workRows(state.selectedProgram);
-    box.hidden = !rows.length;
-    if (!rows.length) { return; }
-    var show = state.showAllWork ? rows : rows.slice(0, 2);
-    list.innerHTML = show.map(function (r, wi) {
-      var wp = r.wp;
-      var ok = r.m.status === 'good';
-      var check = r.m.status === 'check';
-      var picked = state.selectedWorkplace === wp.name;
-      return '<div class="job" data-state="' + (picked ? 'picked' : '') + '">' +
-        '<input class="sr-only" type="radio" name="work" id="work-' + wi + '" value="' + esc(wp.name) + '"' + (picked ? ' checked' : '') + '>' +
-        '<label class="jbody" for="work-' + wi + '">' +
-        '<span class="tick" aria-hidden="true">✓</span>' +
-        '<span class="top"><span class="badge ' + (ok ? 'ok' : check ? 'check' : 'no') + '">' + (ok ? '조건 일치' : check ? '확인 필요' : '조건 불일치') + '</span></span>' +
-        '<span class="name">' + esc(wp.name) + '</span>' +
-        '<span class="meta">' + esc(wp.duty) + ' · ' + esc(wp.hours) + '</span>' +
-        '<span class="wtags">' + wp.tags.map(function (t) {
-          return '<span class="wtag' + (WARN_TAGS[t] ? ' warn' : '') + '">' + esc(TAG_LABEL[t] || t) + '</span>';
-        }).join('') + '</span>' +
-        (r.m.reasons.length ? '<span class="why">' + esc(r.m.reasons[0].t) + '</span>' : '') +
-        '</label></div>';
-    }).join('');
+    box.hidden = false;
+    var kind = kindOfProgram(state.selectedProgram);
+    var order = { good: 0, check: 1, none: 2, bad: 3 };
+    var rows = scoredWorkplaces().slice().sort(function (a, b) {
+      var sa = (kind && a.wp.kind === kind) ? 0 : 1;
+      var sb = (kind && b.wp.kind === kind) ? 0 : 1;
+      if (sa !== sb) { return sa - sb; }
+      if (order[a.m.status] !== order[b.m.status]) { return order[a.m.status] - order[b.m.status]; }
+      return a.idx - b.idx;
+    });
+    var note = $('#workNote');
+    if (note) {
+      note.hidden = !!kind;
+      note.textContent = kind ? '' : '이 사업은 등록된 근무지 예시가 없습니다. 다른 사업 근무지를 순위에 넣으면 담당자가 상담 때 함께 확인합니다.';
+    }
+    var show = state.showAllWork ? rows : rows.slice(0, 3);
+    list.innerHTML = show.map(function (r, wi) { return workCardHtml(r, wi, kind); }).join('');
     var more = $('#btnWorkMore');
-    if (more) { more.hidden = rows.length <= 2 || state.showAllWork; }
+    if (more) { more.hidden = rows.length <= 3 || state.showAllWork; }
+    renderRankSummary();
+  }
+
+  function workCardHtml(r, wi, kind) {
+    var wp = r.wp;
+    var ok = r.m.status === 'good', check = r.m.status === 'check';
+    var stLabel = ok ? '조건 일치' : check ? '확인 필요' : r.m.status === 'bad' ? '조건 불일치' : '조건 참고';
+    var rank = rankOf(wp.name);
+    var holder = rankList();
+    var fit = fitScore(r.m);
+    var other = !!kind && wp.kind !== kind;
+    var btns = [1, 2, 3].map(function (k) {
+      var on = rank === k;
+      var taken = !on && !!holder[k - 1];
+      var label = esc(wp.name) + ' ' + k + '순위' + (on ? ' 해제' : ' 지정') +
+        (taken ? ' (지금 ' + k + '순위는 다른 근무지)' : '');
+      return '<button class="rankbtn" type="button" id="wpr-' + wi + '-' + k + '"' +
+        ' data-work-rank="' + k + '" data-work-idx="' + wi + '" data-work-name="' + esc(wp.name) + '"' +
+        ' aria-pressed="' + (on ? 'true' : 'false') + '"' + (taken ? ' data-taken="true"' : '') +
+        ' aria-label="' + label + '"><span aria-hidden="true">' + (on ? '✓' : '') + '</span>' + k + '순위</button>';
+    }).join('');
+    var hint = ok
+      ? '적합도 ' + fit + ' · 1순위로 두면 정원 안에서 먼저 배정 심사'
+      : check
+        ? '적합도 ' + fit + ' · 확인 필요 항목 있어 2·3순위로 두면 안전'
+        : '적합도 ' + fit + ' · 현장 확인 뒤 2·3순위 권장';
+    return '<div class="job wp" data-state="' + (rank ? 'picked' : '') + '">' +
+      '<div class="jbody">' +
+      '<span class="top">' +
+      '<span class="badge ' + (ok ? 'ok' : check ? 'check' : 'no') + '">' + stLabel + '</span>' +
+      '<span class="badge fit" title="내 조건과의 적합도 점수">적합도 ' + fit + '</span>' +
+      (other ? '<span class="badge no">다른 사업</span>' : '') +
+      (rank ? '<span class="rankbadge">' + rank + '순위</span>' : '') +
+      '</span>' +
+      '<span class="name">' + esc(wp.name) + '</span>' +
+      '<span class="meta">' + esc(wp.duty) + ' · ' + esc(wp.hours) + '</span>' +
+      '<span class="wtags">' + wp.tags.map(function (t) {
+        return '<span class="wtag' + (WARN_TAGS[t] ? ' warn' : '') + '">' + esc(TAG_LABEL[t] || t) + '</span>';
+      }).join('') + '</span>' +
+      (r.m.reasons.length ? '<span class="why">' + esc(r.m.reasons[0].t) + '</span>' : '') +
+      '<div class="rankrow" role="group" aria-label="' + esc(wp.name) + ' 희망 순위 지정">' + btns + '</div>' +
+      '<span class="rankhint">' + esc(hint) + '</span>' +
+      '</div></div>';
+  }
+
+  function renderRankSummary() {
+    var list = $('#rankList'), cnt = $('#rankCount');
+    var r = rankList();
+    if (cnt) { cnt.textContent = r.filter(Boolean).length + '/3'; }
+    if (!list) { return; }
+    list.innerHTML = [0, 1, 2].map(function (i) {
+      var n = r[i];
+      return '<li class="rb-row' + (n ? '' : ' empty') + '">' +
+        '<span class="rb-no">' + (i + 1) + '순위</span>' +
+        '<span class="rb-name">' + (n ? esc(n) : '아래 카드에서 지정') + '</span>' +
+        (n ? '<button class="rb-clear" type="button" data-clear-rank="' + (i + 1) + '" aria-label="' + (i + 1) + '순위 ' + esc(n) + ' 비우기">비우기</button>' : '') +
+        '</li>';
+    }).join('');
   }
 
   function renderSupports() {
@@ -3450,8 +3767,47 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   /* ============================================================
      9. 신청 화면 · 제출 · 접수증
      ============================================================ */
+  function renderExtraFields() {
+    var box = $('#extraFields');
+    if (!box) { return; }
+    var f = state.form;
+    if (!f.extra || typeof f.extra !== 'object') { f.extra = {}; }
+    var html = EXTRA_FIELDS.map(function (fd) {
+      var v = f.extra[fd.key];
+      var sel = fd.multi ? (Array.isArray(v) ? v : []) : [v || ''];
+      return '<div class="field">' +
+        '<span class="lab" id="xl-' + fd.key + '">' + esc(fd.label) + '</span>' +
+        '<div class="chiprow" role="group" aria-labelledby="xl-' + fd.key + '">' +
+        fd.opts.map(function (o, i) {
+          var on = sel.indexOf(o) > -1;
+          return '<button class="chip" type="button" id="x-' + fd.key + '-' + i + '" data-xkey="' + fd.key + '"' +
+            ' data-xval="' + esc(o) + '" data-xidx="' + i + '"' + (fd.multi ? ' data-xmulti="1"' : '') +
+            ' aria-pressed="' + (on ? 'true' : 'false') + '">' + esc(o) + '</button>';
+        }).join('') + '</div></div>';
+    }).join('');
+    html += '<div class="field"><label for="inLic">자격면허·경력</label>' +
+      '<span class="hint">예: 컴퓨터활용능력 2급, 사무보조 1년 — 없으면 비워 두세요</span>' +
+      '<input id="inLic" type="text" value="' + esc(f.lic || '') + '" placeholder="예: 컴퓨터활용능력 2급" /></div>';
+    html += '<div class="field"><label for="inGuardian">보호자 연락처 <span style="font-weight:700;color:var(--ink-mute);font-size:14px">(선택)</span></label>' +
+      '<span class="hint">본인 연락처로 충분하면 비워 두세요</span>' +
+      '<input id="inGuardian" type="tel" inputmode="tel" value="' + esc(f.guardian || '') + '" placeholder="010-0000-0000" /></div>';
+    box.innerHTML = html;
+  }
+
+  function renderConfirmRanks() {
+    var box = $('#confirmRankList');
+    if (!box) { return; }
+    var r = rankList();
+    box.innerHTML = [0, 1, 2].map(function (i) {
+      var n = r[i];
+      return '<li><b>' + (i + 1) + '순위</b><span>' + (n ? esc(n) : '없음 · 배정 시 담당자 상담') + '</span></li>';
+    }).join('');
+  }
+
   function renderSubmit() {
     var prog = progOf(state.selectedProgram);
+    renderConfirmRanks();
+    renderExtraFields();
     if (!state.form.name && state.card && state.card.name) { state.form.name = state.card.name; }
     var nm = $('#inName'), bt = $('#inBirth'), tr = $('#inTransport'), chips = $('#aidChips');
     if (nm && document.activeElement !== nm) { nm.value = state.form.name || ''; }
@@ -3466,7 +3822,8 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var ad = $('#autoDesc');
     if (ad) {
       var parts = [state.form.name || '이름', TYPE_LABEL[state.type] || '장애 정보'];
-      if (state.selectedWorkplace) { parts.push(state.selectedWorkplace); }
+      var rk = rankList().filter(Boolean);
+      if (rk.length) { parts.push('1순위 ' + rk[0]); }
       var attachN = requiredFetchDocs().filter(function (d) { return state.fetched[d.id]; }).length;
       ad.innerHTML = '서류에서 채운 값: <b>' + esc(parts.join(' · ')) + '</b>.' +
         (attachN ? ' 가져온 서류 <b>' + attachN + '장</b> 첨부 완료.' : '') +
@@ -3584,8 +3941,9 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       other: '조금만 도움을 받으면 꾸준히 할 수 있어요.'
     }[t] || '꾸준히 할 수 있는 일을 찾고 있어요.';
     var job = JOB_DEFAULT[state.selectedProgram] || '사무보조';
-    var close = state.selectedWorkplace
-      ? '집에서 가까운 ‘' + state.selectedWorkplace + '’에서 일하고 싶어요. 잘 부탁드립니다.'
+    var rk = rankList().filter(Boolean);
+    var close = rk.length
+      ? '희망 근무지는 1순위 ‘' + rk[0] + '’' + (rk[1] ? ', 2순위 ‘' + rk[1] + '’' + (rk[2] ? ', 3순위 ‘' + rk[2] + '’' : '') : '') + ' 순서입니다. 잘 부탁드립니다.'
       : '집에서 가까운 곳에서 오래 일하고 싶어요. 잘 부탁드립니다.';
     return wl + ' ' + job + ' 일을 맡으면 순서대로 하나씩 끝내겠습니다. ' + close;
   }
@@ -3634,7 +3992,8 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       orgAddr: ORG.addr,
       orgTel: ORG.tel,
       program: progOf(state.selectedProgram).name,
-      workplace: state.selectedWorkplace || '협회에서 배정',
+      workplace: rankText(' · ') || '협회에서 배정',
+      ranks: rankList().slice(),
       name: state.form.name || '신청인'
     };
   }
@@ -3645,15 +4004,21 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var no = $('#doneNo'), box = $('#doneReceipt'), bc = $('#doneBarcode');
     if (no) { no.textContent = r.no; }
     if (box) {
+      var wrows = [];
+      var rr = Array.isArray(r.ranks) ? r.ranks : [];
+      for (var i = 0; i < 3; i++) {
+        if (rr[i]) { wrows.push([i === 0 ? '일할 곳 (1순위)' : (i + 1) + '순위', esc(rr[i])]); }
+      }
+      if (!wrows.length) { wrows.push(['일할 곳', esc(r.workplace)]); }
       box.innerHTML = [
         ['접수처', r.org + ' <span class="org-meta">' + esc(r.orgAddr) + ' · ☎ ' + esc(r.orgTel) + '</span>'],
         ['신청인', esc(r.name)],
-        ['신청 사업', esc(r.program)],
-        ['일할 곳', esc(r.workplace)],
+        ['신청 사업', esc(r.program)]
+      ].concat(wrows).concat([
         ['함께 낸 서류', '신청서 3장 포함 모두 ' + requiredDocs(docsFor(state.selectedProgram)).length + '장'],
         ['접수 일시', esc(r.at)],
         ['상태', '<b style="color:var(--grass)">접수 완료 (시연)</b>']
-      ].map(function (row) {
+      ]).map(function (row) {
         return '<div><b>' + row[0] + '</b><span>' + row[1] + '</span></div>';
       }).join('');
     }
@@ -3731,7 +4096,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var body = '다온(DAON) 시연용 신청 요약\n\n접수번호: ' + (r ? r.no : '-') +
       '\n접수처: ' + ORG.name + '\n전화: ' + ORG.tel +
       '\n신청 사업: ' + progOf(state.selectedProgram).name +
-      '\n일할 곳: ' + (state.selectedWorkplace || '협회 배정') +
+      '\n일할 곳: ' + (rankText(' / ') || '협회 배정') +
       '\n신청인: ' + (state.form.name || '신청인') + ' (가명)' +
       '\n연락처: ' + (state.form.phone || '') +
       '\n\n※ 실제 접수가 아닌 공모전 시연용 요약입니다.';
@@ -3765,6 +4130,11 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       return '할 수 있는 일자리 화면이에요. ' + (TYPE_LABEL[state.type] || '') + ', ' + (SEVERITY_LABEL[state.severity] || '') +
         ', ' + (WORK_SHORT[state.workType] || '') + ' 일하기로 했어요. 지금 조건으로 ' + rows.length + '가지 일을 할 수 있어요.' +
         (sel ? ' 고른 일은 ' + sel.p.name + '이고, ' + sel.p.hours + ', 보수는 ' + payShort(sel.p.pay) + '예요.' : '') +
+        (function () {
+          var rk = rankList().filter(Boolean);
+          if (!rk.length) { return ' 근무지 카드에서 1순위·2순위·3순위를 골라 주세요.'; }
+          return ' 희망 근무지는 1순위 ' + rk[0] + (rk[1] ? ', 2순위 ' + rk[1] : '') + (rk[2] ? ', 3순위 ' + rk[2] : '') + '예요.';
+        })() +
         ' 마음에 드는 일을 고르고 아래 큰 버튼을 눌러 주세요.';
     }
     if (v === 'docs') {
@@ -3799,7 +4169,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     return {
       v: 4, view: state.view, card: state.card, type: state.type, severity: state.severity,
       workType: state.workType, envs: Array.from(state.envs), selectedProgram: state.selectedProgram,
-      selectedWorkplace: state.selectedWorkplace, checked: state.checked, fetched: state.fetched,
+      selectedWorkplace: state.selectedWorkplace, workplaceRanks: rankList().slice(), checked: state.checked, fetched: state.fetched,
       form: state.form, receipt: state.receipt, easy: state.easy
     };
   }
@@ -3825,18 +4195,21 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     state.card = raw.card || null;
     if (state.card && state.card.type) { state.card.type = normalizeType(state.card.type); }
     state.selectedProgram = raw.selectedProgram || '';
-    state.selectedWorkplace = raw.selectedWorkplace || '';
+    var rr = Array.isArray(raw.workplaceRanks) ? raw.workplaceRanks.slice(0, 3) : [];
+    state.workplaceRanks = [rr[0] || raw.selectedWorkplace || '', rr[1] || '', rr[2] || ''];
+    rankSync();
     state.checked = raw.checked && typeof raw.checked === 'object' ? raw.checked : {};
     state.fetched = raw.fetched && typeof raw.fetched === 'object' ? raw.fetched : {};
     if (raw.form && typeof raw.form === 'object') {
-      state.form = Object.assign({ name: '', birth: '', phone: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '' }, raw.form);
+      state.form = Object.assign({ name: '', birth: '', phone: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '', guardian: '', extra: {}, lic: '' }, raw.form);
+      if (!state.form.extra || typeof state.form.extra !== 'object') { state.form.extra = {}; }
     }
     state.receipt = raw.receipt || null;
     state.easy = !!raw.easy;
     document.body.classList.toggle('easy', state.easy);
     if (state.selectedProgram && !PROGRAMS.some(function (p) { return p.id === state.selectedProgram; })) {
       state.selectedProgram = '';
-      state.selectedWorkplace = '';
+      setRanks(['', '', '']);
       state.checked = {};
       state.fetched = {};
     }
@@ -3859,10 +4232,10 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       state.workType = '';
       state.envs = new Set();
       state.selectedProgram = '';
-      state.selectedWorkplace = '';
+      setRanks(['', '', '']);
       state.checked = {};
       state.fetched = {};
-      state.form = { name: '', birth: '', phone: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '' };
+      state.form = { name: '', birth: '', phone: '', addr: '', bank: '', account: '', motivation: '', job1: '', job2: '', aids: [], transport: '', guardian: '', extra: {}, lic: '' };
       state.receipt = null;
       state.easy = false;
       document.body.classList.remove('easy');
@@ -3954,7 +4327,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   function selectProgram(pid) {
     if (!pid || state.selectedProgram === pid) { return; }
     state.selectedProgram = pid;
-    state.selectedWorkplace = pickDefaultWorkplace(pid);
+    setRanks([pickDefaultWorkplace(pid), '', '']);
     state.checked = {};
     state.fetched = {};
     fetchState.log = [];
@@ -3966,16 +4339,6 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if (radio) { focusBack(radio); }
     scheduleSave();
   }
-  function selectWorkplace(name) {
-    state.selectedWorkplace = name;
-    render();
-    var list = $$('#workList input[name="work"]');
-    for (var i = 0; i < list.length; i++) {
-      if (list[i].value === name) { focusBack(list[i]); break; }
-    }
-    scheduleSave();
-  }
-
   function goPrev() {
     var idx = VIEW_ORDER.indexOf(state.view);
     if (state.view === 'docs') { go('jobs'); return; }
@@ -4125,13 +4488,88 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         if (t && t.name === 'job' && t.value) { selectProgram(t.value); }
       });
     }
+    /* 근무지 카드의 1·2·3순위 버튼 — 누르면 바로 지정·해제, 포커스는 그 버튼에 유지 */
     var workList = $('#workList');
     if (workList) {
-      workList.addEventListener('change', function (e) {
-        var t = e.target;
-        if (t && t.name === 'work' && t.value) { selectWorkplace(t.value); }
+      workList.addEventListener('click', function (e) {
+        var b = e.target && e.target.closest ? e.target.closest('[data-work-rank]') : null;
+        if (!b) { return; }
+        var idx = b.getAttribute('data-work-idx');
+        var k = parseInt(b.getAttribute('data-work-rank'), 10);
+        var name = b.getAttribute('data-work-name') || '';
+        if (!name || !k) { return; }
+        var msg = setRank(name, k);
+        renderWork();
+        focusBack(document.getElementById('wpr-' + idx + '-' + k));
+        toast(msg);
+        announce(msg);
       });
     }
+    var rbList = $('#rankList');
+    if (rbList) {
+      rbList.addEventListener('click', function (e) {
+        var b = e.target && e.target.closest ? e.target.closest('[data-clear-rank]') : null;
+        if (!b) { return; }
+        var k = parseInt(b.getAttribute('data-clear-rank'), 10);
+        var r = rankList(), nm = r[k - 1] || '';
+        r[k - 1] = '';
+        rankSync();
+        scheduleSave();
+        renderWork();
+        var msg = k + '순위를 비웠습니다.' + (nm ? ' ' + nm : '');
+        toast(msg);
+        announce(msg);
+        var next = document.querySelector('#rankList [data-clear-rank]');
+        focusBack(next || $('#rankBoxTitle'));
+      });
+    }
+    var rankEdit = $('#btnRankEdit');
+    if (rankEdit) {
+      rankEdit.addEventListener('click', function () {
+        go('jobs');
+        setTimeout(function () {
+          var ws = $('#workSection');
+          if (!ws) { return; }
+          try { ws.scrollIntoView({ block: 'start' }); } catch (err) {}
+          var h = ws.querySelector('h2');
+          if (h) {
+            if (!h.hasAttribute('tabindex')) { h.setAttribute('tabindex', '-1'); }
+            try { h.focus({ preventScroll: true }); } catch (err2) {}
+          }
+        }, 80);
+      });
+    }
+    var ex = $('#extraFields');
+    if (ex) {
+      ex.addEventListener('input', function (e) {
+        var t = e.target;
+        if (!t || !t.id) { return; }
+        if (t.id === 'inLic') { state.form.lic = t.value; scheduleSave(); }
+        else if (t.id === 'inGuardian') { state.form.guardian = t.value; scheduleSave(); }
+      });
+      ex.addEventListener('click', function (e) {
+        var b = e.target && e.target.closest ? e.target.closest('[data-xkey]') : null;
+        if (!b) { return; }
+        var key = b.getAttribute('data-xkey');
+        var val = b.getAttribute('data-xval');
+        var multi = b.getAttribute('data-xmulti') === '1';
+        var f = state.form;
+        if (!f.extra || typeof f.extra !== 'object') { f.extra = {}; }
+        if (multi) {
+          var arr = Array.isArray(f.extra[key]) ? f.extra[key].slice() : [];
+          var i = arr.indexOf(val);
+          if (i > -1) { arr.splice(i, 1); } else { arr.push(val); }
+          f.extra[key] = arr;
+        } else {
+          f.extra[key] = f.extra[key] === val ? '' : val;
+        }
+        var xi = b.getAttribute('data-xidx');
+        renderExtraFields();
+        focusBack(document.getElementById('x-' + key + '-' + xi));
+        scheduleSave();
+      });
+    }
+
 
     var agencyList = $('#agencyList');
     if (agencyList) {
