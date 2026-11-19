@@ -750,29 +750,29 @@ body.a11y-big.easy .hero h1{line-height:1.4}
           <div class="bigface" aria-hidden="true">
             <svg viewBox="0 0 48 48" role="presentation" focusable="false"><g fill="none" stroke="#1B6438" stroke-width="4.4" stroke-linecap="round"><path d="M15 14v20"/><path d="M15 14h18v14a6 6 0 0 1-6 6H15"/></g><circle cx="11.6" cy="12" r="2.4" fill="#1B6438"/><circle cx="19.6" cy="12" r="2.4" fill="#1B6438"/></svg>
           </div>
-          <h1><span class="hl">복지카드만 있으면</span><br><span class="hb">할 수 있는 일을</span> <span class="hc">찾아 드려요</span></h1>
-          <p>복지카드를 찍으면 <b>할 수 있는 일자리</b>를 골라 드리고, 필요한 서류는 나라 기관에서 <b>대신 모아</b> 드려요.</p>
+          <h1><span class="hl">복지카드 인식</span><br><span class="hb">맞춤 일자리 조회</span><br><span class="hc">신청서 제출</span></h1>
+          <p>복지카드 인식 → <b>맞춤 일자리 조회</b> → <b>기관 서류 자동 첨부</b> → 신청서 제출</p>
         </div>
 
         <div class="btnrow" style="margin-top:14px">
           <button class="btn primary block" id="btnScan" type="button"><span aria-hidden="true">📷</span> 복지카드 찍기·올리기</button>
         </div>
         <div class="btnrow" style="margin-top:10px">
-          <button class="btn block" id="btnSamples" type="button"><span aria-hidden="true">🗂️</span> 예시 카드로 해보기</button>
-          <button class="btn ghost block" id="btnManual" type="button">카드가 없어요 · 직접 고르기</button>
+          <button class="btn block" id="btnSamples" type="button"><span aria-hidden="true">🗂️</span> 예시 카드 선택</button>
+          <button class="btn ghost block" id="btnManual" type="button">카드 없이 직접 선택</button>
         </div>
-        <p class="micro" style="text-align:center; margin-top:12px">사진은 서버로 보내지 않아요 · 시연용 가상 인식입니다</p>
+        <p class="micro" style="text-align:center; margin-top:12px">사진 서버 전송 없음 · 시연용 가상 인식</p>
         <input type="file" id="cardFile" accept="image/*" hidden>
       </div>
 
       <div id="cardDone" hidden>
-        <h2 class="sec">복지카드를 읽었어요</h2>
-        <p class="lead">카드에 적힌 내용이에요. 맞으면 아래 버튼을 눌러 주세요.</p>
+        <h2 class="sec">복지카드 인식 완료</h2>
+        <p class="lead">카드 인식 결과 · 내용 확인 후 다음 단계</p>
         <div class="cardarea" id="cardVisual"></div>
         <div class="card" id="cardHint" hidden></div>
         <div class="btnrow">
-          <button class="btn" id="btnCardEdit" type="button"><span aria-hidden="true">✏️</span> 내용이 달라요 · 고치기</button>
-          <button class="btn ghost" id="btnCardAgain" type="button">다른 카드로 다시 하기</button>
+          <button class="btn" id="btnCardEdit" type="button"><span aria-hidden="true">✏️</span> 내용 수정</button>
+          <button class="btn ghost" id="btnCardAgain" type="button">카드 다시 인식</button>
         </div>
       </div>
     </section>
@@ -784,21 +784,21 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         <button class="chip" id="btnCond" type="button">조건 바꾸기</button>
       </div>
       <h2 class="sec">할 수 있는 일자리 <span class="cnt" id="jobCount">0</span></h2>
-      <p class="lead">복지카드와 조건에 맞춰 골랐어요. 하나를 고르면 서류 준비를 도와드려요.</p>
+      <p class="lead">복지카드·조건 기준 맞춤 결과 · 일자리 선택 시 서류 준비로 이동</p>
       <div class="joblist" id="jobList" role="radiogroup" aria-label="일자리 고르기"></div>
-      <button class="btn ghost block" id="btnJobMore" type="button" hidden>다른 일자리 더 보기</button>
+      <button class="btn ghost block" id="btnJobMore" type="button" hidden>일자리 더 보기</button>
       <details class="box" id="offBox" hidden>
-        <summary>지금 조건으로는 어려운 일자리</summary>
+        <summary>조건 미충족 일자리</summary>
         <div class="inner" id="offList"></div>
       </details>
       <div id="workSection">
-        <h2 class="sec" style="margin-top:6px">일할 수 있는 곳</h2>
-        <p class="lead">진주에서 조건에 맞는 곳을 골라 봤어요.</p>
+        <h2 class="sec" style="margin-top:6px">근무지 매칭</h2>
+        <p class="lead">진주 지역 · 조건 일치 근무지</p>
         <div class="joblist" id="workList"></div>
-        <button class="btn ghost block" id="btnWorkMore" type="button">다른 곳도 보기</button>
+        <button class="btn ghost block" id="btnWorkMore" type="button">근무지 더 보기</button>
       </div>
       <details class="box" id="supportBox">
-        <summary>더 받을 수 있는 도움</summary>
+        <summary>추가 지원 제도</summary>
         <div class="inner" id="supportList"></div>
       </details>
     </section>
@@ -811,8 +811,8 @@ body.a11y-big.easy .hero h1{line-height:1.4}
             <svg viewBox="0 0 48 48" role="presentation" focusable="false"><g fill="none" stroke="#1B6438" stroke-width="4" stroke-linecap="round"><path d="M16 15v18"/><path d="M16 15h16v12a6 6 0 0 1-6 6H16"/></g><circle cx="12.5" cy="12.5" r="2.2" fill="#1B6438"/><circle cx="20" cy="12.5" r="2.2" fill="#1B6438"/></svg>
           </span>
           <div style="flex:1;min-width:0">
-            <b id="docsTitle">서류를 모아 드릴게요</b>
-            <p id="docsLead">나라 기관에 들어가서 필요한 서류를 대신 가져와요.</p>
+            <b id="docsTitle">기관 서류 자동 수집</b>
+            <p id="docsLead">정부24·건강보험공단 등 기관 서류 자동 수집·첨부</p>
           </div>
         </div>
         <div class="progress">
@@ -822,85 +822,85 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       </div>
 
       <div class="agentlog" id="agentLog" hidden>
-        <div class="al-head"><b>다온이 대신 다녀오는 중</b><span class="al-badge">시연</span></div>
+        <div class="al-head"><b>서류 자동 수집</b><span class="al-badge">시연</span></div>
         <ul class="al-list" id="alList" aria-live="polite"></ul>
       </div>
 
-      <h2 class="sec">어디서 가져오나요?</h2>
+      <h2 class="sec">발급 기관</h2>
       <div class="joblist" id="agencyList"></div>
 
       <div id="fileBlock" hidden>
-        <h2 class="sec" style="margin-top:8px">가져온 서류 <span class="cnt" id="fileCount">0</span></h2>
+        <h2 class="sec" style="margin-top:8px">수집 완료 서류 <span class="cnt" id="fileCount">0</span></h2>
         <div class="filelist" id="fileList"></div>
       </div>
 
       <details class="box" id="selfBox">
-        <summary>서류를 직접 준비할래요</summary>
+        <summary>서류 직접 준비</summary>
         <div class="inner">
-          <p>종이 서류를 이미 가지고 있다면, 서류를 가져오지 않고도 다음으로 넘어갈 수 있어요. 신청서는 다온이 대신 써 드려요.</p>
-          <button class="btn block small" id="btnSelfDocs" type="button">직접 준비한 것으로 하고 넘어가기</button>
+          <p>종이 서류 보유 시 자동 수집 생략 · 신청서 자동 작성.</p>
+          <button class="btn block small" id="btnSelfDocs" type="button">직접 준비 · 다음 단계</button>
         </div>
       </details>
-      <p class="micro">※ 시연용 가상 연결입니다. 실제로는 본인 인증 후 정부24·복지로 등에서 직접 발급받아야 해요. 가져온 서류는 신청서와 함께 한 번에 제출돼요.</p>
+      <p class="micro">※ 시연용 가상 연결. 실제 발급은 본인 인증 후 정부24·복지로 등에서 직접. 수집 서류는 신청서와 함께 제출.</p>
     </section>
 
     <!-- ============ 4. 신청 ============ -->
     <section class="screen" id="view-submit" aria-label="신청서 내기" hidden>
-      <h2 class="sec">빠진 것만 적으면 돼요</h2>
+      <h2 class="sec">필수 항목 입력</h2>
       <div class="autofill">
         <b id="autoTitle">🤖 서류에서 채운 정보</b>
-        <p id="autoDesc">복지카드와 기관 서류로 이름·장애 정보·주소를 채웠어요.</p>
+        <p id="autoDesc">복지카드·기관 서류 기반 자동 입력: 이름 · 장애 정보 · 주소</p>
       </div>
 
       <form id="applyForm" novalidate>
         <div class="field" id="fPhone">
           <label for="inPhone">연락처</label>
-          <span class="hint">연락 받으실 휴대폰 번호</span>
+          <span class="hint">휴대폰 번호</span>
           <input id="inPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="010-1234-5678" />
-          <span class="err" id="ePhone" hidden>번호를 다시 확인해 주세요. (예: 010-1234-5678)</span>
+          <span class="err" id="ePhone" hidden>전화번호 형식 확인 (예: 010-1234-5678)</span>
         </div>
         <div class="field" id="fAddr">
           <label for="inAddr">사는 곳</label>
-          <span class="hint">동까지만 적어도 괜찮아요</span>
+          <span class="hint">동까지 입력 가능</span>
           <input id="inAddr" name="addr" type="text" autocomplete="street-address" placeholder="예: 경상남도 진주시 ○○로 12" />
-          <span class="err" id="eAddr" hidden>사는 곳을 적어 주세요.</span>
+          <span class="err" id="eAddr" hidden>주소 입력 필요</span>
         </div>
         <div class="field" id="fAcct">
           <label for="inBank">급여 받을 계좌</label>
-          <span class="hint">은행과 계좌번호를 적어 주세요</span>
+          <span class="hint">은행명 · 계좌번호</span>
           <input id="inBank" name="bank" type="text" placeholder="○○은행" />
           <input id="inAcct" name="account" type="tel" inputmode="numeric" placeholder="계좌번호 (숫자만)" style="margin-top:8px" />
-          <span class="err" id="eAcct" hidden>은행과 계좌번호를 적어 주세요.</span>
+          <span class="err" id="eAcct" hidden>은행명·계좌번호 입력 필요</span>
         </div>
         <div class="field" id="fMotiv">
-          <label for="inMotiv">하고 싶은 말 <span style="font-weight:700;color:var(--ink-mute);font-size:14px">(안 써도 돼요)</span></label>
-          <span class="hint">왜 이 일을 하고 싶은지 한두 줄이면 충분해요</span>
+          <label for="inMotiv">하고 싶은 말 <span style="font-weight:700;color:var(--ink-mute);font-size:14px">(선택)</span></label>
+          <span class="hint">지원 동기 1~2줄 (선택)</span>
           <textarea id="inMotiv" name="motivation" maxlength="600" placeholder="예: 집에서 가까운 곳에서 오래 일하고 싶어요."></textarea>
-          <button class="btn small" id="btnDraft" type="button" style="align-self:flex-start;margin-top:8px"><span aria-hidden="true">✍️</span> AI가 초안 써 주기</button>
+          <button class="btn small" id="btnDraft" type="button" style="align-self:flex-start;margin-top:8px"><span aria-hidden="true">✍️</span> AI 초안 생성</button>
         </div>
       </form>
 
       <details class="box" id="formDocs">
-        <summary>함께 낼 서류 보기</summary>
+        <summary>함께 제출할 서류</summary>
         <div class="inner"><div class="filelist" id="formDocList"></div></div>
       </details>
-      <p class="micro">※ 시연용입니다. 실제 제출은 협회에 서류를 가지고 가서 본인이 서명해야 해요.</p>
+      <p class="micro">※ 시연용. 실제 제출은 협회 방문·본인 서명 필요.</p>
     </section>
 
     <!-- ============ 완료 ============ -->
     <section class="screen" id="view-done" aria-label="접수 완료" hidden>
       <div class="donebox">
         <div class="check" aria-hidden="true">✓</div>
-        <h1>신청서를 냈어요</h1>
-        <p class="lead" style="margin-top:6px" id="doneLead">접수 번호를 꼭 보관해 주세요.</p>
+        <h1>신청 접수 완료</h1>
+        <p class="lead" style="margin-top:6px" id="doneLead">접수 번호 보관 필요.</p>
         <div class="no" id="doneNo">DAON-2026-0000</div>
         <div class="barcode" aria-hidden="true" id="doneBarcode"></div>
         <div class="receipt" id="doneReceipt"></div>
       </div>
       <div class="btnrow" style="margin-top:4px">
-        <button class="btn primary block" id="btnPrint" type="button"><span aria-hidden="true">🖨️</span> 신청서 인쇄하기</button>
-        <button class="btn block" id="btnZip" type="button"><span aria-hidden="true">📦</span> 서류 모두 저장하기</button>
-        <button class="btn block" id="btnMail" type="button"><span aria-hidden="true">✉️</span> 메일로 보내기</button>
+        <button class="btn primary block" id="btnPrint" type="button"><span aria-hidden="true">🖨️</span> 신청서 인쇄</button>
+        <button class="btn block" id="btnZip" type="button"><span aria-hidden="true">📦</span> 서류 전체 저장</button>
+        <button class="btn block" id="btnMail" type="button"><span aria-hidden="true">✉️</span> 메일 전송</button>
       </div>
       <p class="micro" style="text-align:center">※ 실제 기관으로 전송되지 않은 <b>시연용 접수</b>입니다.</p>
     </section>
@@ -928,14 +928,14 @@ body.a11y-big.easy .hero h1{line-height:1.4}
 <div class="ov" id="ocr" hidden>
   <div class="sheet sheetwrap" role="dialog" aria-modal="true" aria-labelledby="ocrTitle">
     <div class="grab" aria-hidden="true"></div>
-    <h2 id="ocrTitle">복지카드를 읽는 중이에요</h2>
-    <p class="sub" id="ocrSub">카드에서 필요한 것만 읽어요. 사진은 서버로 보내지 않아요.</p>
+    <h2 id="ocrTitle">복지카드 인식 중</h2>
+    <p class="sub" id="ocrSub">필요 항목만 인식 · 사진 서버 전송 없음</p>
     <div class="ocrstage">
       <div class="cardarea" id="ocrCard"></div>
       <span class="ocrline" aria-hidden="true"></span>
     </div>
     <div class="ocrsteps" id="ocrSteps"></div>
-    <p class="micro">※ 시연용 가상 인식입니다. 실제 카드 정보는 저장·전송되지 않아요.</p>
+    <p class="micro">※ 시연용 가상 인식. 카드 정보 저장·전송 없음.</p>
   </div>
 </div>
 
@@ -948,7 +948,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     <p class="sub" id="loginSub"></p>
     <div id="loginBody"></div>
     <div class="stickybtns">
-      <button class="btn primary block" id="loginGo" type="button">시연 인증하고 서류 가져오기</button>
+      <button class="btn primary block" id="loginGo" type="button">시연 인증 · 서류 수집</button>
       <button class="btn ghost block" id="loginCancel" type="button">취소</button>
     </div>
   </div>
@@ -958,10 +958,10 @@ body.a11y-big.easy .hero h1{line-height:1.4}
 <div class="ov" id="submitOv" hidden>
   <div class="sheet sheetwrap" role="dialog" aria-modal="true" aria-labelledby="subTitle">
     <div class="grab" aria-hidden="true"></div>
-    <h2 id="subTitle">신청서를 내고 있어요</h2>
-    <p class="sub" id="subSub">잠시만 기다려 주세요.</p>
+    <h2 id="subTitle">신청서 제출 중</h2>
+    <p class="sub" id="subSub">처리 중…</p>
     <div class="substeps" id="subSteps"></div>
-    <p class="micro">※ 실제 기관으로 전송되지 않는 시연입니다.</p>
+    <p class="micro">※ 실제 기관 전송 없음 (시연).</p>
   </div>
 </div>
 
@@ -1069,17 +1069,17 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     saveA11y();
     applyA11y();
     if (!silent) {
-      var msg = a11y.rate === TTS_RATE_SLOW ? '음성 속도를 천천히(0.82)로 바꿨어요' : '음성 속도를 보통(0.93)으로 바꿨어요';
+      var msg = a11y.rate === TTS_RATE_SLOW ? '음성 속도 · 천천히(0.82)' : '음성 속도 · 보통(0.93)';
       toast(msg);
       announce(msg);
-      if (a11y.voice && ttsSupported) { speak('이 속도로 안내해 드릴게요.'); }
+      if (a11y.voice && ttsSupported) { speak('이 속도로 안내합니다.'); }
     }
   }
 
   function setA11y(key, on, msg) {
     if (key === 'voice' && on && !ttsSupported) {
-      toast('이 브라우저는 음성 안내를 지원하지 않아요. 대신 화면의 글자를 읽어 주세요.');
-      announce('이 브라우저는 음성 안내를 지원하지 않습니다.');
+      toast('음성 안내 미지원 브라우저 · 화면 글자 확인');
+      announce('음성 안내 미지원 브라우저입니다.');
       a11y.voice = false;
       saveA11y();
       applyA11y();
@@ -1089,7 +1089,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       checkKoreanVoice(function (ok) {
         if (!ok) {
           toast(NO_KO_VOICE_MSG);
-          announce('한국어 음성이 없어 음성 안내를 켜지 않았습니다.');
+          announce('한국어 음성 미설치 · 음성 안내 꺼짐.');
           a11y.voice = false;
           saveA11y();
           applyA11y();
@@ -1133,7 +1133,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var was = tts.speaking;
     tts.speaking = false;
     setSpeakUI(false);
-    if (was && !silent) { announce('음성 안내를 멈췄습니다.'); }
+    if (was && !silent) { announce('음성 안내 정지.'); }
   }
 
   /* 한국어 음성 중 민원인 응대에 자연스러운 음성을 고른다.
@@ -1172,23 +1172,23 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     try { window.speechSynthesis.addEventListener('voiceschanged', finish); } catch (e) {}
     setTimeout(finish, 1500);
   }
-  var NO_KO_VOICE_MSG = '이 기기에는 한국어 음성이 없어 음성 안내를 켤 수 없어요. 기기 설정에서 한국어 음성을 추가하거나 화면의 글자를 읽어 주세요.';
+  var NO_KO_VOICE_MSG = '한국어 음성 미설치 · 음성 안내 사용 불가. 기기 설정에서 한국어 음성 추가 필요.';
   function voicesLoaded() {
     try { return (window.speechSynthesis.getVoices() || []).length > 0; } catch (e) { return false; }
   }
 
   function speak(text) {
     var t = String(text || '').replace(/\s+/g, ' ').trim();
-    if (!t) { toast('아직 읽어 드릴 내용이 없어요.'); return; }
+    if (!t) { toast('읽을 내용 없음'); return; }
     if (!ttsSupported) {
-      toast('이 브라우저는 음성 안내를 지원하지 않아요. 화면의 글자를 읽어 주세요.');
-      announce('이 브라우저는 음성 안내를 지원하지 않습니다.');
+      toast('음성 안내 미지원 브라우저 · 화면 글자 확인');
+      announce('음성 안내 미지원 브라우저입니다.');
       return;
     }
     /* 음성 목록을 받았는데 한국어 음성이 없으면 다른 언어 음성으로 읽지 않는다 */
     if (voicesLoaded() && !pickKoreanVoice()) {
       toast(NO_KO_VOICE_MSG);
-      announce('한국어 음성이 없어 읽어 드릴 수 없습니다.');
+      announce('한국어 음성 미설치 · 낭독 불가.');
       return;
     }
     try { window.speechSynthesis.cancel(); } catch (e) {}
@@ -1208,7 +1208,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     tts.speaking = true;
     setSpeakUI(true);
     try { window.speechSynthesis.speak(u); }
-    catch (e) { tts.speaking = false; setSpeakUI(false); toast('음성 안내를 시작하지 못했어요. 다시 눌러 주세요.'); }
+    catch (e) { tts.speaking = false; setSpeakUI(false); toast('음성 안내 시작 실패 · 재시도'); }
   }
   /* ============================================================
      1. 이름표 (쉬운 말 우선)
@@ -1221,7 +1221,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     physical: '지체', brain: '뇌병변', visual: '시각',
     hearing: '청각', developmental: '발달', other: '기타'
   };
-  var SEVERITY_LABEL = { severe: '심한 장애', mild: '심하지 않은 장애', unsure: '잘 모르겠어요' };
+  var SEVERITY_LABEL = { severe: '심한 장애', mild: '심하지 않은 장애', unsure: '확인 전' };
   var WORK_LABEL = { full: '전일제', part: '시간제', welfare: '복지형·참여형', remote: '재택·유연근무' };
   var WORK_SHORT = { full: '주 40시간', part: '주 20시간', welfare: '주 14시간', remote: '재택·유연' };
   var ENV_LABEL = {
@@ -1303,7 +1303,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     nhis: { name: '국민건강보험공단', short: '건강보험', cls: 'nhis', desc: '건강보험 자격 확인' },
     bokjiro: { name: '복지로', short: '복지로', cls: 'bok', desc: '수급자·차상위 확인' },
     work24: { name: '고용24', short: '고용24', cls: 'work', desc: '구직등록 확인' },
-    assoc: { name: '협회 서식', short: '협회', cls: 'assoc', desc: '다온 AI가 대신 써요', auto: true }
+    assoc: { name: '협회 서식', short: '협회', cls: 'assoc', desc: '다온 AI 자동 작성', auto: true }
   };
   var DOC_AGENCY = {
     id: 'gov24', disability: 'gov24', resident: 'gov24',
@@ -1357,183 +1357,183 @@ body.a11y-big.easy .hero h1{line-height:1.4}
      kind: ok(충족) / check(확인 필요) / no(제한) / info(참고)
      ============================================================ */
   function baseReason() {
-    return { k: 'ok', t: '만 18세 이상 장애인복지법상 등록된 미취업 장애인이면 신청할 수 있습니다. 장애 정도·유형만으로 자격이 갈리지 않습니다.' };
+    return { k: 'ok', t: '자격: 만 18세 이상 · 장애인복지법 등록 미취업 장애인. 장애 정도·유형에 따른 자격 제한 없음.' };
   }
   function unsureNote(s) {
     return s.severity === 'unsure'
-      ? [{ k: 'info', t: '장애 정도가 확인되면 선발 우선순위(심한 장애 가점)와 지원 제도를 다시 계산해 드릴게요.' }]
+      ? [{ k: 'info', t: '장애 정도 확인 시 선발 우선순위(심한 장애 가점)·지원 제도 재계산.' }]
       : [];
   }
   function envInfo(s) {
     var out = [];
     if (s.envs.has('wheelchair')) {
-      out.push({ k: 'info', t: '휠체어 이동이 가능한지는 근무지 동선(경사로·승강기·화장실)에서 갈립니다. 배치 전에 꼭 확인하세요.' });
+      out.push({ k: 'info', t: '휠체어 이동 가능 여부: 근무지 동선(경사로·승강기·화장실). 배치 전 확인 필요.' });
     }
     if (s.envs.has('standing')) {
-      out.push({ k: 'info', t: '장시간 서 있기 어려우면 앉아서 하는 사무·사서보조·재택 직무가 안전합니다.' });
+      out.push({ k: 'info', t: '장시간 서기 어려운 경우 앉아서 하는 사무·사서보조·재택 직무 권장.' });
     }
     if (s.envs.has('communication')) {
-      out.push({ k: 'info', t: '업무 지시를 서면·문자로 받을 수 있는지가 첫 상담에서 확인할 핵심입니다.' });
+      out.push({ k: 'info', t: '업무 지시 서면·문자 수령 가능 여부 · 첫 상담 필수 확인 항목.' });
     }
     return out;
   }
 
   function ruleGeneralFull(s) {
     var r = [baseReason()];
-    r.push({ k: 'info', t: '주 40시간(12월은 37.5시간), 월 2,156,880원(12월 2,022,720원, 세전).' });
+    r.push({ k: 'info', t: '주 40시간(12월 37.5시간) · 월 2,156,880원(12월 2,022,720원, 세전).' });
     if (s.workType === 'full') {
-      r.push({ k: 'ok', t: '희망 근무형태가 전일제라 근무시간이 그대로 맞습니다.' });
+      r.push({ k: 'ok', t: '희망 근무형태(전일제) 일치.' });
     } else if (s.workType === 'part') {
-      r.push({ k: 'check', t: '희망하신 주 20시간보다 두 배 긴 주 40시간 근무입니다. 같은 사업의 시간제를 함께 보세요.' });
+      r.push({ k: 'check', t: '희망 주 20시간 대비 2배 근무 · 같은 사업 시간제 병행 검토.' });
     } else if (s.workType === 'welfare') {
-      r.push({ k: 'check', t: '주 14시간 희망보다 세 배 가까이 긴 근무입니다. 무리가 예상되면 복지일자리(참여형)가 맞습니다.' });
+      r.push({ k: 'check', t: '희망 주 14시간 대비 약 3배 근무 · 체력 부담 시 복지일자리(참여형) 권장.' });
     } else if (s.workType === 'remote') {
-      r.push({ k: 'check', t: '행정·복지 지원 업무는 대부분 출근 근무입니다. 재택 전환은 기관 협의가 필요합니다.' });
+      r.push({ k: 'check', t: '행정·복지 지원 업무 대부분 출근 근무 · 재택 전환은 기관 협의 필요.' });
     }
     if (s.severity === 'severe') {
-      r.push({ k: 'check', t: '심한 장애도 참여할 수 있지만 전일제는 체력 부담이 큽니다. 근로지원인·보조공학기기를 함께 신청하세요.' });
+      r.push({ k: 'check', t: '심한 장애 참여 가능 · 전일제 체력 부담 큼 · 근로지원인·보조공학기기 동시 신청 권장.' });
     }
     if (s.envs.has('standing')) {
-      r.push({ k: 'ok', t: '행정·사무 중심이라 장시간 서서 일하는 부담이 적습니다.' });
+      r.push({ k: 'ok', t: '행정·사무 중심 · 장시간 서기 부담 적음.' });
     }
     if (s.envs.has('simple')) {
-      r.push({ k: 'ok', t: '서류 정리·안내문 발송처럼 단순 반복 사무가 많은 직무입니다.' });
+      r.push({ k: 'ok', t: '서류 정리·안내문 발송 등 단순 반복 사무 다수.' });
     }
     if (s.envs.has('communication')) {
-      r.push({ k: 'check', t: '민원 응대가 포함될 수 있어 문자 안내·서면 지시 등 의사소통 지원을 미리 요청하세요.' });
+      r.push({ k: 'check', t: '민원 응대 포함 가능 · 문자 안내·서면 지시 등 의사소통 지원 사전 요청 필요.' });
     }
     if (s.envs.has('wheelchair')) {
-      r.push({ k: 'info', t: '주민센터·복지관은 승강기와 경사로가 대부분 있으나, 실제 배치 건물을 확인해야 합니다.' });
+      r.push({ k: 'info', t: '주민센터·복지관 대부분 승강기·경사로 구비 · 실제 배치 건물 확인 필요.' });
     }
     return r.concat(unsureNote(s));
   }
 
   function ruleGeneralPart(s) {
     var r = [baseReason()];
-    r.push({ k: 'info', t: '주 20시간(12월 19시간), 월 1,078,440원(세전). 1일 4시간 이상 근무합니다.' });
+    r.push({ k: 'info', t: '주 20시간(12월 19시간) · 월 1,078,440원(세전) · 1일 4시간 이상.' });
     if (s.workType === 'part') {
-      r.push({ k: 'ok', t: '희망 시간(주 20시간)과 정확히 맞습니다.' });
+      r.push({ k: 'ok', t: '희망 시간(주 20시간) 일치.' });
     } else if (s.workType === 'full') {
-      r.push({ k: 'check', t: '희망하신 주 40시간의 절반이라 소득이 줄어듭니다. 전일제와 함께 비교해 보세요.' });
+      r.push({ k: 'check', t: '희망 주 40시간의 절반 · 소득 감소 · 전일제와 비교 권장.' });
     } else if (s.workType === 'welfare') {
-      r.push({ k: 'check', t: '주 14시간 희망보다 조금 깁니다. 하루 4시간 근무가 가능한지 확인하세요.' });
+      r.push({ k: 'check', t: '희망 주 14시간 대비 소폭 김 · 1일 4시간 근무 가능 여부 확인.' });
     } else if (s.workType === 'remote') {
-      r.push({ k: 'check', t: '출근 근무가 원칙입니다. 재택은 별도 직무에서 찾아야 합니다.' });
+      r.push({ k: 'check', t: '출근 근무 원칙 · 재택은 별도 직무 검색 필요.' });
     }
     if (s.severity === 'severe') {
-      r.push({ k: 'info', t: '심한 장애도 참여할 수 있습니다. 하루 4시간이라 전일제보다 부담이 적고, 근로지원인을 함께 신청하면 더 안정적입니다.' });
+      r.push({ k: 'info', t: '심한 장애 참여 가능 · 1일 4시간으로 전일제 대비 부담 적음 · 근로지원인 동시 신청 시 안정적.' });
     }
     if (s.envs.has('standing')) {
-      r.push({ k: 'ok', t: '주로 앉아서 하는 사무 지원 업무입니다.' });
+      r.push({ k: 'ok', t: '주로 앉아서 하는 사무 지원 업무.' });
     }
     if (s.envs.has('wheelchair')) {
-      r.push({ k: 'info', t: '근무지 건물의 승강기·화장실 동선을 배치 전에 확인하세요.' });
+      r.push({ k: 'info', t: '근무지 건물 승강기·화장실 동선 배치 전 확인 필요.' });
     }
     return r.concat(unsureNote(s));
   }
 
   function ruleWelfare(s) {
     var r = [baseReason()];
-    r.push({ k: 'info', t: '주 14시간 이내(월 56시간), 월 577,920원(세전). 2026년에는 50개 맞춤 직무로 운영됩니다.' });
+    r.push({ k: 'info', t: '주 14시간 이내(월 56시간) · 월 577,920원(세전) · 2026년 50개 맞춤 직무 운영.' });
     if (s.workType === 'welfare') {
-      r.push({ k: 'ok', t: '희망하신 주 14시간 내외와 정확히 맞습니다.' });
+      r.push({ k: 'ok', t: '희망 주 14시간 내외 일치.' });
     } else if (s.workType === 'full') {
-      r.push({ k: 'check', t: '최대 주 14시간이라 전일제 희망과 소득 차이가 큽니다.' });
+      r.push({ k: 'check', t: '최대 주 14시간 · 전일제 희망 대비 소득 차이 큼.' });
     } else if (s.workType === 'part') {
-      r.push({ k: 'check', t: '주 20시간보다 짧습니다. 소득보다 지속 가능성을 우선하면 좋은 선택입니다.' });
+      r.push({ k: 'check', t: '주 20시간 대비 짧음 · 소득보다 지속 가능성 우선 시 적합.' });
     } else if (s.workType === 'remote') {
-      r.push({ k: 'check', t: '대부분 현장 근무입니다. 다만 2026년 신규 직무에 재택형(자료 감수·모니터링)이 있습니다.' });
+      r.push({ k: 'check', t: '대부분 현장 근무 · 2026년 신규 직무 중 재택형(자료 감수·모니터링) 존재.' });
     }
     if (s.severity === 'severe') {
-      r.push({ k: 'ok', t: '2026년 확대된 복지일자리 1,600개는 심한 장애인 대상으로 운영되어 기회가 늘었습니다.' });
+      r.push({ k: 'ok', t: '2026년 확대 복지일자리 1,600개 · 심한 장애인 대상 · 기회 확대.' });
     }
     if (s.type === 'developmental') {
-      r.push({ k: 'ok', t: '복지일자리는 발달장애인 맞춤 직무(사서보조·환경정리·급식지원 등)가 많은 유형입니다.' });
+      r.push({ k: 'ok', t: '복지일자리 · 발달장애인 맞춤 직무(사서보조·환경정리·급식지원 등) 다수.' });
     }
     if (s.envs.has('wheelchair')) {
-      r.push({ k: 'info', t: '실내 사무·사서보조·자료 감수는 가능하지만, 환경정비·주차계도는 이동 부담이 큽니다.' });
+      r.push({ k: 'info', t: '실내 사무·사서보조·자료 감수 가능 · 환경정비·주차계도는 이동 부담 큼.' });
     }
     if (s.envs.has('simple')) {
-      r.push({ k: 'ok', t: '정해진 순서를 반복하는 직무가 많아 단순·반복 선호와 잘 맞습니다.' });
+      r.push({ k: 'ok', t: '정해진 순서 반복 직무 다수 · 단순·반복 선호 일치.' });
     }
     return r.concat(unsureNote(s));
   }
 
   function ruleMassage(s) {
     var r = [];
-    r.push({ k: 'info', t: '주 25시간, 월 1,351,920원(세전). 노인복지관·경로당 등에서 안마 서비스를 제공합니다.' });
+    r.push({ k: 'info', t: '주 25시간 · 월 1,351,920원(세전) · 노인복지관·경로당 등 안마 서비스 제공.' });
     if (s.type === 'visual') {
-      r.push({ k: 'check', t: '시각장애는 대상이지만, 안마사 자격증과 전년도 이후 보수교육 이수 확인이 필요합니다.' });
+      r.push({ k: 'check', t: '시각장애 대상 · 안마사 자격증·전년도 이후 보수교육 이수 확인 필요.' });
       if (!s.envs.has('communication')) {
-        r.push({ k: 'ok', t: '직무 특성상 이동은 동행 지원과 함께 이뤄집니다.' });
+        r.push({ k: 'ok', t: '직무 특성상 이동은 동행 지원 병행.' });
       }
     } else {
-      r.push({ k: 'no', t: '안마사 자격을 가진 미취업 시각장애인만 참여할 수 있어 이 유형은 해당되지 않습니다.' });
+      r.push({ k: 'no', t: '안마사 자격 보유 미취업 시각장애인 한정 · 해당 없음.' });
     }
     if (s.workType === 'full') {
-      r.push({ k: 'info', t: '주 25시간이라 전일제(주 40시간)보다 짧습니다.' });
+      r.push({ k: 'info', t: '주 25시간 · 전일제(주 40시간) 대비 짧음.' });
     }
     return r.concat(unsureNote(s));
   }
 
   function ruleCare(s) {
     var r = [];
-    r.push({ k: 'info', t: '주 25시간(1일 5시간), 월 1,351,920원(세전). 노인요양시설·재가기관에서 요양보호사 업무를 보조합니다.' });
+    r.push({ k: 'info', t: '주 25시간(1일 5시간) · 월 1,351,920원(세전) · 노인요양시설·재가기관 요양보호사 업무 보조.' });
     if (s.type === 'developmental') {
-      r.push({ k: 'check', t: '지적장애 또는 자폐성장애가 대상입니다. 정신장애만 있는 경우는 해당되지 않으니 등록 유형을 확인하세요.' });
-      r.push({ k: 'ok', t: '식사·이동 돕기처럼 순서가 정해진 보조 업무라 반복 선호와 맞습니다.' });
+      r.push({ k: 'check', t: '대상: 지적장애 또는 자폐성장애 · 정신장애만 있는 경우 제외 · 등록 유형 확인 필요.' });
+      r.push({ k: 'ok', t: '식사·이동 돕기 등 순서 정해진 보조 업무 · 반복 선호 일치.' });
     } else {
-      r.push({ k: 'no', t: '지적·자폐성 장애인만 참여할 수 있는 특화형 일자리라 이 유형은 해당되지 않습니다.' });
+      r.push({ k: 'no', t: '지적·자폐성 장애인 전용 특화형 · 해당 없음.' });
     }
     if (s.workType === 'full') {
-      r.push({ k: 'info', t: '주 25시간이라 전일제 희망과는 차이가 있습니다.' });
+      r.push({ k: 'info', t: '주 25시간 · 전일제 희망 대비 차이.' });
     }
     if (s.envs.has('standing') && s.type === 'developmental') {
-      r.push({ k: 'check', t: '이동·식사 보조는 서서 움직이는 시간이 있습니다. 하루 5시간 견딜 수 있는지 상담하세요.' });
+      r.push({ k: 'check', t: '이동·식사 보조 시 서서 움직이는 시간 발생 · 1일 5시간 가능 여부 상담 필요.' });
     }
     return r.concat(unsureNote(s));
   }
 
   function ruleEduLink(s) {
     var r = [];
-    r.push({ k: 'check', t: '특수교육 전공과 재학생(고3은 실습 가능 시점부터)만 참여할 수 있습니다. 해당 여부를 확인하세요.' });
-    r.push({ k: 'info', t: '주 14시간 이내, 월 577,920원 안팎(세전)으로 운영됩니다.' });
+    r.push({ k: 'check', t: '특수교육 전공과 재학생 한정(고3은 실습 가능 시점부터) · 해당 여부 확인 필요.' });
+    r.push({ k: 'info', t: '주 14시간 이내 · 월 577,920원 안팎(세전) 운영.' });
     if (s.workType === 'welfare') {
-      r.push({ k: 'ok', t: '희망하신 주 14시간 내외와 맞습니다.' });
+      r.push({ k: 'ok', t: '희망 주 14시간 내외 일치.' });
     }
     return r.concat(unsureNote(s));
   }
 
   function ruleStandard(s) {
     var r = [];
-    r.push({ k: 'check', t: '사업체별 채용 공고와 직무에 따라 조건이 다릅니다. 한국장애인고용공단 알선으로 확인합니다.' });
-    r.push({ k: 'ok', t: '장애 정도·유형 제한이 없고, 최저임금 이상과 4대 보험을 보장합니다.' });
-    r.push({ k: 'info', t: '표준사업장은 무장애 작업환경과 편의시설을 갖춘 곳으로, 휠체어 근무 사례가 많습니다.' });
+    r.push({ k: 'check', t: '사업체별 채용 공고·직무에 따라 조건 상이 · 한국장애인고용공단 알선으로 확인.' });
+    r.push({ k: 'ok', t: '장애 정도·유형 제한 없음 · 최저임금 이상·4대 보험 보장.' });
+    r.push({ k: 'info', t: '표준사업장: 무장애 작업환경·편의시설 구비 · 휠체어 근무 사례 다수.' });
     if (s.workType === 'welfare') {
-      r.push({ k: 'check', t: '대부분 전일제라 주 14시간 희망과는 맞지 않습니다.' });
+      r.push({ k: 'check', t: '대부분 전일제 · 주 14시간 희망과 불일치.' });
     }
     if (s.envs.has('communication')) {
-      r.push({ k: 'check', t: '채용 전에 수어통역·문자 안내 제공 여부를 사업체에 확인하세요.' });
+      r.push({ k: 'check', t: '채용 전 수어통역·문자 안내 제공 여부 사업체 확인 필요.' });
     }
     return r.concat(unsureNote(s));
   }
 
   function ruleRemote(s) {
     var r = [];
-    r.push({ k: 'info', t: '재택·유연근무 직무(자료 감수, 데이터 검수, 콘텐츠 정리 등)로 근무시간은 계약에 따라 다릅니다.' });
+    r.push({ k: 'info', t: '재택·유연근무 직무(자료 감수·데이터 검수·콘텐츠 정리 등) · 근무시간 계약별 상이.' });
     if (s.workType === 'remote') {
-      r.push({ k: 'ok', t: '희망 근무형태(재택·유연근무)와 일치합니다.' });
+      r.push({ k: 'ok', t: '희망 근무형태(재택·유연근무) 일치.' });
     } else {
-      r.push({ k: 'check', t: '희망하신 근무형태와 다릅니다. 재택 직무는 주로 계약형이라 소득이 일정하지 않습니다.' });
+      r.push({ k: 'check', t: '희망 근무형태와 불일치 · 재택 직무 대부분 계약형 · 소득 변동.' });
     }
     if (s.envs.has('wheelchair')) {
-      r.push({ k: 'ok', t: '출퇴근 이동이 없어 접근성 문제에서 자유롭습니다.' });
+      r.push({ k: 'ok', t: '출퇴근 이동 없음 · 접근성 제약 없음.' });
     }
     if (s.envs.has('standing')) {
-      r.push({ k: 'ok', t: '집에서 앉아 하는 일이라 자세 부담을 스스로 조절할 수 있습니다.' });
+      r.push({ k: 'ok', t: '재택·착석 근무 · 자세 부담 자기 조절 가능.' });
     }
     if (s.envs.has('communication')) {
-      r.push({ k: 'ok', t: '업무를 글로 주고받아 의사소통 부담이 적습니다.' });
+      r.push({ k: 'ok', t: '업무를 글로 주고받음 · 의사소통 부담 적음.' });
     }
     return r.concat(unsureNote(s));
   }
@@ -1633,50 +1633,50 @@ body.a11y-big.easy .hero h1{line-height:1.4}
 
     if (sev === 'severe' && ['physical', 'brain', 'visual', 'hearing'].indexOf(s.type) > -1) {
       list.push({ badge: '추천', name: '근로지원인 서비스', org: '한국장애인고용공단 (사업주·근로자 신청)',
-        why: '혼자 하기 어려운 업무(이동·서류 작성·의사소통)를 근로지원인이 도와드립니다. 배치 전에 신청하면 첫 출근부터 도움을 받을 수 있습니다.' });
+        why: '이동·서류 작성·의사소통 등 단독 수행 어려운 업무 지원. 배치 전 신청 시 첫 출근부터 지원.' });
     } else if (sev === 'severe') {
       list.push({ badge: '확인', name: '근로지원인 · 직무지도원', org: '한국장애인고용공단 / 직업재활시설',
-        why: '발달장애는 근로지원인보다 현장 훈련을 해 주는 직무지도원이 먼저 맞는 경우가 많습니다. 담당자와 상담해 보세요.' });
+        why: '발달장애는 근로지원인보다 현장 훈련 직무지도원이 우선 적합한 경우 다수 · 담당자 상담 권장.' });
     } else {
       list.push({ badge: '확인', name: '근로지원인 서비스', org: '한국장애인고용공단',
-        why: '근로지원인은 주로 심한(중증) 장애인에게 지원됩니다. 장애 정도가 확인되면 대상 여부를 다시 계산해 드려요.' });
+        why: '근로지원인은 주로 심한(중증) 장애인 지원 · 장애 정도 확인 후 대상 여부 재확인.' });
     }
 
     var aids = {
-      physical: '높낮이 조절 책상, 휠체어 팔받침, 목소리 입력기처럼 작업 자세를 지켜 주는 기기를 지원합니다.',
-      brain: '특수키보드, 마우스 대체 장치, 의사소통 보조기기(AAC)를 지원합니다.',
-      visual: '화면읽기 프로그램, 점자정보단말기, 확대독서기를 지원합니다.',
-      hearing: '문자통역 앱, 영상전화, 호출 알림 기기를 지원합니다.',
-      developmental: '그림 일정표, 쉬운 글 안내판, 음성 안내 기기를 지원합니다.',
-      other: '직무에 필요한 보조기기를 상담 후 지원합니다.'
+      physical: '높낮이 조절 책상·휠체어 팔받침·목소리 입력기 등 작업 자세 지원 기기.',
+      brain: '특수키보드·마우스 대체 장치·의사소통 보조기기(AAC).',
+      visual: '화면읽기 프로그램·점자정보단말기·확대독서기.',
+      hearing: '문자통역 앱·영상전화·호출 알림 기기.',
+      developmental: '그림 일정표·쉬운 글 안내판·음성 안내 기기.',
+      other: '직무에 필요한 보조기기 상담 후 지원.'
     };
     list.push({ badge: '추천', name: '보조공학기기 지원', org: '한국장애인고용공단 고용지원',
-      why: (aids[s.type] || aids.other) + ' 본인과 사업주 모두 신청할 수 있습니다.' });
+      why: (aids[s.type] || aids.other) + ' 본인·사업주 모두 신청 가능.' });
 
     list.push({
       badge: (s.envs.has('wheelchair') || s.type === 'visual') ? '추천' : '확인',
       name: '출퇴근 이동 지원', org: '거주지 지자체 · 근무지',
-      why: '특별교통수단(예: 두리발) 이용 등록, 장애인 출퇴근 비용 지원, 통근 차량 운영 여부를 근무지와 함께 확인하세요.'
+      why: '특별교통수단(예: 두리발) 등록, 장애인 출퇴근 비용 지원, 통근 차량 운영 여부 근무지 확인.'
     });
 
     if (s.type === 'hearing') {
       list.push({ badge: '추천', name: '수어통역 · 문자통역', org: '한국농아인협회 지역 수어통역센터 / 고용공단',
-        why: '면접과 첫 근무에 수어통역사를 배치할 수 있습니다. 업무 지시는 문자·메모로 받는 것이 안전합니다.' });
+        why: '면접·첫 근무 수어통역사 배치 가능 · 업무 지시는 문자·메모 수령 권장.' });
     } else {
       list.push({ badge: '해당 없음', name: '수어통역 · 문자통역', org: '지역 수어통역센터',
-        why: '청각·언어장애가 아닌 경우에는 필요하지 않습니다. 동료가 청각장애인이라면 사업장 지원으로 안내할 수 있습니다.' });
+        why: '청각·언어장애 아닌 경우 불필요 · 동료가 청각장애인 경우 사업장 지원으로 안내 가능.' });
     }
 
     if (s.type === 'developmental') {
       list.push({ badge: '추천', name: '발달장애인 직무개발 · 현장훈련', org: '한국장애인개발원, 직업재활시설',
-        why: '직무를 잘게 나눠 익히는 훈련과 취업 후 적응 지원을 받을 수 있습니다.' });
+        why: '직무를 잘게 나눈 훈련·취업 후 적응 지원.' });
     }
 
     list.push({ badge: '안내', name: '장애인 고용장려금 (사업주)', org: '한국장애인고용공단',
-      why: '사업주가 신청하면 인건비 일부를 지원받습니다. 채용을 설득할 때 함께 이야기하면 도움이 됩니다.' });
+      why: '사업주 신청 시 인건비 일부 지원 · 채용 설득 시 함께 안내 권장.' });
 
     list.push({ badge: '확인', name: '국민취업지원제도 · 취업 지원', org: '고용센터',
-      why: '장애인일자리와 별도로 구직촉진수당·취업 알선을 받을 수 있는지 확인해 보세요. 중복 참여 제한이 있습니다.' });
+      why: '장애인일자리와 별도로 구직촉진수당·취업 알선 가능 여부 확인 · 중복 참여 제한 존재.' });
 
     return list;
   }
@@ -1710,74 +1710,74 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var has = function (t) { return wp.tags.indexOf(t) > -1; };
     if (envs.has('wheelchair')) {
       if (has('remote')) {
-        out.push({ k: 'ok', t: '집에서 일해 건물 이동 부담이 없습니다.' });
+        out.push({ k: 'ok', t: '재택 근무 · 건물 이동 부담 없음.' });
       } else if (has('ramp') && has('elevator') && has('toilet')) {
-        out.push({ k: 'ok', t: '경사로·승강기·장애인 화장실이 모두 있어 휠체어로 이동할 수 있습니다.' });
+        out.push({ k: 'ok', t: '경사로·승강기·장애인 화장실 구비 · 휠체어 이동 가능.' });
       } else {
-        out.push({ k: 'no', t: '경사로·승강기·장애인 화장실 중 빠진 것이 있어 휠체어 이동이 어렵습니다.' });
+        out.push({ k: 'no', t: '경사로·승강기·장애인 화장실 중 일부 없음 · 휠체어 이동 어려움.' });
       }
     }
     if (envs.has('standing')) {
       if (has('seated')) {
-        out.push({ k: 'ok', t: '앉아서 하는 사무 중심이라 오래 서 있지 않아도 됩니다.' });
+        out.push({ k: 'ok', t: '앉아서 하는 사무 중심 · 장시간 서기 불필요.' });
       } else if (has('standing')) {
-        out.push({ k: 'no', t: '서서 하는 일이 많아 장시간 서 있기 어려운 경우 무리입니다.' });
+        out.push({ k: 'no', t: '서서 하는 일 많음 · 장시간 서기 어려운 경우 부적합.' });
       } else {
-        out.push({ k: 'check', t: '서는 시간이 얼마나 되는지 근무지에 확인하세요.' });
+        out.push({ k: 'check', t: '서는 시간 비중 근무지 확인 필요.' });
       }
     }
     if (envs.has('simple')) {
       if (has('seated') || has('quiet')) {
-        out.push({ k: 'ok', t: '정해진 순서로 반복하는 단순 업무가 많습니다.' });
+        out.push({ k: 'ok', t: '정해진 순서 반복 단순 업무 다수.' });
       } else {
-        out.push({ k: 'check', t: '업무가 여러 가지로 바뀌는지 확인하세요.' });
+        out.push({ k: 'check', t: '업무 종류 변경 여부 확인 필요.' });
       }
     }
     if (envs.has('communication')) {
       if (has('sign')) {
-        out.push({ k: 'ok', t: '수어·문자 안내가 가능한 동료가 있는 곳입니다.' });
+        out.push({ k: 'ok', t: '수어·문자 안내 가능 동료 근무.' });
       } else if (has('remote')) {
-        out.push({ k: 'ok', t: '대화 없이 글로 주고받는 업무라 의사소통 부담이 적습니다.' });
+        out.push({ k: 'ok', t: '대화 없이 글로 주고받는 업무 · 의사소통 부담 적음.' });
       } else {
-        out.push({ k: 'check', t: '업무 지시를 문자·서면으로 받을 수 있는지 확인하세요.' });
+        out.push({ k: 'check', t: '업무 지시 문자·서면 수령 가능 여부 확인 필요.' });
       }
     }
     if (envs.has('vision')) {
       if (has('assist') || has('remote')) {
-        out.push({ k: 'ok', t: '화면낭독·확대 프로그램 같은 보조기기를 쓸 수 있는 곳입니다.' });
+        out.push({ k: 'ok', t: '화면낭독·확대 프로그램 등 보조기기 사용 가능.' });
       } else if (has('outdoor')) {
-        out.push({ k: 'no', t: '실외 이동·계도 업무라 시각 보조만으로는 어렵습니다.' });
+        out.push({ k: 'no', t: '실외 이동·계도 업무 · 시각 보조만으로 어려움.' });
       } else {
-        out.push({ k: 'check', t: '화면낭독·확대 프로그램 설치가 되는지 확인하세요.' });
+        out.push({ k: 'check', t: '화면낭독·확대 프로그램 설치 여부 확인 필요.' });
       }
     }
     if (envs.has('quiet')) {
       if (has('noise')) {
-        out.push({ k: 'no', t: '소음이 많은 환경입니다.' });
+        out.push({ k: 'no', t: '소음 많은 환경.' });
       } else if (has('quiet') || has('remote')) {
-        out.push({ k: 'ok', t: '조용하고 붐비지 않는 곳입니다.' });
+        out.push({ k: 'ok', t: '조용하고 붐비지 않는 환경.' });
       } else {
-        out.push({ k: 'check', t: '사람이 붐비거나 시끄러운 시간대가 있는지 확인하세요.' });
+        out.push({ k: 'check', t: '혼잡·소음 시간대 확인 필요.' });
       }
     }
     if (envs.has('flexible')) {
       if (has('flex') || has('remote') || /14/.test(wp.hours)) {
-        out.push({ k: 'ok', t: '근무시간이 짧거나 조정할 수 있어 통원 일정과 맞추기 쉽습니다.' });
+        out.push({ k: 'ok', t: '근무시간 짧음·조정 가능 · 통원 일정 병행 용이.' });
       } else {
-        out.push({ k: 'check', t: '통원·치료 날에 근무시간을 조정할 수 있는지 확인하세요.' });
+        out.push({ k: 'check', t: '통원·치료일 근무시간 조정 가능 여부 확인 필요.' });
       }
     }
     /* 희망 근무시간과 맞는지 — 환경 조건이 없는 사람도 판정을 받는다 */
     if (wt) {
       var hrs = wp.hours;
       if (wt === 'remote') {
-        out.push(has('remote') ? { k: 'ok', t: '집에서 일할 수 있습니다.' } : { k: 'check', t: '출근해서 하는 일입니다. 재택이 꼭 필요하면 다른 곳을 보세요.' });
+        out.push(has('remote') ? { k: 'ok', t: '재택 근무 가능.' } : { k: 'check', t: '출근 근무 · 재택 필수 시 다른 근무지 검토.' });
       } else if (wt === 'full') {
-        out.push(/40/.test(hrs) ? { k: 'ok', t: '희망하신 전일제로 일할 수 있습니다.' } : { k: 'check', t: '희망하신 전일제보다 근무시간이 짧습니다.' });
+        out.push(/40/.test(hrs) ? { k: 'ok', t: '희망 전일제 근무 가능.' } : { k: 'check', t: '희망 전일제 대비 근무시간 짧음.' });
       } else if (wt === 'part') {
-        out.push(/20/.test(hrs) ? { k: 'ok', t: '희망하신 시간제(주 20시간)에 맞습니다.' } : { k: 'check', t: '희망하신 주 20시간과 근무시간이 다릅니다.' });
+        out.push(/20/.test(hrs) ? { k: 'ok', t: '희망 시간제(주 20시간) 일치.' } : { k: 'check', t: '희망 주 20시간과 근무시간 상이.' });
       } else if (wt === 'welfare') {
-        out.push(/14|10/.test(hrs) ? { k: 'ok', t: '희망하신 짧은 근무(주 14시간 안팎)에 맞습니다.' } : { k: 'check', t: '희망하신 것보다 근무시간이 깁니다.' });
+        out.push(/14|10/.test(hrs) ? { k: 'ok', t: '희망 짧은 근무(주 14시간 안팎) 일치.' } : { k: 'check', t: '희망 대비 근무시간 김.' });
       }
     }
     var status = 'none';
@@ -2472,7 +2472,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
 
   function saveDocFile(id) {
     var d = findDocById(id);
-    if (!d) { toast('파일을 다시 만들어 주세요'); return; }
+    if (!d) { toast('파일 생성 실패 · 재시도'); return; }
     var f = docFileFor(d, seqOfDoc(d));
     var blob = new Blob([f.content], { type: f.mime + ';charset=utf-8' });
     var url = URL.createObjectURL(blob);
@@ -2492,7 +2492,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       var b = card.querySelector('.fc-actions .fc-btn.primary');
       if (b) { b.textContent = '저장됨 ✓'; }
     }
-    toast(f.name + ' (' + fmtBytes(blob.size) + ') 저장을 시작했어요');
+    toast(f.name + ' (' + fmtBytes(blob.size) + ') 저장 시작');
     announce(f.name + ' 파일 저장을 시작했습니다.');
   }
 
@@ -2510,7 +2510,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   }
   function openFileView(id, opener) {
     var d = findDocById(id);
-    if (!d) { toast('파일을 다시 만들어 주세요'); return; }
+    if (!d) { toast('파일 생성 실패 · 재시도'); return; }
     var f = docFileFor(d, seqOfDoc(d));
     fileViewState = { id: id, file: f, opener: opener || null };
     var el = $('#fileView');
@@ -2548,13 +2548,13 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   }
   function printDocFile() {
     var fr = $('#fvFrame');
-    if (!fr || !fr.contentWindow) { toast('미리보기를 먼저 열어 주세요'); return; }
+    if (!fr || !fr.contentWindow) { toast('미리보기 먼저 열기 필요'); return; }
     try {
       fr.contentWindow.focus();
       fr.contentWindow.print();
       announce('인쇄 창을 열었습니다.');
     } catch (e) {
-      toast('인쇄 창을 열 수 없어요. 저장한 파일을 열어 인쇄해 주세요.');
+      toast('인쇄 창 열기 실패 · 저장 파일로 인쇄');
     }
   }
   /* ============================================================
@@ -2564,25 +2564,25 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     s1: {
       key: 's1', name: '김다온', type: 'physical', severity: 'severe',
       reg: '******-*******', issue: '2024. 03. 12.', org: '진주시', note: '휠체어 이용',
-      icon: '♿', label: '지체장애 · 심한 장애', sub: '휠체어를 이용해요'
+      icon: '♿', label: '지체장애 · 심한 장애', sub: '휠체어 이용'
     },
     s2: {
       key: 's2', name: '이하늘', type: 'hearing', severity: 'mild',
       reg: '******-*******', issue: '2023. 09. 04.', org: '진주시', note: '수어·문자통역',
-      icon: '🤟', label: '청각장애 · 심하지 않은 장애', sub: '수어·문자로 이야기해요'
+      icon: '🤟', label: '청각장애 · 심하지 않은 장애', sub: '수어·문자 소통'
     },
     s3: {
       key: 's3', name: '박다온', type: 'developmental', severity: 'severe',
       reg: '******-*******', issue: '2025. 01. 20.', org: '진주시', note: '쉬운 안내 필요',
-      icon: '🌱', label: '발달장애 · 심한 장애', sub: '쉬운 말 안내가 필요해요'
+      icon: '🌱', label: '발달장애 · 심한 장애', sub: '쉬운 말 안내 필요'
     }
   };
 
   var OCR_STEPS = [
-    { t: '카드 찾기', d: '카드 네 모서리를 찾고, 주민등록번호 뒷자리를 가렸어요.' },
-    { t: '글자 읽기', d: '장애 유형과 정도, 이름만 골라 읽었어요.' },
-    { t: '내용 맞추기', d: '읽은 내용이 카드와 같은지 확인해요.' },
-    { t: '화면에 채우기', d: '일자리 찾기에 필요한 것만 채웠어요.' }
+    { t: '카드 찾기', d: '카드 모서리 검출 · 주민등록번호 뒷자리 마스킹' },
+    { t: '글자 읽기', d: '장애 유형·정도·성명만 선택 인식' },
+    { t: '내용 맞추기', d: '인식 결과 · 카드 원본 대조' },
+    { t: '화면에 채우기', d: '일자리 조회 필요 항목만 자동 입력' }
   ];
 
   var ocrState = { data: null, stage: 0, timers: [] };
@@ -2610,13 +2610,13 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         '<span class="sico" aria-hidden="true">' + s.icon + '</span>' +
         '<span><b>' + esc(s.label) + '</b><span>' + esc(s.sub) + '</span></span></button>';
     });
-    body += '</div><p class="note" style="margin-top:12px">예시 카드는 <b>가명·가상 정보</b>예요. 실제 카드처럼 읽는 과정을 보여 드려요.</p>';
-    openSheet('어떤 카드로 해 볼까요?', '장애 유형마다 화면을 다르게 맞춰 드려요.', body);
+    body += '</div><p class="note" style="margin-top:12px">예시 카드: <b>가명·가상 정보</b>. 실제 카드와 동일한 인식 과정 시연.</p>';
+    openSheet('예시 카드 선택', '장애 유형별 화면 자동 조정.', body);
   }
 
   function openManual() {
     var s = manualSel;
-    var body = '<p class="note">카드가 없어도 괜찮아요. 두 가지만 골라 주세요.</p>' +
+    var body = '<p class="note">카드 없이 진행: 두 항목만 선택.</p>' +
       '<h3 style="font-size:16px;font-weight:900;margin:4px 0 8px">장애 정도</h3><div class="chiprow" style="margin-bottom:16px">' +
       ['severe', 'mild'].map(function (v) {
         return '<button class="chip" type="button" data-man-sev="' + v + '" aria-pressed="' + (s.severity === v ? 'true' : 'false') + '">' + esc(SEVERITY_LABEL[v]) + '</button>';
@@ -2625,12 +2625,12 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       Object.keys(TYPE_LABEL).map(function (v) {
         return '<button class="chip" type="button" data-man-type="' + v + '" aria-pressed="' + (s.type === v ? 'true' : 'false') + '">' + esc(TYPE_LABEL[v]) + '</button>';
       }).join('') + '</div>' +
-      '<div class="stickybtns"><button class="btn primary block" id="manGo" type="button">이 조건으로 시작하기</button></div>';
-    openSheet('직접 고르기', '나중에 언제든 바꿀 수 있어요.', body);
+      '<div class="stickybtns"><button class="btn primary block" id="manGo" type="button">이 조건으로 조회</button></div>';
+    openSheet('직접 고르기', '조건은 이후 변경 가능.', body);
     var go = $('#manGo');
     if (go) {
       go.addEventListener('click', function () {
-        if (!manualSel.type || !manualSel.severity) { toast('장애 정도와 유형을 골라 주세요'); return; }
+        if (!manualSel.type || !manualSel.severity) { toast('장애 정도·유형 선택 필요'); return; }
         closeSheet();
         applyManual(manualSel.type, manualSel.severity);
       });
@@ -2652,7 +2652,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       }).join('');
     }
     var sub = $('#ocrSub');
-    if (sub) { sub.textContent = data.source === 'upload' ? '올려 주신 사진에서 필요한 것만 읽어요. 사진은 서버로 보내지 않아요.' : '카드에서 필요한 것만 읽어요. 사진은 서버로 보내지 않아요.'; }
+    if (sub) { sub.textContent = data.source === 'upload' ? '업로드 사진에서 필요 항목만 인식 · 사진 서버 전송 없음' : '필요 항목만 인식 · 사진 서버 전송 없음'; }
     var ov = $('#ocr');
     if (ov) { ov.hidden = false; }
     setPageInert(true);
@@ -2668,7 +2668,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         $$('#ocrSteps .ocrstep').forEach(function (el, i) { el.classList.toggle('on', i <= n); });
         if (n >= 2) {
           var sub2 = $('#ocrSub');
-          if (sub2) { sub2.textContent = '거의 다 읽었어요.'; }
+          if (sub2) { sub2.textContent = '인식 거의 완료'; }
         }
         if (n === 3) {
           ocrState.timers.push(setTimeout(finishOcr, 520));
@@ -2709,8 +2709,8 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     applyProfile(d.type);
     go('card');
     toast(d.source === 'upload'
-      ? '사진에서 읽었어요. 시연용이라 예시 값으로 채웠으니 ‘고치기’로 확인해 주세요.'
-      : '복지카드를 읽었어요. 맞으면 아래 큰 버튼을 눌러 주세요.');
+      ? '사진 인식 완료 · 시연용 예시 값 입력. ‘내용 수정’에서 확인.'
+      : '복지카드 인식 완료 · 내용 확인 후 다음 단계.');
   }
 
   function applyManual(type, severity) {
@@ -2746,12 +2746,12 @@ body.a11y-big.easy .hero h1{line-height:1.4}
 
   /* 장애 유형에 맞춘 배려 — 화면·안내를 자동으로 맞춘다 */
   var PROFILE = {
-    physical: { msg: '지체장애로 인식해서 버튼을 크게 만들었어요. 화면마다 큰 버튼 하나만 누르면 돼요.', icon: '♿' },
-    brain: { msg: '뇌병변장애로 인식해서 버튼을 크게 만들었어요. 화면마다 큰 버튼 하나만 누르면 돼요.', icon: '🧠' },
-    visual: { msg: '시각장애로 인식해서 큰 글씨와 읽어주기를 켰어요. 화면을 누르면 읽어 드려요.', icon: '👁️', big: true, voice: true },
-    hearing: { msg: '청각장애로 인식해서 모든 안내를 글로 크게 보여 드려요.', icon: '🤟' },
-    developmental: { msg: '발달장애로 인식해서 쉬운 말로, 한 번에 하나씩 보여 드려요.', icon: '🌱', easy: true },
-    other: { msg: '편하게 쓰실 수 있게 큰 버튼으로 만들어 드렸어요.', icon: '🙂' }
+    physical: { msg: '지체장애 인식 · 큰 버튼 UI 적용. 화면당 주요 버튼 1개.', icon: '♿' },
+    brain: { msg: '뇌병변장애 인식 · 큰 버튼 UI 적용. 화면당 주요 버튼 1개.', icon: '🧠' },
+    visual: { msg: '시각장애 인식 · 큰 글씨·읽어주기 자동 활성.', icon: '👁️', big: true, voice: true },
+    hearing: { msg: '청각장애 인식 · 모든 안내 문자·큰 글씨 표시.', icon: '🤟' },
+    developmental: { msg: '발달장애 인식 · 쉬운 말 모드, 단계별 1개씩 표시.', icon: '🌱', easy: true },
+    other: { msg: '큰 버튼 UI 적용.', icon: '🙂' }
   };
   function applyProfile(type) {
     var p = PROFILE[type] || PROFILE.other;
@@ -2763,7 +2763,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var hint = $('#cardHint');
     if (hint) {
       hint.hidden = false;
-      hint.innerHTML = '<b style="display:block;font-size:16px;font-weight:900">' + (p.icon || '') + ' ' + esc(TYPE_LABEL[type] || '장애') + '에 맞춰 드렸어요</b>' +
+      hint.innerHTML = '<b style="display:block;font-size:16px;font-weight:900">' + (p.icon || '') + ' ' + esc(TYPE_LABEL[type] || '장애') + ' · 화면 자동 조정</b>' +
         '<p style="font-size:15px;color:var(--ink-soft);margin-top:4px;line-height:1.6">' + esc(p.msg) + '</p>' +
         (state.easy ? '<button class="btn small" type="button" data-act="easy-off" style="margin-top:8px">쉬운 말 모드 끄기</button>' : '');
     }
@@ -2839,18 +2839,18 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       return;
     }
     if (dock) { dock.hidden = false; }
-    if (v === 'card') { label = '할 수 있는 일자리 보기'; }
+    if (v === 'card') { label = '일자리 조회'; }
     else if (v === 'jobs') {
-      label = '이 일자리로 서류 준비하기';
+      label = '서류 준비';
       noteTxt = '';
     } else if (v === 'docs') {
       var st = docsStats();
-      if (fetchState.running) { label = '서류를 가져오는 중…'; noteTxt = ''; disabled = true; }
-      else if (st.done >= st.total && st.total > 0) { label = '빠진 것만 적으러 가기'; noteTxt = ''; }
-      else { label = '한 번에 로그인하고 ' + (st.total - st.done) + '장 가져오기'; noteTxt = '주민등록등본·장애인증명서 같은 서류예요'; }
+      if (fetchState.running) { label = '서류 수집 중…'; noteTxt = ''; disabled = true; }
+      else if (st.done >= st.total && st.total > 0) { label = '신청서 작성'; noteTxt = ''; }
+      else { label = '기관 로그인 · ' + (st.total - st.done) + '장 수집'; noteTxt = '주민등록등본·장애인증명서 등'; }
     } else if (v === 'submit') {
-      label = '신청서 내기';
-      noteTxt = '연락처·사는 곳·계좌만 적으면 끝나요';
+      label = '신청서 제출';
+      noteTxt = '연락처 · 주소 · 계좌 입력';
     } else if (v === 'done') {
       label = '처음부터 다시 하기';
     }
@@ -2866,7 +2866,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
      7. 일자리 화면
      ============================================================ */
   function jobStatusLabel(st) {
-    return st === '가능' ? '신청할 수 있어요' : st === '조건부' ? '확인해 보세요' : '지금은 어려워요';
+    return st === '가능' ? '신청 가능' : st === '조건부' ? '확인 필요' : '신청 불가';
   }
   function jobStatusCls(st) {
     return st === '가능' ? 'ok' : st === '조건부' ? 'check' : 'no';
@@ -2928,7 +2928,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var who = $('#condWho');
     if (who) {
       who.innerHTML = esc(TYPE_LABEL[state.type] || '장애 유형') + ' · ' + esc(SEVERITY_LABEL[state.severity] || '') +
-        '<small>' + esc(WORK_SHORT[state.workType] || '일하는 시간') + ' 일하고 싶어요</small>';
+        '<small>' + esc(WORK_SHORT[state.workType] || '근무 형태') + ' 희망</small>';
     }
     var cnt = $('#jobCount');
     if (cnt) { cnt.textContent = String(top.length + rest.length); }
@@ -2973,13 +2973,13 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         (why ? '<span class="why">' + esc(why) + '</span>' : '') +
         '</label>';
     } else {
-      html += '<div class="jbody"><span class="top"><span class="badge no">지금은 어려워요</span></span>' +
+      html += '<div class="jbody"><span class="top"><span class="badge no">신청 불가</span></span>' +
         '<span class="name">' + esc(p.name) + '</span>' +
         '<span class="meta">' + esc(p.hours) + ' · ' + esc(payShort(p.pay)) + '</span>' +
         (why ? '<span class="why">' + esc(why) + '</span>' : '') + '</div>';
     }
-    html += '<details><summary>왜 이 일이 맞나요?</summary><div class="inner"><ul class="reasonlist">' + reasons + '</ul>' +
-      '<p style="margin-top:8px;color:var(--ink-mute)">근무 시간과 하는 일을 바꾸면 달라질 수 있어요. 담당자와 상의해 보세요.</p></div></details>';
+    html += '<details><summary>판정 근거</summary><div class="inner"><ul class="reasonlist">' + reasons + '</ul>' +
+      '<p style="margin-top:8px;color:var(--ink-mute)">근무 시간·직무 변경 시 결과 변동 가능 · 담당자 상담 권장.</p></div></details>';
     html += '</div>';
     return html;
   }
@@ -3000,7 +3000,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         '<input class="sr-only" type="radio" name="work" id="work-' + wi + '" value="' + esc(wp.name) + '"' + (picked ? ' checked' : '') + '>' +
         '<label class="jbody" for="work-' + wi + '">' +
         '<span class="tick" aria-hidden="true">✓</span>' +
-        '<span class="top"><span class="badge ' + (ok ? 'ok' : check ? 'check' : 'no') + '">' + (ok ? '잘 맞아요' : check ? '확인해 보세요' : '힘들 수 있어요') + '</span></span>' +
+        '<span class="top"><span class="badge ' + (ok ? 'ok' : check ? 'check' : 'no') + '">' + (ok ? '조건 일치' : check ? '확인 필요' : '조건 불일치') + '</span></span>' +
         '<span class="name">' + esc(wp.name) + '</span>' +
         '<span class="meta">' + esc(wp.duty) + ' · ' + esc(wp.hours) + '</span>' +
         '<span class="wtags">' + wp.tags.map(function (t) {
@@ -3029,14 +3029,14 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       Object.keys(WORK_LABEL).map(function (v) {
         return '<button class="chip" type="button" data-work="' + v + '" aria-pressed="' + (state.workType === v ? 'true' : 'false') + '">' + esc(WORK_LABEL[v]) + '</button>';
       }).join('') + '</div>' +
-      '<h3 style="font-size:16px;font-weight:900;margin:2px 0 8px">필요한 도움 (여러 개 골라도 돼요)</h3><div class="chiprow">' +
+      '<h3 style="font-size:16px;font-weight:900;margin:2px 0 8px">필요 지원 (복수 선택)</h3><div class="chiprow">' +
       Object.keys(ENV_LABEL).map(function (v) {
         return '<button class="chip" type="button" data-env="' + v + '" aria-pressed="' + (state.envs.has(v) ? 'true' : 'false') + '">' + esc(ENV_LABEL[v]) + '</button>';
       }).join('') + '</div>' +
-      '<p class="note" style="margin-top:14px">고르면 일자리와 일할 곳을 바로 다시 골라 드려요.</p>' +
-      '<button class="btn block" type="button" data-act="rescan">복지카드 다시 찍기</button>' +
-      '<div class="stickybtns"><button class="btn primary block" id="condGo" type="button">이대로 보기</button></div>';
-    openSheet('조건 바꾸기', '고르는 대로 바로 다시 맞춰 드려요.', body);
+      '<p class="note" style="margin-top:14px">선택 즉시 일자리·근무지 재조회.</p>' +
+      '<button class="btn block" type="button" data-act="rescan">복지카드 재인식</button>' +
+      '<div class="stickybtns"><button class="btn primary block" id="condGo" type="button">결과 보기</button></div>';
+    openSheet('조건 바꾸기', '선택 즉시 재조회.', body);
     var go2 = $('#condGo');
     if (go2) { go2.addEventListener('click', function () { closeSheet(); state.showAllJobs = false; render(); }); }
   }
@@ -3052,9 +3052,9 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   function phaseLabel(phase) {
     if (phase === 'connect') { return '접속 중…'; }
     if (phase === 'login') { return '로그인 완료'; }
-    if (phase === 'issue') { return '서류 받는 중…'; }
-    if (phase === 'attach') { return '신청서에 붙이는 중…'; }
-    return '가져오는 중…';
+    if (phase === 'issue') { return '서류 수집 중…'; }
+    if (phase === 'attach') { return '신청서 첨부 중…'; }
+    return '수집 중…';
   }
   function pushLog(icon, text, tone) {
     fetchState.log.push({ icon: icon, text: text, tone: tone || 'ok' });
@@ -3107,13 +3107,13 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var st = docsStats();
     var t = $('#docsTitle'), lead = $('#docsLead');
     if (t) {
-      t.textContent = !st.total ? '서류 준비를 도와드릴게요'
-        : (st.done >= st.total ? '서류 ' + st.total + '장을 다 모았어요' : '서류 ' + st.total + '장을 모아 드릴게요');
+      t.textContent = !st.total ? '기관 서류 자동 수집'
+        : (st.done >= st.total ? '서류 ' + st.total + '장 수집 완료' : '서류 ' + st.total + '장 수집');
     }
     if (lead) {
       lead.textContent = (st.total && st.done >= st.total)
-        ? prog.name + ' 신청에 필요한 서류예요. 기관에서 받아 신청서에 붙여 두었어요.'
-        : prog.name + ' 신청에 필요한 서류예요. 기관에 들어가서 대신 가져와요.';
+        ? prog.name + ' 신청 필요 서류 · 기관 수집 후 신청서 첨부 완료.'
+        : prog.name + ' 신청 필요 서류 · 기관 자동 수집.';
     }
     var txt = $('#docProgTxt'), pct = $('#docProgPct'), bar = $('#docBar');
     if (txt) { txt.textContent = st.done + '장 / ' + st.total + '장'; }
@@ -3134,7 +3134,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
           '<div class="agmain"><b>' + esc(ag.name) + '</b>' +
           '<span class="sub">' + docs.map(function (d) { return esc(shortDocName(d.name)); }).join(' · ') + ' (' + docs.length + '장)</span></div>' +
           (done === docs.length
-            ? '<span class="status">가져왔어요 ✓</span>'
+            ? '<span class="status">수집 완료 ✓</span>'
             : running
               ? '<span class="status">' + esc(phaseLabel(fetchState.phase)) + '</span>'
               : '<button class="btn small primary" type="button" data-login="' + esc(key) + '"' + (fetchState.running ? ' disabled' : '') + '>로그인</button>') +
@@ -3144,7 +3144,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       if (ad.length) {
         html += '<div class="agency done">' +
           '<span class="agico assoc" aria-hidden="true">AI</span>' +
-          '<div class="agmain"><b>협회 서식</b><span class="sub">' + ad.map(function (d) { return esc(shortDocName(d.name)); }).join(' · ') + ' — 다온이 대신 써요</span></div>' +
+          '<div class="agmain"><b>협회 서식</b><span class="sub">' + ad.map(function (d) { return esc(shortDocName(d.name)); }).join(' · ') + ' — 다온 자동 작성</span></div>' +
           '<span class="status">준비됨 ✓</span></div>';
       }
       al.innerHTML = html;
@@ -3157,7 +3157,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if (fc) { fc.textContent = String(files.length); }
     if (fl) {
       fl.innerHTML = files.map(function (d) { return docFileCard(d, { badge: '신청서에 자동 첨부됨' }); }).join('') +
-        '<div class="attached"><span aria-hidden="true">📎</span><span>이 서류들은 신청서와 함께 한 번에 제출돼요.</span></div>';
+        '<div class="attached"><span aria-hidden="true">📎</span><span>신청서와 함께 제출되는 서류</span></div>';
     }
     var selfBox = $('#selfBox');
     if (selfBox) { selfBox.hidden = st.done >= st.total; }
@@ -3177,11 +3177,11 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     loginState.agency = agency === 'all' ? '' : agency;
     var ag = AGENCY[loginState.agency] || null;
     var title = $('#loginTitle'), sub = $('#loginSub');
-    if (title) { title.textContent = loginState.mode === 'all' ? '한 번에 로그인' : (ag ? ag.name + ' 로그인' : '기관 로그인'); }
+    if (title) { title.textContent = loginState.mode === 'all' ? '일괄 인증' : (ag ? ag.name + ' 로그인' : '기관 로그인'); }
     if (sub) {
       sub.textContent = loginState.mode === 'all'
-        ? '기관마다 따로 로그인하지 않아도, 한 번만 인증하면 서류를 모두 가져와요.'
-        : (ag ? ag.name + '에서 ' + ag.desc + ' 서류를 가져와요.' : '');
+        ? '1회 인증으로 전체 기관 서류 수집.'
+        : (ag ? ag.name + ' · ' + ag.desc + ' 서류 자동 수집.' : '');
     }
     var groups = agencyGroups();
     var keys = Object.keys(groups).filter(function (k) {
@@ -3194,14 +3194,14 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         return '<li>· ' + esc((AGENCY[k] || {}).name || k) + ' ' + left + '장</li>';
       }).join('') + '</ul></div>';
     }
-    body += '<h3 style="font-size:15.5px;font-weight:900;margin:6px 0 8px">어떻게 인증할까요?</h3>' +
+    body += '<h3 style="font-size:15.5px;font-weight:900;margin:6px 0 8px">인증 수단 선택</h3>' +
       LOGIN_METHODS.map(function (m) {
         return '<button class="choice" type="button" data-method="' + m.v + '" aria-pressed="' + (loginState.method === m.v ? 'true' : 'false') + '">' +
           '<span class="ci" aria-hidden="true">' + m.icon + '</span>' +
           '<span><b>' + esc(m.label) + '</b><span>' + esc(m.sub) + '</span></span>' +
           '<span class="rd" aria-hidden="true"></span></button>';
       }).join('') +
-      '<p class="note">🔒 <b>시연용 가상 로그인</b>이에요. 실제 아이디·비밀번호·인증번호는 넣지 않아요. 어떤 정보도 기관으로 보내지 않습니다.</p>';
+      '<p class="note">🔒 <b>시연용 가상 로그인</b> · 실제 아이디·비밀번호·인증번호 입력 불필요 · 기관 전송 없음.</p>';
     var lb = $('#loginBody');
     if (lb) { lb.innerHTML = body; }
     var ov = $('#login');
@@ -3224,7 +3224,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       (agencyGroups()[k] || []).forEach(function (d) { if (!state.fetched[d.id]) { todo.push(d); } });
     });
     closeLogin();
-    if (!todo.length) { toast('가져올 서류가 없어요'); return; }
+    if (!todo.length) { toast('수집할 서류 없음'); return; }
     fetchDocs(todo);
   }
 
@@ -3247,7 +3247,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var firstAg = steps.length ? steps[0].ag : '';
     fetchState.agency = firstAg;
     fetchState.phase = 'connect';
-    pushLog('🔌', (AGENCY[firstAg] || {}).name + '에 접속하고 있어요', 'run');
+    pushLog('🔌', (AGENCY[firstAg] || {}).name + ' 접속 중', 'run');
     render();
     function next() {
       if (fetchState.idx >= fetchState.queue.length) {
@@ -3257,11 +3257,11 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         var st = docsStats();
         var all = st.total > 0 && st.done >= st.total;
         pushLog('✅', all
-          ? '서류 ' + st.done + '장을 모두 신청서에 붙였어요'
-          : '서류 ' + st.done + '장을 신청서에 붙였어요 · ' + (st.total - st.done) + '장 남았어요', 'ok');
+          ? '서류 ' + st.done + '장 전체 첨부 완료'
+          : '서류 ' + st.done + '장 첨부 · ' + (st.total - st.done) + '장 남음', 'ok');
         render();
-        toast(all ? '서류 ' + st.done + '장을 모두 신청서에 붙였어요 (시연용)'
-          : '서류 ' + st.done + '장을 신청서에 붙였어요. ' + (st.total - st.done) + '장 남았어요 (시연용)');
+        toast(all ? '서류 ' + st.done + '장 전체 첨부 완료 (시연용)'
+          : '서류 ' + st.done + '장 첨부 · ' + (st.total - st.done) + '장 남음 (시연용)');
         announce(all ? '서류 ' + st.done + '장을 모두 가져와 신청서에 첨부했습니다.'
           : '서류 ' + st.done + '장을 첨부했습니다. ' + (st.total - st.done) + '장이 남았습니다.');
         return;
@@ -3280,10 +3280,10 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         wait = 760;
         state.fetched[step.doc.id] = { at: nowStamp(), agency: agentMeta(step.doc).agency };
         state.checked[state.selectedProgram + ':' + step.doc.id] = true;
-        pushLog('📄', shortDocName(step.doc.name) + ' 받았어요', 'ok');
+        pushLog('📄', shortDocName(step.doc.name) + ' 수집 완료', 'ok');
       } else if (step.t === 'attach') {
         wait = 380;
-        pushLog('📎', shortDocName(step.doc.name) + ' — 신청서에 붙였어요', 'ok');
+        pushLog('📎', shortDocName(step.doc.name) + ' — 신청서 첨부', 'ok');
       }
       render();
       scheduleSave();
@@ -3291,7 +3291,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       if (fetchState.idx < fetchState.queue.length) {
         var nxt = fetchState.queue[fetchState.idx];
         if (nxt.t === 'connect' && nxt.ag !== step.ag) {
-          fetchState.log.push({ icon: '🔌', text: ((AGENCY[nxt.ag] || {}).name || nxt.ag) + '에 접속하고 있어요', tone: 'run' });
+          fetchState.log.push({ icon: '🔌', text: ((AGENCY[nxt.ag] || {}).name || nxt.ag) + ' 접속 중', tone: 'run' });
         }
       }
       setTimeout(next, wait);
@@ -3309,9 +3309,9 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       var parts = [state.form.name || '이름', TYPE_LABEL[state.type] || '장애 정보'];
       if (state.selectedWorkplace) { parts.push(state.selectedWorkplace); }
       var attachN = requiredFetchDocs().filter(function (d) { return state.fetched[d.id]; }).length;
-      ad.innerHTML = '복지카드와 기관 서류로 <b>' + esc(parts.join(' · ')) + '</b> 정보를 채웠어요.' +
-        (attachN ? ' 가져온 서류 <b>' + attachN + '장</b>도 신청서에 붙여 두었어요.' : '') +
-        ' 아래 ' + (prog ? '세 칸' : '') + '만 채우면 신청서가 완성돼요.';
+      ad.innerHTML = '복지카드·기관 서류 기반 자동 입력: <b>' + esc(parts.join(' · ')) + '</b>.' +
+        (attachN ? ' 가져온 서류 <b>' + attachN + '장</b> 첨부 완료.' : '') +
+        ' 아래 ' + (prog ? '3개 항목' : '') + ' 입력 시 신청서 완성.';
     }
     var phone = $('#inPhone'), addr = $('#inAddr'), bank = $('#inBank'), acct = $('#inAcct'), mot = $('#inMotiv');
     if (phone && !phone.value) { phone.value = state.form.phone || ''; }
@@ -3354,7 +3354,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if (!ok) {
       var first = $('.field.bad input, .field.bad textarea');
       if (first) { first.focus(); }
-      toast('표시된 칸을 다시 확인해 주세요');
+      toast('표시 항목 확인 필요');
     }
     return ok;
   }
@@ -3400,13 +3400,13 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     allDocs().forEach(function (d) { state.checked[state.selectedProgram + ':' + d.id] = true; });
     scheduleSave();
     var ov = $('#submitOv'), box = $('#subSteps'), sub = $('#subSub');
-    var steps = ['서류 확인', '신청서 쓰기', '접수처로 보내기', '접수증 받기'];
+    var steps = ['서류 확인', '신청서 작성', '접수처 전송', '접수증 발급'];
     if (box) {
       box.innerHTML = steps.map(function (s, i) {
         return '<div class="substep' + (i === 0 ? ' on' : '') + '"><span class="sd" aria-hidden="true">' + (i + 1) + '</span><b>' + esc(s) + '</b></div>';
       }).join('');
     }
-    if (sub) { sub.textContent = '잠시만 기다려 주세요.'; }
+    if (sub) { sub.textContent = '처리 중…'; }
     if (ov) { ov.hidden = false; }
     setPageInert(true);
     document.body.style.overflow = 'hidden';
@@ -3451,7 +3451,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if (box) {
       box.innerHTML = [
         ['접수처', r.org + ' <span class="org-meta">' + esc(r.orgAddr) + ' · ☎ ' + esc(r.orgTel) + '</span>'],
-        ['신청한 일', esc(r.program)],
+        ['신청 사업', esc(r.program)],
         ['일할 곳', esc(r.workplace)],
         ['함께 낸 서류', '신청서 3장 포함 모두 ' + requiredDocs(docsFor(state.selectedProgram)).length + '장'],
         ['접수 일시', esc(r.at)],
@@ -3487,19 +3487,19 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if (!w) {
       URL.revokeObjectURL(url);
       downloadHtml(html, name);
-      toast('인쇄 창이 막혀 신청서 파일로 저장했어요. 파일을 열어 인쇄해 주세요.');
+      toast('팝업 차단 · 신청서 파일 저장. 파일 열어 인쇄.');
       return;
     }
     setTimeout(function () {
       try { w.focus(); w.print(); } catch (e) {}
     }, 900);
     setTimeout(function () { URL.revokeObjectURL(url); }, 120000);
-    toast('새 탭에서 인쇄 창을 열어요. 인쇄 화면이 보이지 않으면 새 탭에서 인쇄를 눌러 주세요.');
+    toast('새 탭 인쇄 창 열기 · 미표시 시 새 탭에서 인쇄');
     announce('신청서를 새 탭에서 열어 인쇄합니다.');
   }
   function printApp() {
     var d = findDocById('form1');
-    if (!d) { toast('신청서를 먼저 만들어 주세요'); return; }
+    if (!d) { toast('신청서 생성 필요'); return; }
     printHtmlString(docFileFor(d, 1).content, '신청서_' + (state.form.name || '김다온'));
   }
   function allDocs() {
@@ -3526,7 +3526,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     document.body.appendChild(a);
     a.click();
     setTimeout(function () { if (a.parentNode) { a.parentNode.removeChild(a); } URL.revokeObjectURL(url); }, 1500);
-    toast('서류 ' + files.length + '개를 ZIP으로 저장해요 (' + fmtBytes(blob.size) + ')');
+    toast('서류 ' + files.length + '개 ZIP 저장 (' + fmtBytes(blob.size) + ')');
     announce('신청서와 서류 묶음 저장을 시작했습니다.');
   }
   function sendMail() {
@@ -3546,7 +3546,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     document.body.appendChild(a);
     a.click();
     setTimeout(function () { if (a.parentNode) { a.parentNode.removeChild(a); } }, 1200);
-    toast('메일 앱을 열어요. 받는 사람은 직접 적어 주세요.');
+    toast('메일 앱 실행 · 받는 사람 직접 입력');
   }
 
   /* ============================================================
@@ -3588,7 +3588,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   }
   function speakScreen() {
     if (!ttsSupported) {
-      toast('이 브라우저는 음성 안내를 지원하지 않아요. 화면의 글자를 읽어 주세요.');
+      toast('음성 안내 미지원 브라우저 · 화면 글자 확인');
       return;
     }
     speak(screenSummaryText());
@@ -3646,7 +3646,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     if (state.view === 'done' && !state.receipt) { state.view = state.card ? 'jobs' : 'card'; }
     var gotN = 0;
     Object.keys(state.fetched || {}).forEach(function (k) { if (state.fetched[k]) { gotN += 1; } });
-    if (gotN) { fetchState.log = [{ icon: '✅', text: '서류 ' + gotN + '장을 신청서에 붙여 두었어요', tone: 'ok' }]; }
+    if (gotN) { fetchState.log = [{ icon: '✅', text: '서류 ' + gotN + '장 첨부 상태 복원', tone: 'ok' }]; }
     return true;
   }
 
@@ -3672,10 +3672,10 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       ['#inPhone', '#inAddr', '#inBank', '#inAcct', '#inMotiv'].forEach(function (sel) { var el = $(sel); if (el) { el.value = ''; } });
       render();
       window.scrollTo(0, 0);
-      toast('처음부터 다시 시작해요');
+      toast('초기화 완료');
     }
     if (skipAsk) { doReset(); return; }
-    openSheet('처음부터 할까요?', '지금까지 고른 것과 적은 내용이 지워져요.', '<div class="btnrow"><button class="btn primary block" id="resetYes" type="button">처음부터 하기</button><button class="btn block" id="resetNo" type="button">계속하기</button></div>');
+    openSheet('초기화 확인', '선택·입력 내용이 모두 삭제됩니다.', '<div class="btnrow"><button class="btn primary block" id="resetYes" type="button">초기화</button><button class="btn block" id="resetNo" type="button">계속하기</button></div>');
     var y = $('#resetYes'), n = $('#resetNo');
     if (y) { y.addEventListener('click', function () { closeSheet(); doReset(); }); }
     if (n) { n.addEventListener('click', closeSheet); }
@@ -3721,11 +3721,11 @@ body.a11y-big.easy .hero h1{line-height:1.4}
   function handleCardFile(file) {
     if (!file) { return; }
     if (!/^image\//.test(file.type || '')) {
-      toast('사진 파일(jpg·png)을 골라 주세요');
+      toast('이미지 파일(jpg·png) 필요');
       return;
     }
     if (file.size > 12 * 1024 * 1024) {
-      toast('사진이 너무 커요. 12MB 이하 사진으로 다시 시도해 주세요');
+      toast('파일 12MB 초과 · 12MB 이하 이미지 사용');
       return;
     }
     var d = {
@@ -3768,7 +3768,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
       return;
     }
     if (v === 'jobs') {
-      if (!state.selectedProgram) { toast('일자리를 하나 골라 주세요'); return; }
+      if (!state.selectedProgram) { toast('일자리 선택 필요'); return; }
       go('docs');
       return;
     }
@@ -3791,7 +3791,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     closeSheet();
     render();
     go('submit');
-    toast('직접 준비한 서류로 하고, 신청서를 써 드릴게요');
+    toast('직접 준비 서류 적용 · 신청서 자동 작성');
   }
 
   function bindEvents() {
@@ -3851,7 +3851,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         ta.value = txt;
         state.form.motivation = txt;
         scheduleSave();
-        toast('AI가 초안을 썼어요. 마음에 안 들면 고쳐 주세요');
+        toast('AI 초안 생성 · 수정 가능');
         ta.focus();
       });
     }
@@ -3962,15 +3962,15 @@ body.a11y-big.easy .hero h1{line-height:1.4}
         state.easy = false;
         document.body.classList.remove('easy');
         easyOff.parentNode.removeChild(easyOff);
-        toast('쉬운 말 모드를 껐어요');
+        toast('쉬운 말 모드 끔');
         return;
       }
       var stepBtn = t.closest('.stp[data-goto]');
       if (stepBtn && !stepBtn.disabled) {
         var target = stepBtn.getAttribute('data-goto');
-        if (target === 'jobs' && !state.type) { toast('먼저 복지카드를 읽어 주세요'); return; }
-        if (target === 'docs' && !state.selectedProgram) { toast('먼저 일자리를 골라 주세요'); return; }
-        if (target === 'submit' && !state.receipt) { toast('서류를 모은 뒤에 갈 수 있어요'); return; }
+        if (target === 'jobs' && !state.type) { toast('복지카드 인식 필요'); return; }
+        if (target === 'docs' && !state.selectedProgram) { toast('일자리 선택 필요'); return; }
+        if (target === 'submit' && !state.receipt) { toast('서류 수집 후 이동 가능'); return; }
         go(target);
       }
     });
@@ -4011,20 +4011,20 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var big = $('#btnBigText');
     if (big) {
       big.addEventListener('click', function () {
-        setA11y('big', !a11y.big, !a11y.big ? '글씨를 크게 했어요' : '글씨를 원래 크기로 했어요');
+        setA11y('big', !a11y.big, !a11y.big ? '글씨 크게 적용' : '기본 글씨 크기');
       });
     }
     var hc = $('#btnHighContrast');
     if (hc) {
       hc.addEventListener('click', function () {
-        setA11y('contrast', !a11y.contrast, !a11y.contrast ? '고대비로 바꿨어요' : '원래 색으로 돌아왔어요');
+        setA11y('contrast', !a11y.contrast, !a11y.contrast ? '고대비 적용' : '기본 색상');
       });
     }
     var voice = $('#btnVoice');
     if (voice) {
       voice.addEventListener('click', function () {
-        if (a11y.voice) { setA11y('voice', false, '읽어주기를 껐어요'); return; }
-        setA11y('voice', true, '읽어주기를 켰어요. 화면을 읽어 드릴게요.');
+        if (a11y.voice) { setA11y('voice', false, '읽어주기 끔'); return; }
+        setA11y('voice', true, '읽어주기 켬 · 화면 낭독 시작');
       });
     }
     var slow = $('#btnRateSlow');
@@ -4052,7 +4052,7 @@ body.a11y-big.easy .hero h1{line-height:1.4}
     var restored = restoreSaved();
     render();
     if (restored) {
-      toast('하던 곳부터 이어서 할게요. 처음부터 하려면 위의 ‘처음부터’를 눌러 주세요.');
+      toast('이전 진행 상태 복원 · 초기화는 상단 ‘처음부터’');
     }
   }
 
