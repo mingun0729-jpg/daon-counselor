@@ -7,7 +7,7 @@
 
 - **다온(DAON)** — 장애인 일자리 맞춤형 AI 도우미 **공모전 시연용 웹 프로토타입**.
 - **앱(Application)처럼 동작하는 4개 화면**으로 이어진다.
-  1. **복지카드** — 사진 업로드 시 **브라우저 로컬 OCR**(Tesseract.js `kor+eng`)로 성명·생년월일·장애유형·정도·등록일·발급기관을 실제 판독해 확인 화면에 채움 · 예시 인물 7종 · 내 정보 직접 입력(이름·유형·정도) 세 가지 길
+  1. **복지카드·주민등록증** — 사진 업로드 시 **브라우저 로컬 OCR**(Tesseract.js `kor+eng`)로 성명·생년월일·(주민등록증이면 주소까지)·장애유형·정도·등록일·발급기관을 실제 판독해 확인 화면에 채움. 복지카드가 없으면 `주민등록증 찍기·올리기`로 시작할 수 있고, **그 사진이 3단계 '신분증 사본' 파일(원본 JPG/PNG)로 그대로 들어간다** · 예시 인물 7종 · 내 정보 직접 입력(이름·유형·정도) 세 가지 길
   2. **할 수 있는 일자리** — 조건에 따라 신청 가능/확인 필요/지금은 어려움으로 나눈 8개 사업과 진주 지역 근무지 10곳
   3. **서류** — 나라 기관(정부24·국민건강보험공단·복지로·고용24) 서류를 받아 신청서에 붙이는 화면. **기본 프록시(`https://daon-codef-proxy.mingun29.workers.dev`)가 미리 연결되어 있어 실제 간편인증 조회**가 동작하고, 사용자가 `연결 해제`를 누르면 시연 연출로 돌아간다. 둘을 화면에서 명확히 구분한다
   4. **신청** — 복지카드·기관 서류로 채운 정보는 그대로 두고, 빠진 칸(연락처·사는 곳·계좌·하고 싶은 말)만 적어 제출 → 접수번호와 접수증
@@ -51,9 +51,9 @@ proxy/        # 실제 기관 조회용 백엔드 프록시 (Pages와 별개로 
 | `.topbar` | 로고(눈 달린 ㅍ) · `#btnBack` · `#btnStartOver`(처음부터) + 편하게 보기 줄(`#btnBigText`, `#btnHighContrast`, `#btnVoice`, `#a11yRate`의 `#btnRateSlow`/`#btnRateNormal`, `#btnStopSpeak`) |
 | `.steps` | 4단계 표시 `button.stp[data-goto="card|jobs|docs|submit"]` — 지나온 단계는 `✓`, 지금 단계는 `aria-current="step"` |
 | `main` 안 5개 화면 | `#view-card`(카드 인식) · `#view-jobs` · `#view-docs` · `#view-submit` · `#view-done`. 한 번에 하나만 보이고 나머지는 `hidden` |
-| `#view-card` | `#cardHome`(시작: `#btnScan`, `#btnSamples`, `#btnManual`, `#cardFile`) / `#cardDone`(인식 결과 `#cardVisual`, 배려 안내 `#cardHint`, `#btnCardEdit`, `#btnCardAgain`) |
+| `#view-card` | `#cardHome`(시작: `#btnScan` 복지카드, `#btnIdCard` 주민등록증, `#btnSamples`, `#btnManual`, 파일 입력 `#cardFile`·`#idFile`) / `#cardDone`(인식 결과 `#cardVisual`, 배려 안내 `#cardHint`, `#btnCardEdit`, `#btnCardAgain`) |
 | `#view-jobs` | `#condWho`·`#btnCond`(조건 바꾸기), `#jobList`(라디오 카드), `#btnJobMore`, `#offBox`(지금은 어려운 일자리), `#workSection`(`#rankBox`/`#rankList` 희망 근무지 1·2·3순위 요약, `#workList` 순위 버튼이 붙은 근무지 카드, `#btnWorkMore`, `#assignRule` 배정 기준), `#supportBox`(근로지원 제도) |
-| `#view-docs` | 진행 카드(`#docsTitle`·`#docProgTxt`·`#docBar`), **실시간 진행 로그** `#agentLog`/`#alList`, 기관 카드 `#agencyList`, 파일 카드 `#fileList`, `#selfBox`(직접 준비) |
+| `#view-docs` | 진행 카드(`#docsTitle`·`#docProgTxt`·`#docBar`), **실시간 진행 로그** `#agentLog`/`#alList`, 기관 카드 `#agencyList`, **신분증 사진 카드** `#photoBox`(`#photoState`·`#photoHint`·`#btnIdPhoto`), 파일 카드 `#fileList`, `#selfBox`(직접 준비) |
 | `#view-submit` | 자동 채움 안내 `#autoDesc`, 희망 근무지 순위 `#confirmRanks`(+`#btnRankEdit`), 입력 칸(`#inPhone`, `#inEmail`, `#inAddr`, `#inBank`+`#inAcct`)과 `#inMotiv`(+`#btnDraft`), **추가 신청서 항목(선택)** `#extraBox`/`#extraFields`(서식 1의 성별·소득수준·최종학력·전산능력·자격면허·보호자 연락처 등), `#formDocList`, **자격 판정** `#eligResult`, **자필 서명** `#sigPad`/`#sigState`, **서식 3종 탭** `#formTabs`/`#formPreviewFrame`/`#formMeta` |
 | `#view-done` | 접수증 `#doneNo`·`#doneReceipt`, 인쇄 `#btnPrint`, ZIP `#btnZip`, 메일 `#btnMail` |
 | `.dock` | 화면마다 **큰 버튼 하나** `#ctaMain` + 안내 `#dockNote`. 카드 화면(인식 전)과 완료 화면에서는 숨긴다 |
@@ -73,11 +73,11 @@ proxy/        # 실제 기관 조회용 백엔드 프록시 (Pages와 별개로 
 | 5. 근로지원 | `buildSupports()`(7개 제도) |
 | 6. 근무지 | `WORKPLACES`(10곳), `TAG_LABEL`, `WARN_TAGS`, `matchWorkplace`, `scoredWorkplaces`, `rankList`/`rankSync`/`setRanks`/`setRank`/`rankOf`/`rankText`(1·2·3순위), `fitScore`(적합도 점수) |
 | 7. 서류 목록 | `COMMON_DOCS`, `EXTRA_DOCS`, `ALWAYS_EXTRA`, `docsFor` |
-| 5(앱). 복지카드 | `CARD_SAMPLES`(7종), `OCR_STEPS`, `openSamples`/`openSampleConfirm`(예시 인물 확인), `startCardOcr`/`ensureOcrWorker`/`ocrPrepCanvas`/`ocrPass`(브라우저 로컬 OCR 파이프라인), `parseOcrText`/`mergeOcrPasses`(판독문 파싱·2패스 병합), `openOcrProgress`/`setOcrPct`/`cancelOcr`, `openOcrReview`/`applyOcrDraft`, `openOcrFailed`, `openManual`, `openOcr`/`finishOcr`, `applyCard`(`birth` 포함), `applyManual`, `applyProfile`(장애 유형별 배려: 시각=큰글씨+읽어주기, 지적·자폐성=쉬운 말, 정신=근무 시간·업무 조정 안내, 지체·뇌병변=큰 글씨·큰 버튼) |
+| 5(앱). 복지카드·주민등록증 | `CARD_SAMPLES`(7종), `OCR_STEPS`/`OCR_STEPS_ID`, `openSamples`/`openSampleConfirm`(예시 인물 확인), `startCardOcr(file, mode)`/`ensureOcrWorker`/`ocrPrepCanvas`/`ocrPass`(브라우저 로컬 OCR 파이프라인), `parseOcrText`/`mergeOcrPasses`(판독문 파싱·2패스 병합), `ocrAddrOf`(주민등록증 주소 줄), `openOcrProgress`/`setOcrPct`/`cancelOcr`, `openOcrReview(res, mode)`/`applyOcrDraft`(`mode:'id'`면 주소까지), `openOcrFailed`, `openManual`, `openOcr`/`finishOcr`, `pickIdCard`/`handleIdFile`(주민등록증), `applyCard`(`birth` 포함), `applyManual`, `applyProfile`(장애 유형별 배려: 시각=큰글씨+읽어주기, 지적·자폐성=쉬운 말, 정신=근무 시간·업무 조정 안내, 지체·뇌병변=큰 글씨·큰 버튼) |
 | 6(앱). 화면 흐름 | `VIEW_ORDER`, `go`, `render`, `renderSteps`, `renderCard`, `renderDock` |
 | 7(앱). 일자리 | `analyze` 결과를 `jobCardHtml`로, `kindOfProgram`·`workRows`·`pickDefaultWorkplace`, `renderWork`(진주 근무지 3장 + 더 보기)·`workCardHtml`(순위 버튼)·`renderRankSummary`, `renderSupports`, `openCond` |
 | 8(앱). 서류 | `fetchState`(진행 로그·phase·mode), `requiredFetchDocs`, `assocDocs`, `docsStats`, `agencyGroups`, `renderDocs`, `renderAgentLog`/`pushLog`/`phaseLabel`, `openLogin`/`confirmLogin`, `fetchDocs`(시연 연출) |
-| 8-B. 실제 연동 | `codef`(프록시 주소·health), `realState`, `loadCodef`/`saveCodef`, `codefFetch`, `updateCfgBar`, `openCfg`/`closeCfg`/`testCfg`/`saveCfg`/`clearCfg`, `REAL_DOC_IDS`/`realDocs`, `renderLoginBody`/`setLoginButtons`, `startReal`/`realStep`/`completeTwoWay`/`realFail`/`finishReal`, `renderLoginRun`, `startTwoWayTimer`, `applyRealDoc`/`mergeRealIntoForm`/`realSummary`, `typeFromDisability`/`severityFromDisability` |
+| 8-B. 실제 연동 | `codef`(프록시 주소·health), `realState`, `loadCodef`/`saveCodef`, `codefFetch`(오류에 `hint`·`address`·`guide` 보존), `updateCfgBar`, `openCfg`/`closeCfg`/`testCfg`/`saveCfg`/`clearCfg`, `REAL_DOC_IDS`/`realDocs`, `renderLoginBody`/`setLoginButtons`, `cleanAddr`/`addrProblem`/`isRoadAddr`/`addrCheckHtml`/`updateAddrCheck`(주소 도우미), `startReal`/`realStep`/`completeTwoWay`/`realFail`/`finishReal`, `renderLoginRun`, `isAddrError`/`retryWithAddr`(CF-13006), `startTwoWayTimer`, `applyRealDoc`/`mergeRealIntoForm`/`realSummary`, `typeFromDisability`/`severityFromDisability` |
 | 서류 실데이터 렌더 | `realHead`/`realCertDoc`(CODEF 응답 요약 문서 — `REAL_WM` 워터마크), `docShell(title, inner, wm)` |
 | 9(앱). 신청 | `renderSubmit`(확인 카드 `#confirmCard` · 희망 근무지 순위 `renderConfirmRanks` · 필요 지원 칩 `aidChipsHtml`), `renderExtraFields`(서식 1 추가 항목 칩), `validateForm`(aria-invalid·role=alert), `readForm`, `clearFieldError`, `JOB_DEFAULT`, `buildDraftText`, `submitAll`, `makeReceipt`(순위 포함), `renderDone`, `birthText`/`maskedRrn`/`rrnMasked` |
 | 9-B. 포커스 | `focusViewHeading`(화면 전환 → 제목), `focusBack`/`overlayReturn`(모달을 열었던 버튼으로 복원), `selectProgram`·순위 버튼(`data-work-rank`)·순위 비우기(`data-clear-rank`)·추가 항목 칩(`data-xkey`)이 재렌더 뒤 같은 버튼으로 포커스 |
@@ -85,7 +85,7 @@ proxy/        # 실제 기관 조회용 백엔드 프록시 (Pages와 별개로 
 | 11(앱). 읽어주기 | `screenSummaryText`(화면별 대본), `speakScreen` |
 | 12(앱). 저장·복원 | `snapshot`(v4), `saveNow`/`scheduleSave`/`restoreSaved`/`clearSaved`, `resetAll` |
 | 13~15. 시트·이벤트·시작 | `openSheet`/`closeSheet`, `bindEvents`(이벤트 위임), `init` |
-| 7-F. 서류 파일 | `DOC_STYLE`/`DOC_WM`, `DOC_FILE_META`/`DOC_TITLE`, `docFileFor`(HTML/SVG + 실제 Blob 크기), `certSpec`/`certDoc`, `svgCardDoc`, `docFileCard`/`docPendingCard`, `buildZip`(무압축 ZIP, `bytes` 항목 지원), `openFileView`/`saveDocFile`/`printDocFile` |
+| 7-F. 서류 파일 | `DOC_STYLE`/`DOC_WM`, `DOC_FILE_META`/`DOC_TITLE`, `docFileFor`(HTML/SVG/**본인 첨부 사진 bytes** + 실제 Blob 크기), `photoDoc`/`photoExt`/`photoUrlOf`/`photoSig`/`readPhotoFile`/`attachPhotoDoc`/`reapplyPhotoDocs`(사진 서류), `certSpec`/`certDoc`, `svgCardDoc`, `docFileCard`/`docPendingCard`, `buildZip`(무압축 ZIP, `bytes` 항목 지원), `openFileView`/`saveDocFile`/`printDocFile` |
 | 7-G. 공식 서식 3종 | `OF_STYLE`(A4 인쇄 CSS), `form1Pages`/`form2Pages`/`form3Pages`(원본 구조 그대로), `form1Doc`~`form3Doc`, `allFormsDoc`(3종 한 번에 인쇄), `obx`/`ofv`/`sigMark` |
 | 7-H. 자격 판정 | `ELIG_DEF`, `eligDefault`, `eligibility`(지침 p.15·p.20·p.23·공고 4), `eligBadge`, `renderElig`, `renderEligResult`, `setElig` |
 | 7-I. 자필 서명 | `sigPad`, `sigInit`/`sigRedraw`/`sigDown`/`sigMove`/`sigUp`, `sigStatus`, `sigClear`, `sigMode` |
@@ -96,7 +96,9 @@ proxy/        # 실제 기관 조회용 백엔드 프록시 (Pages와 별개로 
 - 모든 사업 종류·근무시간·보수·서류·선발 기준은 **2026년 장애인일자리 사업안내(보건복지부)** 기준이다. 예: 일반형 전일제 주 40시간(12월 37.5시간) 월 2,156,880원(12월 2,022,720원, 세전), 시간제 주 20시간 월 1,078,440원, 복지일자리 참여형 주 14시간 이내 월 577,920원.
 - 수치를 바꿀 때는 **출처 연도를 함께 표기**하고, 화면 하단 고지의 "2026년 장애인일자리 사업안내 기준" 문구도 같이 갱신한다.
 - 근무지 10곳과 신청서 예시 값(성명·연락처·거주지·계좌)은 **가상 예시**다. 실제 기관·개인 정보로 바꾸지 않는다. 다만 **접수처 안내의 기관명·주소·대표전화**는 공개된 공식 정보(**(사)경남지체장애인연합회 진주시지회**, 경남 진주시 대신로 232번길 16, ☎ 055-755-0008)를 실제 값으로 쓰고 `ORG` 상수에서 관리한다.
-- 복지카드 인식은 **실제 브라우저 로컬 OCR**이다(`startCardOcr`). Tesseract.js 5.1.1(`kor+eng`)을 CDN에서 **필요할 때 한 번만** 불러오고, 사진은 그레이스케일·대비·이진화/샤프닝 두 가지로 전처리해 2패스(PSM 6)로 읽고, 6개 항목 중 3개 미만이면 원본에 가까운(이진화·샤프닝 없는) 세 번째 패스를 더 돌린 뒤 `mergeOcrPasses`로 항목별 최선값을 고른다. **사진 픽셀은 어디로도 전송하지 않는다**(내려받는 것은 엔진·언어 데이터뿐) — 이 고지를 지우지 않는다. 주민등록번호는 앞 6자리와 성별 숫자만 쓰고 뒷자리는 저장하지 않는다(`810716-1******`). 생년월일은 앞 6자리+성별숫자로 계산해 `state.form.birth`(YYYYMMDD)에 넣어 서식 1에 그대로 반영된다. 엔진을 못 받거나 글자를 못 읽으면 `openOcrFailed`가 안내 후 직접 입력·예시 인물로 잇는다. 예시 인물 경로(`openSampleConfirm` → `openOcr` 연출)는 그대로 남아 있다.
+- 복지카드·주민등록증 인식은 **실제 브라우저 로컬 OCR**이다(`startCardOcr(file, mode)`). Tesseract.js 5.1.1(`kor+eng`)을 CDN에서 **필요할 때 한 번만** 불러오고, 사진은 그레이스케일·대비·이진화/샤프닝 두 가지로 전처리해 2패스(PSM 6)로 읽고, 6개 항목 중 3개 미만이면 원본에 가까운(이진화·샤프닝 없는) 세 번째 패스를 더 돌린 뒤 `mergeOcrPasses`로 항목별 최선값을 고른다. `mode='id'`(주민등록증)는 `ocrAddrOf`가 '주소' 라벨 뒤/시·도로 시작하는 줄을 읽어 **주소**까지 채운다. **사진 픽셀은 어디로도 전송하지 않는다**(내려받는 것은 엔진·언어 데이터뿐) — 이 고지를 지우지 않는다. 주민등록번호는 앞 6자리와 성별 숫자만 쓰고 뒷자리는 저장하지 않는다(`810716-1******`). 생년월일은 앞 6자리+성별숫자로 계산해 `state.form.birth`(YYYYMMDD)에 넣어 서식 1에 그대로 반영된다. 엔진을 못 받거나 글자를 못 읽으면 `openOcrFailed`가 안내 후 직접 입력·예시 인물로 잇는다. 예시 인물 경로(`openSampleConfirm` → `openOcr` 연출)는 그대로 남아 있다.
+- **주민등록증 사진 = 신분증 사본** — 1단계든 3단계 `#photoBox`든, 올린 사진은 `state.photos.id`(메모리에만)에 보관하고 `state.fetched.id`를 `photo:true`로 표시한다. `docFileFor`가 그 서류만 **원본 사진 파일**(JPG/PNG, `bytes`)로 돌려주므로 미리보기·저장·ZIP이 모두 사진 그대로다. 사진은 저장(localStorage)하지 않으므로 새로 고치면 `restoreSaved`가 `photo` 첨부를 지우고 로그에 남긴다. 사진으로 붙인 서류는 `reapplyPhotoDocs`로 프로그램 선택·재렌더 뒤에도 유지한다.
+- **장애인증명서 주소** — 정부24는 주소검색 결과가 **한 건**인 주소만 통과시키고, 아파트 이름만·시·도만·번지 없는 '동'·괄호 메모가 섞인 주소는 `CF-13006`을 돌려준다. `cleanAddr`/`addrProblem`(프론트)과 `cleanAddress`/`addressProblem`(프록시)이 같은 규칙으로 ① 다듬고 ② 번지가 없으면 CODEF을 부르지 않고 막고 ③ `CF-13006`이면 보낸 주소를 보여 주며 `retryWithAddr`(휴대폰 인증 한 번 더)로 고쳐 다시 요청하게 한다. 이 규칙을 느슨하게 풀지 않는다.
 - 기관 로그인·서류 자동 수집·자동 첨부·접수는 **기본값이 시연 연출**이다. 외부 요청 0건의 모의(Mock)이며, 화면 고지("시연용 가상 로그인", "실제로는 본인이 직접 발급받아야 해요")를 지우지 않는다. **프록시를 연결했을 때만** `startReal`이 실제 API를 부른다. 실제 모드에서도 받지 못한 서류는 '직접 준비'로 남기고 가짜로 채우지 않는다.
 - 메일 보내기는 **빈 수신자 `mailto:`만** 쓴다. 특정 개인·기관 이메일 주소를 코드에 넣지 않는다.
 
@@ -116,7 +118,7 @@ proxy/        # 실제 기관 조회용 백엔드 프록시 (Pages와 별개로 
 12. **XSS 습관** — 사용자 입력은 반드시 `esc()`로 이스케이프한 뒤 `innerHTML`에 넣는다.
 13. **서류 파일은 시연용 가상 문서** — 파일 카드·미리보기·저장(`Blob`+`URL.createObjectURL`)·ZIP(`buildZip`)은 브라우저 안에서만 만들어지며 외부 전송이 없다. 문서 본문에는 항상 '시연용 가상 문서' 워터마크와 고지, 가상 값(가명)만 넣는다. ZIP은 무압축(store) 방식이며 파일명은 UTF-8 플래그(0x0800)로 기록한다.
 14. **큰 글씨·음성 안내 기준** — 큰 글씨 모드는 본문 20px 이상·버튼 64px 이상, 375px에서 가로 스크롤이 없어야 한다. 음성 대본은 민원인 응대용 구어체로 쓰고 화면 이름을 함께 말한다. 음성은 한국어 우선순위(SunHi→Yuna→Sora→Heami→Google 한국의)로 고르며, 속도는 **기본 `rate 0.82`(천천히)**, `0.93`(보통)으로 바꿀 수 있다. `pitch 1.04` 유지. 속도 상수는 `TTS_RATE_SLOW`/`TTS_RATE_NORMAL` 한 곳에서만 관리한다.
-15. **localStorage 키 고정** — 접근성 설정 `daon.a11y.v1`(`big`·`contrast`·`voice`·`rate`), 자동 임시저장 `daon.state.v1`(내부 스키마 `v: 4`), 프록시 설정 `daon.codef.v1`(`url`·`token` — 저장값이 없으면 기본 프록시, 빈 `url`은 직접 해제). 저장값은 브라우저 밖으로 나가지 않으며 `resetAll`에서 앞의 둘을 비운다. 실제 조회값(`state.real`)은 저장하지 않는다(메모리에만). 스키마를 바꾸면 `v`를 올리고 `restoreSaved`에서 검증한다.
+15. **localStorage 키 고정** — 접근성 설정 `daon.a11y.v1`(`big`·`contrast`·`voice`·`rate`), 자동 임시저장 `daon.state.v1`(내부 스키마 `v: 4`), 프록시 설정 `daon.codef.v1`(`url`·`token` — 저장값이 없으면 기본 프록시, 빈 `url`은 직접 해제). 저장값은 브라우저 밖으로 나가지 않으며 `resetAll`에서 앞의 둘을 비운다. 실제 조회값(`state.real`)과 올린 사진(`state.photos`)은 저장하지 않는다(메모리에만). 스키마를 바꾸면 `v`를 올리고 `restoreSaved`에서 검증한다.
 16. **음성 안내** — 외부 TTS 라이브러리를 넣지 않고 `window.speechSynthesis`만 사용한다. 한국어 음성이 없는 기기에서는 음성 안내를 켜지 않고 `NO_KO_VOICE_MSG`로 안내한다.
 16-B. **낭독은 한 곳에서** — 화면 낭독 안내는 `#a11yStatus` 라이브 리전 한 곳만 쓴다. `toast()`는 보이는 안내만 담당하고(80ms 뒤 announce로 넘김), `announce()`가 바로 오면 같은 말을 두 번 읽지 않는다. `#toast`에 `role=status`를 다시 붙이지 않는다.
 16-C. **하단 고정 버튼과 시트 여백** — 시트 안 `.stickybtns`는 화면 아래에 붙어 마지막 내용을 가릴 수 있다. 내용을 바꾼 뒤 `fitSheetFoot(오버레이)`를 불러, 내용이 넘칠 때만 시트에 아래 여백(`.hasfoot`)을 준다. 새 시트를 만들면 같은 처리를 넣는다.
@@ -126,7 +128,7 @@ proxy/        # 실제 기관 조회용 백엔드 프록시 (Pages와 별개로 
 19. **4단계 확인 카드** — `#view-submit` 맨 위 `#confirmCard`에서 이름·생년월일·주소·필요 지원·이동 수단을 확인·수정하게 하고, 값은 `state.form`에 저장되어 `form1Doc`~`form3Doc`·인쇄·ZIP·접수증·미리보기에 그대로 들어간다. 이름·생년월일을 가짜로 만들지 않는다(`birthText()`는 입력값만 쓰고 비어 있으면 `—`).
 20. **공식 서식 3종은 원본 1:1** — 제목·표 구조·항목명·문구를 기장군 2027년 모집공고 [서식1]~[서식3]과 진주시 참여신청서식에서 그대로 옮긴다. 구조를 임의로 바꾸거나 항목을 지어내지 않는다. 값이 없으면 원본처럼 빈칸으로 두고, 글자를 읽지 못하는 항목은 억지로 채우지 않는다.
 21. **자격 판정은 지침 수치** — `eligibility()`의 제한·예외는 「2026년 장애인일자리 사업안내」와 모집공고 근거를 주석으로 남긴다. 제한이 있으면 `submitAll`이 접수를 막고, 서명이 없으면 서명란으로 포커스를 옮긴다.
-22. **개인정보** — 서명 이미지·올린 사진은 브라우저 안에서만 다루고 서버로 보내지 않는다. 공개 저장소이므로 커밋 금지(`CLAUDE.md` 상단 규칙).
+22. **개인정보** — 서명 이미지·올린 사진(주민등록증·복지카드)은 브라우저 안에서만 다루고 서버로 보내지 않는다. 사진은 `state.photos`(메모리)에만 두고 localStorage·ZIP 외에는 어디에도 쓰지 않는다. 공개 저장소이므로 커밋 금지(`CLAUDE.md` 상단 규칙).
 18. **진행 로그** — 기관 서류 수집은 `fetchState.log`에 쌓고 `renderAgentLog()`가 최신 순으로 그린다. 단계는 `connect → login → issue → attach`이며, 새 단계를 넣으면 `phaseLabel()`과 기관 카드 상태 문구를 함께 고친다.
 
 ## 5. Claude Code 협업 규칙

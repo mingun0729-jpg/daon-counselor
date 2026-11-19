@@ -33,6 +33,18 @@
  *   · 주민등록등본  /v1/kr/public/mw/resident-registration-copy/issuance (organization 0001)
  *   · 장애인증명서  /v1/kr/public/mw/certificate/disability            (organization 0001)
  *
+ * 장애인증명서의 address (2026-11-20 정리)
+ *   정부24 장애인증명서 발급 화면은 신청인의 주소를 주소검색으로 먼저 찾고, 그 결과로
+ *   관할 발급기관(시·군·구)을 정한다. CODEF은 이 검색창에 address 값을 그대로 넣고
+ *   한 건으로 떨어지는 주소만 통과시킨다(같은 정부24 스크래핑 상품 명세도 '주소검색
+ *   입력값 사용 - 단일 주소 나오는 입력값', 예: '신도림동 642'). 그래서
+ *     · 아파트 이름만 / 시·도만 / 번지 없는 '동' → 검색 결과가 여러 건이거나 0건
+ *     · 괄호 메모·우편번호가 섞인 문장 → 0건 (정부24 응답 CF-13006)
+ *   이 된다. 여기서는 ① 보내기 전에 주소를 다듬고(cleanAddress) ② 번지가 없으면 CODEF을
+ *   부르지 않고 그 자리에서 되돌려 주소를 고치게 하고(addressProblem) ③ 그래도
+ *   CF-13006이 오면 어떤 주소를 보냈는지(address)·힌트(address_no_result)를 함께
+ *   돌려주어 화면에서 바로 고쳐 다시 인증할 수 있게 한다.
+ *
  * 주의: 이 파일에는 어떤 개인정보·키도 넣지 않는다. 요청마다 사용자가 보낸
  *       본인확인 정보를 그대로 CODEF에 넘기고, 서버에는 저장하지 않는다.
  */
@@ -140,6 +152,46 @@ function jsonResponse(body, status, env, request) {
 
 function digits(s) {
   return String(s == null ? '' : s).replace(/[^0-9]/g, '');
+}
+
+/**
+ * 정부24 주소검색에 넣을 수 있는 형태로 다듬는다.
+ *   '경상남도 진주시 대신로 232번길 16 (상대동, 52782)' → '경상남도 진주시 대신로 232번길 16'
+ * 괄호 메모·동 표기·우편번호는 검색 결과를 0건으로 만드는 대표적인 원인이라 지운다.
+ */
+function cleanAddress(raw) {
+  let s = String(raw == null ? '' : raw).trim();
+  if (!s) { return ''; }
+  s = s.replace(/\s+/g, ' ');
+  /* (...) / （...） 안의 메모(동 표기·우편번호·층/호 등)를 지운다. */
+  for (let i = 0; i < 3; i++) { s = s.replace(/[（(][^()（）]{0,40}[)）]/g, ' '); }
+  /* 남은 5자리 우편번호 — 번지는 보통 4자리 이하라 이걸 지워도 번지는 남는다. */
+  s = s.replace(/(^|\s)\d{5}(?=\s|$)/g, ' ');
+  /* 도로명 뒤에 붙는 ', 52782' 같은 꼬리 */
+  s = s.replace(/[,，]\s*\d{5}\s*$/g, ' ');
+  s = s.replace(/[,，]\s*$/g, ' ');
+  return s.replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * 주소검색이 한 건으로 떨어질 만한 값인지 본다. 문제가 있으면 { code, message },
+ * 없으면 null. CODEF을 부르기 전에 막아 간편인증을 한 번 헛되이 쓰지 않게 한다.
+ */
+function addressProblem(addr) {
+  const a = cleanAddress(addr);
+  if (!a) {
+    return { code: 'input_address', message: '주소를 입력해 주세요. 예: 진주시 가좌동 123-4' };
+  }
+  if (a.length < 4) {
+    return { code: 'input_address_short', message: "주소가 너무 짧습니다. 동·번지까지 적어 주세요. 예: 진주시 가좌동 123-4" };
+  }
+  if (!/[0-9]/.test(a)) {
+    return { code: 'input_address_number', message: "번지(숫자)가 없습니다. '진주시 가좌동 123-4'처럼 동·번지로 적어 주세요. 아파트 이름만으로는 정부24가 찾지 못합니다." };
+  }
+  if (!/([가-힣]+(동|읍|면|가|리)(\s|[0-9]|$))|([가-힣]+(로|길)(\s|[0-9]|$))/.test(a)) {
+    return { code: 'input_address_dong', message: "동·읍·면 이름이 없습니다. 예: 진주시 가좌동 123-4" };
+  }
+  return null;
 }
 
 function maskRrn(v) {
@@ -251,7 +303,7 @@ function buildProfile(input) {
   const auth = String((input && input.auth) || 'kakao');
   const telecom = String((input && input.telecom) || '').toUpperCase().replace(/\s+/g, '');
   const telecomKey = TELECOM_ALIAS[telecom] || telecom;
-  const address = String((input && input.address) || '').trim();
+  const address = cleanAddress((input && input.address) || '');
 
   if (name.length < 2) { throw httpError(400, '성명을 2자 이상 입력해 주세요.', 'input_name'); }
   if (birth.length !== 8) { throw httpError(400, '생년월일 8자리(YYYYMMDD)를 입력해 주세요.', 'input_birth'); }
@@ -265,8 +317,9 @@ function buildProfile(input) {
 function buildParams(docId, profile) {
   const p = PRODUCTS[docId];
   if (!p) { throw httpError(400, '지원하지 않는 서류입니다: ' + docId, 'unknown_doc'); }
-  if (p.requiresAddress && !profile.address) {
-    throw httpError(400, p.label + ' 조회에는 주소가 필요합니다. 주소를 입력해 주세요.', 'input_address');
+  if (p.requiresAddress) {
+    const bad = addressProblem(profile.address);
+    if (bad) { throw httpError(400, p.label + ' 조회에는 주소가 필요합니다. ' + bad.message, bad.code); }
   }
   const params = {
     organization: p.organization,
@@ -277,7 +330,10 @@ function buildParams(docId, profile) {
   };
   if (profile.telecom) { params.telecom = TELECOM_CODE[profile.telecom]; }
   if (p.identity === 'birth') { params.identity = profile.birth; }
-  if (p.requiresAddress) { params.address = profile.address; }
+  if (p.requiresAddress) {
+    /* 정부24 주소검색에 그대로 들어가는 값 — 다듬은 주소를 보낸다. */
+    params.address = cleanAddress(profile.address);
+  }
   Object.keys(p.defaults).forEach(function (k) { params[k] = p.defaults[k]; });
   return params;
 }
@@ -358,6 +414,33 @@ function normalize(docId, body) {
     };
   }
   return null;
+}
+
+/* 백엔드가 돌려준 오류 코드를 화면이 바로 쓸 수 있는 모양으로 만든다.
+   주소 때문에 실패한 경우에는 어떤 주소를 보냈는지(address)와 고치는 법(hint)을 함께 준다. */
+const ADDRESS_ERROR_HINTS = {
+  'CF-13006': '정부24가 이 주소로 주소검색 결과를 찾지 못했습니다(CF-13006). 동·번지까지 적은 지번주소(예: 진주시 가좌동 123-4)로 바꾸면 대개 해결됩니다.',
+  'CF-13005': '정부24 주소검색이 응답하지 않았습니다. 주소를 동·번지로 바꾸거나 잠시 뒤 다시 시도해 주세요.'
+};
+
+function codefErrorBody(docId, r, params) {
+  const code = String(r.code || '') || 'CF-UNKNOWN';
+  const message = r.message || r.extraMessage || '기관 조회에 실패했습니다.';
+  const body = {
+    ok: false,
+    status: 'error',
+    doc: docId,
+    code: code,
+    message: message,
+    result: { code: code, message: r.message || '', extraMessage: r.extraMessage || '' }
+  };
+  const addrIssue = !!ADDRESS_ERROR_HINTS[code] || /주소|검색결과가 없습니다/.test(String(message));
+  if (addrIssue) {
+    body.hint = 'address_no_result';
+    body.address = String((params && params.address) || '');
+    body.guide = ADDRESS_ERROR_HINTS[code] || '정부24가 이 주소를 찾지 못했습니다. 동·번지까지 적은 지번주소로 바꿔 다시 시도해 주세요.';
+  }
+  return body;
 }
 
 /* --------------------------------------------------------- 모의 응답 */
@@ -465,14 +548,7 @@ async function handleRequest(env, request) {
   }
 
   /* 그 밖의 코드는 숨기지 않고 그대로 전달한다. */
-  return jsonResponse({
-    ok: false,
-    status: 'error',
-    doc: docId,
-    code: code || 'CF-UNKNOWN',
-    message: r.message || r.extraMessage || '기관 조회에 실패했습니다.',
-    result: { code: code, message: r.message || '', extraMessage: r.extraMessage || '' }
-  }, 200, env, request);
+  return jsonResponse(codefErrorBody(docId, r, params), 200, env, request);
 }
 
 async function handleComplete(env, request) {
@@ -535,14 +611,7 @@ async function handleComplete(env, request) {
       normalized: normalize(docId, out.body)
     }, 200, env, request);
   }
-  return jsonResponse({
-    ok: false,
-    status: 'error',
-    doc: docId,
-    code: code || 'CF-UNKNOWN',
-    message: r.message || r.extraMessage || '기관 조회에 실패했습니다.',
-    result: { code: code, message: r.message || '', extraMessage: r.extraMessage || '' }
-  }, 200, env, request);
+  return jsonResponse(codefErrorBody(docId, r, params), 200, env, request);
 }
 
 async function readJson(request) {
