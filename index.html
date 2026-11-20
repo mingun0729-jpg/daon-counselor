@@ -892,6 +892,151 @@ body.a11y-contrast .twbox b,body.a11y-contrast .twbox p{color:#D8F5E4}
 body.a11y-contrast .rsum{color:#C8F3D8}
 body.easy .twbox p{font-size:16px}
 
+/* ---------- 다온 채팅 · 민원 전화 · 맞춤 알림 (2026-11-20) ---------- */
+.modebar{display:flex; gap:8px; padding:8px 16px 10px; background:var(--bg); border-bottom:1px solid var(--line); overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch}
+.modebar::-webkit-scrollbar{display:none}
+.mb{position:relative; flex:0 0 auto; display:inline-flex; align-items:center; gap:6px; min-height:48px; padding:0 15px; border-radius:999px; border:1.5px solid var(--line-strong); background:var(--surface); color:var(--ink-soft); font-size:14.5px; font-weight:900; white-space:nowrap}
+.mb:hover{border-color:var(--grass)}
+.mb[aria-current="page"]{background:var(--btn); border-color:var(--btn); color:#fff}
+.mb .mb-dot{display:none; min-width:20px; height:20px; padding:0 5px; border-radius:999px; background:#C8402F; color:#fff; font-size:11.5px; font-weight:900; line-height:20px; text-align:center}
+.mb .mb-dot.on{display:inline-block}
+
+.chatwrap{display:flex; flex-direction:column; gap:12px; min-height:calc(100vh - 320px)}
+.chathead{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.chathead h1{font-size:20px; font-weight:900; letter-spacing:-.02em}
+.chathead .btn.small{margin-left:auto}
+.chatlog{display:flex; flex-direction:column; gap:10px}
+.msg{display:flex; gap:8px; align-items:flex-end}
+.msg .ava{width:34px; min-width:34px; height:34px; border-radius:11px; background:var(--grass-soft); border:1px solid var(--grass-line); display:grid; place-items:center; font-size:17px}
+.msg .bubble{max-width:82%; padding:12px 14px; border-radius:16px; background:var(--surface); border:1px solid var(--line); font-size:16px; font-weight:600; line-height:1.62; overflow-wrap:anywhere; box-shadow:var(--shadow-soft)}
+.msg.daon .bubble{border-bottom-left-radius:6px}
+.msg.me{flex-direction:row-reverse}
+.msg.me .bubble{background:var(--btn); border-color:var(--btn); color:#fff; border-bottom-right-radius:6px; font-weight:700}
+.msg .bubble.wide{max-width:100%; flex:1; min-width:0}
+.msg .bubble h3{font-size:15.5px; font-weight:900; margin:0 0 8px; letter-spacing:-.01em}
+.bubble .sub{font-size:13.5px; color:var(--ink-mute); font-weight:700; margin-top:6px}
+.qchips{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+.qchip{min-height:44px; padding:0 14px; border-radius:999px; border:1.5px solid var(--grass-line); background:var(--grass-soft); color:#12452A; font-size:14.5px; font-weight:900; text-align:left}
+.qchip:hover{border-color:var(--grass)}
+.chatjob{display:flex; flex-direction:column; gap:8px}
+.chatjob button{display:flex; flex-direction:column; gap:2px; text-align:left; min-height:58px; padding:10px 12px; border-radius:12px; border:1.5px solid var(--line-strong); background:var(--surface-2)}
+.chatjob button:hover{border-color:var(--grass)}
+.chatjob b{font-size:15px; font-weight:900; line-height:1.4}
+.chatjob span{font-size:13px; color:var(--ink-soft); font-weight:700}
+.chatcompose{position:sticky; bottom:0; z-index:5; display:flex; gap:8px; align-items:center; margin-top:auto; padding:10px 0 calc(8px + env(safe-area-inset-bottom)); background:linear-gradient(180deg,rgba(247,248,245,0) 0%, var(--bg) 26%)}
+.chatcompose input{flex:1; min-width:0; min-height:52px; border-radius:16px; border:1.5px solid var(--line-strong); background:var(--surface); padding:0 14px; font-size:16px}
+.chatcompose button{min-height:52px; min-width:52px; border-radius:16px; border:1.5px solid var(--line-strong); background:var(--surface); font-size:18px; font-weight:900}
+.chatcompose #chatSend{background:var(--btn); border-color:var(--btn); color:#fff; padding:0 18px; font-size:16px}
+.chatcompose #chatMic[aria-pressed="true"]{background:var(--red-soft); border-color:var(--red); color:#8A2019}
+
+.briefcard{background:linear-gradient(180deg,#F0F8F2 0%,#FFFFFF 70%); border:1.5px solid var(--grass-line); border-radius:var(--r-lg); padding:16px; box-shadow:var(--shadow-soft)}
+.briefcard .bhead{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+.briefcard h2{font-size:17px; font-weight:900; letter-spacing:-.02em}
+.briefcard .bmeta{font-size:12.5px; font-weight:900; color:#12452A; background:var(--grass-soft); border:1px solid var(--grass-line); border-radius:999px; padding:3px 10px}
+.brieflist{display:flex; flex-direction:column; gap:8px; margin-top:12px}
+.briefitem{display:flex; gap:10px; align-items:flex-start; width:100%; text-align:left; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:12px}
+.briefitem:hover{border-color:var(--grass)}
+.briefitem .bi{width:38px; min-width:38px; height:38px; border-radius:12px; background:var(--grass-soft); display:grid; place-items:center; font-size:19px}
+.briefitem .bt{flex:1; min-width:0}
+.briefitem b{display:block; font-size:15px; font-weight:900; line-height:1.42}
+.briefitem span{display:block; font-size:13.5px; color:var(--ink-soft); font-weight:700; line-height:1.5; margin-top:3px}
+.briefitem .why{display:inline-block; margin-top:6px; font-size:12px; font-weight:900; color:var(--amber); background:var(--amber-soft); border:1px solid var(--amber-line); border-radius:999px; padding:2px 9px}
+
+.callcard{background:linear-gradient(180deg,#EAF6EE 0%,#FFFFFF 76%); border:1.5px solid var(--grass-line); border-radius:var(--r-lg); padding:18px 16px; text-align:center}
+.callcard.ringing{background:linear-gradient(180deg,#FDF3E2 0%,#FFFFFF 76%); border-color:var(--amber-line)}
+.callcard.ended{background:linear-gradient(180deg,#EAF0F8 0%,#FFFFFF 76%); border-color:var(--blue-line)}
+.callcard .callwho{font-size:13px; font-weight:900; color:#12452A; letter-spacing:.01em}
+.callcard .callnum{font-size:20px; font-weight:900; margin-top:4px; letter-spacing:-.01em}
+.callcard .callstate{display:inline-flex; align-items:center; gap:8px; margin-top:10px; font-size:15px; font-weight:900; color:var(--ink-soft)}
+.callcard .callstate .dot{width:10px; height:10px; border-radius:50%; background:var(--grass)}
+.callcard.ringing .callstate .dot{background:var(--amber); animation:pulse 1.4s infinite}
+.callcard.ended .callstate .dot{background:var(--ink-mute)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.callcard .timer{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:30px; font-weight:900; letter-spacing:.04em; margin-top:6px; line-height:1.1}
+.callcard .callnote{font-size:12.5px; color:var(--ink-mute); font-weight:800; margin-top:8px; line-height:1.5}
+.callctrl{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:14px}
+.cbtn{min-height:56px; border-radius:16px; border:1.5px solid var(--line-strong); background:var(--surface); font-size:14px; font-weight:900; color:var(--ink-soft); display:grid; place-items:center; gap:2px; padding:6px}
+.cbtn .ci{font-size:19px; line-height:1}
+.cbtn[aria-pressed="true"]{background:var(--grass-soft); border-color:var(--grass); color:#12452A}
+.cbtn.hang{background:var(--red); border-color:var(--red); color:#fff}
+.cbtn.answer{background:var(--btn); border-color:var(--btn); color:#fff}
+.cbtn:disabled{opacity:.5}
+.callwide{display:flex; flex-direction:column; gap:10px; margin-top:14px}
+.calllog{display:flex; flex-direction:column; gap:8px}
+.csline{display:flex; gap:8px; align-items:flex-start}
+.csline .who{font-size:12px; font-weight:900; color:var(--ink-mute); min-width:40px; padding-top:8px; text-align:right}
+.csline .txt{flex:1; min-width:0; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:10px 12px; font-size:15.5px; font-weight:600; line-height:1.6}
+.csline.me .txt{background:var(--grass-soft); border-color:var(--grass-line); font-weight:700}
+.csline.now .txt{border-style:dashed; color:var(--ink-mute); font-weight:700}
+.sumcard{background:var(--surface); border:1.5px solid var(--blue-line); border-radius:var(--r); padding:16px}
+.sumcard .sumno{font-family:ui-monospace,Menlo,Consolas,monospace; font-size:17px; font-weight:900; color:var(--blue); letter-spacing:.02em}
+.sumcard h3{font-size:17px; font-weight:900; margin-top:6px}
+.sumcard ul{margin:10px 0 0; display:flex; flex-direction:column; gap:6px}
+.sumcard li{display:flex; gap:8px; font-size:14.5px; font-weight:700; color:var(--ink-soft); line-height:1.55}
+.sumcard li i{font-style:normal; color:var(--grass); font-weight:900}
+.sumcard .dept{margin-top:10px; font-size:14px; font-weight:900; color:#12452A; background:var(--grass-soft); border:1px solid var(--grass-line); border-radius:12px; padding:10px 12px}
+
+.alertrow{display:flex; gap:10px; align-items:flex-start; width:100%; text-align:left; padding:12px; border-radius:14px; border:1px solid var(--line); background:var(--surface-2); margin-bottom:8px}
+.alertrow.unread{border-color:var(--grass-line); background:#F4FBF6}
+.alertrow .ai{width:36px; min-width:36px; height:36px; border-radius:11px; background:var(--grass-soft); display:grid; place-items:center; font-size:18px}
+.alertrow .at{flex:1; min-width:0}
+.alertrow b{display:block; font-size:15px; font-weight:900; line-height:1.42}
+.alertrow span{display:block; font-size:13.5px; color:var(--ink-soft); font-weight:700; line-height:1.5; margin-top:2px}
+.alertrow .ameta{display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; font-size:11.5px; font-weight:900; color:var(--ink-mute)}
+.alertrow .ameta em{font-style:normal; color:#12452A; background:var(--grass-soft); border:1px solid var(--grass-line); border-radius:999px; padding:1px 8px}
+.alertrow .ameta em.due{color:var(--amber); background:var(--amber-soft); border-color:var(--amber-line)}
+.alertrow .unreaddot{width:9px; height:9px; min-width:9px; border-radius:50%; background:#C8402F; margin-top:6px}
+.alertrow.read .unreaddot{background:transparent}
+.subrow{display:flex; flex-direction:column; gap:8px}
+.permbar{display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:12px; border-radius:14px; background:var(--surface-2); border:1px solid var(--line)}
+.permbar .pt{flex:1; min-width:160px; font-size:13.5px; font-weight:800; color:var(--ink-soft); line-height:1.5}
+.permbar .pt b{display:block; font-size:14.5px; color:var(--ink)}
+.permbar.on .pt b{color:#12452A}
+.permbar .btn{min-height:46px; padding:0 14px; font-size:14px; flex:0 0 auto}
+body.a11y-big .modebar{padding:8px 14px 10px}
+body.a11y-big .mb{font-size:17px; min-height:54px}
+body.a11y-big .msg .bubble{font-size:19px; max-width:88%}
+body.a11y-big .qchip{font-size:17px; min-height:52px}
+body.a11y-big .chatcompose input,body.a11y-big .chatcompose button{min-height:60px; font-size:19px}
+body.a11y-big .briefcard h2{font-size:20px}
+body.a11y-big .briefitem b{font-size:17.5px}
+body.a11y-big .briefitem span{font-size:16px}
+body.a11y-big .cbtn{min-height:64px; font-size:16px}
+body.a11y-big .csline .txt{font-size:18px}
+body.a11y-big .alertrow b{font-size:17.5px}
+body.a11y-big .alertrow span{font-size:16px}
+body.a11y-big .callcard .timer{font-size:34px}
+body.a11y-contrast .modebar{background:#0A0E0B; border-color:#2A342C}
+body.a11y-contrast .mb{background:#141A16; border-color:#55665A; color:#DDE6DE}
+body.a11y-contrast .mb[aria-current="page"]{background:#7FE0A4; border-color:#7FE0A4; color:#07130B}
+body.a11y-contrast .briefcard{background:#121814; border-color:#3E6F4F}
+body.a11y-contrast .briefcard h2,body.a11y-contrast .briefitem b{color:#F2F6F3}
+body.a11y-contrast .briefcard .bmeta{background:#16301F; border-color:#3E6F4F; color:#C8F3D8}
+body.a11y-contrast .briefitem .why{background:#33260C; border-color:#6E5518; color:#FFD479}
+body.a11y-contrast .briefitem{background:#141A16; border-color:#3A453C}
+body.a11y-contrast .briefitem span{color:#D3DBD4}
+body.a11y-contrast .msg .bubble{background:#141A16; border-color:#3A453C; color:#EAF3EC}
+body.a11y-contrast .msg.me .bubble{background:#1B6438; border-color:#7FE0A4; color:#FFFFFF}
+body.a11y-contrast .qchip{background:#16301F; border-color:#7FE0A4; color:#C8F3D8}
+body.a11y-contrast .chatcompose input{background:#0E1310; border-color:#55665A; color:#EAF3EC}
+body.a11y-contrast .chatcompose button{background:#141A16; border-color:#55665A; color:#EAF3EC}
+body.a11y-contrast .callcard{background:#121814; border-color:#3E6F4F}
+body.a11y-contrast .callcard .callnum,body.a11y-contrast .callcard .timer{color:#F2F6F3}
+body.a11y-contrast .cbtn{background:#141A16; border-color:#55665A; color:#DDE6DE}
+body.a11y-contrast .csline .txt{background:#141A16; border-color:#3A453C; color:#EAF3EC}
+body.a11y-contrast .csline.me .txt{background:#16301F; border-color:#3E6F4F; color:#D8F5E4}
+body.a11y-contrast .alertrow{background:#141A16; border-color:#3A453C}
+body.a11y-contrast .alertrow.unread{background:#16301F; border-color:#3E6F4F}
+body.a11y-contrast .alertrow b{color:#F2F6F3}
+body.a11y-contrast .alertrow span{color:#D3DBD4}
+body.a11y-contrast .permbar{background:#141A16; border-color:#3A453C}
+body.a11y-contrast .permbar .pt,body.a11y-contrast .permbar .pt b{color:#EAF3EC}
+body.a11y-contrast .sumcard{background:#121814; border-color:#3E6F4F}
+body.a11y-contrast .sumcard h3{color:#F2F6F3}
+body.a11y-contrast .sumcard li{color:#D3DBD4}
+body.easy .msg .bubble{font-size:17px; line-height:1.72}
+body.easy .qchip{font-size:16px}
+
 /* ---------- 인쇄 ---------- */
 #printArea{display:none}
 @media print{
@@ -955,6 +1100,13 @@ body.easy .twbox p{font-size:16px}
     <button class="stopbtn" id="btnStopSpeak" type="button" hidden>■ 멈춤</button>
   </div>
   </div>
+
+  <!-- ============ 다온 서비스 탭 (채팅 · 민원 전화 · 맞춤 알림) ============ -->
+  <nav class="modebar" id="modeBar" aria-label="다온 서비스">
+    <button class="mb" type="button" data-mode="chat">💬 다온 채팅</button>
+    <button class="mb" type="button" data-mode="call">📞 민원 전화</button>
+    <button class="mb" type="button" data-mode="notify">🔔 맞춤 알림 <span class="mb-dot" id="ntfDot" aria-hidden="true"></span></button>
+  </nav>
 
   <!-- ============ 진행 단계 ============ -->
   <nav class="steps" aria-label="진행 단계">
@@ -1286,6 +1438,67 @@ body.easy .twbox p{font-size:16px}
         <button class="btn block" id="btnMail" type="button"><span aria-hidden="true">✉️</span> 메일 전송</button>
       </div>
       <p class="micro" style="text-align:center">※ 실제 기관으로 전송되지 않은 <b>시연용 접수</b>입니다.</p>
+    </section>
+    <!-- ============ 다온 채팅 (말·글로 진행) ============ -->
+    <section class="screen chatwrap" id="view-chat" aria-label="다온 채팅" hidden>
+      <div class="chathead">
+        <h1>다온에게 말하기</h1>
+        <button class="btn small" type="button" id="btnChatClear">대화 지우기</button>
+      </div>
+      <div id="chatBrief"></div>
+      <div class="chatlog" id="chatLog" role="log" aria-live="polite" aria-relevant="additions" aria-label="다온과의 대화"></div>
+      <form class="chatcompose" id="chatForm" autocomplete="off">
+        <button type="button" id="chatMic" aria-pressed="false" aria-label="말로 입력하기" title="말로 입력">🎤</button>
+        <input id="chatInput" type="text" enterkeyhint="send" placeholder="다온에게 물어보기" aria-label="다온에게 할 말">
+        <button type="submit" id="chatSend">보내기</button>
+      </form>
+      <input type="file" id="chatCardFile" accept="image/*" hidden>
+      <input type="file" id="chatIdFile" accept="image/*" hidden>
+      <p class="micro">🎤를 누르고 말하거나 아래에 글로 적어 주세요. 음성 인식이 안 되는 브라우저에서는 글자로 하시면 돼요. ※ 시연용이며 입력한 내용은 이 브라우저에만 저장됩니다.</p>
+    </section>
+
+    <!-- ============ 민원 전화 (시연 통화) ============ -->
+    <section class="screen" id="view-call" aria-label="민원 전화" hidden>
+      <h1 class="sr-only">민원 전화</h1>
+      <div class="callcard" id="callCard"></div>
+      <div class="calllog" id="callLog" aria-live="polite" aria-label="통화 내용"></div>
+      <div id="callScn"></div>
+      <form class="chatcompose" id="callForm" autocomplete="off" hidden>
+        <button type="button" id="callMic" aria-pressed="false" aria-label="말로 하기" title="말로 하기">🎤</button>
+        <input id="callInput" type="text" enterkeyhint="send" placeholder="하고 싶은 말을 적어 주세요" aria-label="상담원에게 할 말">
+        <button type="submit">말하기</button>
+      </form>
+      <div id="callSummary"></div>
+    </section>
+
+    <!-- ============ 맞춤 알림 (구독 · 알림 센터 · 협회원 설정) ============ -->
+    <section class="screen" id="view-notify" aria-label="맞춤 알림" hidden>
+      <h1 class="sr-only">맞춤 알림</h1>
+      <div id="briefCard"></div>
+      <div class="card">
+        <h2 class="sec" style="margin-bottom:8px">브라우저 알림</h2>
+        <div class="permbar" id="ntfPermBar">
+          <span class="pt"><b id="ntfPermTitle">알림 상태 확인 중…</b><span id="ntfPermTxt"></span></span>
+          <button class="btn small" id="btnNtfOn" type="button">알림 허용</button>
+        </div>
+        <div class="btnrow" style="margin-top:10px">
+          <button class="btn block" id="btnNtfPing" type="button">🔔 테스트 알림 보내기</button>
+        </div>
+        <p class="micro" style="margin-top:8px">브라우저 알림은 휴대폰 홈 화면에 추가했을 때 가장 잘 동작해요. 알림을 막아 두어도 앱 안 알림 센터에는 그대로 쌓입니다.</p>
+      </div>
+      <div class="card">
+        <h2 class="sec" style="margin-bottom:10px">구독할 소식</h2>
+        <div class="subrow" id="subList"></div>
+      </div>
+      <div class="card">
+        <h2 class="sec" style="margin-bottom:10px">협회원 설정</h2>
+        <div id="memberBox"></div>
+      </div>
+      <div class="card">
+        <div class="rb-head" style="margin-bottom:10px"><h2 class="sec" style="margin:0">알림 센터</h2><span class="rb-count" id="ntfCount">0</span></div>
+        <div id="alertList"></div>
+        <button class="btn ghost block" id="btnAllRead" type="button" style="margin-top:6px">모두 읽음으로</button>
+      </div>
     </section>
   </main>
 
@@ -1699,7 +1912,7 @@ body.easy .twbox p{font-size:16px}
      2. 상태 — 화면(카드 → 일자리 → 서류 → 내기) 값
      ============================================================ */
   var state = {
-    view: 'card',
+    view: 'chat',
     card: null,
     type: '', severity: '', workType: '',
     envs: new Set(),
@@ -1717,7 +1930,13 @@ body.easy .twbox p{font-size:16px}
     receipt: null,
     easy: false,
     showAllJobs: false,
-    showAllWork: false
+    showAllWork: false,
+    /* 2026-11-20 추가 — 채팅 · 민원 접수 · 알림 · 구독 · 협회원 설정 (스냅샷 v5에 저장) */
+    chat: [],
+    calls: [],
+    alerts: [],
+    subs: { job: true, care: true, voucher: true, device: false, assoc: true },
+    member: { assoc: true, region: '진주시', interests: [] }
   };
 
   function progOf(pid) {
@@ -4609,14 +4828,21 @@ body.easy .twbox p{font-size:16px}
      6. 화면 흐름 — 카드 → 일자리 → 서류 → 내기
      ============================================================ */
   var VIEW_ORDER = ['card', 'jobs', 'docs', 'submit', 'done'];
-  var VIEW_TITLE = { card: '복지카드', jobs: '할 수 있는 일자리', docs: '서류 준비', submit: '신청서 내기', done: '접수 완료' };
+  var VIEW_TITLE = { card: '복지카드', jobs: '할 수 있는 일자리', docs: '서류 준비', submit: '신청서 내기', done: '접수 완료',
+    chat: '다온 채팅', call: '민원 전화', notify: '맞춤 알림' };
 
   function go(view) {
+    /* 전화 화면을 떠나면 통화를 정리한다(요약 카드는 이미 저장·전달됨). */
+    if (state.view === 'call' && view !== 'call' && (callState.phase === 'ringing' || callState.phase === 'connected')) {
+      endCall(true);
+    }
     state.view = view;
     render();
     window.scrollTo(0, 0);
     focusViewHeading(view);
     scheduleSave();
+    /* 채팅은 지금 하는 대화가 보이게 맨 아래에서 시작한다. */
+    if (view === 'chat') { setTimeout(chatScrollEnd, 40); }
     if (a11y.voice) { setTimeout(function () { speak(screenSummaryText()); }, 420); }
   }
 
@@ -4632,7 +4858,7 @@ body.easy .twbox p{font-size:16px}
 
   function render() {
     var v = state.view;
-    ['card', 'jobs', 'docs', 'submit', 'done'].forEach(function (x) {
+    VIEW_ORDER.concat(MODE_VIEWS).forEach(function (x) {
       var el = $('#view-' + x);
       if (el) { el.hidden = x !== v; }
     });
@@ -4642,6 +4868,10 @@ body.easy .twbox p{font-size:16px}
     if (v === 'docs') { renderDocs(); }
     if (v === 'submit') { renderSubmit(); }
     if (v === 'done') { renderDone(); }
+    if (v === 'chat') { renderChat(); }
+    if (v === 'call') { renderCall(); }
+    if (v === 'notify') { renderNotify(); }
+    renderModeBar();
     renderDock();
     var back = $('#btnBack');
     if (back) { back.hidden = (v === 'card' || v === 'done'); }
@@ -4649,7 +4879,7 @@ body.easy .twbox p{font-size:16px}
   }
 
   function renderSteps() {
-    var idx = VIEW_ORDER.indexOf(state.view);
+    var idx = VIEW_ORDER.indexOf(state.view);   /* 채팅·전화·알림 화면에서는 -1(단계 표시는 숨김) */
     $$('.steps .stp').forEach(function (b, i) {
       var target = b.getAttribute('data-goto');
       var reached = (target === 'card') || (target === 'jobs' && !!state.type) ||
@@ -4681,6 +4911,10 @@ body.easy .twbox p{font-size:16px}
     var dock = $('.dock'), cta = $('#ctaMain'), sub = $('#ctaSub'), note = $('#dockNote');
     var v = state.view;
     var label = '', subLabel = '', noteTxt = '', disabled = false;
+    if (MODE_VIEWS.indexOf(v) > -1) {
+      if (dock) { dock.hidden = true; }
+      return;
+    }
     if ((v === 'card' && !state.card) || v === 'done') {
       if (dock) { dock.hidden = true; }
       return;
@@ -7335,6 +7569,1191 @@ body.easy .twbox p{font-size:16px}
   }
 
   /* ============================================================
+     10-B. 다온 채팅 · 민원 전화 · 맞춤 알림 (2026-11-20)
+
+     - 💬 다온 채팅: 피클처럼 말·글로 진행하는 화면. 카드 올리기, 일자리 추천,
+       서류·신청서 이동, 민원 질문, 맞춤 소식 확인을 한 대화에서 처리한다.
+     - 📞 민원 전화: 실제 통화처럼 보이는 시연 화면(Web Audio 벨소리·연결음,
+       통화 타이머, 마이크·소리·끊기). 한국어 STT(SpeechRecognition)와
+       TTS(speechSynthesis)로 음성 대화를 하고, 마이크가 없으면 글자와
+       예시 민원 버튼으로 그대로 시연한다. 통화가 끝나면 민원 응대 요약·
+       접수번호·담당 부서 카드를 만들어 채팅과 알림에 남긴다.
+     - 🔔 맞춤 알림: 카테고리별 구독 스위치, Notification API 권한·테스트,
+       앱 안 알림 센터(안읽음 배지·토스트).
+     - 협회원 개인별 맞춤: 장애 유형·정도·지역·협회원 여부·관심 분야로
+       지원사업·긴급 공지·교육/물품 지원을 골라 브리핑 카드와 알림으로 준다.
+     - 유료 통신사·유료 API 없이 브라우저 무료 API만 쓴다. 실제 전화는 걸지 않는다.
+     ============================================================ */
+  var MODE_VIEWS = ['chat', 'call', 'notify'];
+
+  /* 구독 카테고리 — 협회원이 받을 소식 */
+  var SUBS = [
+    { id: 'job', icon: '💼', label: '일자리 모집', desc: '진주·경남 장애인 일자리 공고와 모집 일정' },
+    { id: 'care', icon: '🤝', label: '활동지원·돌봄', desc: '활동지원 시간 변경, 주간활동·돌봄 서비스' },
+    { id: 'voucher', icon: '🚕', label: '바우처·교통', desc: '장애인 콜택시·특별교통수단·교통비' },
+    { id: 'device', icon: '🦾', label: '보조기기·의료', desc: '보조기기 지원 접수, 재활·의료비' },
+    { id: 'assoc', icon: '🏛️', label: '협회 교육·행사', desc: '진주시지회 교육·행사·회원 모집' }
+  ];
+  function subMeta(id) {
+    for (var i = 0; i < SUBS.length; i++) { if (SUBS[i].id === id) { return SUBS[i]; } }
+    return { id: id, icon: '🔔', label: '소식', desc: '' };
+  }
+  function subOn(id) { return !!(state.subs && state.subs[id]); }
+
+  /* 알림 소식함 — 시연용 예시 소식(가상). 실제 공고·일정·자격은 기관 안내를 따른다. */
+  var ALERT_FEED = [
+    { id: 'a-job-plan', cat: 'job', icon: '💼', due: '12월 초',
+      title: '2027년 장애인일자리 참여자 모집 사전 안내',
+      body: '진주시가 12월 첫째 주에 2027년 참여자 모집 공고를 냅니다. 공고가 나오면 다온이 필요한 서류까지 함께 알려 드릴게요.',
+      tags: {} },
+    { id: 'a-care-add', cat: 'care', icon: '🤝', due: '11/28 마감',
+      title: '활동지원 추가·시간 변경 신청 접수 (11/24~11/28)',
+      body: '다음 달 활동지원 시간을 늘리거나 바꾸는 신청을 이번 주 금요일까지 받습니다. 신청서와 활동지원사 배치 확인서가 필요해요.',
+      tags: { severity: 'severe' } },
+    { id: 'a-taxi-night', cat: 'voucher', icon: '🚕', due: '12/1 시행',
+      title: '진주시 장애인 콜택시 야간 운행 확대 (12/1~)',
+      body: '오후 10시까지 운행이 늘어납니다. 이용 등록은 지회에서 함께 도와드려요.',
+      tags: {} },
+    { id: 'a-device2', cat: 'device', icon: '🦾', due: '12/2 마감',
+      title: '보조기기 지원 2차 접수 (12/2 마감)',
+      body: '휠체어·보청기·의사소통 보조기기 지원 사업 2차 접수입니다. 장애인증명서와 견적서가 필요해요.',
+      tags: {} },
+    { id: 'a-assoc-party', cat: 'assoc', icon: '🏛️', due: '12/3 마감',
+      title: '진주시지회 송년 문화행사 참가 신청',
+      body: '12월 5일 송년 행사 참가 신청을 받습니다. 보호자 1인까지 함께 오실 수 있어요.',
+      tags: { member: true } },
+    { id: 'a-job-lib', cat: 'job', icon: '💼', due: '상시',
+      title: '복지일자리 참여자 추가 모집 (진주시)',
+      body: '사서보조·환경정리 분야 12명을 모집합니다. 주 14시간 이내, 월 57만 원 안팎이에요.',
+      tags: {} },
+    { id: 'a-care-day', cat: 'care', icon: '🤝', due: '상시',
+      title: '발달장애인 주간활동서비스 이용자 모집',
+      body: '주간활동서비스를 상시 접수합니다. 지회 상담 뒤 시군구에 신청해요.',
+      tags: { types: ['intellectual', 'autism'] } },
+    { id: 'a-device-visual', cat: 'device', icon: '🦾', due: '상시',
+      title: '점자 안내서·화면읽기 프로그램 지원',
+      body: '점자 안내서와 화면읽기 프로그램 설치를 무료로 도와드립니다.',
+      tags: { types: ['visual'] } },
+    { id: 'a-voucher-wheel', cat: 'voucher', icon: '🚕', due: '상시',
+      title: '특별교통수단 이용 등록 안내',
+      body: '휠체어 탑승 차량 배차 등록을 지회에서 함께 도와드립니다.',
+      tags: { types: ['physical', 'brain'] } },
+    { id: 'a-assoc-sign', cat: 'assoc', icon: '🏛️', due: '상시',
+      title: '수화통역 지원 신청 안내 (협회 회원)',
+      body: '병원·관공서에 함께 가는 수화통역을 신청할 수 있습니다. 3일 전에 신청해 주세요.',
+      tags: { types: ['hearing'], member: true } },
+    { id: 'a-job-mental', cat: 'job', icon: '💼', due: '상시',
+      title: '정신장애인 취업 상담·직무조정 연계',
+      body: '근무 시간·업무량 조정 상담을 함께 받을 수 있어요. 고용공단 연계를 도와드립니다.',
+      tags: { types: ['mental'] } }
+  ];
+  function feedById(id) {
+    for (var i = 0; i < ALERT_FEED.length; i++) { if (ALERT_FEED[i].id === id) { return ALERT_FEED[i]; } }
+    return null;
+  }
+
+  /* ----- 협회원·개인 조건 판정 ----- */
+  function regionOf() {
+    var m = state.member || {};
+    if (m.region) { return m.region; }
+    var addr = (state.form && state.form.addr) || '';
+    var hit = addr.match(/([가-힣]{2,6}시)(?![가-힣])/);
+    if (hit) { return hit[1]; }
+    if (state.card && /진주/.test(state.card.org || '')) { return '진주시'; }
+    return '';
+  }
+  function profileOf() {
+    var m = state.member || {};
+    return {
+      type: state.type || '',
+      severity: state.severity || '',
+      region: regionOf(),
+      member: !!m.assoc,
+      interests: (m.interests || []).slice()
+    };
+  }
+  function profileLabel(p) {
+    p = p || profileOf();
+    var w = [];
+    if (p.type) { w.push(TYPE_LABEL[p.type] || ''); }
+    if (p.severity) { w.push(SEVERITY_LABEL[p.severity] || ''); }
+    if (p.region) { w.push(p.region); }
+    w.push(p.member ? '협회원' : '협회원 아님');
+    return w.filter(Boolean).join(' · ');
+  }
+  function alertMatch(a, p) {
+    p = p || profileOf();
+    if (!a || !a.cat) { return false; }
+    if (!subOn(a.cat)) { return false; }
+    var t = a.tags || {};
+    if (t.member && !p.member) { return false; }
+    if (t.types && p.type && t.types.indexOf(p.type) < 0) { return false; }
+    if (t.severity && p.severity && t.severity !== p.severity) { return false; }
+    return true;
+  }
+  function alertScore(a, p) {
+    var s = 1;
+    var t = a.tags || {};
+    if (t.types && p.type && t.types.indexOf(p.type) > -1) { s += 3; }
+    if (t.severity && p.severity === t.severity) { s += 2; }
+    if (t.member && p.member) { s += 2; }
+    if (p.interests.indexOf(a.cat) > -1) { s += 1; }
+    return s;
+  }
+  function matchingAlerts(p) {
+    p = p || profileOf();
+    return ALERT_FEED.filter(function (a) { return alertMatch(a, p); })
+      .map(function (a) { return { a: a, s: alertScore(a, p) }; })
+      .sort(function (x, y) { return y.s - x.s; })
+      .map(function (x) { return x.a; });
+  }
+  function briefReason(a, p) {
+    p = p || profileOf();
+    var t = a.tags || {};
+    var w = [];
+    if (t.types && p.type && t.types.indexOf(p.type) > -1) { w.push(TYPE_LABEL[p.type] || ''); }
+    if (t.severity && p.severity === t.severity) { w.push(SEVERITY_LABEL[p.severity] || ''); }
+    if (t.member && p.member) { w.push('협회 회원'); }
+    if (p.region) { w.push(p.region); }
+    if (!w.length) { w.push('전체 회원'); }
+    return w.filter(Boolean).join(' · ');
+  }
+  function personalBriefing(p, n) {
+    p = p || profileOf();
+    return matchingAlerts(p).slice(0, n || 3);
+  }
+
+  /* ----- 알림 센터 ----- */
+  function syncAlerts() {
+    if (!state.alerts) { state.alerts = []; }
+    var p = profileOf();
+    var add = matchingAlerts(p).filter(function (a) {
+      return !state.alerts.some(function (x) { return x.id === a.id; });
+    });
+    add.forEach(function (a) {
+      state.alerts.unshift({ id: a.id, cat: a.cat, icon: a.icon, title: a.title, body: a.body,
+        due: a.due || '', why: briefReason(a, p), at: nowStamp(), read: false });
+    });
+    /* 지금 조건에 맞지 않는 소식(구독 끔·회원 아님)은 목록에서 빼고, 30건까지만 둔다. */
+    state.alerts = state.alerts.filter(function (x) {
+      if (!subOn(x.cat)) { return false; }
+      if (/^call-/.test(x.id)) { return true; }
+      var f = feedById(x.id);
+      return f ? alertMatch(f, p) : true;
+    }).slice(0, 30);
+    renderModeBar();
+    return add.length;
+  }
+  function addCallAlert(sum) {
+    if (!state.alerts) { state.alerts = []; }
+    if (!sum || !sum.no) { return; }
+    if (state.alerts.some(function (x) { return x.id === 'call-' + sum.no; })) { return; }
+    state.alerts.unshift({ id: 'call-' + sum.no, cat: 'assoc', icon: '📞',
+      title: '민원 접수 · ' + sum.title, body: sum.dept + ' · ' + (sum.next || ''),
+      due: '', why: '전화 상담', at: sum.at || nowStamp(), read: false });
+    if (state.alerts.length > 30) { state.alerts = state.alerts.slice(0, 30); }
+    renderModeBar();
+  }
+  function unreadAlerts() {
+    return (state.alerts || []).filter(function (a) { return !a.read; }).length;
+  }
+
+  /* ----- 브라우저 알림(Notification API) ----- */
+  function ntfSupported() {
+    try { return typeof window !== 'undefined' && 'Notification' in window; } catch (e) { return false; }
+  }
+  function ntfPermission() {
+    try { return ntfSupported() ? window.Notification.permission : 'unsupported'; } catch (e) { return 'unsupported'; }
+  }
+  function requestNtf() {
+    if (!ntfSupported()) {
+      toast('이 브라우저는 알림 창 미지원 · 앱 안 알림으로 안내해요');
+      announce('이 브라우저는 알림 창을 지원하지 않습니다. 앱 안 알림 센터를 이용해 주세요.');
+      return;
+    }
+    try {
+      var p = window.Notification.requestPermission(function () { renderNotify(); });
+      if (p && typeof p.then === 'function') { p.then(function () { renderNotify(); }); }
+      toast('알림 권한을 물어봅니다 · 허용을 눌러 주세요');
+    } catch (e) { toast('알림 권한을 요청하지 못했어요'); }
+  }
+  function sendNtf(title, body) {
+    if (!ntfSupported() || ntfPermission() !== 'granted') { return false; }
+    try { new window.Notification(title, { body: body, tag: 'daon-alert' }); return true; }
+    catch (e) { return false; }
+  }
+
+  /* ============================================================
+     10-C. 💬 다온 채팅
+     ============================================================ */
+  var CHAT_CHIPS_MAIN = [
+    { t: '복지카드 올리기', v: '복지카드 올리기' },
+    { t: '내가 할 수 있는 일자리', v: '내가 할 수 있는 일자리 알려줘' },
+    { t: '필요한 서류 준비', v: '필요한 서류 준비해줘' },
+    { t: '민원 전화 연결', v: '민원 전화 연결해줘' },
+    { t: '맞춤 소식 보기', v: '맞춤 알림 보여줘' }
+  ];
+  var INFO_TOPICS = [
+    { k: ['활동지원', '활동 보조', '돌봄'], scn: 'activity', title: '활동지원 시간 변경',
+      body: '활동지원 시간 변경은 이번 달 20일까지 신청하면 다음 달부터 적용돼요. 늘리는 시간은 시군구 예산에 따라 조정될 수 있고, 신청서와 활동지원사 배치 확인서가 필요해요.' },
+    { k: ['콜택시', '택시', '특별교통수단', '교통', '바우처'], scn: 'taxi', title: '장애인 콜택시·교통바우처',
+      body: '진주시 특별교통수단으로 등록하면 콜택시를 이용할 수 있어요. 복지카드·주민등록증과 사진 1장을 가지고 지회에 오시면 등록을 도와드려요. 교통비 지원은 연 20만 원 한도예요.' },
+    { k: ['급여', '월급', '보수', '근무 시간', '근로조건'], scn: 'wage', title: '일자리 근로조건·급여',
+      body: '복지일자리 참여형은 주 14시간 이내 월 57만 원 안팎, 일반형 시간제는 주 20시간 월 107만 원 정도예요. 12월은 근무일이 적어 보수가 줄어요.' },
+    { k: ['보조기기', '휠체어', '보청기', '점자'], scn: 'device', title: '보조기기 지원',
+      body: '휠체어 같은 보조기기는 연 1회 지원 신청을 받아요. 장애인증명서·견적서·본인 명의 통장 사본이 필요하고, 2차 접수는 12월 2일까지예요.' },
+    { k: ['수화', '수어', '통역'], scn: '', title: '수화통역 지원',
+      body: '병원·관공서에 함께 가는 수화통역을 신청할 수 있어요. 3일 전에 지회로 신청해 주세요.' }
+  ];
+  function infoFor(text) {
+    var t = String(text || '');
+    for (var i = 0; i < INFO_TOPICS.length; i++) {
+      var e = INFO_TOPICS[i];
+      for (var j = 0; j < e.k.length; j++) { if (t.indexOf(e.k[j]) > -1) { return e; } }
+    }
+    return { k: [], scn: '', title: '민원 안내',
+      body: '궁금한 점은 민원 전화로 바로 물어보실 수 있어요. 통화가 끝나면 접수번호와 담당 부서를 정리해 드려요.' };
+  }
+
+  /* 말의 뜻을 알아듣는다 — 화면과 테스트가 같은 함수를 쓴다. */
+  function chatIntent(text) {
+    var t = String(text || '').replace(/\s+/g, ' ').trim();
+    if (!t) { return 'empty'; }
+    function has() {
+      for (var i = 0; i < arguments.length; i++) { if (t.indexOf(arguments[i]) > -1) { return true; } }
+      return false;
+    }
+    if (has('전화', '콜센터', '상담원')) { return 'call'; }
+    if (has('민원') && !has('서류', '신청서')) { return 'call'; }
+    if (has('알림', '구독', '소식', '브리핑')) { return 'notify'; }
+    if (has('주민등록증')) { return 'idcard'; }
+    if (has('복지카드')) { return has('일자리', '일할', '취업') ? 'jobs' : 'card'; }
+    if (has('서류', '정부24', '건강보험', '발급', '떼')) { return 'docs'; }
+    if (has('신청서', '접수', '제출', '내기')) { return 'submit'; }
+    if (has('일자리', '일할', '취업', '근로', '추천', '직업')) { return 'jobs'; }
+    if (has('협회', '회원', '지회', '교육', '행사')) { return 'assoc'; }
+    if (has('활동지원', '콜택시', '바우처', '보조기기', '수화', '수어', '점자', '교통', '돌봄', '급여')) { return 'info'; }
+    if (has('안녕', '반가', '도와', '무엇', '뭐')) { return 'hello'; }
+    return 'fallback';
+  }
+
+  function greetingText() {
+    var nm = (state.form && state.form.name) || (state.card && state.card.name) || '';
+    return (nm ? nm + '님, ' : '') + '안녕하세요. 저는 다온이에요. 복지카드 사진 한 장이면 할 수 있는 일자리를 찾아 드리고, 기관 서류도 대신 모아 신청서까지 만들어 드려요.\n무엇부터 도와드릴까요?';
+  }
+  function ensureChat() {
+    if (state.chat && state.chat.length) { return; }
+    state.chat = [{ id: 'greet', who: 'daon', kind: 'text', at: nowStamp(), text: greetingText(), chips: CHAT_CHIPS_MAIN }];
+  }
+  function chatReply(intent, text) {
+    var out = [];
+    if (intent === 'hello' || intent === 'empty') {
+      out.push({ kind: 'text', text: greetingText(), chips: CHAT_CHIPS_MAIN });
+      return out;
+    }
+    if (intent === 'card' || intent === 'idcard') {
+      var which = intent === 'idcard' ? '주민등록증' : '복지카드';
+      out.push({ kind: 'text',
+        text: which + ' 사진을 올려 주세요. 사진은 이 브라우저 안에서만 읽고 서버로 보내지 않아요.\n카드가 없으면 예시 인물로 해 보셔도 돼요.',
+        chips: [{ t: '📷 ' + which + ' 사진 고르기', act: 'pick-' + intent },
+          { t: '🗂️ 예시 인물로 보기', act: 'samples' },
+          { t: '내 정보 직접 입력', act: 'manual' }] });
+      return out;
+    }
+    if (intent === 'jobs') {
+      if (!state.type) {
+        out.push({ kind: 'text',
+          text: '일자리를 찾으려면 먼저 복지카드나 주민등록증 사진이 필요해요. 카드가 없으면 장애 유형만 직접 골라 주셔도 돼요.',
+          chips: [{ t: '📷 복지카드 올리기', act: 'pick-card' }, { t: '🗂️ 예시 인물로 보기', act: 'samples' }, { t: '내 정보 직접 입력', act: 'manual' }] });
+        return out;
+      }
+      var rows = analyze().filter(function (r) { return r.status !== '불가'; });
+      var top = rows.slice(0, 3);
+      out.push({ kind: 'text',
+        text: (TYPE_LABEL[state.type] || '') + ' · ' + (SEVERITY_LABEL[state.severity] || '') + ' 조건으로 지금 신청할 수 있는 일자리는 ' + rows.length + '가지예요.\n마음에 드는 일을 누르면 그 일로 정하고 일자리 화면으로 이동해요.' });
+      if (top.length) { out.push({ kind: 'jobs', data: { ids: top.map(function (r) { return r.p.id; }) } }); }
+      out.push({ kind: 'text', text: '일을 고르면 필요한 서류를 다온이 기관에서 대신 받아 신청서에 붙여 드려요.',
+        chips: [{ t: '일자리 화면 전체 보기', act: 'go-jobs' }] });
+      return out;
+    }
+    if (intent === 'docs') {
+      if (!state.selectedProgram) {
+        out.push({ kind: 'text', text: '어떤 일로 신청할지 먼저 골라 주세요. 그러면 그 일에 필요한 서류만 골라 모아 드릴게요.',
+          chips: [{ t: '일자리 고르기', act: 'go-jobs' }] });
+        return out;
+      }
+      var list = docsFor(state.selectedProgram);
+      var names = list.slice(0, 4).map(function (d) { return d.name; }).join(', ');
+      out.push({ kind: 'text',
+        text: progOf(state.selectedProgram).name + ' 신청에는 서류 ' + list.length + '장이 필요해요.\n' + names + (list.length > 4 ? ' 외' : '') + '.\n정부24·건강보험공단에 다온이 들어가 받아 올게요.',
+        chips: [{ t: '서류 준비 화면으로', act: 'go-docs' }] });
+      return out;
+    }
+    if (intent === 'submit') {
+      if (state.receipt && state.receipt.no) {
+        out.push({ kind: 'text', text: '이미 접수했어요. 접수번호는 ' + state.receipt.no + '입니다.',
+          chips: [{ t: '접수증 보기', act: 'go-submit' }] });
+        return out;
+      }
+      if (!state.selectedProgram) {
+        out.push({ kind: 'text', text: '신청서를 쓰려면 먼저 일자리와 서류를 정해야 해요.',
+          chips: [{ t: '일자리 고르기', act: 'go-jobs' }] });
+        return out;
+      }
+      out.push({ kind: 'text', text: '신청서로 넘어갈게요. 복지카드와 기관 서류로 채운 정보는 그대로 두고, 빠진 칸만 적으시면 돼요.',
+        chips: [{ t: '신청서 쓰기', act: 'go-submit' }] });
+      return out;
+    }
+    if (intent === 'call') {
+      out.push({ kind: 'text',
+        text: '민원 전화를 연결할게요. 아래에서 궁금한 것을 고르면 그 내용으로 바로 시작해요. (시연용 통화라 실제로 걸리지는 않아요)',
+        chips: CALL_SCN.map(function (s) { return { t: s.icon + ' ' + s.label, act: 'call-scn', scn: s.id }; }) });
+      return out;
+    }
+    if (intent === 'notify') {
+      var p = profileOf();
+      var items = personalBriefing(p, 2);
+      out.push({ kind: 'text', text: '구독한 소식 중 ' + (p.region || '전국') + ' · ' + profileLabel(p) + ' 조건에 맞는 소식이에요.' });
+      if (items.length) { out.push({ kind: 'brief', data: { ids: items.map(function (a) { return a.id; }) } }); }
+      out.push({ kind: 'text', text: '알림 화면에서 받을 소식을 고르고, 휴대폰 알림도 켤 수 있어요.',
+        chips: [{ t: '🔔 맞춤 알림 열기', act: 'go-notify' }] });
+      return out;
+    }
+    if (intent === 'assoc') {
+      var m = state.member || {};
+      out.push({ kind: 'text',
+        text: '지금 설정은 ' + (m.assoc ? ORG.name + ' 회원' : '협회원 아님') + ', 지역은 ' + (regionOf() || '설정 전') + '이에요.\n회원이면 협회 교육·행사와 물품 지원 소식을 먼저 골라 드려요.',
+        chips: [{ t: '협회원 설정 바꾸기', act: 'go-notify' }] });
+      return out;
+    }
+    if (intent === 'info') {
+      var kb = infoFor(text);
+      out.push({ kind: 'text', text: kb.title + '\n' + kb.body,
+        chips: [{ t: '📞 민원 전화로 물어보기', act: 'call-scn', scn: kb.scn }] });
+      return out;
+    }
+    out.push({ kind: 'text', text: '미안해요, 그 말은 잘 못 알아들었어요. 이렇게 물어보시면 돼요.', chips: CHAT_CHIPS_MAIN });
+    return out;
+  }
+
+  function chatItemHtml(it) {
+    var chips = '';
+    if (it.chips && it.chips.length) {
+      chips = '<div class="qchips">' + it.chips.map(function (c) {
+        var attr = c.act
+          ? ' data-chat-act="' + esc(c.act) + '"' + (c.scn ? ' data-chat-scn="' + esc(c.scn) + '"' : '')
+          : ' data-chat-chip="' + esc(c.v || c.t) + '"';
+        return '<button class="qchip" type="button"' + attr + '>' + esc(c.t) + '</button>';
+      }).join('') + '</div>';
+    }
+    var head = it.text ? '<div>' + esc(it.text).replace(/\n/g, '<br>') + '</div>' : '';
+    var extra = '';
+    if (it.kind === 'jobs') { extra = chatJobsHtml(it.data); }
+    else if (it.kind === 'brief') { extra = chatBriefListHtml(it.data); }
+    else if (it.kind === 'call') { extra = callSummaryCardHtml(callByNo(it.data && it.data.id), true); }
+    var wide = it.kind === 'jobs' || it.kind === 'brief' || it.kind === 'call';
+    var who = it.who === 'me';
+    return '<div class="msg ' + (who ? 'me' : 'daon') + '">' +
+      (who ? '' : '<span class="ava" aria-hidden="true">ㅍ</span>') +
+      '<div class="bubble' + (wide ? ' wide' : '') + '">' + head + extra + chips + '</div></div>';
+  }
+  function chatJobsHtml(data) {
+    var ids = (data && data.ids) || [];
+    if (!ids.length) { return ''; }
+    return '<div class="chatjob" style="margin-top:10px">' + ids.map(function (id) {
+      var p = progOf(id);
+      return '<button type="button" data-chat-pick="' + esc(id) + '"><b>' + esc(p.name) + '</b><span>' +
+        esc(p.hours + ' · ' + payShort(p.pay)) + '</span></button>';
+    }).join('') + '</div>';
+  }
+  function chatBriefListHtml(data) {
+    var ids = (data && data.ids) || [];
+    var p = profileOf();
+    var items = ids.map(feedById).filter(Boolean);
+    if (!items.length) { return ''; }
+    return '<div class="brieflist" style="margin-top:10px">' + items.map(function (a) {
+      return '<button class="briefitem" type="button" data-alert-open="' + esc(a.id) + '">' +
+        '<span class="bi" aria-hidden="true">' + esc(a.icon) + '</span>' +
+        '<span class="bt"><b>' + esc(a.title) + '</b><span>' + esc(a.body) + '</span>' +
+        '<span class="why">' + esc(briefReason(a, p)) + '</span></span></button>';
+    }).join('') + '</div>';
+  }
+  function chatPush(who, item) {
+    if (!state.chat) { state.chat = []; }
+    var it = { id: 'm' + Date.now().toString(36) + Math.floor(Math.random() * 1000), who: who, kind: 'text', at: nowStamp() };
+    for (var k in item) { if (Object.prototype.hasOwnProperty.call(item, k)) { it[k] = item[k]; } }
+    state.chat.push(it);
+    if (state.chat.length > 80) { state.chat = state.chat.slice(-80); }
+    renderChat();
+    chatScrollEnd();
+    scheduleSave();
+    return it;
+  }
+  function renderChat() {
+    var log = $('#chatLog');
+    if (!log) { return; }
+    ensureChat();
+    log.innerHTML = state.chat.map(chatItemHtml).join('');
+    renderBrief();
+  }
+  /* 새 말이 오면 대화 맨 아래로 — 화면을 처음 열 때는 맨 위(브리핑)에서 시작한다. */
+  function chatScrollEnd() {
+    if (state.view !== 'chat') { return; }
+    var inp = $('#chatInput');
+    if (inp && document.activeElement === inp) { return; }
+    try { window.scrollTo(0, document.body.scrollHeight); } catch (e) {}
+  }
+  function chatSendText(text) {
+    var t = String(text || '').replace(/\s+/g, ' ').trim();
+    if (!t) { return; }
+    chatPush('me', { kind: 'text', text: t });
+    var replies = chatReply(chatIntent(t), t);
+    replies.forEach(function (r) { chatPush('daon', r); });
+    var last = state.chat[state.chat.length - 1];
+    if (a11y.voice && last && last.text) { speak(last.text); }
+    announce('다온: ' + (last && last.text ? last.text : ''));
+  }
+  function chatAct(act, el) {
+    if (act === 'pick-card') { var f = $('#chatCardFile'); if (f) { f.click(); } return; }
+    if (act === 'pick-idcard') { var g = $('#chatIdFile'); if (g) { g.click(); } return; }
+    if (act === 'samples') { openSamples(); return; }
+    if (act === 'manual') {
+      manualSel = { type: state.type || '', severity: state.severity || '', name: state.form.name || '' };
+      openManual();
+      return;
+    }
+    if (act === 'go-jobs') { go('jobs'); return; }
+    if (act === 'go-docs') { go('docs'); return; }
+    if (act === 'go-submit') { go('submit'); return; }
+    if (act === 'go-call') { go('call'); return; }
+    if (act === 'go-notify') { go('notify'); return; }
+    if (act === 'call-scn') {
+      var s = el ? el.getAttribute('data-chat-scn') : '';
+      go('call');
+      startCall(s || '');
+      return;
+    }
+  }
+  function chatPick(pid) {
+    if (!pid) { return; }
+    selectProgram(pid);
+    chatPush('daon', { kind: 'text', text: progOf(pid).name + '으로 정했어요. 이제 필요한 서류를 준비할게요.',
+      chips: [{ t: '서류 준비 화면으로', act: 'go-docs' }] });
+    go('jobs');
+    toast('일자리를 골랐어요');
+  }
+
+  /* 맞춤 브리핑 카드 — 채팅 맨 위와 알림 화면에 같은 내용을 보여 준다. */
+  function briefHtml(compact) {
+    var p = profileOf();
+    var all = personalBriefing(p, 9);
+    var items = all.slice(0, compact ? 1 : 3);
+    var rest = all.length - items.length;
+    var html = '<div class="briefcard"><div class="bhead"><h2>맞춤 브리핑</h2>' +
+      '<span class="bmeta">' + esc(profileLabel(p)) + '</span></div>';
+    if (!items.length) {
+      html += '<p class="micro" style="margin-top:10px">아직 받을 소식이 없어요. 받고 싶은 소식을 켜 주시면 조건에 맞는 소식만 골라 드려요.</p>' +
+        '<button class="btn small" type="button" data-chat-act="go-notify" style="margin-top:10px">🔔 구독 설정하기</button>';
+    } else {
+      html += '<div class="brieflist">' + items.map(function (a) {
+        return '<button class="briefitem" type="button" data-alert-open="' + esc(a.id) + '">' +
+          '<span class="bi" aria-hidden="true">' + esc(a.icon) + '</span>' +
+          '<span class="bt"><b>' + esc(a.title) + '</b>' +
+          (compact ? '' : '<span>' + esc(a.body) + '</span>') +
+          '<span class="why">' + esc(briefReason(a, p)) + '</span></span></button>';
+      }).join('') + '</div>' +
+        '<button class="btn ghost block" type="button" data-chat-act="go-notify" style="margin-top:6px">맞춤 알림 전체 보기' +
+        (rest > 0 ? ' (외 ' + rest + '건)' : '') + '</button>';
+    }
+    return html + '</div>';
+  }
+  function renderBrief() {
+    var a = $('#chatBrief');
+    if (a) { a.innerHTML = briefHtml(true); }
+    var b = $('#briefCard');
+    if (b) { b.innerHTML = briefHtml(false); }
+  }
+
+  function openAlert(id) {
+    var a = null;
+    for (var i = 0; i < (state.alerts || []).length; i++) { if (state.alerts[i].id === id) { a = state.alerts[i]; break; } }
+    if (!a) {
+      var f = feedById(id);
+      if (f) {
+        a = { id: f.id, cat: f.cat, icon: f.icon, title: f.title, body: f.body, due: f.due, why: briefReason(f, profileOf()) };
+      }
+    }
+    if (!a) { return; }
+    if (state.alerts && state.alerts.indexOf(a) > -1) { a.read = true; }
+    renderAlerts();
+    renderModeBar();
+    scheduleSave();
+    openSheet(a.title, subMeta(a.cat).label,
+      '<p style="font-size:15.5px;line-height:1.65">' + esc(a.body) + '</p>' +
+      (a.due ? '<p class="micro" style="margin-top:8px"><b>기한</b> ' + esc(a.due) + '</p>' : '') +
+      (a.why ? '<p class="micro" style="margin-top:4px"><b>왜 이 소식인가요</b> ' + esc(a.why) + '</p>' : '') +
+      '<div class="btnrow" style="margin-top:12px">' +
+      '<button class="btn block" id="alertCallBtn" type="button">📞 전화로 물어보기</button>' +
+      '<button class="btn ghost block" id="alertJobBtn" type="button">💼 일자리 보기</button></div>' +
+      '<p class="micro" style="margin-top:8px">※ 시연용 예시 소식입니다. 실제 일정·자격은 기관 공고를 확인해 주세요.</p>');
+    var cb = $('#alertCallBtn');
+    if (cb) { cb.addEventListener('click', function () { closeSheet(); go('call'); }); }
+    var jb = $('#alertJobBtn');
+    if (jb) { jb.addEventListener('click', function () { closeSheet(); go(state.type ? 'jobs' : 'card'); }); }
+  }
+
+  /* ============================================================
+     10-D. 📞 민원 전화 (시연 통화)
+     ============================================================ */
+  var CALL_SCN = [
+    { id: 'activity', icon: '🤝', label: '활동지원 시간 문의', q: '활동지원 시간을 주 3회로 늘릴 수 있나요?' },
+    { id: 'taxi', icon: '🚕', label: '콜택시·교통바우처', q: '장애인 콜택시 이용 등록은 어떻게 하나요?' },
+    { id: 'wage', icon: '💼', label: '일자리 근로조건·급여', q: '복지일자리 급여와 근무 시간을 알고 싶어요.' },
+    { id: 'device', icon: '🦾', label: '보조기기 지원', q: '휠체어 보조기기 지원을 신청할 수 있나요?' }
+  ];
+  function scnOf(id) {
+    for (var i = 0; i < CALL_SCN.length; i++) { if (CALL_SCN[i].id === id) { return CALL_SCN[i]; } }
+    return null;
+  }
+  var CALL_KB = [
+    { k: ['활동지원', '활동 보조', '돌봄', '주간활동'], dept: '활동지원팀', title: '활동지원 시간 변경 상담',
+      answer: '네, 활동지원 시간 변경은 이번 달 20일까지 신청하면 다음 달부터 적용돼요. 본인 확인과 장애 정도 확인이 필요하고, 늘리는 시간은 시군구 예산에 따라 조정될 수 있어요. 신청서와 활동지원사 배치 확인서를 준비해 주세요.',
+      next: '담당자가 3일 안에 문자로 안내' },
+    { k: ['콜택시', '택시', '특별교통수단', '교통', '바우처', '이동'], dept: '이동지원팀', title: '장애인 콜택시·교통바우처 안내',
+      answer: '네, 콜택시는 진주시 특별교통수단으로 등록하시면 이용할 수 있어요. 복지카드와 주민등록증, 사진 한 장을 가지고 지회로 오시면 등록을 도와드려요. 교통비 지원은 연 20만 원 한도로 바우처 카드에 들어갑니다.',
+      next: '등록 신청서를 문자로 보내 드리고 5일 안에 처리' },
+    { k: ['급여', '월급', '보수', '근무 시간', '근로조건', '복지일자리'], dept: '일자리팀', title: '일자리 근로조건·급여 안내',
+      answer: '복지일자리 참여형은 주 14시간 이내에 월 57만 원 안팎이고, 일반형 시간제는 주 20시간에 월 107만 원 정도예요. 12월은 근무일이 적어 보수가 줄어요. 정확한 금액과 근무지는 배정된 사업장에 따라 달라요.',
+      next: '담당자가 배정 사업장과 정확한 보수를 안내' },
+    { k: ['보조기기', '휠체어', '보청기', '의사소통', '점자'], dept: '보조기기지원팀', title: '보조기기 지원 신청 안내',
+      answer: '네, 휠체어 같은 보조기기는 연 1회 지원 신청을 받아요. 장애인증명서와 견적서, 본인 명의 통장 사본이 필요합니다. 2차 접수는 12월 2일까지이고, 신청서 작성을 지회에서 도와드려요.',
+      next: '접수 뒤 심사 결과를 2주 안에 문자로 안내' },
+    { k: ['수화', '수어', '통역'], dept: '권익지원팀', title: '수화통역 지원 안내',
+      answer: '병원이나 관공서에 함께 가는 수화통역을 신청할 수 있어요. 3일 전에 신청해 주시면 통역사를 배정해 드립니다.',
+      next: '일정 확인 뒤 통역사 배정을 문자로 안내' }
+  ];
+  var CALL_KB_DEFAULT = { dept: '민원상담팀', title: '민원 상담 접수',
+    answer: '말씀하신 내용을 접수해 두었어요. 담당 부서에서 확인한 뒤 안내해 드릴게요. 더 궁금한 점이 있으면 이어서 말씀해 주세요.',
+    next: '담당자가 2일 안에 문자로 안내' };
+  function callAnswer(text) {
+    var t = String(text || '');
+    for (var i = 0; i < CALL_KB.length; i++) {
+      var e = CALL_KB[i];
+      for (var j = 0; j < e.k.length; j++) { if (t.indexOf(e.k[j]) > -1) { return e; } }
+    }
+    return CALL_KB_DEFAULT;
+  }
+  function mmss(s) {
+    var n = Math.max(0, s || 0);
+    var m = Math.floor(n / 60), r = n % 60;
+    return (m < 10 ? '0' : '') + m + ':' + (r < 10 ? '0' : '') + r;
+  }
+  function callNumber(n) {
+    var y = new Date().getFullYear();
+    var s = String(Math.max(1, n || 1));
+    while (s.length < 4) { s = '0' + s; }
+    return 'DAON-CALL-' + y + '-' + s;
+  }
+  function callByNo(no) {
+    for (var i = 0; i < (state.calls || []).length; i++) { if (state.calls[i].no === no) { return state.calls[i]; } }
+    return null;
+  }
+  function callSummaryCardHtml(sum, compact) {
+    if (!sum) { return ''; }
+    return '<div class="sumcard"' + (compact ? ' style="margin-top:10px"' : '') + '>' +
+      '<p class="sumno">' + esc(sum.no) + '</p>' +
+      '<h3>' + esc(sum.title) + '</h3>' +
+      '<ul>' + (sum.points || []).map(function (p) { return '<li><i>·</i>' + esc(p) + '</li>'; }).join('') + '</ul>' +
+      '<p class="dept">담당 부서 · ' + esc(sum.dept) +
+      (sum.next ? '<br><span style="font-weight:800;font-size:13px">' + esc(sum.next) + '</span>' : '') + '</p>' +
+      (compact ? '' : '<p class="micro" style="margin-top:8px">※ 실제로 접수된 민원이 아닌 시연용 카드입니다.</p>') +
+      '</div>';
+  }
+  var callState = { phase: 'idle', sec: 0, timer: null, muted: false, sound: true, lines: [], scn: '',
+    summary: null, ringStop: null, lastKb: null };
+  function makeCallSummary() {
+    var kb = callState.lastKb;
+    if (!kb) {
+      for (var i = callState.lines.length - 1; i >= 0; i--) {
+        if (callState.lines[i].who === 'me') { kb = callAnswer(callState.lines[i].text); break; }
+      }
+    }
+    if (!kb) { kb = CALL_KB_DEFAULT; }
+    var asks = callState.lines.filter(function (l) { return l.who === 'me'; }).map(function (l) { return l.text; });
+    var points = asks.slice(0, 3);
+    if (!points.length) {
+      var s = scnOf(callState.scn);
+      points.push(s ? s.q : '민원 상담 (' + mmss(callState.sec) + ')');
+    }
+    return { no: callNumber((state.calls || []).length + 1), at: nowStamp(), sec: callState.sec,
+      dept: kb.dept, title: kb.title, points: points, answer: kb.answer, next: kb.next };
+  }
+  var audioCtxRef = null;
+  function audioCtx() {
+    if (audioCtxRef) { return audioCtxRef; }
+    var C = window.AudioContext || window.webkitAudioContext;
+    if (!C) { return null; }
+    try { audioCtxRef = new C(); } catch (e) { audioCtxRef = null; }
+    return audioCtxRef;
+  }
+  function tone(ctx, freq, start, dur, vol) {
+    try {
+      var o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.value = freq;
+      g.gain.setValueAtTime(0, start);
+      g.gain.linearRampToValueAtTime(vol, start + 0.02);
+      g.gain.linearRampToValueAtTime(0, start + dur);
+      o.connect(g);
+      g.connect(ctx.destination);
+      o.start(start);
+      o.stop(start + dur + 0.05);
+    } catch (e) {}
+  }
+  /* 벨소리 — Web Audio로만 만든다(오디오 파일 없음). 소리가 안 되는 환경에서는 조용히 넘어간다. */
+  function ringStart() {
+    var ctx = audioCtx();
+    if (!ctx) { return null; }
+    try { if (ctx.state === 'suspended' && ctx.resume) { ctx.resume(); } } catch (e) {}
+    var beat = function () {
+      try {
+        var t = ctx.currentTime;
+        tone(ctx, 440, t, 0.4, 0.1);
+        tone(ctx, 480, t + 0.5, 0.4, 0.1);
+      } catch (e) {}
+    };
+    beat();
+    var id = setInterval(beat, 2000);
+    return function () { clearInterval(id); };
+  }
+  function stopRing() {
+    if (callState.ringStop) { try { callState.ringStop(); } catch (e) {} callState.ringStop = null; }
+  }
+
+  /* 한국어 음성 인식 — 없는 브라우저에서는 글자 입력으로 그대로 진행한다. */
+  function sttSupported() { return !!(window.SpeechRecognition || window.webkitSpeechRecognition); }
+  var listen = { rec: null, on: false };
+  function stopListen() {
+    if (listen.rec) { try { listen.rec.stop(); } catch (e) {} }
+    listen.on = false;
+    listen.rec = null;
+    ['#chatMic', '#callMic'].forEach(function (s) {
+      var b = $(s);
+      if (b) { b.setAttribute('aria-pressed', 'false'); }
+    });
+  }
+  function startListen(kind) {
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      toast('이 브라우저는 음성 인식 미지원 · 글자로 입력해 주세요');
+      announce('이 브라우저는 음성 인식을 지원하지 않습니다. 아래에 글자로 입력해 주세요.');
+      return false;
+    }
+    if (kind === 'call' && callState.phase !== 'connected') { toast('먼저 전화를 걸어 주세요'); return false; }
+    if (kind === 'call' && callState.muted) { toast('마이크가 꺼져 있어요 · 마이크를 먼저 켜 주세요'); return false; }
+    if (listen.on) { stopListen(); return false; }
+    var rec;
+    try { rec = new SR(); } catch (e) { toast('음성 인식을 시작하지 못했어요'); return false; }
+    rec.lang = 'ko-KR';
+    rec.interimResults = false;
+    rec.maxAlternatives = 1;
+    rec.continuous = false;
+    rec.onresult = function (ev) {
+      var txt = '';
+      try { txt = (ev.results && ev.results[0] && ev.results[0][0] ? ev.results[0][0].transcript : '') || ''; } catch (e) { txt = ''; }
+      stopListen();
+      if (!txt) { return; }
+      if (kind === 'call') { callSay(txt); } else { chatSendText(txt); }
+    };
+    rec.onerror = function () { stopListen(); toast('음성을 못 들었어요 · 다시 눌러 주세요'); };
+    rec.onend = function () { if (listen.rec === rec) { stopListen(); } };
+    listen.rec = rec;
+    listen.on = true;
+    var b = $(kind === 'call' ? '#callMic' : '#chatMic');
+    if (b) { b.setAttribute('aria-pressed', 'true'); }
+    try { rec.start(); } catch (e) { stopListen(); toast('음성 인식을 시작하지 못했어요'); return false; }
+    toast('듣고 있어요 · 말씀해 주세요');
+    return true;
+  }
+
+  function startCall(scnId) {
+    stopListen();
+    stopRing();
+    if (callState.timer) { clearInterval(callState.timer); callState.timer = null; }
+    callState.phase = 'ringing';
+    callState.sec = 0;
+    callState.lines = [];
+    callState.summary = null;
+    callState.lastKb = null;
+    callState.scn = scnId || '';
+    callState.muted = false;
+    callState.ringStop = ringStart();
+    renderCall();
+    announce('시연용 전화를 겁니다. 실제로는 걸리지 않습니다.');
+    setTimeout(function () {
+      if (callState.phase !== 'ringing') { return; }
+      connectCall();
+    }, 1500);
+  }
+  function connectCall() {
+    if (callState.phase === 'connected') { return; }
+    stopRing();
+    /* 연결음 — 짧게 두 번 울린다(Web Audio). */
+    if (callState.sound) {
+      var actx = audioCtx();
+      if (actx) {
+        try {
+          var t0 = actx.currentTime;
+          tone(actx, 660, t0, 0.1, 0.07);
+          tone(actx, 880, t0 + 0.14, 0.1, 0.07);
+        } catch (e) {}
+      }
+    }
+    callState.phase = 'connected';
+    callState.sec = 0;
+    if (callState.timer) { clearInterval(callState.timer); }
+    callState.timer = setInterval(function () {
+      if (callState.phase !== 'connected') { return; }
+      callState.sec += 1;
+      var el = $('#callTimer');
+      if (el) { el.textContent = mmss(callState.sec); }
+    }, 1000);
+    renderCall();
+    callLine('counselor', '안녕하세요, ' + ORG.name + ' 민원 상담입니다. 무엇을 도와드릴까요?', '접수');
+    var s = scnOf(callState.scn);
+    if (s) {
+      callState.lines.push({ who: 'me', text: s.q });
+      var kb = callAnswer(s.q);
+      callState.lastKb = kb;
+      callState.lines.push({ who: 'counselor', text: kb.answer, dept: kb.dept });
+      renderCall();
+      if (callState.sound) { speak(kb.answer); }
+    }
+    announce('통화가 연결되었습니다. 마이크나 아래 입력으로 말씀해 주세요.');
+  }
+  function callLine(who, text, dept) {
+    callState.lines.push({ who: who, text: text, dept: dept || '' });
+    renderCallLog();
+    if (who === 'counselor' && callState.sound) { speak(text); }
+  }
+  function callSay(text) {
+    var t = String(text || '').trim();
+    if (!t) { return; }
+    if (callState.phase !== 'connected') { toast('먼저 전화를 걸어 주세요'); return; }
+    callState.lines.push({ who: 'me', text: t });
+    renderCallLog();
+    var kb = callAnswer(t);
+    callState.lastKb = kb;
+    setTimeout(function () {
+      if (callState.phase !== 'connected') { return; }
+      callState.lines.push({ who: 'counselor', text: kb.answer, dept: kb.dept });
+      renderCall();
+      if (callState.sound) { speak(kb.answer); }
+    }, 450);
+  }
+  function endCall(silent) {
+    if (callState.phase === 'idle' || callState.phase === 'ended') { return; }
+    stopRing();
+    stopListen();
+    if (callState.timer) { clearInterval(callState.timer); callState.timer = null; }
+    callState.phase = 'ended';
+    try { window.speechSynthesis.cancel(); } catch (e) {}
+    var sum = makeCallSummary();
+    callState.summary = sum;
+    state.calls.push(sum);
+    if (state.calls.length > 20) { state.calls = state.calls.slice(-20); }
+    addCallAlert(sum);
+    renderCall();
+    renderChat();
+    scheduleSave();
+    if (!silent) {
+      chatPush('daon', { kind: 'call', text: '민원 전화 상담을 접수했어요. 접수번호는 ' + sum.no + '입니다.', data: { id: sum.no } });
+      toast('통화를 마쳤어요 · 민원 응대 요약 카드');
+      announce('통화를 마쳤습니다. 접수번호 ' + sum.no + ', 담당 부서는 ' + sum.dept + '입니다.');
+    }
+  }
+
+  function renderCallLog() {
+    var log = $('#callLog');
+    if (!log) { return; }
+    log.innerHTML = callState.lines.map(function (l) {
+      return '<div class="csline ' + (l.who === 'me' ? 'me' : '') + '">' +
+        '<span class="who">' + (l.who === 'me' ? '나' : '상담원') + '</span>' +
+        '<span class="txt">' + esc(l.text) + '</span></div>';
+    }).join('');
+  }
+  function renderCall() {
+    var card = $('#callCard'), sum = $('#callSummary'), scnBox = $('#callScn'), form = $('#callForm');
+    if (!card) { return; }
+    var ph = callState.phase;
+    card.className = 'callcard' + (ph === 'ringing' ? ' ringing' : ph === 'ended' ? ' ended' : '');
+    var num = '<p class="callwho">' + esc(ORG.short) + ' · 시연 민원 상담</p><p class="callnum">055-755-0008</p>';
+    if (ph === 'idle') {
+      card.innerHTML = num +
+        '<p class="callstate"><span class="dot" aria-hidden="true"></span>지금 전화를 걸 수 있어요</p>' +
+        '<div class="callwide"><button class="btn primary block" type="button" id="btnCallStart">📞 전화 걸기</button></div>' +
+        '<p class="callnote">※ 시연용입니다. 실제로 전화가 걸리지 않고 요금도 나가지 않아요.</p>';
+    } else if (ph === 'ringing') {
+      card.innerHTML = '<p class="callwho">연결 중</p><p class="callnum">055-755-0008</p>' +
+        '<p class="callstate"><span class="dot" aria-hidden="true"></span>벨이 울리고 있어요…</p>' +
+        '<div class="callctrl" style="grid-template-columns:1fr 1fr">' +
+        '<button class="cbtn answer" type="button" id="btnCallAnswer"><span class="ci">📞</span>받기</button>' +
+        '<button class="cbtn hang" type="button" id="btnCallHang"><span class="ci">📴</span>끊기</button></div>' +
+        '<p class="callnote">※ 시연용 벨소리입니다. 실제 발신이 아닙니다.</p>';
+    } else if (ph === 'connected') {      card.innerHTML = '<p class="callwho">통화 중 · 시연' + (callState.muted ? ' · 마이크 꺼짐' : '') + '</p>' +
+        '<p class="callnum">055-755-0008</p>' +
+        '<p class="timer" id="callTimer">' + mmss(callState.sec) + '</p>' +
+        '<div class="callctrl">' +
+        '<button class="cbtn" type="button" id="btnCallMute" aria-pressed="' + (callState.muted ? 'true' : 'false') + '"><span class="ci">🎙️</span>마이크</button>' +
+        '<button class="cbtn" type="button" id="btnCallSpeaker" aria-pressed="' + (callState.sound ? 'true' : 'false') + '"><span class="ci">🔊</span>소리</button>' +
+        '<button class="cbtn hang" type="button" id="btnCallHang"><span class="ci">📴</span>끊기</button></div>' +
+        '<p class="callnote">※ 시연용 통화입니다. 실제로 걸리지 않아요.</p>';
+    } else {
+      card.innerHTML = num +
+        '<p class="callstate"><span class="dot" aria-hidden="true"></span>통화 종료</p>' +
+        '<p class="timer" id="callTimer">' + mmss(callState.sec) + '</p>' +
+        '<div class="callwide"><button class="btn primary block" type="button" id="btnCallStart">📞 다시 걸기</button></div>' +
+        '<p class="callnote">※ 시연용 통화였습니다. 실제 발신·요금 없음.</p>';
+    }
+    if (scnBox) {
+      scnBox.innerHTML = ph === 'connected'
+        ? '<p class="micro" style="margin-bottom:6px;font-weight:900">이런 민원으로 물어볼 수 있어요</p><div class="chiprow">' +
+          CALL_SCN.map(function (s) {
+            return '<button class="chip" type="button" data-call-scn="' + esc(s.id) + '">' + esc(s.icon + ' ' + s.label) + '</button>';
+          }).join('') + '</div>'
+        : '';
+    }
+    if (form) { form.hidden = ph !== 'connected'; }
+    if (sum) {
+      sum.innerHTML = ph === 'ended' && callState.summary
+        ? '<h2 class="sec" style="margin:16px 0 8px">민원 응대 요약</h2>' + callSummaryCardHtml(callState.summary, false)
+        : '';
+    }
+    renderCallLog();
+  }
+
+  /* ============================================================
+     10-E. 🔔 맞춤 알림 화면
+     ============================================================ */
+  function renderPerm() {
+    var bar = $('#ntfPermBar'), t = $('#ntfPermTitle'), d = $('#ntfPermTxt'), btn = $('#btnNtfOn');
+    if (!bar || !t) { return; }
+    var p = ntfPermission();
+    var on = p === 'granted';
+    bar.classList.toggle('on', on);
+    if (p === 'unsupported') {
+      t.textContent = '이 브라우저는 알림 창 미지원';
+      d.textContent = '앱 안 알림 센터로 알려 드려요.';
+    } else if (on) {
+      t.textContent = '브라우저 알림 켜짐';
+      d.textContent = '새 소식이 오면 휴대폰 알림으로도 알려 드려요.';
+    } else if (p === 'denied') {
+      t.textContent = '브라우저에서 알림을 막았어요';
+      d.textContent = '주소창 옆 자물쇠 → 알림 → 허용으로 바꾸면 켜져요.';
+    } else {
+      t.textContent = '브라우저 알림 아직 꺼짐';
+      d.textContent = '허용을 누르면 이 브라우저에 알림을 보낼 수 있어요.';
+    }
+    if (btn) {
+      btn.textContent = on ? '켜짐' : (p === 'unsupported' ? '지원 안 함' : '알림 허용');
+      btn.disabled = on || p === 'unsupported';
+    }
+  }
+  function renderSubs() {
+    var box = $('#subList');
+    if (!box) { return; }
+    box.innerHTML = SUBS.map(function (s) {
+      return '<label class="swbox"><input type="checkbox" data-sub="' + esc(s.id) + '"' + (subOn(s.id) ? ' checked' : '') + '>' +
+        '<span class="sw-txt"><b>' + esc(s.icon + ' ' + s.label) + '</b><span class="micro">' + esc(s.desc) + '</span></span></label>';
+    }).join('');
+  }
+  function renderMember() {
+    var box = $('#memberBox');
+    if (!box) { return; }
+    var m = state.member || (state.member = { assoc: true, region: '진주시', interests: [] });
+    var regions = ['진주시', '창원시', '김해시', '양산시', '거제시', '사천시', '기타'];
+    box.innerHTML =
+      '<label class="swbox"><input type="checkbox" id="memAssoc"' + (m.assoc ? ' checked' : '') + '>' +
+      '<span class="sw-txt"><b>🏛️ ' + esc(ORG.name) + ' 회원</b><span class="micro">회원이면 협회 교육·행사와 물품 지원 소식을 먼저 골라 드려요.</span></span></label>' +
+      '<p class="micro" style="margin:12px 0 6px; font-weight:900">사는 지역</p>' +
+      '<div class="chiprow">' + regions.map(function (r) {
+        return '<button class="chip" type="button" data-mem-region="' + esc(r) + '" aria-pressed="' + ((m.region || '') === r ? 'true' : 'false') + '">' + esc(r) + '</button>';
+      }).join('') + '</div>' +
+      '<p class="micro" style="margin:12px 0 6px; font-weight:900">관심 분야 (맞춤 순서에 반영)</p>' +
+      '<div class="chiprow">' + SUBS.map(function (s) {
+        var on = (m.interests || []).indexOf(s.id) > -1;
+        return '<button class="chip" type="button" data-mem-int="' + esc(s.id) + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + esc(s.icon + ' ' + s.label) + '</button>';
+      }).join('') + '</div>';
+  }
+  function renderAlerts() {
+    var list = $('#alertList'), cnt = $('#ntfCount');
+    if (!list) { return; }
+    var alerts = state.alerts || [];
+    if (!alerts.length) {
+      list.innerHTML = '<p class="micro">아직 도착한 알림이 없어요. 위에서 받고 싶은 소식을 켜면 조건에 맞는 소식이 여기에 쌓여요.</p>';
+    } else {
+      list.innerHTML = alerts.map(function (a) {
+        return '<button class="alertrow ' + (a.read ? 'read' : 'unread') + '" type="button" data-alert-read="' + esc(a.id) + '">' +
+          '<span class="ai" aria-hidden="true">' + esc(a.icon || '🔔') + '</span>' +
+          '<span class="at"><b>' + esc(a.title) + '</b><span>' + esc(a.body) + '</span>' +
+          '<span class="ameta">' + (a.due ? '<em class="due">' + esc(a.due) + '</em>' : '') +
+          (a.why ? '<em>' + esc(a.why) + '</em>' : '') + '<span>' + esc(a.at || '') + '</span></span>' +
+          '</span><span class="unreaddot" aria-hidden="true"></span></button>';
+      }).join('');
+    }
+    var unread = unreadAlerts();
+    if (cnt) { cnt.textContent = unread ? '안 읽음 ' + unread : '모두 읽음'; }
+  }
+  function renderNotify() {
+    syncAlerts();
+    renderBrief();
+    renderPerm();
+    renderSubs();
+    renderMember();
+    renderAlerts();
+    renderModeBar();
+    scheduleSave();
+  }
+  function deliverTest() {
+    var added = syncAlerts();
+    var top = (state.alerts || []).filter(function (a) { return !a.read; })[0];
+    var title = top ? top.title : '다온 맞춤 알림';
+    var body = top ? top.body : '이렇게 알려 드려요. 구독한 소식만 골라 보내 드립니다.';
+    var sent = sendNtf(title, body);
+    renderNotify();
+    if (!ntfSupported()) { toast('알림 창 미지원 · 앱 안 알림 센터에 쌓였어요'); }
+    else if (ntfPermission() !== 'granted') { toast('알림 권한 필요 · [알림 허용]을 먼저 눌러 주세요'); }
+    else { toast(sent ? '🔔 알림을 보냈어요' : '알림을 보내지 못했어요'); }
+    announce(added ? '새 소식 ' + added + '건이 알림 센터에 들어왔습니다.' : '새 소식이 없습니다. 알림 센터를 확인해 주세요.');
+  }
+
+  function renderModeBar() {
+    var bar = $('#modeBar');
+    if (bar) {
+      $$('#modeBar [data-mode]').forEach(function (b) {
+        if (b.getAttribute('data-mode') === state.view) { b.setAttribute('aria-current', 'page'); }
+        else { b.removeAttribute('aria-current'); }
+      });
+    }
+    var dot = $('#ntfDot');
+    if (dot) {
+      var n = unreadAlerts();
+      dot.classList.toggle('on', n > 0);
+      dot.textContent = n > 9 ? '9+' : String(n);
+    }
+    var steps = $('.steps');
+    if (steps) { steps.hidden = MODE_VIEWS.indexOf(state.view) > -1; }
+  }
+
+  /* ============================================================
+     10-F. 이벤트 — 채팅 · 민원 전화 · 맞춤 알림
+     ============================================================ */
+  function bindExtraEvents() {
+    var bar = $('#modeBar');
+    if (bar) {
+      bar.addEventListener('click', function (e) {
+        var b = e.target && e.target.closest ? e.target.closest('[data-mode]') : null;
+        if (!b) { return; }
+        go(b.getAttribute('data-mode'));
+      });
+    }
+
+    /* 채팅 */
+    var chatForm = $('#chatForm');
+    if (chatForm) {
+      chatForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var inp = $('#chatInput');
+        var v = inp ? inp.value : '';
+        if (inp) { inp.value = ''; }
+        chatSendText(v);
+      });
+    }
+    var chatMic = $('#chatMic');
+    if (chatMic) { chatMic.addEventListener('click', function () { startListen('chat'); }); }
+    var chatLog = $('#chatLog');
+    if (chatLog) {
+      chatLog.addEventListener('click', function (e) {
+        var t = e.target;
+        if (!t || !t.closest) { return; }
+        var chip = t.closest('[data-chat-chip]');
+        if (chip) { chatSendText(chip.getAttribute('data-chat-chip')); return; }
+        var act = t.closest('[data-chat-act]');
+        if (act) { chatAct(act.getAttribute('data-chat-act'), act); return; }
+        var pick = t.closest('[data-chat-pick]');
+        if (pick) { chatPick(pick.getAttribute('data-chat-pick')); return; }
+        var op = t.closest('[data-alert-open]');
+        if (op) { openAlert(op.getAttribute('data-alert-open')); return; }
+      });
+    }
+    var chatBrief = $('#chatBrief');
+    if (chatBrief) {
+      chatBrief.addEventListener('click', function (e) {
+        var t = e.target;
+        if (!t || !t.closest) { return; }
+        var act = t.closest('[data-chat-act]');
+        if (act) { chatAct(act.getAttribute('data-chat-act'), act); return; }
+        var op = t.closest('[data-alert-open]');
+        if (op) { openAlert(op.getAttribute('data-alert-open')); }
+      });
+    }
+    var chatClear = $('#btnChatClear');
+    if (chatClear) {
+      chatClear.addEventListener('click', function () {
+        state.chat = [];
+        ensureChat();
+        renderChat();
+        scheduleSave();
+        toast('대화를 지웠습니다');
+      });
+    }
+    var cf = $('#chatCardFile');
+    if (cf) {
+      cf.addEventListener('change', function () {
+        var f = cf.files && cf.files[0];
+        handleCardFile(f);
+        cf.value = '';
+      });
+    }
+    var cif = $('#chatIdFile');
+    if (cif) {
+      cif.addEventListener('change', function () {
+        var f = cif.files && cif.files[0];
+        handleIdFile(f);
+        cif.value = '';
+      });
+    }
+
+    /* 민원 전화 */
+    var callCard = $('#callCard');
+    if (callCard) {
+      callCard.addEventListener('click', function (e) {
+        var t = e.target;
+        if (!t || !t.closest) { return; }
+        if (t.closest('#btnCallStart')) { startCall(''); return; }
+        if (t.closest('#btnCallAnswer')) { connectCall(); return; }
+        if (t.closest('#btnCallHang')) { endCall(false); return; }
+        if (t.closest('#btnCallMute')) {
+          callState.muted = !callState.muted;
+          if (callState.muted) { stopListen(); }
+          renderCall();
+          toast(callState.muted ? '마이크 꺼짐' : '마이크 켜짐');
+          return;
+        }
+        if (t.closest('#btnCallSpeaker')) {
+          callState.sound = !callState.sound;
+          if (!callState.sound) { try { window.speechSynthesis.cancel(); } catch (err) {} }
+          renderCall();
+          toast(callState.sound ? '상담원 소리 켬' : '상담원 소리 끔');
+        }
+      });
+    }
+    var scnBox = $('#callScn');
+    if (scnBox) {
+      scnBox.addEventListener('click', function (e) {
+        var b = e.target && e.target.closest ? e.target.closest('[data-call-scn]') : null;
+        if (!b) { return; }
+        var s = scnOf(b.getAttribute('data-call-scn'));
+        if (s) { callSay(s.q); }
+      });
+    }
+    var callForm = $('#callForm');
+    if (callForm) {
+      callForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var inp = $('#callInput');
+        var v = inp ? inp.value : '';
+        if (inp) { inp.value = ''; }
+        callSay(v);
+      });
+    }
+    var callMic = $('#callMic');
+    if (callMic) { callMic.addEventListener('click', function () { startListen('call'); }); }
+
+    /* 맞춤 알림 */
+    var permBtn = $('#btnNtfOn');
+    if (permBtn) { permBtn.addEventListener('click', requestNtf); }
+    var ping = $('#btnNtfPing');
+    if (ping) { ping.addEventListener('click', deliverTest); }
+    var subList = $('#subList');
+    if (subList) {
+      subList.addEventListener('change', function (e) {
+        var t = e.target;
+        if (!t || !t.getAttribute) { return; }
+        var id = t.getAttribute('data-sub');
+        if (!id) { return; }
+        if (!state.subs) { state.subs = {}; }
+        state.subs[id] = !!t.checked;
+        var added = syncAlerts();
+        renderNotify();
+        toast((t.checked ? '구독 켬 · ' : '구독 끔 · ') + subMeta(id).label + (added ? ' · 새 소식 ' + added + '건' : ''));
+      });
+    }
+    var memBox = $('#memberBox');
+    if (memBox) {
+      memBox.addEventListener('change', function (e) {
+        if (e.target && e.target.id === 'memAssoc') {
+          if (!state.member) { state.member = { assoc: false, region: '', interests: [] }; }
+          state.member.assoc = !!e.target.checked;
+          syncAlerts();
+          renderNotify();
+          toast(state.member.assoc ? '협회원 맞춤으로 설정' : '협회원 아님으로 설정');
+        }
+      });
+      memBox.addEventListener('click', function (e) {
+        var t = e.target;
+        if (!t || !t.closest) { return; }
+        var reg = t.closest('[data-mem-region]');
+        if (reg) {
+          if (!state.member) { state.member = { assoc: false, region: '', interests: [] }; }
+          state.member.region = reg.getAttribute('data-mem-region');
+          syncAlerts();
+          renderNotify();
+          toast('지역 · ' + state.member.region);
+          return;
+        }
+        var int = t.closest('[data-mem-int]');
+        if (int) {
+          if (!state.member) { state.member = { assoc: false, region: '', interests: [] }; }
+          var id = int.getAttribute('data-mem-int');
+          var arr = state.member.interests || (state.member.interests = []);
+          var i = arr.indexOf(id);
+          if (i > -1) { arr.splice(i, 1); } else { arr.push(id); }
+          renderNotify();
+        }
+      });
+    }
+    var alertList = $('#alertList');
+    if (alertList) {
+      alertList.addEventListener('click', function (e) {
+        var b = e.target && e.target.closest ? e.target.closest('[data-alert-read]') : null;
+        if (b) { openAlert(b.getAttribute('data-alert-read')); }
+      });
+    }
+    var briefCard = $('#briefCard');
+    if (briefCard) {
+      briefCard.addEventListener('click', function (e) {
+        var t = e.target;
+        if (!t || !t.closest) { return; }
+        var act = t.closest('[data-chat-act]');
+        if (act) { chatAct(act.getAttribute('data-chat-act'), act); return; }
+        var op = t.closest('[data-alert-open]');
+        if (op) { openAlert(op.getAttribute('data-alert-open')); }
+      });
+    }
+    var allRead = $('#btnAllRead');
+    if (allRead) {
+      allRead.addEventListener('click', function () {
+        (state.alerts || []).forEach(function (a) { a.read = true; });
+        renderAlerts();
+        renderModeBar();
+        scheduleSave();
+        toast('알림을 모두 읽음으로 했어요');
+      });
+    }
+  }
+
+  /* ============================================================
      11. 읽어주기 대본
      ============================================================ */
   function screenSummaryText() {
@@ -7377,6 +8796,24 @@ body.easy .twbox p{font-size:16px}
     if (v === 'done') {
       return '신청서를 냈어요. 접수 번호는 ' + (state.receipt ? state.receipt.no : '') + '입니다. 접수처는 ' + ORG.name + '이고, 전화는 ' + ORG.tel + '이에요. 실제로 기관에 보내진 것은 아닌 시연용 접수입니다.';
     }
+    if (v === 'chat') {
+      var p = profileOf();
+      var items = personalBriefing(p, 2);
+      return '다온 채팅 화면이에요. 아래에 글로 적거나 마이크를 눌러 말해 주세요. 맞춤 브리핑으로 ' +
+        (items.length ? items[0].title + ' 등 소식 ' + items.length + '건을 먼저 보여 드리고 있어요. ' : '아직 보여 드릴 소식은 없어요. ') +
+        (items.length ? '카드를 누르면 내용을 자세히 보실 수 있어요.' : '복지카드 올리기나 일자리 알려줘 라고 말해 보세요.');
+    }
+    if (v === 'call') {
+      if (callState.phase === 'connected') {
+        return '민원 전화가 연결되어 있어요. 통화 시간은 ' + mmss(callState.sec) + '입니다. 하고 싶은 말을 적거나 마이크를 눌러 말해 주세요. 아래 예시 민원을 눌러도 돼요. 끊기를 누르면 상담 요약과 접수 번호를 만들어 드립니다.';
+      }
+      if (callState.phase === 'ringing') { return '민원 전화를 거는 중입니다. 시연용이라 실제로는 걸리지 않아요.'; }
+      return '민원 전화 화면이에요. 전화 걸기를 누르면 시연용 통화가 시작됩니다. 실제로 전화가 걸리지 않고 요금도 나가지 않아요. 마이크가 없으면 아래 글로 말해 주세요.';
+    }
+    if (v === 'notify') {
+      var un = unreadAlerts();
+      return '맞춤 알림 화면이에요. 받고 싶은 소식을 켜고 끌 수 있고, 협회 회원 여부와 사는 지역을 정하면 조건에 맞는 소식만 골라 드려요. 지금 안 읽은 알림은 ' + un + '건입니다. 브라우저 알림을 허용하면 휴대폰 알림으로도 받으실 수 있어요.';
+    }
     return '다온입니다.';
   }
   function speakScreen() {
@@ -7393,11 +8830,14 @@ body.easy .twbox p{font-size:16px}
      ============================================================ */
   function snapshot() {
     return {
-      v: 4, view: state.view, card: state.card, type: state.type, severity: state.severity,
+      v: 5, view: state.view, card: state.card, type: state.type, severity: state.severity,
       workType: state.workType, envs: Array.from(state.envs), selectedProgram: state.selectedProgram,
       selectedWorkplace: state.selectedWorkplace, workplaceRanks: rankList().slice(), checked: state.checked, fetched: state.fetched,
       form: state.form, elig: state.elig, signature: state.signature,
-      receipt: state.receipt, easy: state.easy
+      receipt: state.receipt, easy: state.easy,
+      /* 2026-11-20 — 채팅 기록·민원 접수·알림 센터·구독·협회원 설정 (브라우저 밖으로 나가지 않는다) */
+      chat: (state.chat || []).slice(-80), calls: (state.calls || []).slice(-20),
+      alerts: (state.alerts || []).slice(0, 30), subs: state.subs, member: state.member
     };
   }
   function saveNow() {
@@ -7414,7 +8854,7 @@ body.easy .twbox p{font-size:16px}
   function restoreSaved() {
     var raw = null;
     try { raw = JSON.parse(lsGet(STORE_KEY) || 'null'); } catch (e) { raw = null; }
-    if (!raw || typeof raw !== 'object' || raw.v !== 4) { return false; }
+    if (!raw || typeof raw !== 'object' || (raw.v !== 4 && raw.v !== 5)) { return false; }
     if (raw.type) { state.type = normalizeType(raw.type); }
     if (raw.severity) { state.severity = raw.severity; }
     if (raw.workType) { state.workType = raw.workType; }
@@ -7449,14 +8889,33 @@ body.easy .twbox p{font-size:16px}
     state.receipt = raw.receipt || null;
     state.easy = !!raw.easy;
     document.body.classList.toggle('easy', state.easy);
+    /* 채팅·전화·알림 (v5) — v4로 저장된 예전 기록도 그대로 복원한다. */
+    state.chat = Array.isArray(raw.chat) ? raw.chat.filter(function (m) {
+      return m && typeof m === 'object' && (m.who === 'me' || m.who === 'daon');
+    }).slice(-80) : [];
+    state.calls = Array.isArray(raw.calls) ? raw.calls.filter(function (c) { return c && c.no; }).slice(-20) : [];
+    state.alerts = Array.isArray(raw.alerts) ? raw.alerts.filter(function (a) { return a && a.id && a.title; }).slice(0, 30) : [];
+    state.subs = { job: true, care: true, voucher: true, device: false, assoc: true };
+    if (raw.subs && typeof raw.subs === 'object') {
+      Object.keys(state.subs).forEach(function (k) {
+        if (typeof raw.subs[k] === 'boolean') { state.subs[k] = raw.subs[k]; }
+      });
+    }
+    state.member = { assoc: true, region: '진주시', interests: [] };
+    if (raw.member && typeof raw.member === 'object') {
+      state.member.assoc = raw.member.assoc !== false;
+      state.member.region = typeof raw.member.region === 'string' ? raw.member.region : '진주시';
+      state.member.interests = Array.isArray(raw.member.interests) ? raw.member.interests.filter(function (k) { return subMeta(k).id === k; }) : [];
+    }
     if (state.selectedProgram && !PROGRAMS.some(function (p) { return p.id === state.selectedProgram; })) {
       state.selectedProgram = '';
       setRanks(['', '', '']);
       state.checked = {};
       state.fetched = {};
     }
-    state.view = VIEW_ORDER.indexOf(raw.view) >= 0 ? raw.view : (state.receipt ? 'done' : state.card ? 'card' : 'card');
-    if (!state.type) { state.view = 'card'; }
+    state.view = (VIEW_ORDER.indexOf(raw.view) >= 0 || MODE_VIEWS.indexOf(raw.view) >= 0) ? raw.view
+      : (state.receipt ? 'done' : state.card ? 'card' : 'chat');
+    if (!state.type && ['jobs', 'docs', 'submit', 'done'].indexOf(state.view) > -1) { state.view = 'card'; }
     if ((state.view === 'docs' || state.view === 'submit') && !state.selectedProgram) { state.view = state.card ? 'jobs' : 'card'; }
     if (state.view === 'done' && !state.receipt) { state.view = state.card ? 'jobs' : 'card'; }
     var gotN = 0;
@@ -7469,7 +8928,7 @@ body.easy .twbox p{font-size:16px}
 
   function resetAll(skipAsk) {
     function doReset() {
-      state.view = 'card';
+      state.view = 'chat';
       state.card = null;
       state.type = '';
       state.severity = '';
@@ -7488,6 +8947,12 @@ body.easy .twbox p{font-size:16px}
       state.photoDocs = [];
       state.receipt = null;
       state.easy = false;
+      state.chat = [];
+      state.calls = [];
+      state.alerts = [];
+      state.subs = { job: true, care: true, voucher: true, device: false, assoc: true };
+      state.member = { assoc: true, region: '진주시', interests: [] };
+      if (callState.phase === 'ringing' || callState.phase === 'connected') { endCall(true); }
       document.body.classList.remove('easy');
       clearSaved();
       var hint = $('#cardHint');
@@ -8227,6 +9692,9 @@ body.easy .twbox p{font-size:16px}
       if (overlayOpen('login')) { closeLogin(); return; }
       if (overlayOpen('sheet')) { closeSheet(); return; }
     });
+
+    /* 채팅 · 민원 전화 · 맞춤 알림 화면의 이벤트 */
+    bindExtraEvents();
   }
 
   /* ============================================================
@@ -8238,6 +9706,8 @@ body.easy .twbox p{font-size:16px}
     applyA11y();
     bindEvents();
     var restored = restoreSaved();
+    ensureChat();
+    syncAlerts();
     render();
     updateCfgBar();
     if (codef.url) { testCfg(false); }
@@ -8248,6 +9718,13 @@ body.easy .twbox p{font-size:16px}
 
   /* 테스트용 — 이 파일 안의 판독 파서를 그대로 부른다(화면·저장에는 쓰지 않는다). */
   window.__DAON_OCR__ = { parse: parseOcrText, merge: mergeOcrPasses, date: ocrDateOf, reg: ocrRegOf };
+  /* 테스트용 — 채팅 의도 해석 · 알림 매칭 · 민원 답변을 그대로 부를 수 있게 둔다. */
+  window.__DAON_EXTRA__ = {
+    chatIntent: chatIntent, chatReply: chatReply, infoFor: infoFor,
+    alertMatch: alertMatch, matchingAlerts: matchingAlerts, personalBriefing: personalBriefing, briefReason: briefReason,
+    callAnswer: callAnswer, callNumber: callNumber, profileOf: profileOf,
+    state: function () { return { chat: state.chat, calls: state.calls, alerts: state.alerts, subs: state.subs, member: state.member, view: state.view, type: state.type, severity: state.severity, selectedProgram: state.selectedProgram }; }
+  };
 
   init();
 })();

@@ -16,6 +16,17 @@
 - 배포: GitHub Pages — https://mingun0729-jpg.github.io/daon-counselor/
 - 출발점: 진주시지체장애인협회 일자리 업무 현장 경험(작성자 본인 근로 경험).
 
+## 1-C. 다온 채팅 · 민원 전화 · 맞춤 알림 (2026-11-20)
+
+- **첫 화면은 `#view-chat`(💬 다온 채팅)** 이다. 위쪽 `#modeBar` 탭 3개(💬 다온 채팅 · 📞 민원 전화 · 🔔 맞춤 알림)로 오가고, **기존 4단계 신청 화면은 그대로**다(채팅의 칩이 `go('card'|'jobs'|'docs'|'submit')`로 이어 준다). 채팅·전화·알림 화면에서는 `.steps`(진행 단계)를 숨긴다(`renderModeBar`).
+- 채팅: `state.chat`에 `{who:'me'|'daon', kind:'text'|'jobs'|'brief'|'call', text, chips, data}`로 쌓고 `renderChat()`이 말풍선으로 그린다. `chatIntent(text)`가 말의 뜻을 13가지로 나누고 `chatReply()`가 답·카드·칩을 만든다. 카드 올리기는 `#chatCardFile`→`handleCardFile()`(기존 로컬 OCR 그대로), 일자리 카드는 `[data-chat-pick]`→`selectProgram()`, 서류·신청서·전화·알림은 `go()`로 이동한다.
+- 민원 전화: `startCall()`(Web Audio 벨소리) → 1.5초 뒤 `connectCall()`(연결음·타이머·상담원 인사) → 예시 민원 칩이나 `callSay()`(글·음성) → `endCall()`이 `makeCallSummary()`로 **`DAON-CALL-YYYY-NNNN` 접수번호·담당 부서·요약**을 만들어 채팅·알림 센터·`state.calls`에 남긴다. **실제 전화는 걸지 않는다** — "시연용입니다. 실제로 걸리지 않아요" 고지를 지우지 않는다. 표시 번호는 `ORG.tel`(공개된 지회 대표번호)이다.
+- 음성: `startListen(kind)`이 `SpeechRecognition`(ko-KR)을 쓰고, 없는 브라우저에서는 토스트로 안내하고 **글자 입력·예시 버튼으로 그대로 시연**한다. 상담원 말은 `speak()`(speechSynthesis)로 읽고 '소리' 버튼으로 끈다. 오디오 파일·유료 API는 쓰지 않는다.
+- 알림: `SUBS`(5종) 구독 스위치 → `state.subs`, `ALERT_FEED`(시연용 소식 11건) 중 `alertMatch()`가 조건에 맞는 것만 골라 `state.alerts`에 쌓는다. `Notification` API 권한·테스트 버튼, 앱 안 알림 센터(안읽음 배지·모두 읽음), 탭 배지(`#ntfDot`).
+- 협회원 맞춤: `state.member`(회원 여부·지역·관심 분야) + 카드의 장애 유형·정도 + 주소/`ORG`로 `profileOf()`를 만들고 `personalBriefing()`이 지원사업·긴급 공지·교육/물품 지원을 골라 **상단 브리핑 카드**(채팅 1건, 알림 화면 3건)와 알림으로 보여 준다. `briefReason()`이 왜 골랐는지 표시한다.
+- 저장: 스냅샷 `daon.state.v1`이 **v5**로 올라가 `chat`·`calls`·`alerts`·`subs`·`member`를 함께 저장한다(v4 기록도 읽는다). 사진·실제 조회값은 여전히 저장하지 않는다.
+- 테스트: `frontend.test.mjs` [S1]~[S12]가 의도 해석·채팅 카드·전화 연결/요약·구독 필터·협회원 매칭·Notification 분기·저장 복원을 확인한다(**270건**).
+
 ## 1-B. 실제 기관 조회(CODEF) 연동 구조
 
 ```
@@ -51,7 +62,11 @@ proxy/        # 실제 기관 조회용 백엔드 프록시 (Pages와 별개로 
 | `<style>` | 디자인 토큰(`:root`) · 앱 틀(헤더·편하게 보기·단계 표시·하단 큰 버튼) · 화면별 카드 · 접근성 3모드(큰 글씨·고대비·쉬운 말) · 시트/모달 · 인쇄 |
 | `.topbar` | 로고(눈 달린 ㅍ) · `#btnBack` · `#btnStartOver`(처음부터) + 편하게 보기 줄(`#btnBigText`, `#btnHighContrast`, `#btnVoice`, `#a11yRate`의 `#btnRateSlow`/`#btnRateNormal`, `#btnStopSpeak`) |
 | `.steps` | 4단계 표시 `button.stp[data-goto="card|jobs|docs|submit"]` — 지나온 단계는 `✓`, 지금 단계는 `aria-current="step"` |
-| `main` 안 5개 화면 | `#view-card`(카드 인식) · `#view-jobs` · `#view-docs` · `#view-submit` · `#view-done`. 한 번에 하나만 보이고 나머지는 `hidden` |
+| `main` 안 화면 | `#view-chat`(다온 채팅, **첫 화면**) · `#view-call`(민원 전화) · `#view-notify`(맞춤 알림) + 기존 `#view-card` · `#view-jobs` · `#view-docs` · `#view-submit` · `#view-done`. 한 번에 하나만 보이고 나머지는 `hidden` |
+| `#view-chat` | `#chatBrief`(맞춤 브리핑) · `#chatLog`(말풍선) · `#chatForm`(`#chatMic` · `#chatInput` · `#chatSend`) · `#btnChatClear` · `#chatCardFile`/`#chatIdFile` |
+| `#view-call` | `#callCard`(상태·번호·타이머·`#btnCallStart`/`#btnCallAnswer`/`#btnCallMute`/`#btnCallSpeaker`/`#btnCallHang`) · `#callLog`(자막) · `#callScn`(예시 민원) · `#callForm`(`#callMic`·`#callInput`) · `#callSummary` |
+| `#view-notify` | `#briefCard` · `#ntfPermBar`/`#btnNtfOn`/`#btnNtfPing` · `#subList` · `#memberBox` · `#alertList`/`#ntfCount`/`#btnAllRead` |
+| `#modeBar` | 💬 다온 채팅 · 📞 민원 전화 · 🔔 맞춤 알림 탭(`[data-mode]`) + 안읽음 배지 `#ntfDot` |
 | `#view-card` | `#cardHome`(시작: `#btnScan` 복지카드, `#btnIdCard` 주민등록증, `#btnSamples`, `#btnManual`, 파일 입력 `#cardFile`·`#idFile`) / `#cardDone`(인식 결과 `#cardVisual`, 배려 안내 `#cardHint`, `#btnCardEdit`, `#btnCardAgain`) |
 | `#view-jobs` | `#condWho`·`#btnCond`(조건 바꾸기), `#jobList`(라디오 카드), `#btnJobMore`, `#offBox`(지금은 어려운 일자리), `#workSection`(`#rankBox`/`#rankList` 희망 근무지 1·2·3순위 요약, `#workList` 순위 버튼이 붙은 근무지 카드, `#btnWorkMore`, `#assignRule` 배정 기준), `#supportBox`(근로지원 제도) |
 | `#view-docs` | 진행 카드(`#docsTitle`·`#docProgTxt`·`#docBar`), **실시간 진행 로그** `#agentLog`/`#alList`, **장애인증명서 포함 선택** `#disScopeBox`/`#disScopeToggle`/`#disScopeState`/`#disScopeHint`, 기관 카드 `#agencyList`, **신분증 사진 카드** `#photoBox`(`#photoState`·`#photoHint`·`#btnIdPhoto`), 파일 카드 `#fileList`, `#selfBox`(직접 준비) |
@@ -91,6 +106,7 @@ proxy/        # 실제 기관 조회용 백엔드 프록시 (Pages와 별개로 
 | 7-H. 자격 판정 | `ELIG_DEF`, `eligDefault`, `eligibility`(지침 p.15·p.20·p.23·공고 4), `eligBadge`, `renderElig`, `renderEligResult`, `setElig` |
 | 7-I. 자필 서명 | `sigPad`, `sigInit`/`sigRedraw`/`sigDown`/`sigMove`/`sigUp`, `sigStatus`, `sigClear`, `sigMode` |
 | 7-J. 서식 탭·인쇄 | `FORM_TABS`, `renderFormTabs`, `selectFormTab`, `refreshFormPreview`, `printAllForms`/`printOneForm`/`saveOneForm`/`openFormInTab`, `buildSummaryJson` |
+| 10-B~10-F. 채팅·민원 전화·알림 | `MODE_VIEWS`, `SUBS`/`subMeta`/`subOn`, `ALERT_FEED`/`feedById`, `regionOf`/`profileOf`/`profileLabel`, `alertMatch`/`alertScore`/`matchingAlerts`/`briefReason`/`personalBriefing`, `syncAlerts`/`addCallAlert`/`unreadAlerts`, `ntfSupported`/`ntfPermission`/`requestNtf`/`sendNtf`, `CHAT_CHIPS_MAIN`, `INFO_TOPICS`/`infoFor`, `chatIntent`/`chatReply`/`chatItemHtml`/`chatJobsHtml`/`chatBriefListHtml`, `chatPush`/`renderChat`/`chatScrollEnd`/`chatSendText`/`chatAct`/`chatPick`, `briefHtml`/`renderBrief`, `openAlert`, `CALL_SCN`/`scnOf`, `CALL_KB`/`callAnswer`, `mmss`/`callNumber`/`callByNo`/`callSummaryCardHtml`, `callState`, `makeCallSummary`, `audioCtx`/`tone`/`ringStart`/`stopRing`, `sttSupported`/`startListen`/`stopListen`, `startCall`/`connectCall`/`callLine`/`callSay`/`endCall`, `renderCallLog`/`renderCall`, `renderPerm`/`renderSubs`/`renderMember`/`renderAlerts`/`renderNotify`/`deliverTest`, `renderModeBar`, `bindExtraEvents` |
 
 ## 3. 데이터·수치 출처
 
@@ -121,7 +137,7 @@ proxy/        # 실제 기관 조회용 백엔드 프록시 (Pages와 별개로 
 12. **XSS 습관** — 사용자 입력은 반드시 `esc()`로 이스케이프한 뒤 `innerHTML`에 넣는다.
 13. **서류 파일은 시연용 가상 문서** — 파일 카드·미리보기·저장(`Blob`+`URL.createObjectURL`)·ZIP(`buildZip`)은 브라우저 안에서만 만들어지며 외부 전송이 없다. 문서 본문에는 항상 '시연용 가상 문서' 워터마크와 고지, 가상 값(가명)만 넣는다. ZIP은 무압축(store) 방식이며 파일명은 UTF-8 플래그(0x0800)로 기록한다.
 14. **큰 글씨·음성 안내 기준** — 큰 글씨 모드는 본문 20px 이상·버튼 64px 이상, 375px에서 가로 스크롤이 없어야 한다. 음성 대본은 민원인 응대용 구어체로 쓰고 화면 이름을 함께 말한다. 음성은 한국어 우선순위(SunHi→Yuna→Sora→Heami→Google 한국의)로 고르며, 속도는 **기본 `rate 0.82`(천천히)**, `0.93`(보통)으로 바꿀 수 있다. `pitch 1.04` 유지. 속도 상수는 `TTS_RATE_SLOW`/`TTS_RATE_NORMAL` 한 곳에서만 관리한다.
-15. **localStorage 키 고정** — 접근성 설정 `daon.a11y.v1`(`big`·`contrast`·`voice`·`rate`), 자동 임시저장 `daon.state.v1`(내부 스키마 `v: 4`), 프록시 설정 `daon.codef.v1`(`url`·`token` — 저장값이 없으면 기본 프록시, 빈 `url`은 직접 해제). 저장값은 브라우저 밖으로 나가지 않으며 `resetAll`에서 앞의 둘을 비운다. 실제 조회값(`state.real`)과 올린 사진(`state.photos`)은 저장하지 않는다(메모리에만). 스키마를 바꾸면 `v`를 올리고 `restoreSaved`에서 검증한다.
+15. **localStorage 키 고정** — 접근성 설정 `daon.a11y.v1`(`big`·`contrast`·`voice`·`rate`), 자동 임시저장 `daon.state.v1`(내부 스키마 `v: 5` — 채팅·민원 접수·알림·구독·협회원 설정 포함, `v: 4`도 읽음), 프록시 설정 `daon.codef.v1`(`url`·`token` — 저장값이 없으면 기본 프록시, 빈 `url`은 직접 해제). 저장값은 브라우저 밖으로 나가지 않으며 `resetAll`에서 앞의 둘을 비운다. 실제 조회값(`state.real`)과 올린 사진(`state.photos`)은 저장하지 않는다(메모리에만). 스키마를 바꾸면 `v`를 올리고 `restoreSaved`에서 검증한다.
 16. **음성 안내** — 외부 TTS 라이브러리를 넣지 않고 `window.speechSynthesis`만 사용한다. 한국어 음성이 없는 기기에서는 음성 안내를 켜지 않고 `NO_KO_VOICE_MSG`로 안내한다.
 16-B. **낭독은 한 곳에서** — 화면 낭독 안내는 `#a11yStatus` 라이브 리전 한 곳만 쓴다. `toast()`는 보이는 안내만 담당하고(80ms 뒤 announce로 넘김), `announce()`가 바로 오면 같은 말을 두 번 읽지 않는다. `#toast`에 `role=status`를 다시 붙이지 않는다.
 16-C. **하단 고정 버튼과 시트 여백** — 시트 안 `.stickybtns`는 화면 아래에 붙어 마지막 내용을 가릴 수 있다. 내용을 바꾼 뒤 `fitSheetFoot(오버레이)`를 불러, 내용이 넘칠 때만 시트에 아래 여백(`.hasfoot`)을 준다. 새 시트를 만들면 같은 처리를 넣는다.
