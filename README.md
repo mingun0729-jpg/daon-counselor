@@ -58,7 +58,7 @@ open index.html                                  # 그냥 열기
 python3 -m http.server 8000                      # 또는 로컬 서버 (권장)
 
 pip install playwright && playwright install chromium
-python3 tests/verify_hackathon.py                # 38개 항목 자동 검증 (375px·1280px)
+python3 tests/verify_hackathon.py                # 41개 항목 자동 검증 (375px·1280px)
 ```
 
 ## 5. 파일

@@ -160,6 +160,31 @@ def run():
         pg.wait_for_timeout(300)
         shot(pg, "09-call-summary-375.png")
 
+        # 통화 중에 다른 탭으로 옮겨도 멈춘 화면이 남지 않는다 (정리 카드가 생긴다)
+        pg.click('#callSummary [data-call-new]')
+        pg.wait_for_timeout(400)
+        pg.click('#callScn [data-call="mood"]')
+        pg.wait_for_timeout(2600)
+        pg.click('#modeBar [data-mode="chat"]')
+        pg.wait_for_timeout(500)
+        pg.click('#modeBar [data-mode="call"]')
+        pg.wait_for_timeout(500)
+        check("통화 중 화면을 옮겨도 정리 카드가 남는다", pg.locator("#callSummary .sumcard").count() == 1)
+        check("멈춘 '통화 중' 화면이 남지 않는다", "통화 중" not in pg.inner_text("#callCard"))
+
+        # 예시 인물 바꾸기
+        pg.click('#modeBar [data-mode="meds"]')
+        pg.wait_for_timeout(400)
+        pg.click('#medPerson [data-act="person"]')
+        pg.wait_for_timeout(400)
+        pg.click('#sheetBody [data-person="youngsu"]')
+        pg.wait_for_timeout(500)
+        check("예시 인물을 바꾸면 그 사람 약으로 바뀐다", "김영수" in pg.inner_text("#medPerson"))
+        pg.click('#medPerson [data-act="person"]')
+        pg.wait_for_timeout(300)
+        pg.click('#sheetBody [data-person="soonja"]')
+        pg.wait_for_timeout(400)
+
         # 맞춤 알림
         pg.click('#modeBar [data-mode="notify"]')
         pg.wait_for_timeout(500)

@@ -91,7 +91,7 @@ pip install playwright && playwright install chromium
 python3 tests/verify_hackathon.py                       # 로컬 파일로 검증
 python3 tests/verify_hackathon.py http://localhost:8000/ out/   # 서버·출력 폴더 지정
 ```
-이 스크립트가 확인하는 것 (38개 항목):
+이 스크립트가 확인하는 것 (41개 항목):
 - 콘솔 에러 0건, 375px·1280px **가로 넘침 없음**
 - 첫 실행 안전 안내 → 닫힘, 안전 고지 줄 표시
 - 채팅 인사·브리핑·빠른 질문, "오늘 먹을 약" 답변 + 약 목록 카드

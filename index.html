@@ -1072,7 +1072,6 @@ body.easy .qchip{font-size:16px}
   *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important}
   .ocrline{display:none}
 }
-
 /* ============================================================
    해커톤 헬스케어판 추가 스타일 (2026-11-20)
    기존 디자인 토큰을 그대로 쓰고, 복약 카드·안전 고지 줄만 더한다.
@@ -1662,7 +1661,11 @@ body.a11y-contrast .hacktag{background:#0E1A26; border-color:#2F5B80; color:#BBD
 
   function go(next, opts) {
     if (MODES.indexOf(next) < 0) { next = 'chat'; }
-    if (next !== 'call') { callStopTimer(); }
+    /* 통화 중에 화면을 옮기면 통화를 정리해서 남긴다 — 돌아왔을 때 멈춘 화면을 보지 않도록 */
+    if (next !== 'call' && call) {
+      if (call.phase === 'live') { finishCall(); }
+      else if (call.phase === 'ringing') { callStopTimer(); call.scn = null; call.phase = 'idle'; }
+    }
     mode = next;
     MODES.forEach(function (m) {
       var el = $('#view-' + m);
@@ -2045,6 +2048,9 @@ body.a11y-contrast .hacktag{background:#0E1A26; border-color:#2F5B80; color:#BBD
     save();
     renderMeds();
     renderBrief();
+    /* 다시 그린 뒤에도 같은 버튼에 초점을 남긴다 (키보드·스위치 사용자) */
+    var again = document.querySelector('[data-take="' + String(key).replace(/"/g, '') + '"]');
+    if (again) { try { again.focus({ preventScroll: true }); } catch (e) { again.focus(); } }
     if (!was) {
       var med = curMeds().filter(function (m) { return m.id === medId; })[0];
       toast((med ? med.name : '약') + ' 먹음으로 표시했어요');
@@ -2174,6 +2180,8 @@ body.a11y-contrast .hacktag{background:#0E1A26; border-color:#2F5B80; color:#BBD
     ocrRender('reading');
     var pct = 0;
     var t = setInterval(function () {
+      var ov = $('#ocr');
+      if (!ov || ov.hidden) { clearInterval(t); return; }
       pct += 8 + Math.random() * 10;
       if (pct >= 100) {
         pct = 100;
@@ -2786,7 +2794,8 @@ body.a11y-contrast .hacktag{background:#0E1A26; border-color:#2F5B80; color:#BBD
     var sumBox = $('#callSummary');
     if (sumBox) {
       sumBox.addEventListener('click', function (e) {
-        if (e.target.closest('[data-call-share]')) { callShare(); }
+        if (e.target.closest('[data-call-share]')) { callShare(); return; }
+        if (e.target.closest('[data-call-new]')) { call.scn = null; call.phase = 'idle'; call.no = ''; renderCall(); }
       });
     }
 
