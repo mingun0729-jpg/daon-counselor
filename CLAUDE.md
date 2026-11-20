@@ -16,17 +16,6 @@
 - 배포: GitHub Pages — https://mingun0729-jpg.github.io/daon-counselor/
 - 출발점: 진주시지체장애인협회 일자리 업무 현장 경험(작성자 본인 근로 경험).
 
-## 1-C. 다온 채팅 · 민원 전화 · 맞춤 알림 (2026-11-20)
-
-- **첫 화면은 `#view-chat`(💬 다온 채팅)** 이다. 위쪽 `#modeBar` 탭 3개(💬 다온 채팅 · 📞 민원 전화 · 🔔 맞춤 알림)로 오가고, **기존 4단계 신청 화면은 그대로**다(채팅의 칩이 `go('card'|'jobs'|'docs'|'submit')`로 이어 준다). 채팅·전화·알림 화면에서는 `.steps`(진행 단계)를 숨긴다(`renderModeBar`).
-- 채팅: `state.chat`에 `{who:'me'|'daon', kind:'text'|'jobs'|'brief'|'call', text, chips, data}`로 쌓고 `renderChat()`이 말풍선으로 그린다. `chatIntent(text)`가 말의 뜻을 13가지로 나누고 `chatReply()`가 답·카드·칩을 만든다. 카드 올리기는 `#chatCardFile`→`handleCardFile()`(기존 로컬 OCR 그대로), 일자리 카드는 `[data-chat-pick]`→`selectProgram()`, 서류·신청서·전화·알림은 `go()`로 이동한다.
-- 민원 전화: `startCall()`(Web Audio 벨소리) → 1.5초 뒤 `connectCall()`(연결음·타이머·상담원 인사) → 예시 민원 칩이나 `callSay()`(글·음성) → `endCall()`이 `makeCallSummary()`로 **`DAON-CALL-YYYY-NNNN` 접수번호·담당 부서·요약**을 만들어 채팅·알림 센터·`state.calls`에 남긴다. **실제 전화는 걸지 않는다** — "시연용입니다. 실제로 걸리지 않아요" 고지를 지우지 않는다. 표시 번호는 `ORG.tel`(공개된 지회 대표번호)이다.
-- 음성: `startListen(kind)`이 `SpeechRecognition`(ko-KR)을 쓰고, 없는 브라우저에서는 토스트로 안내하고 **글자 입력·예시 버튼으로 그대로 시연**한다. 상담원 말은 `speak()`(speechSynthesis)로 읽고 '소리' 버튼으로 끈다. 오디오 파일·유료 API는 쓰지 않는다.
-- 알림: `SUBS`(5종) 구독 스위치 → `state.subs`, `ALERT_FEED`(시연용 소식 11건) 중 `alertMatch()`가 조건에 맞는 것만 골라 `state.alerts`에 쌓는다. `Notification` API 권한·테스트 버튼, 앱 안 알림 센터(안읽음 배지·모두 읽음), 탭 배지(`#ntfDot`).
-- 협회원 맞춤: `state.member`(회원 여부·지역·관심 분야) + 카드의 장애 유형·정도 + 주소/`ORG`로 `profileOf()`를 만들고 `personalBriefing()`이 지원사업·긴급 공지·교육/물품 지원을 골라 **상단 브리핑 카드**(채팅 1건, 알림 화면 3건)와 알림으로 보여 준다. `briefReason()`이 왜 골랐는지 표시한다.
-- 저장: 스냅샷 `daon.state.v1`이 **v5**로 올라가 `chat`·`calls`·`alerts`·`subs`·`member`를 함께 저장한다(v4 기록도 읽는다). 사진·실제 조회값은 여전히 저장하지 않는다.
-- 테스트: `frontend.test.mjs` [S1]~[S12]가 의도 해석·채팅 카드·전화 연결/요약·구독 필터·협회원 매칭·Notification 분기·저장 복원을 확인한다(**270건**).
-
 ## 1-B. 실제 기관 조회(CODEF) 연동 구조
 
 ```
@@ -41,6 +30,17 @@
 - **가짜 성공 금지** — 프록시가 없거나 기관이 거절하면 그 사실·응답 코드를 화면에 그대로 보여 주고 '직접 준비'로 넘긴다. 시연 데이터는 `[시연용 예시 데이터로 미리보기]` 버튼으로만 들어가고, 배지·로그도 `시연` / `실제 조회`로 구분한다.
 - **장애인증명서의 `identity`는 주민등록번호 13자리다(2026-11-20 수정).** 이 상품은 `loginType=5`에서 `identity`로 주민등록번호 13자리를 받고, 생년월일 8자리만 보내면 `CF-12100`("사업자번호(주민등록번호)가 잘못되었습니다")으로 거절한다. 그래서 앞 6자리는 생년월일에서(YYMMDD), 뒷 7자리는 **간편인증 창에서 한 번 입력받아** 13자리로 만들어 보낸다(`PRODUCTS.disability.identity='rrn13'` → `buildParams`·`identity13For`). 뒷자리가 없거나 7자리 숫자가 아니면 CODEF을 부르지 않고 `400 input_rrn_back`, 생년월일 세기와 뒷자리 첫 숫자가 어긋나면 `input_rrn_back_century`. 받은 뒷자리는 저장·응답·로그에 남기지 않고, `CF-12100`이면 `hint: rrn_mismatch`·`guide`와 화면의 `주민번호 뒷자리 고쳐 다시 인증`으로 다시 넣게 한다.
 - **복지카드가 있으면 장애인증명서는 받지 않는다(2026-11-20).** 서류 이름이 '장애인증명서 또는 복지카드 사본'이라, 카드 `source`가 `idcard`가 아니면(복지카드 OCR·예시·직접입력) 정부24 장애인증명서를 일괄 인증에서 빼서 **기관마다 1번, 모두 2번**으로 끝낸다. 주민등록증만 있거나 필요하면 서류 화면·일괄 인증 모달의 '장애인증명서도 함께 조회하기'로 켜서 포함한다(`docScope`).
+
+## 1-C. 다온 채팅 · 민원 전화 · 맞춤 알림 (2026-11-20)
+
+- **첫 화면은 `#view-chat`(💬 다온 채팅)** 이다. 위쪽 `#modeBar` 탭 3개(💬 다온 채팅 · 📞 민원 전화 · 🔔 맞춤 알림)로 오가고, **기존 4단계 신청 화면은 그대로**다(채팅의 칩이 `go('card'|'jobs'|'docs'|'submit')`로 이어 준다). 채팅·전화·알림 화면에서는 `.steps`(진행 단계)를 숨긴다(`renderModeBar`).
+- 채팅: `state.chat`에 `{who:'me'|'daon', kind:'text'|'jobs'|'brief'|'call', text, chips, data}`로 쌓고 `renderChat()`이 말풍선으로 그린다. `chatIntent(text)`가 말의 뜻을 13가지로 나누고 `chatReply()`가 답·카드·칩을 만든다. 카드 올리기는 `#chatCardFile`→`handleCardFile()`(기존 로컬 OCR 그대로), 일자리 카드는 `[data-chat-pick]`→`selectProgram()`, 서류·신청서·전화·알림은 `go()`로 이동한다.
+- 민원 전화: `startCall()`(Web Audio 벨소리) → 1.5초 뒤 `connectCall()`(연결음·타이머·상담원 인사) → 예시 민원 칩이나 `callSay()`(글·음성) → `endCall()`이 `makeCallSummary()`로 **`DAON-CALL-YYYY-NNNN` 접수번호·담당 부서·요약**을 만들어 채팅·알림 센터·`state.calls`에 남긴다. **실제 전화는 걸지 않는다** — "시연용입니다. 실제로 걸리지 않아요" 고지를 지우지 않는다. 표시 번호는 `ORG.tel`(공개된 지회 대표번호)이다.
+- 음성: `startListen(kind)`이 `SpeechRecognition`(ko-KR)을 쓰고, 없는 브라우저에서는 토스트로 안내하고 **글자 입력·예시 버튼으로 그대로 시연**한다. 상담원 말은 `speak()`(speechSynthesis)로 읽고 '소리' 버튼으로 끈다. 오디오 파일·유료 API는 쓰지 않는다.
+- 알림: `SUBS`(5종) 구독 스위치 → `state.subs`, `ALERT_FEED`(시연용 소식 11건) 중 `alertMatch()`가 조건에 맞는 것만 골라 `state.alerts`에 쌓는다. `Notification` API 권한·테스트 버튼, 앱 안 알림 센터(안읽음 배지·모두 읽음), 탭 배지(`#ntfDot`).
+- 협회원 맞춤: `state.member`(회원 여부·지역·관심 분야) + 카드의 장애 유형·정도 + 주소/`ORG`로 `profileOf()`를 만들고 `personalBriefing()`이 지원사업·긴급 공지·교육/물품 지원을 골라 **상단 브리핑 카드**(채팅 1건, 알림 화면 3건)와 알림으로 보여 준다. `briefReason()`이 왜 골랐는지 표시한다.
+- 저장: 스냅샷 `daon.state.v1`이 **v5**로 올라가 `chat`·`calls`·`alerts`·`subs`·`member`를 함께 저장한다(v4 기록도 읽는다). 사진·실제 조회값은 여전히 저장하지 않는다.
+- 테스트: `frontend.test.mjs` [S1]~[S12]가 의도 해석·채팅 카드·전화 연결/요약·구독 필터·협회원 매칭·Notification 분기·저장 복원을 확인한다(**270건**).
 
 ## 2. 파일 구조
 
