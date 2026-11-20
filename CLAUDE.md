@@ -1,167 +1,141 @@
-# CLAUDE.md — 다온(DAON) 프로토타입 작업 안내
+# CLAUDE.md — 다온 헬스케어 (hackathon 브랜치) 작업 안내
 
-이 문서는 Claude Code로 이 저장소를 이어서 작업할 때 지켜야 할 구조·기준·규칙을 정리한 것입니다.
-사람이 읽어도 되고, AI 코딩 에이전트가 먼저 읽는 문서로도 쓰입니다.
+이 문서는 **`hackathon` 브랜치**에서 Claude Code(PC)와 피클이 함께 작업할 때 지켜야 할 구조·기준·규칙입니다.
+`main` 브랜치는 **다른 공모전용 '장애인 일자리 AI 카운셀러'**이며 GitHub Pages로 배포 중입니다. 이 브랜치의 문서는 `main`의 문서와 다릅니다(필요하면 `git show main:CLAUDE.md`).
 
-## 1. 프로젝트 개요
+---
 
-- **다온(DAON)** — 장애인 일자리 맞춤형 AI 도우미 **공모전 시연용 웹 프로토타입**.
-- **앱(Application)처럼 동작하는 4개 화면**으로 이어진다.
-  1. **복지카드·주민등록증** — 사진 업로드 시 **브라우저 로컬 OCR**(Tesseract.js `kor+eng`)로 성명·생년월일·(주민등록증이면 주소까지)·장애유형·정도·등록일·발급기관을 실제 판독해 확인 화면에 채움. 복지카드가 없으면 `주민등록증 찍기·올리기`로 시작할 수 있고, **그 사진이 3단계 '신분증 사본' 파일(원본 JPG/PNG)로 그대로 들어간다** · 예시 인물 7종 · 내 정보 직접 입력(이름·유형·정도) 세 가지 길
-  2. **할 수 있는 일자리** — 조건에 따라 신청 가능/확인 필요/지금은 어려움으로 나눈 8개 사업과 진주 지역 근무지 10곳
-  3. **서류** — 나라 기관(정부24·국민건강보험공단·복지로·고용24) 서류를 받아 신청서에 붙이는 화면. **기본 프록시(`https://daon-codef-proxy.mingun29.workers.dev`)가 미리 연결되어 있어 실제 간편인증 조회**가 동작하고, 사용자가 `연결 해제`를 누르면 시연 연출로 돌아간다. 둘을 화면에서 명확히 구분한다
-  4. **신청** — 복지카드·기관 서류로 채운 정보는 그대로 두고, 빠진 칸(연락처·사는 곳·계좌·하고 싶은 말)만 적어 제출 → 접수번호와 접수증
-- 상담(대화형 질문) 단계와 5단계 위저드는 **없다.** 화면마다 큰 버튼 하나로 다음 화면에 간다.
-- 서버·빌드·패키지 없음. `index.html` **단일 파일**(HTML + CSS + JS)이며, 파일을 열면 바로 동작한다. 예외 둘 — 복지카드 OCR만 Tesseract.js 5.1.1을 CDN에서 지연 로드하고, 실제 기관 조회를 쓸 때만 사용자가 배포한 `proxy/`(Cloudflare Worker)를 부른다.
-- 배포: GitHub Pages — https://mingun0729-jpg.github.io/daon-counselor/
-- 출발점: 진주시지체장애인협회 일자리 업무 현장 경험(작성자 본인 근로 경험).
+## 0. 이 브랜치가 무엇인지
 
-## 1-B. 실제 기관 조회(CODEF) 연동 구조
+- **대회**: 2026 마산대학교 X 연암공과대학교 AI 헬스케어 해커톤 (1박 2일, 마산대 보건 + 연암공대 공학 한 팀)
+- **제품**: **다온 헬스케어(DAON Healthcare)** — 장애인·고령층의 **복약 · 진료 · 돌봄 연계** AI 도우미
+- **핵심 구조**: `main`의 다온에서 만든 **피클형 채팅 · 웹 음성 통화 · 사진 글자 읽기(OCR) · 맞춤 알림**을 그대로 가져와 도메인만 헬스케어로 바꾼 것
+- **워크북·발표 초안**: `docs/hackathon-plan.md` (페르소나·여정맵·HMW·기능·화면 스케치·역할 분담·10장 구성안)
+- **데모**: `index.html` 하나. 서버·빌드·설치 없음. 열면 바로 동작.
 
-```
-브라우저(index.html) → proxy/cloudflare-worker.js (Cloudflare Workers) → CODEF → 정부24 · 국민건강보험공단
-```
+### 이 브랜치에서 절대 하지 않는 것 (대회 필수 원칙)
 
-- **키는 절대 저장소·브라우저에 두지 않는다.** `CODEF_CLIENT_ID`·`CODEF_CLIENT_SECRET`은 Worker secret에만 넣는다(`proxy/README.md`).
-- 프론트엔드는 `daon.codef.v1`(localStorage)에 **프록시 주소·접속 토큰만** 저장한다. 저장된 설정이 없으면 `DEFAULT_PROXY_URL`(`https://daon-codef-proxy.mingun29.workers.dev`)을 써서 **처음 여는 사람도 바로 실제 조회**가 되고, `url`이 빈 값이면 사용자가 직접 해제한 상태로 보고 기본 주소를 다시 넣지 않는다(`기본 주소로 채우기` 버튼으로만 되돌린다). 본인확인 정보(성명·생년월일·휴대폰)는 메모리에만 두고 저장·복제하지 않는다.
-- 프록시 엔드포인트는 화이트리스트 3개뿐: `/api/health`, `/api/auth/request`(1차), `/api/auth/complete`(2차).
-- 2-Way 흐름: 1차 응답 `result.code === "CF-03002"` + `data.continue2Way === true` → `twoWayInfo`(`jobIndex`·`threadIndex`·`jti`·`twoWayTimestamp`)를 보관 → 사용자가 휴대폰에서 인증 → `[인증 완료 확인]` → `is2Way:true`, `simpleAuth:"1"`, `twoWayInfo`를 담아 같은 URL로 2차 요청. 추가인증 제한 270초, `simpleAuth:"1"` 반복은 2번까지(3번째 `CF-12872`).
-- 지원 상품(2026-11-19 개발가이드 확인): `insurance` `/v1/kr/public/pp/nhis-join/identify-confirmation`(org 0002), `resident` `/v1/kr/public/mw/resident-registration-copy/issuance`(0001), `disability` `/v1/kr/public/mw/certificate/disability`(0001). `REAL_DOC_IDS`가 이 셋이다.
-- **가짜 성공 금지** — 프록시가 없거나 기관이 거절하면 그 사실·응답 코드를 화면에 그대로 보여 주고 '직접 준비'로 넘긴다. 시연 데이터는 `[시연용 예시 데이터로 미리보기]` 버튼으로만 들어가고, 배지·로그도 `시연` / `실제 조회`로 구분한다.
-- **장애인증명서의 `identity`는 주민등록번호 13자리다(2026-11-20 수정).** 이 상품은 `loginType=5`에서 `identity`로 주민등록번호 13자리를 받고, 생년월일 8자리만 보내면 `CF-12100`("사업자번호(주민등록번호)가 잘못되었습니다")으로 거절한다. 그래서 앞 6자리는 생년월일에서(YYMMDD), 뒷 7자리는 **간편인증 창에서 한 번 입력받아** 13자리로 만들어 보낸다(`PRODUCTS.disability.identity='rrn13'` → `buildParams`·`identity13For`). 뒷자리가 없거나 7자리 숫자가 아니면 CODEF을 부르지 않고 `400 input_rrn_back`, 생년월일 세기와 뒷자리 첫 숫자가 어긋나면 `input_rrn_back_century`. 받은 뒷자리는 저장·응답·로그에 남기지 않고, `CF-12100`이면 `hint: rrn_mismatch`·`guide`와 화면의 `주민번호 뒷자리 고쳐 다시 인증`으로 다시 넣게 한다.
-- **복지카드가 있으면 장애인증명서는 받지 않는다(2026-11-20).** 서류 이름이 '장애인증명서 또는 복지카드 사본'이라, 카드 `source`가 `idcard`가 아니면(복지카드 OCR·예시·직접입력) 정부24 장애인증명서를 일괄 인증에서 빼서 **기관마다 1번, 모두 2번**으로 끝낸다. 주민등록증만 있거나 필요하면 서류 화면·일괄 인증 모달의 '장애인증명서도 함께 조회하기'로 켜서 포함한다(`docScope`).
+1. **실제 환자의 이름·기록·사진을 쓰지 않는다.** 모든 사람·기관은 가상(가명)이다. 이름·주민번호·연락처를 **입력받는 칸을 만들지 않는다**(예시 인물을 고르는 구조 유지).
+2. **진단·처방을 대신하는 기능을 만들지 않는다.** 약봉투 **적힌 내용을 읽어** 일정으로 옮길 뿐, 용량 변경·중단·추가를 권하지 않는다. 증상에는 **119·의료진 안내가 먼저** 나오고 "다온은 판단하지 않아요" 문구를 지운다면 안 된다.
+3. **보건(기준·문구)과 공학(구현)의 역할을 흐리지 않는다.** 화면 문구를 바꿀 때 `docs/hackathon-plan.md` 9장의 **문구 검수 체크리스트**를 통과해야 한다.
+4. **`main`을 건드리지 않는다.** `main`은 장애인 일자리 버전이며 Pages가 연결되어 있다. 모든 작업·커밋·푸시는 `hackathon` 브랜치에서만.
+5. **가짜 성공을 만들지 않는다.** 실제로 하지 않은 일(실제 전화·실제 기관 전송·실제 OCR 성공)을 화면에서 성공으로 보이게 하지 않는다. 화면에는 `시연`, `가상 데이터`, `실제 전송 아님` 표시가 있어야 한다.
 
-## 1-C. 다온 채팅 · 민원 전화 · 맞춤 알림 (2026-11-20)
+---
 
-- **첫 화면은 `#view-chat`(💬 다온 채팅)** 이다. 위쪽 `#modeBar` 탭 3개(💬 다온 채팅 · 📞 민원 전화 · 🔔 맞춤 알림)로 오가고, **기존 4단계 신청 화면은 그대로**다(채팅의 칩이 `go('card'|'jobs'|'docs'|'submit')`로 이어 준다). 채팅·전화·알림 화면에서는 `.steps`(진행 단계)를 숨긴다(`renderModeBar`).
-- 채팅: `state.chat`에 `{who:'me'|'daon', kind:'text'|'jobs'|'brief'|'call', text, chips, data}`로 쌓고 `renderChat()`이 말풍선으로 그린다. `chatIntent(text)`가 말의 뜻을 13가지로 나누고 `chatReply()`가 답·카드·칩을 만든다. 카드 올리기는 `#chatCardFile`→`handleCardFile()`(기존 로컬 OCR 그대로), 일자리 카드는 `[data-chat-pick]`→`selectProgram()`, 서류·신청서·전화·알림은 `go()`로 이동한다.
-- 민원 전화: `startCall()`(Web Audio 벨소리) → 1.5초 뒤 `connectCall()`(연결음·타이머·상담원 인사) → 예시 민원 칩이나 `callSay()`(글·음성) → `endCall()`이 `makeCallSummary()`로 **`DAON-CALL-YYYY-NNNN` 접수번호·담당 부서·요약**을 만들어 채팅·알림 센터·`state.calls`에 남긴다. **실제 전화는 걸지 않는다** — "시연용입니다. 실제로 걸리지 않아요" 고지를 지우지 않는다. 표시 번호는 `ORG.tel`(공개된 지회 대표번호)이다.
-- 음성: `startListen(kind)`이 `SpeechRecognition`(ko-KR)을 쓰고, 없는 브라우저에서는 토스트로 안내하고 **글자 입력·예시 버튼으로 그대로 시연**한다. 상담원 말은 `speak()`(speechSynthesis)로 읽고 '소리' 버튼으로 끈다. 오디오 파일·유료 API는 쓰지 않는다.
-- 알림: `SUBS`(5종) 구독 스위치 → `state.subs`, `ALERT_FEED`(시연용 소식 11건) 중 `alertMatch()`가 조건에 맞는 것만 골라 `state.alerts`에 쌓는다. `Notification` API 권한·테스트 버튼, 앱 안 알림 센터(안읽음 배지·모두 읽음), 탭 배지(`#ntfDot`).
-- 협회원 맞춤: `state.member`(회원 여부·지역·관심 분야) + 카드의 장애 유형·정도 + 주소/`ORG`로 `profileOf()`를 만들고 `personalBriefing()`이 지원사업·긴급 공지·교육/물품 지원을 골라 **상단 브리핑 카드**(채팅 1건, 알림 화면 3건)와 알림으로 보여 준다. `briefReason()`이 왜 골랐는지 표시한다.
-- 저장: 스냅샷 `daon.state.v1`이 **v5**로 올라가 `chat`·`calls`·`alerts`·`subs`·`member`를 함께 저장한다(v4 기록도 읽는다). 사진·실제 조회값은 여전히 저장하지 않는다.
-- **Claude 응답(2026-11-20)**: `chatSendText()`가 `chatIntent`가 `fallback`·`info`일 때만 `askClaude()`→`codefFetch('/api/chat')`로 묻는다(`CLAUDE_INTENTS`). 대기 말풍선(`pending:true`)을 보였다가 답으로 바꾸고, 프록시 미설정·실패 시 기존 `chatReply` 규칙 답으로 조용히 돌아간다. 보내는 것은 최근 대화 8개·`chatFacts()`(안내 자료)·`profileLabel()`뿐 — **성명·주민번호·주소·사진은 보내지 않는다.** 시스템 프롬프트·키·모델은 `proxy/cloudflare-worker.js`의 `handleChat`에만 있다. `ANTHROPIC_API_KEY`가 없으면 Cloudflare Workers AI(`[ai]` 바인딩, 무료 한도 내)로 답하고, 응답의 `engine`이 `claude`/`workers-ai`로 구분된다(공모전 시연은 무료 우선이라 Workers AI가 기본). 채팅 화면 안내문(`#view-chat` 하단 `.micro`)의 'AI에 전달' 고지를 지우지 않는다.
-- 테스트: `frontend.test.mjs` [S1]~[S12]가 의도 해석·채팅 카드·전화 연결/요약·구독 필터·협회원 매칭·Notification 분기·저장 복원을 확인한다(**270건**).
-
-## 2. 파일 구조
+## 1. 파일 구조
 
 ```
-index.html    # 프로토타입 전체 (이 파일 하나가 배포본)
-README.md     # 기능·시연 방법 안내
-CLAUDE.md     # 이 문서 (작업 규칙)
-.nojekyll     # GitHub Pages Jekyll 처리 비활성화
-proxy/        # 실제 기관 조회용 백엔드 프록시 (Pages와 별개로 Cloudflare에 배포)
-  cloudflare-worker.js · wrangler.toml · README.md
+index.html                 # 데모 전체 (HTML + CSS + JS 단일 파일 · 배포본)
+docs/hackathon-plan.md     # 실습 워크북 초안 (제출물 ①)
+tests/verify_hackathon.py  # Playwright 자동 검증 (375px·1280px, 콘솔 에러 0, 넘침 0)
+CLAUDE.md                  # 이 문서
+.nojekyll                  # GitHub Pages Jekyll 처리 비활성화
+proxy/                     # (main 브랜치 자산) 기관 조회용 Cloudflare Worker — 이 브랜치 데모에서는 쓰지 않음
+preview/                   # 예전 스크린샷 (main 브랜치 것)
 ```
 
-로컬 원본은 별도 작업 공간의 `prototypes/disability-job-counselor.html`이며, 배포 전에는 항상 이 원본과 `index.html`을 동일하게 맞춘다(MD5 비교).
+- `index.html`은 **`main`의 9,700줄짜리 일자리 앱을 복사해 고친 파일이 아니라**, 같은 디자인 토큰(CSS)을 그대로 가져와 헬스케어 화면으로 새로 쓴 파일이다. 스타일 블록의 앞부분(약 1,060줄)은 `main`과 동일하고, 그 뒤 `해커톤 헬스케어판 추가 스타일` 주석부터가 이 브랜치의 추가분이다.
+- 그래서 `main`의 일자리 화면(복지카드→일자리→서류→신청)은 이 파일에 없다. **필요하면 `main`에서 가져오지 말고, 왜 필요한지부터 확인한다**(대회 주제와 무관한 화면은 발표에서 설명할 수 없어 감점 요인).
 
-### `index.html` 내부 구성
+---
 
-| 위치 | 내용 |
-| --- | --- |
-| `<style>` | 디자인 토큰(`:root`) · 앱 틀(헤더·편하게 보기·단계 표시·하단 큰 버튼) · 화면별 카드 · 접근성 3모드(큰 글씨·고대비·쉬운 말) · 시트/모달 · 인쇄 |
-| `.topbar` | 로고(눈 달린 ㅍ) · `#btnBack` · `#btnStartOver`(처음부터) + 편하게 보기 줄(`#btnBigText`, `#btnHighContrast`, `#btnVoice`, `#a11yRate`의 `#btnRateSlow`/`#btnRateNormal`, `#btnStopSpeak`) |
-| `.steps` | 4단계 표시 `button.stp[data-goto="card|jobs|docs|submit"]` — 지나온 단계는 `✓`, 지금 단계는 `aria-current="step"` |
-| `main` 안 화면 | `#view-chat`(다온 채팅, **첫 화면**) · `#view-call`(민원 전화) · `#view-notify`(맞춤 알림) + 기존 `#view-card` · `#view-jobs` · `#view-docs` · `#view-submit` · `#view-done`. 한 번에 하나만 보이고 나머지는 `hidden` |
-| `#view-chat` | `#chatBrief`(맞춤 브리핑) · `#chatLog`(말풍선) · `#chatForm`(`#chatMic` · `#chatInput` · `#chatSend`) · `#btnChatClear` · `#chatCardFile`/`#chatIdFile` |
-| `#view-call` | `#callCard`(상태·번호·타이머·`#btnCallStart`/`#btnCallAnswer`/`#btnCallMute`/`#btnCallSpeaker`/`#btnCallHang`) · `#callLog`(자막) · `#callScn`(예시 민원) · `#callForm`(`#callMic`·`#callInput`) · `#callSummary` |
-| `#view-notify` | `#briefCard` · `#ntfPermBar`/`#btnNtfOn`/`#btnNtfPing` · `#subList` · `#memberBox` · `#alertList`/`#ntfCount`/`#btnAllRead` |
-| `#modeBar` | 💬 다온 채팅 · 📞 민원 전화 · 🔔 맞춤 알림 탭(`[data-mode]`) + 안읽음 배지 `#ntfDot` |
-| `#view-card` | `#cardHome`(시작: `#btnScan` 복지카드, `#btnIdCard` 주민등록증, `#btnSamples`, `#btnManual`, 파일 입력 `#cardFile`·`#idFile`) / `#cardDone`(인식 결과 `#cardVisual`, 배려 안내 `#cardHint`, `#btnCardEdit`, `#btnCardAgain`) |
-| `#view-jobs` | `#condWho`·`#btnCond`(조건 바꾸기), `#jobList`(라디오 카드), `#btnJobMore`, `#offBox`(지금은 어려운 일자리), `#workSection`(`#rankBox`/`#rankList` 희망 근무지 1·2·3순위 요약, `#workList` 순위 버튼이 붙은 근무지 카드, `#btnWorkMore`, `#assignRule` 배정 기준), `#supportBox`(근로지원 제도) |
-| `#view-docs` | 진행 카드(`#docsTitle`·`#docProgTxt`·`#docBar`), **실시간 진행 로그** `#agentLog`/`#alList`, **장애인증명서 포함 선택** `#disScopeBox`/`#disScopeToggle`/`#disScopeState`/`#disScopeHint`, 기관 카드 `#agencyList`, **신분증 사진 카드** `#photoBox`(`#photoState`·`#photoHint`·`#btnIdPhoto`), 파일 카드 `#fileList`, `#selfBox`(직접 준비) |
-| `#view-submit` | 자동 채움 안내 `#autoDesc`, 희망 근무지 순위 `#confirmRanks`(+`#btnRankEdit`), 입력 칸(`#inPhone`, `#inEmail`, `#inAddr`, `#inBank`+`#inAcct`)과 `#inMotiv`(+`#btnDraft`), **추가 신청서 항목(선택)** `#extraBox`/`#extraFields`(서식 1의 성별·소득수준·최종학력·전산능력·자격면허·보호자 연락처 등), `#formDocList`, **자격 판정** `#eligResult`, **자필 서명** `#sigPad`/`#sigState`, **서식 3종 탭** `#formTabs`/`#formPreviewFrame`/`#formMeta` |
-| `#view-done` | 접수증 `#doneNo`·`#doneReceipt`, 인쇄 `#btnPrint`, ZIP `#btnZip`, 메일 `#btnMail` |
-| `.dock` | 화면마다 **큰 버튼 하나** `#ctaMain` + 안내 `#dockNote`. 카드 화면(인식 전)과 완료 화면에서는 숨긴다 |
-| 시트·모달 | `#sheet`(예시 카드·직접 고르기·조건 바꾸기·처음부터), `#ocr`(카드 읽기 4단계), `#login`(기관 로그인 — 실제/시연 분리), `#apiCfg`(기관 API 연결 설정), `#submitOv`(제출 4단계), `#fileView`(서류 미리보기 iframe) |
-| `#printArea` | 인쇄용 컨테이너(화면에서는 `display:none`) |
+## 2. 화면과 코드 지도
 
-### 스크립트 섹션 (IIFE 안, 주석의 번호와 대응)
+| 화면 | id | 첫 화면? | 하는 일 |
+| --- | --- | --- | --- |
+| 다온 채팅 | `#view-chat` | ✅ | 인사·오늘 브리핑·빠른 질문·말로 입력·약봉투 사진 버튼·안전 답변(119) |
+| 오늘의 약 | `#view-meds` | | 가상 인물 카드, 오늘 복약 진행률, 시간대별 약 체크, 약봉투 등록, 약 전체 목록 |
+| 안부 전화 | `#view-call` | | 시나리오 3종(복약·컨디션·병원) → 통화 → 3줄 정리 + `DAON-CALL-YYYY-NNNN` + 보호자 전달 |
+| 맞춤 알림 | `#view-notify` | | 휴대폰 알림 권한, 받을 소식 5개 스위치, 병원·복지 연계, 알림 센터 |
 
-| 섹션 | 주요 심볼 |
-| --- | --- |
-| 0. 공통 유틸 | `$`, `$$`, `esc`, `toast` |
-| 0-B. 접근성·임시저장 | `a11y`(`big`·`contrast`·`voice`·`rate`), `applyA11y`, `setA11y`, `setRate`, `TTS_RATE_SLOW(0.82)`/`TTS_RATE_NORMAL(0.93)`, `speak`/`stopSpeak`(TTS), `setSpeakUI`, `checkKoreanVoice`, `announce` |
-| 1. 이름표 | `TYPE_LABEL`, `TYPE_SHORT`, `SEVERITY_LABEL`, `WORK_LABEL`, `WORK_SHORT`, `ENV_LABEL`, `TRANSPORTS`, `AIDS`/`AIDS_LABEL`, `ORG` |
-| 2. 상태 | `state` — `view`·`card`·`type`·`severity`·`workType`·`envs(Set)`·`selectedProgram`·`selectedWorkplace`(1순위 미러)·`workplaceRanks`(1·2·3순위)·`checked`·`fetched`·`form`(안에 `extra`·`lic`·`guardian`)·`receipt`·`easy` |
-| 3. 기관 | `AGENCY`(정부24·건강보험·복지로·고용24·협회), `DOC_AGENCY`, `AGENT_DOC_META`/`agentMeta` |
-| 4. 판별 규칙 | `ruleGeneralFull` ~ `ruleRemote`, `statusOf`, `PROGRAMS`(8개), `analyze()` |
-| 5. 근로지원 | `buildSupports()`(7개 제도) |
-| 6. 근무지 | `WORKPLACES`(10곳), `TAG_LABEL`, `WARN_TAGS`, `matchWorkplace`, `scoredWorkplaces`, `rankList`/`rankSync`/`setRanks`/`setRank`/`rankOf`/`rankText`(1·2·3순위), `fitScore`(적합도 점수) |
-| 7. 서류 목록 | `COMMON_DOCS`, `EXTRA_DOCS`, `ALWAYS_EXTRA`, `docsFor` |
-| 5(앱). 복지카드·주민등록증 | `CARD_SAMPLES`(7종), `OCR_STEPS`/`OCR_STEPS_ID`, `openSamples`/`openSampleConfirm`(예시 인물 확인), `startCardOcr(file, mode)`/`ensureOcrWorker`/`ocrPrepCanvas`/`ocrPass`(브라우저 로컬 OCR 파이프라인), `parseOcrText`/`mergeOcrPasses`(판독문 파싱·2패스 병합), `ocrDateCore`/`ocrDateOf`(날짜 표기·오인식 흡수), `ocrLabelHits`/`ocrRegOf`(등록일 라벨·다음 줄 찾기), `ocrRestAfter`/`ocrRestOf`(띄어 쓴 라벨까지 찾는 라벨 뒤 값), `ocrAddrOf`(주민등록증 주소 줄), `openOcrProgress`/`setOcrPct`/`cancelOcr`, `openOcrReview(res, mode)`/`applyOcrDraft`(`mode:'id'`면 주소까지), `openOcrFailed`, `openManual`, `openOcr`/`finishOcr`, `pickIdCard`/`handleIdFile`(주민등록증), `applyCard`(`birth` 포함), `applyManual`, `applyProfile`(장애 유형별 배려: 시각=큰글씨+읽어주기, 지적·자폐성=쉬운 말, 정신=근무 시간·업무 조정 안내, 지체·뇌병변=큰 글씨·큰 버튼) |
-| 6(앱). 화면 흐름 | `VIEW_ORDER`, `go`, `render`, `renderSteps`, `renderCard`, `renderDock` |
-| 7(앱). 일자리 | `analyze` 결과를 `jobCardHtml`로, `kindOfProgram`·`workRows`·`pickDefaultWorkplace`, `renderWork`(진주 근무지 3장 + 더 보기)·`workCardHtml`(순위 버튼)·`renderRankSummary`, `renderSupports`, `openCond` |
-| 8(앱). 서류 | `fetchState`(진행 로그·phase·mode), `docScope`·`welfareCardConfirmed`·`disabilityDocInProgram`·`disabilityInScope`·`setDisabilityScope`(장애인증명서 포함 여부), `authPlan`/`authPlanHtml`/`authPlanLine`(총 몇 번 인증), `requiredFetchDocs`, `assocDocs`, `docsStats`, `agencyGroups`, `renderDocs`, `renderAgentLog`/`pushLog`/`phaseLabel`, `openLogin`/`confirmLogin`, `fetchDocs`(시연 연출) |
-| 8-B. 실제 연동 | `codef`(프록시 주소·health), `realState`, `loadCodef`/`saveCodef`, `codefFetch`(오류에 `hint`·`address`·`guide` 보존), `updateCfgBar`, `openCfg`/`closeCfg`/`testCfg`/`saveCfg`/`clearCfg`, `REAL_DOC_IDS`/`realDocs`, `renderLoginBody`/`setLoginButtons`, `cleanAddr`/`addrProblem`/`isRoadAddr`/`addrCheckHtml`/`updateAddrCheck`(주소 도우미), `startReal`/`realStep`/`completeTwoWay`/`realFail`/`finishReal`, `renderLoginRun`, `isAddrError`/`retryWithAddr`(CF-13006), `isRrnError`/`retryWithRrn`/`rrnCenturyProblem`/`clearRrnProfile`(CF-12100 · 주민번호 뒷자리), `startTwoWayTimer`, `applyRealDoc`/`mergeRealIntoForm`/`realSummary`, `typeFromDisability`/`severityFromDisability` |
-| 서류 실데이터 렌더 | `realHead`/`realCertDoc`(CODEF 응답 요약 문서 — `REAL_WM` 워터마크), `docShell(title, inner, wm)` |
-| 9(앱). 신청 | `renderSubmit`(확인 카드 `#confirmCard` · 희망 근무지 순위 `renderConfirmRanks` · 필요 지원 칩 `aidChipsHtml`), `renderExtraFields`(서식 1 추가 항목 칩), `validateForm`(aria-invalid·role=alert), `readForm`, `clearFieldError`, `JOB_DEFAULT`, `buildDraftText`, `submitAll`, `makeReceipt`(순위 포함), `renderDone`, `birthText`/`maskedRrn`/`rrnMasked` |
-| 9-B. 포커스 | `focusViewHeading`(화면 전환 → 제목), `focusBack`/`overlayReturn`(모달을 열었던 버튼으로 복원), `selectProgram`·순위 버튼(`data-work-rank`)·순위 비우기(`data-clear-rank`)·추가 항목 칩(`data-xkey`)이 재렌더 뒤 같은 버튼으로 포커스 |
-| 10(앱). 인쇄·저장 | `printHtmlString`(새 탭 인쇄, 팝업 차단 시 `downloadHtml`), `printApp`, `saveAllZip`, `sendMail`, `allDocs` |
-| 11(앱). 읽어주기 | `screenSummaryText`(화면별 대본), `speakScreen` |
-| 12(앱). 저장·복원 | `snapshot`(v4), `saveNow`/`scheduleSave`/`restoreSaved`/`clearSaved`, `resetAll` |
-| 13~15. 시트·이벤트·시작 | `openSheet`/`closeSheet`, `bindEvents`(이벤트 위임), `init` |
-| 7-F. 서류 파일 | `DOC_STYLE`/`DOC_WM`, `DOC_FILE_META`/`DOC_TITLE`, `docFileFor`(HTML/SVG/**본인 첨부 사진 bytes** + 실제 Blob 크기), `photoDoc`/`photoExt`/`photoUrlOf`/`photoSig`/`readPhotoFile`/`attachPhotoDoc`/`reapplyPhotoDocs`(사진 서류), `certSpec`/`certDoc`, `svgCardDoc`, `docFileCard`/`docPendingCard`, `buildZip`(무압축 ZIP, `bytes` 항목 지원), `openFileView`/`saveDocFile`/`printDocFile` |
-| 7-G. 공식 서식 3종 | `OF_STYLE`(A4 인쇄 CSS), `form1Pages`/`form2Pages`/`form3Pages`(원본 구조 그대로), `form1Doc`~`form3Doc`, `allFormsDoc`(3종 한 번에 인쇄), `obx`/`ofv`/`sigMark` |
-| 7-H. 자격 판정 | `ELIG_DEF`, `eligDefault`, `eligibility`(지침 p.15·p.20·p.23·공고 4), `eligBadge`, `renderElig`, `renderEligResult`, `setElig` |
-| 7-I. 자필 서명 | `sigPad`, `sigInit`/`sigRedraw`/`sigDown`/`sigMove`/`sigUp`, `sigStatus`, `sigClear`, `sigMode` |
-| 7-J. 서식 탭·인쇄 | `FORM_TABS`, `renderFormTabs`, `selectFormTab`, `refreshFormPreview`, `printAllForms`/`printOneForm`/`saveOneForm`/`openFormInTab`, `buildSummaryJson` |
-| 10-B~10-F. 채팅·민원 전화·알림 | `MODE_VIEWS`, `SUBS`/`subMeta`/`subOn`, `ALERT_FEED`/`feedById`, `regionOf`/`profileOf`/`profileLabel`, `alertMatch`/`alertScore`/`matchingAlerts`/`briefReason`/`personalBriefing`, `syncAlerts`/`addCallAlert`/`unreadAlerts`, `ntfSupported`/`ntfPermission`/`requestNtf`/`sendNtf`, `CHAT_CHIPS_MAIN`, `INFO_TOPICS`/`infoFor`, `chatIntent`/`chatReply`/`chatItemHtml`/`chatJobsHtml`/`chatBriefListHtml`, `chatPush`/`renderChat`/`chatScrollEnd`/`chatSendText`/`chatAct`/`chatPick`, `briefHtml`/`renderBrief`, `openAlert`, `CALL_SCN`/`scnOf`, `CALL_KB`/`callAnswer`, `mmss`/`callNumber`/`callByNo`/`callSummaryCardHtml`, `callState`, `makeCallSummary`, `audioCtx`/`tone`/`ringStart`/`stopRing`, `sttSupported`/`startListen`/`stopListen`, `startCall`/`connectCall`/`callLine`/`callSay`/`endCall`, `renderCallLog`/`renderCall`, `renderPerm`/`renderSubs`/`renderMember`/`renderAlerts`/`renderNotify`/`deliverTest`, `renderModeBar`, `bindExtraEvents` |
+| 오버레이 | id | 내용 |
+| --- | --- | --- |
+| 첫 실행 안전 안내 | `#welcome` | 3원칙 + "가상 데이터로 시작하기" (`state.safetyAck`로 1회) |
+| 공통 시트 | `#sheet` | 인물 고르기, 안전 안내, 119 안내 |
+| 약봉투 읽기 | `#ocr` | 단계: `pick` → `reading` → `review` / `failed` |
 
-## 3. 데이터·수치 출처
+**스크립트 섹션** (`<script>` 안 주석 번호와 대응)
+`0. 공통 유틸` · `1. 데이터` · `2. 상태·저장` · `3. 화면 전환·편하게 보기` · `4. 다온 채팅` · `5. 오늘의 약` · `6. 약봉투 읽기(OCR)` · `7. 안부 전화` · `8. 맞춤 알림` · `9. 시트·안전 안내` · `10. 첫 실행·이벤트 연결`
 
-- 모든 사업 종류·근무시간·보수·서류·선발 기준은 **2026년 장애인일자리 사업안내(보건복지부)** 기준이다. 예: 일반형 전일제 주 40시간(12월 37.5시간) 월 2,156,880원(12월 2,022,720원, 세전), 시간제 주 20시간 월 1,078,440원, 복지일자리 참여형 주 14시간 이내 월 577,920원.
-- 수치를 바꿀 때는 **출처 연도를 함께 표기**하고, 화면 하단 고지의 "2026년 장애인일자리 사업안내 기준" 문구도 같이 갱신한다.
-- 근무지 10곳과 신청서 예시 값(성명·연락처·거주지·계좌)은 **가상 예시**다. 실제 기관·개인 정보로 바꾸지 않는다. 다만 **접수처 안내의 기관명·주소·대표전화**는 공개된 공식 정보(**(사)경남지체장애인연합회 진주시지회**, 경남 진주시 대신로 232번길 16, ☎ 055-755-0008)를 실제 값으로 쓰고 `ORG` 상수에서 관리한다.
-- 복지카드·주민등록증 인식은 **실제 브라우저 로컬 OCR**이다(`startCardOcr(file, mode)`). Tesseract.js 5.1.1(`kor+eng`)을 CDN에서 **필요할 때 한 번만** 불러오고, 사진은 그레이스케일·대비·이진화/샤프닝 두 가지로 전처리해 2패스(PSM 6)로 읽고, 6개 항목 중 3개 미만이면 원본에 가까운(이진화·샤프닝 없는) 세 번째 패스를 더 돌린 뒤 `mergeOcrPasses`로 항목별 최선값을 고른다. `mode='id'`(주민등록증)는 `ocrAddrOf`가 '주소' 라벨 뒤/시·도로 시작하는 줄을 읽어 **주소**까지 채운다. **사진 픽셀은 어디로도 전송하지 않는다**(내려받는 것은 엔진·언어 데이터뿐) — 이 고지를 지우지 않는다. 주민등록번호는 앞 6자리와 성별 숫자만 쓰고 뒷자리는 저장하지 않는다(`810716-1******`). 생년월일은 앞 6자리+성별숫자로 계산해 `state.form.birth`(YYYYMMDD)에 넣어 서식 1에 그대로 반영된다. 엔진을 못 받거나 글자를 못 읽으면 `openOcrFailed`가 안내 후 직접 입력·예시 인물로 잇는다. 예시 인물 경로(`openSampleConfirm` → `openOcr` 연출)는 그대로 남아 있다.
-- **등록일(regDate) 판독은 라벨 모양을 견디게 되어 있다(2026-11-20).** 실제 카드는 라벨을 `등 록 일`처럼 글자 사이를 띄워 인쇄하고(민건님 샘플 사진이 그랬다), 판독은 `등륵일·등록밀·통록일`처럼 어긋나기도 한다. `ocrLabelHits`가 공백을 지우고 흔한 오인식을 되돌려 라벨 위치를 원문 좌표로 찾고, `ocrRegOf`가 ①같은 줄 ②다음 1~2줄(다른 항목 라벨이 나오면 중단) ③라벨 앞 날짜 순으로 찾는다. 날짜는 `ocrDateCore`가 `2024.05.10 / 2024. 5. 10. / 2024-05-10 / 2024/05/10 / 2024년 5월 10일 / 2024,05,10 / 20240510 / 24.05.10`과 숫자 오인식(`2O24.O5.lO`)을 읽고, **유효기간(미래 연도)·발급일·생년월일·주민등록번호는 등록일로 쓰지 않는다**. 읽은 등록일은 검토 시트 `#ocrReg` → `applyCard`의 `issue` → 카드 화면 '등록일'과 복지카드 사본 서류(`svgCardDoc`)까지 이어진다. 파서는 `window.__DAON_OCR__`(테스트용)로 직접 부를 수 있고 단위 테스트는 `/workspace/tmp/daon-codef-test/frontend.test.mjs` [L]에 있다.
-- **주민등록증 사진 = 신분증 사본** — 1단계든 3단계 `#photoBox`든, 올린 사진은 `state.photos.id`(메모리에만)에 보관하고 `state.fetched.id`를 `photo:true`로 표시한다. `docFileFor`가 그 서류만 **원본 사진 파일**(JPG/PNG, `bytes`)로 돌려주므로 미리보기·저장·ZIP이 모두 사진 그대로다. 사진은 저장(localStorage)하지 않으므로 새로 고치면 `restoreSaved`가 `photo` 첨부를 지우고 로그에 남긴다. 사진으로 붙인 서류는 `reapplyPhotoDocs`로 프로그램 선택·재렌더 뒤에도 유지한다.
-- **장애인증명서 주소** — 정부24는 주소검색 결과가 **한 건**인 주소만 통과시키고, 아파트 이름만·시·도만·번지 없는 '동'·괄호 메모가 섞인 주소는 `CF-13006`을 돌려준다. `cleanAddr`/`addrProblem`(프론트)과 `cleanAddress`/`addressProblem`(프록시)이 같은 규칙으로 ① 다듬고 ② 번지가 없으면 CODEF을 부르지 않고 막고 ③ `CF-13006`이면 보낸 주소를 보여 주며 `retryWithAddr`(휴대폰 인증 한 번 더)로 고쳐 다시 요청하게 한다. 이 규칙을 느슨하게 풀지 않는다.
-- **장애인증명서 · 복지카드 · 주민번호(2026-11-20)** — 서류 이름은 '장애인증명서 **또는** 복지카드 사본'이다. 1단계 카드 `source`가 `idcard`가 아니면 복지카드가 확인된 것이므로 정부24 장애인증명서를 빼고 **인증 2번**(정부24 등본 → 건강보험 자격득실확인서)으로 끝낸다. 넣을 때는 주민등록번호 뒷자리 7자리를 한 번 받아 앞 6자리(생년월일 YYMMDD)와 합쳐 13자리로 프록시에 보내고, 화면·저장소에는 남기지 않는다. 인증 횟수는 일괄 인증 모달·진행 화면 맨 위에 "총 N번 인증합니다 (기관마다 1회)"와 순서로 보여 준다(`authPlanHtml`).
-- 기관 로그인·서류 자동 수집·자동 첨부·접수는 **기본값이 시연 연출**이다. 외부 요청 0건의 모의(Mock)이며, 화면 고지("시연용 가상 로그인", "실제로는 본인이 직접 발급받아야 해요")를 지우지 않는다. **프록시를 연결했을 때만** `startReal`이 실제 API를 부른다. 실제 모드에서도 받지 못한 서류는 '직접 준비'로 남기고 가짜로 채우지 않는다.
-- 메일 보내기는 **빈 수신자 `mailto:`만** 쓴다. 특정 개인·기관 이메일 주소를 코드에 넣지 않는다.
+**데이터 정의 위치** — 사람을 추가하려면 `PEOPLE`(1번 섹션의 `PEOPLE` 객체)에만 넣으면 화면·알림·전화가 모두 따라온다. 약은 `PEOPLE[].meds`, 일정은 `PEOPLE[].events`. 알림 초기값은 `ALERT_SEED`, 받을 소식은 `SUBS`, 통화 대본은 `CALLS`, 예시 약봉투는 `SAMPLE_BAG`.
 
-## 4. 수정 시 주의사항
+**저장** — `localStorage['daon.health.v1']`(오늘 복약 체크·알림·설정·대화·통화 기록) / `daon.health.a11y`(큰 글씨·고대비·읽어주기). **사진·음성은 저장하지 않는다.** 저장 스키마를 바꾸면 키 이름을 올리고(`v2`), 이전 값을 읽는 처리를 남긴다.
 
-1. **단일 파일 유지** — 외부 CDN·폰트·라이브러리·이미지 파일을 추가하지 않는다. 아이콘은 이모지 또는 인라인 SVG만 사용한다. 유일한 예외는 복지카드 OCR용 Tesseract.js 동적 로드(`OCR_LIB_URL`)이며, 이것도 없으면 앱의 다른 기능은 그대로 오프라인에서 동작하고 OCR만 안내 후 직접 입력으로 넘어간다.
-2. **간편함이 1원칙** — 한 화면에 초록(주된) 버튼은 하나, 나머지는 같은 크기의 흰 버튼이다. 화면마다 "지금 눌러야 할 것"이 분명해야 한다. 새 요소를 넣을 때는 (a) 지금 화면에서 꼭 필요한가 (b) 쉬운 말인가 (c) 손가락으로 누르기 큰가를 먼저 본다. 표·작은 글씨·긴 문단을 쌓지 않는다.
-3. **쉬운 말 우선** — 화면 문구는 "복지카드 찍기", "할 수 있는 일자리", "나라에서 서류 가져오기", "빠진 것만 적고 내기"처럼 일상어로 쓴다. 행정 용어가 필요하면 괄호로 짧게 덧붙인다.
-4. **색 대비 4.5:1 이상** — 본문은 `--ink`/`--ink-soft`/`--ink-mute`, 초록 버튼은 `--btn(#1B6438)` 위 흰 글씨를 쓴다.
-5. **터치 영역 44px 이상** — 기본 버튼 `.btn` 56px, 하단 `.cta` 62px, 큰 글씨 모드에서는 64~72px. 칩·입력·저장 버튼도 44px 이상.
-6. **접근성** — 키보드 포커스(`:focus-visible`), `aria-*`(누른 상태 `aria-pressed`, 단계 `aria-current="step"`, 진행 로그 `aria-live`), `.sr-only`, `prefers-reduced-motion` 대응을 유지한다. 고정 헤더가 입력칸을 가리지 않도록 `scroll-margin-top`을 유지한다.
-7. **접근성 3모드** — `body.a11y-big`(큰 글씨), `body.a11y-contrast`(고대비), `body.easy`(지적·자폐성 인식 시 쉬운 말 모드). 새 UI를 추가하면 세 모드의 스타일을 같은 커밋에 넣는다.
-8. **장애 유형별 배려** — `applyProfile()`이 카드 인식 뒤 자동으로 맞춘다. 시각=큰 글씨+읽어주기, 청각=글자 안내, 지체·뇌병변=큰 글씨·큰 버튼, 지적·자폐성=쉬운 말 모드, 정신=근무 시간·업무 조정 안내. **지적·자폐성·정신을 하나로 묶거나 정신장애를 '발달장애'로 표시하지 않는다**(`TYPE_ORDER`, `isDevType`). 이 동작을 없애거나 문구를 바꾸지 않는다.
-9. **기존 기능 보존** — 8개 사업·근로지원 제도 7개·근무지 10곳·예시 인물 7종·서류 파일 생성·미리보기·저장·ZIP·인쇄·메일·읽어주기는 시연의 핵심이므로 삭제·축소하지 않는다.
-10. **프로토타입 고지 유지** — 신청서·서류의 "시연용 가상 문서" 워터마크, 카드 화면의 "사진은 서버로 보내지 않아요", 접수 완료의 "실제로 전송되지 않은 시연용 접수" 문구를 지우지 않는다.
-11. **인쇄** — 신청서 인쇄는 `printHtmlString()`이 문서를 새 탭(Blob URL)으로 열어 인쇄하고, 팝업이 막히면 HTML 파일로 저장한다. 인쇄용 문서는 `docShell()`(7-F)이 만든 완성 HTML이어야 한다.
-12. **XSS 습관** — 사용자 입력은 반드시 `esc()`로 이스케이프한 뒤 `innerHTML`에 넣는다.
-13. **서류 파일은 시연용 가상 문서** — 파일 카드·미리보기·저장(`Blob`+`URL.createObjectURL`)·ZIP(`buildZip`)은 브라우저 안에서만 만들어지며 외부 전송이 없다. 문서 본문에는 항상 '시연용 가상 문서' 워터마크와 고지, 가상 값(가명)만 넣는다. ZIP은 무압축(store) 방식이며 파일명은 UTF-8 플래그(0x0800)로 기록한다.
-14. **큰 글씨·음성 안내 기준** — 큰 글씨 모드는 본문 20px 이상·버튼 64px 이상, 375px에서 가로 스크롤이 없어야 한다. 음성 대본은 민원인 응대용 구어체로 쓰고 화면 이름을 함께 말한다. 음성은 한국어 우선순위(SunHi→Yuna→Sora→Heami→Google 한국의)로 고르며, 속도는 **기본 `rate 0.82`(천천히)**, `0.93`(보통)으로 바꿀 수 있다. `pitch 1.04` 유지. 속도 상수는 `TTS_RATE_SLOW`/`TTS_RATE_NORMAL` 한 곳에서만 관리한다.
-15. **localStorage 키 고정** — 접근성 설정 `daon.a11y.v1`(`big`·`contrast`·`voice`·`rate`), 자동 임시저장 `daon.state.v1`(내부 스키마 `v: 5` — 채팅·민원 접수·알림·구독·협회원 설정 포함, `v: 4`도 읽음), 프록시 설정 `daon.codef.v1`(`url`·`token` — 저장값이 없으면 기본 프록시, 빈 `url`은 직접 해제). 저장값은 브라우저 밖으로 나가지 않으며 `resetAll`에서 앞의 둘을 비운다. 실제 조회값(`state.real`)과 올린 사진(`state.photos`)은 저장하지 않는다(메모리에만). 스키마를 바꾸면 `v`를 올리고 `restoreSaved`에서 검증한다.
-16. **음성 안내** — 외부 TTS 라이브러리를 넣지 않고 `window.speechSynthesis`만 사용한다. 한국어 음성이 없는 기기에서는 음성 안내를 켜지 않고 `NO_KO_VOICE_MSG`로 안내한다.
-16-B. **낭독은 한 곳에서** — 화면 낭독 안내는 `#a11yStatus` 라이브 리전 한 곳만 쓴다. `toast()`는 보이는 안내만 담당하고(80ms 뒤 announce로 넘김), `announce()`가 바로 오면 같은 말을 두 번 읽지 않는다. `#toast`에 `role=status`를 다시 붙이지 않는다.
-16-C. **하단 고정 버튼과 시트 여백** — 시트 안 `.stickybtns`는 화면 아래에 붙어 마지막 내용을 가릴 수 있다. 내용을 바꾼 뒤 `fitSheetFoot(오버레이)`를 불러, 내용이 넘칠 때만 시트에 아래 여백(`.hasfoot`)을 준다. 새 시트를 만들면 같은 처리를 넣는다.
-16-D. **실제/시연 로그 분리** — `fetchDocs`(시연)는 시작할 때 `fetchState.log`를 비우고, 실제 조회를 중단하면 `closeLogin`이 `⏹ 중단` 항목을 남긴다. 한 로그에 실제·시연 기록이 섮이면 안 된다.
-17. **단계 표시와 화면 이동** — 화면 이동은 항상 `go(view)`를 거쳐 `state.view`·화면 표시·단계 표시·하단 버튼을 함께 맞춘다. 화면을 직접 감추지 않는다. `go()`는 새 화면 제목(`h1`/`h2`)으로 포커스를 옮기고, 목록을 다시 그리는 함수는 재렌더 뒤 선택한 라디오로 포커스를 돌려준다(`focusBack`). 모달은 `overlayReturn`으로 열었던 버튼에 포커스를 돌린다.
-18. **입력 오류 연결** — 필수 입력은 `required`(aria-required)·`aria-describedby`(오류 span)·`aria-invalid`·오류 문구 `role="alert"`를 함께 쓴다. `validateForm`은 필드 안 모든 입력의 `aria-invalid`를 같이 맞춘다. 새 입력칸을 추가하면 label·오류 문구·연결을 같은 커밋에 넣는다.
-19. **4단계 확인 카드** — `#view-submit` 맨 위 `#confirmCard`에서 이름·생년월일·주소·필요 지원·이동 수단을 확인·수정하게 하고, 값은 `state.form`에 저장되어 `form1Doc`~`form3Doc`·인쇄·ZIP·접수증·미리보기에 그대로 들어간다. 이름·생년월일을 가짜로 만들지 않는다(`birthText()`는 입력값만 쓰고 비어 있으면 `—`).
-20. **공식 서식 3종은 원본 1:1** — 제목·표 구조·항목명·문구를 기장군 2027년 모집공고 [서식1]~[서식3]과 진주시 참여신청서식에서 그대로 옮긴다. 구조를 임의로 바꾸거나 항목을 지어내지 않는다. 값이 없으면 원본처럼 빈칸으로 두고, 글자를 읽지 못하는 항목은 억지로 채우지 않는다.
-21. **자격 판정은 지침 수치** — `eligibility()`의 제한·예외는 「2026년 장애인일자리 사업안내」와 모집공고 근거를 주석으로 남긴다. 제한이 있으면 `submitAll`이 접수를 막고, 서명이 없으면 서명란으로 포커스를 옮긴다.
-22. **개인정보** — 서명 이미지·올린 사진(주민등록증·복지카드)은 브라우저 안에서만 다루고 서버로 보내지 않는다. 사진은 `state.photos`(메모리)에만 두고 localStorage·ZIP 외에는 어디에도 쓰지 않는다. 공개 저장소이므로 커밋 금지(`CLAUDE.md` 상단 규칙).
-18. **진행 로그** — 기관 서류 수집은 `fetchState.log`에 쌓고 `renderAgentLog()`가 최신 순으로 그린다. 단계는 `connect → login → issue → attach`이며, 새 단계를 넣으면 `phaseLabel()`과 기관 카드 상태 문구를 함께 고친다.
-23. **주민등록번호 뒷자리는 한 번만, 저장하지 않는다** — 장애인증명서를 조회할 때만 `#cfRrn`(또는 재입력 `#runRrn`)에 `type="password"`·`inputmode="numeric"`·`maxlength="7"`·`autocomplete="off"`로 받고, 값은 `realState.profile.rrnBack`(메모리)에만 둔다. `state.form`·localStorage·스냅샷에 넣지 않고, 요청을 보낸 직후 입력칸을 비우며 `applyRealDoc`·`skipRealDoc`·`finishReal`·`closeLogin`에서 `clearRrnProfile()`로 지운다. 안내 문구는 "정부24 장애인증명서 조회에만 1회 쓰이고 저장되지 않습니다"를 유지한다. 복지카드 사본이 있으면 장애인증명서는 기본으로 빼서 인증 횟수를 2번으로 줄인다(`docScope`, `disabilityInScope`).
+---
 
-## 5. Claude Code 협업 규칙
+## 3. 접근성 규칙 (어르신·장애인 사용자 전제)
 
-- **개인정보 절대 커밋 금지** — 실명·주민등록번호·연락처·주소·계좌·복지카드 사진·스크린샷 원본을 저장소에 넣지 않는다. **CODEF 키·프록시 접속 토큰도 넣지 않는다.** 이 저장소는 **공개(Public)** 이며 GitHub Pages로 누구나 볼 수 있다. 예시 값은 `김다온(가명)`, `010-1234-5678`, `경상남도 진주시 ○○로 12 (예시)` 같은 가상 값만 쓴다.
-- **시연용 고지 유지** — 복지카드 인식·기관 로그인·서류 자동 첨부·접수는 시연 연출임을 화면과 코드 주석 모두에 남긴다.
-- 커밋 전 최소 확인:
-  1. `index.html` 하나로 열리는지(콘솔 오류 0)
-  2. 예시 카드 → 인식 → 일자리 → 서류(기관 로그인 모달·진행 로그·파일 카드) → 신청 → 접수증까지 이어지는지
-  3. 되돌아가기(이전 화면·단계 표시·처음부터)가 동작하는지
-  4. 모바일 폭(360~420px)에서 가로 스크롤이 없는지(큰 글씨·고대비·쉬운 말 모드 포함)
-  5. `proxy/`를 고쳤으면 Node 18+에서 `node --input-type=module -e "await import('./proxy/cloudflare-worker.js')"`로 로드되는지, `/api/health`·`/api/auth/request`·`/api/auth/complete` 응답 모양(`ok`·`status`·`twoWayInfo`·`normalized`)이 그대로인지 확인
-  6. 실제/시연 구분이 흐려지지 않았는지 — 프록시 미연결에서 실제 요청 0건, 실제 모드에서 받지 못한 서류는 '직접 준비'
-- 배포는 `main` 브랜치에 push하면 GitHub Pages가 자동 반영한다(1분 내외). 반영 후 실제 URL에서 새 기능 문구가 보이는지 확인한다.
-- 이 저장소는 공모전 제출·시연용이다. 기능을 늘리기보다 **시연 흐름이 끊기지 않는 것**을 우선한다.
+- 주요 버튼 **최소 48px 높이**, 한 화면에 주된 행동 하나.
+- `body.a11y-big`(큰 글씨) · `body.a11y-contrast`(고대비) · 읽어주기(`speak()`) 세 모드를 **깨뜨리지 않는다**. 새 컴포넌트를 추가하면 세 모드 각각의 스타일을 같이 넣는다.
+- 색만으로 정보를 전달하지 않는다(체크는 `✓` 문자 + `aria-pressed`, 알림은 점 + 굵기).
+- 모든 화면 하단에 `.safebar`(가상 데이터·진단 대체 불가·119)가 고정되어 있다. **이 줄을 숨기거나 줄이지 않는다.** `main`의 `padding-bottom`은 이 줄 높이를 비운 값이다.
+
+---
+
+## 4. 실행과 검증
+
+### 실행
+```bash
+# 방법 1: 그냥 열기
+open index.html            # macOS
+
+# 방법 2: 로컬 서버 (권장 — 음성 인식·알림 권한이 정상 동작)
+python3 -m http.server 8000
+# 브라우저에서 http://localhost:8000
+```
+
+### 검증 (커밋 전 필수)
+```bash
+pip install playwright && playwright install chromium
+python3 tests/verify_hackathon.py                       # 로컬 파일로 검증
+python3 tests/verify_hackathon.py http://localhost:8000/ out/   # 서버·출력 폴더 지정
+```
+이 스크립트가 확인하는 것 (38개 항목):
+- 콘솔 에러 0건, 375px·1280px **가로 넘침 없음**
+- 첫 실행 안전 안내 → 닫힘, 안전 고지 줄 표시
+- 채팅 인사·브리핑·빠른 질문, "오늘 먹을 약" 답변 + 약 목록 카드
+- **응급 문구("가슴이 아파요") → 119 안내 + 판단하지 않음 문구**
+- 약 체크 시 진행 수 증가, 약봉투 예시 → 결과 확인 → **일정에 약이 더해짐**
+- 안부 전화 연결 → 답변 칩 → **정리 카드 `DAON-CALL`** 생성
+- 받을 소식 5개, 소식 끄면 해당 알림이 사라짐
+- 큰 글씨·고대비에서 넘침 없음, 안전 안내 시트 열림
+
+스크린샷은 기본으로 `tmp/shots-health/`(스크립트 인자로 지정)에 남는다.
+
+### 손으로 확인할 것 (자동 검증이 못 잡는 것)
+- [ ] 아이폰 Safari에서 열어 **큰 글씨** 모드로 첫 화면~약 체크까지
+- [ ] 소리(읽어주기) 켜고 안부 전화 1회 — 말이 끊기지 않는지
+- [ ] 비행기 모드에서 예시 약봉투 시연이 그대로 되는지 (CDN 없이)
+
+---
+
+## 5. 시연 대본 (발표 때 이 순서)
+
+1. 첫 실행 안내 → **가상 데이터로 시작하기**
+2. 채팅: 인사 + 오늘의 복약·돌봄 카드
+3. **오늘의 약 → 예시 약봉투로 해 보기 → 결과 확인 → 오늘 일정에 넣기**
+4. 아침약 체크 → 진행률 상승
+5. **안부 전화 → 복약 확인 → 답변 → 정리 카드 → 보호자에게 전달**
+6. **맞춤 알림**: 전달 기록·병원·복지 연계 알림
+7. 채팅에 **"가슴이 아파요"** → 119 안내(안전 경계)로 마무리
+
+발표 60분 전부터는 **문구만** 수정한다. 기능·구조 변경 금지.
+
+---
+
+## 6. 다음에 붙일 것 (우선순위)
+
+1. **약봉투 OCR 정확도** — 지금은 브라우저 Tesseract(CDN)로 글자를 읽고 정규식으로 약 이름·1일 횟수·식전/식후를 추정한다. 오탈자가 많으므로 (a) 읽은 글자를 사용자가 **직접 고치는 칸**, (b) 약 이름 사전(식약처 허가 목록) 대조가 다음 단계다.
+2. **대화에 LLM 연결** — `main` 브랜치의 `askClaude()`/`chatFacts()` 구조(프록시 `/api/chat`)를 참고. 단, 보내는 내용에서 이름·번호·사진을 빼고, **안전 답변(emergency/sick)은 규칙이 먼저** 처리해야 한다.
+3. **돌봄 기록 내보내기** — 통화 정리 카드를 텍스트/CSV로 내려 재가복지센터 기록에 붙이는 흐름.
+4. **실제 알림 예약** — 지금은 앱을 열었을 때의 알림 센터·테스트 알림만 있다. Service Worker로 시간 예약 알림을 붙이면 "약 시간에 울린다"는 핵심이 실제로 동작한다.
+
+---
+
+## 7. 커밋 규칙
+
+- 브랜치: `hackathon` (푸시: `git push origin hackathon`)
+- 메시지: 무엇을 **왜** 바꿨는지 한 줄 + 필요하면 본문 2~3줄. 예) `안부 전화: 병원 일정 확인 시나리오 추가 — 발표 7장에서 이동 도움 연결을 보여 주기 위해`
+- 문서·화면 문구를 함께 고쳤으면 같은 커밋에 묶는다.
+- 커밋 전 `tests/verify_hackathon.py`를 돌리고, 결과(항목 수·실패 0)를 커밋 본문에 한 줄 남긴다.

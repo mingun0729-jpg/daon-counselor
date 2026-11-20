@@ -1,4 +1,3 @@
 preview/*.png
-
-.wrangler/
-node_modules/
+hackathon-shots/
+__pycache__/
