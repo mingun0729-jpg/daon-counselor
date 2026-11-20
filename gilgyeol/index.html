@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>길결 — 내 몸의 결대로, 갈 수 있는 길만</title>
+<meta name="description" content="신체기능과 최신 도로 정보를 함께 반영하는 배리어프리 휠체어 내비게이션 '길결' 시연용 웹 프로토타입. 모든 지도·업소·위치는 가상 데이터입니다." />
+<style>
+/* ============================================================
+   길결 — 디자인 토큰
+   배리어프리 서비스이므로 화면 자체도 접근성 기준을 지킨다.
+   · 본문 대비 4.5:1 이상, 터치 목표 48px 이상
+   · 모션 최소화(prefers-reduced-motion), 키보드 포커스 가시화
+   · 1280px 데스크톱 / 375px 모바일 모두 가로 스크롤 0
+   ============================================================ */
+:root{
+  --bg:#F3F5F0;
+  --surface:#FFFFFF;
+  --surface-2:#FAFBF8;
+  --ink:#12211C;
+  --ink-2:#4A5A54;
+  --ink-3:#6E7C76;
+  --line:#DBE2DA;
+  --line-2:#E7ECE5;
+  --brand:#0E5C4E;
+  --brand-2:#12796A;
+  --brand-soft:#E4F1EC;
+  --amber:#9A6206;
+  --amber-soft:#FBF0D9;
+  --ease:#1B6F4F;
+  --ease-soft:#E2F2E9;
+  --warn:#8F5A05;
+  --warn-soft:#FBEEDA;
+  --danger:#A61B12;
+  --danger-soft:#FBE7E4;
+  --blue:#1B57B0;
+  --blue-soft:#E7EEFA;
+  --shadow:0 1px 2px rgba(18,33,28,.06), 0 8px 24px -12px rgba(18,33,28,.18);
+  --shadow-lg:0 24px 60px -24px rgba(18,33,28,.35);
+  --r:16px;
+  --r-sm:10px;
+  --fs:16px;
+  --tap:48px;
+}
+html{ -webkit-text-size-adjust:100%; }
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-size:var(--fs);
+  font-family:"Pretendard","Apple SD Gothic Neo","Noto Sans KR",system-ui,-apple-system,"Segoe UI",Roboto,"Malgun Gothic",sans-serif;
+  line-height:1.55; letter-spacing:-0.01em;
+  word-break:keep-all;
+}
+body.large-text{ --fs:18px; }
+*,*::before,*::after{ box-sizing:border-box; }
+h1,h2,h3,h4,p,ul,ol,dl,dd,figure{ margin:0; }
+ul,ol{ padding:0; list-style:none; }
+button{ font:inherit; color:inherit; }
+:focus-visible{ outline:3px solid #1B57B0; outline-offset:2px; border-radius:6px; }
+.skip{ position:absolute; left:-9999px; top:0; background:var(--brand); color:#fff; padding:12px 18px; border-radius:0 0 12px 0; z-index:100; }
+.skip:focus{ left:0; }
+.num{ font-variant-numeric:tabular-nums; }
+.sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+
+/* ---------- 상단 ---------- */
+.top{ background:linear-gradient(180deg,#0B4A3F 0%, #0E5C4E 60%, #0E5C4E 100%); color:#fff; position:sticky; top:0; z-index:30; box-shadow:0 6px 22px -14px rgba(0,0,0,.6); }
+.top-inner{ max-width:1280px; margin:0 auto; padding:14px 24px 0; display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+.brand{ display:flex; align-items:center; gap:12px; margin-right:auto; }
+.logo{ width:44px; height:44px; border-radius:13px; background:#F6C86A; color:#40310A; display:grid; place-items:center; font-weight:800; font-size:22px; flex:0 0 auto; box-shadow:inset 0 -2px 0 rgba(0,0,0,.12); }
+.brand h1{ font-size:1.32rem; line-height:1.15; letter-spacing:.02em; }
+.tagline{ font-size:.78rem; color:#C9E2DA; margin-top:2px; }
+.top-right{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.chip{ display:inline-flex; align-items:center; gap:6px; min-height:36px; padding:6px 12px; border-radius:999px; font-size:.8rem; font-weight:600; border:1px solid transparent; white-space:nowrap; }
+.chip-ghost{ background:rgba(255,255,255,.12); color:#E8F4F0; border-color:rgba(255,255,255,.22); }
+button.chip-ghost{ cursor:pointer; }
+button.chip-ghost[aria-pressed="true"]{ background:#F6C86A; color:#3A2C06; border-color:#F6C86A; }
+.tabs{ max-width:1280px; margin:12px auto 0; padding:0 24px; display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; }
+.tabs::-webkit-scrollbar{ display:none; }
+.tabs button{
+  appearance:none; background:transparent; border:0; cursor:pointer;
+  padding:12px 16px 14px; min-height:var(--tap); color:#BFDCD4; font-weight:700; font-size:.95rem;
+  border-bottom:3px solid transparent; white-space:nowrap; display:inline-flex; align-items:center; gap:8px;
+}
+.tabs button[aria-selected="true"]{ color:#fff; border-bottom-color:#F6C86A; }
+.tabs button:hover{ color:#fff; }
+
+/* ---------- 레이아웃 ---------- */
+main{ max-width:1280px; margin:0 auto; padding:22px 24px 120px; }
+.panel[hidden]{ display:none; }
+.card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow); }
+.card-h{ padding:16px 18px 0; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.card-h h2, .card-h h3{ font-size:1rem; font-weight:800; letter-spacing:-0.01em; }
+.card-h .sub{ font-size:.78rem; color:var(--ink-3); font-weight:600; }
+.card-b{ padding:14px 18px 18px; }
+.stack{ display:grid; gap:14px; }
+.row{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.spacer{ flex:1 1 auto; }
+.muted{ color:var(--ink-3); }
+.small{ font-size:.8rem; }
+.tiny{ font-size:.72rem; }
+.strong{ font-weight:800; }
+
+/* ---------- 프로필 바 ---------- */
+.profile-bar{ display:grid; grid-template-columns:minmax(0,1.55fr) minmax(0,1fr); gap:14px; margin-bottom:16px; }
+.profiles{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+.pcard{
+  text-align:left; cursor:pointer; background:var(--surface); border:2px solid var(--line); border-radius:var(--r);
+  padding:14px 14px 12px; min-height:104px; display:flex; flex-direction:column; gap:6px;
+  transition:border-color .15s, box-shadow .15s, transform .15s;
+}
+.pcard:hover{ border-color:#A9C8BE; }
+.pcard[aria-pressed="true"]{ border-color:var(--brand); background:linear-gradient(180deg,#F2FAF6,#FFFFFF); box-shadow:0 10px 26px -16px rgba(14,92,78,.65); }
+.pcard .emoji{ font-size:1.5rem; line-height:1; }
+.pcard .pname{ font-weight:800; font-size:.95rem; }
+.pcard[aria-pressed="true"] .pname::after{ content:" ✓"; color:var(--brand); font-weight:900; }
+.pcard[aria-pressed="true"] .emoji{ filter:saturate(1.2); }
+.pcard .pmeta{ font-size:.74rem; color:var(--ink-3); line-height:1.4; }
+.pcard .pcheck{ margin-left:auto; }
+
+.summary{ padding:14px 16px; display:flex; flex-direction:column; gap:10px; }
+.summary .sum-h{ display:flex; align-items:center; gap:8px; font-weight:800; font-size:.95rem; }
+.param{ display:grid; grid-template-columns:76px 1fr 62px; align-items:center; gap:10px; font-size:.82rem; }
+.param label{ color:var(--ink-2); font-weight:700; }
+.param output{ text-align:right; font-weight:800; color:var(--brand); }
+input[type="range"]{ -webkit-appearance:none; appearance:none; width:100%; height:30px; background:transparent; cursor:pointer; }
+input[type="range"]::-webkit-slider-runnable-track{ height:8px; background:#DCE5DE; border-radius:999px; }
+input[type="range"]::-webkit-slider-thumb{ -webkit-appearance:none; width:24px; height:24px; border-radius:50%; background:var(--brand); border:3px solid #fff; box-shadow:0 2px 6px rgba(0,0,0,.25); margin-top:-8px; }
+input[type="range"]::-moz-range-track{ height:8px; background:#DCE5DE; border-radius:999px; }
+input[type="range"]::-moz-range-thumb{ width:22px; height:22px; border-radius:50%; background:var(--brand); border:3px solid #fff; }
+
+/* ---------- 경로 화면 ---------- */
+.route-grid{ display:grid; grid-template-columns:minmax(0,300px) minmax(0,1fr) minmax(0,370px); gap:16px; align-items:start; }
+.od{ display:flex; flex-direction:column; gap:2px; padding:14px 16px; }
+.od-line{ display:grid; grid-template-columns:22px 1fr; gap:10px; align-items:start; padding:7px 0; }
+.od-dot{ width:12px; height:12px; border-radius:50%; margin:6px 0 0 5px; border:3px solid var(--brand); background:#fff; }
+.od-dot.end{ background:var(--brand); border-color:var(--brand); }
+.od-role{ font-size:.72rem; color:var(--ink-3); font-weight:700; }
+.od-name{ font-weight:800; font-size:.92rem; }
+.od-foot{ border-top:1px dashed var(--line); margin-top:6px; padding-top:10px; display:flex; gap:14px; font-size:.78rem; color:var(--ink-2); }
+.od-foot b{ color:var(--ink); }
+
+.toggle-row{
+  width:100%; display:flex; align-items:center; gap:12px; text-align:left; cursor:pointer;
+  background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:12px 13px; min-height:var(--tap);
+}
+.toggle-row:hover{ border-color:#B7CFC7; }
+.switch{ width:48px; height:28px; border-radius:999px; background:#C9D4CD; position:relative; flex:0 0 auto; transition:background .15s; }
+.switch::after{ content:""; position:absolute; top:3px; left:3px; width:22px; height:22px; border-radius:50%; background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.3); transition:transform .15s; }
+[aria-pressed="true"] .switch{ background:var(--danger); }
+[aria-pressed="true"] .switch::after{ transform:translateX(20px); }
+.toggle-row .tlabel{ font-weight:800; font-size:.88rem; }
+.toggle-row .tsub{ font-size:.72rem; color:var(--ink-3); }
+.toggle-row[aria-pressed="true"]{ background:var(--danger-soft); border-color:#EBB6AF; }
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px; cursor:pointer;
+  min-height:var(--tap); padding:11px 16px; border-radius:12px; font-weight:800; font-size:.9rem;
+  border:1.5px solid var(--line); background:var(--surface); color:var(--ink);
+  transition:background .15s, border-color .15s, transform .06s;
+}
+.btn:hover{ background:var(--surface-2); border-color:#B7CFC7; }
+.btn:active{ transform:translateY(1px); }
+.btn-primary{ background:var(--brand); border-color:var(--brand); color:#fff; }
+.btn-primary:hover{ background:#0B4E42; border-color:#0B4E42; }
+.btn-danger{ background:var(--danger); border-color:var(--danger); color:#fff; }
+.btn-danger:hover{ background:#8E1610; }
+.btn-warn{ background:var(--amber-soft); border-color:#E9C68A; color:#5A3B02; }
+.btn-sm{ min-height:40px; padding:8px 12px; font-size:.82rem; border-radius:10px; }
+.btn-block{ width:100%; }
+
+.alert{
+  display:flex; gap:10px; align-items:flex-start; padding:11px 13px; border-radius:12px; font-size:.8rem; line-height:1.45;
+  background:var(--danger-soft); border:1px solid #EDB9B1; color:#67120B;
+}
+.alert .ai{ font-size:1rem; line-height:1.2; }
+.alert[hidden]{ display:none; }
+.alert.ok{ background:var(--brand-soft); border-color:#B7D8CC; color:#0B4438; }
+.banner-live{ animation:pop .35s ease-out; }
+@keyframes pop{ from{ transform:scale(.98); opacity:.4 } to{ transform:scale(1); opacity:1 } }
+
+.hz-list{ display:grid; gap:8px; }
+.hz{ display:grid; grid-template-columns:26px 1fr auto; gap:8px; align-items:start; padding:9px 11px; border-radius:10px; background:var(--surface-2); border:1px solid var(--line-2); font-size:.78rem; }
+.hz .hz-ic{ font-size:.95rem; }
+.hz .hz-t{ font-weight:700; }
+.hz .hz-s{ color:var(--ink-3); font-size:.72rem; }
+.hz .hz-ago{ font-size:.7rem; color:var(--ink-3); white-space:nowrap; font-weight:700; }
+.empty{ font-size:.8rem; color:var(--ink-3); padding:10px 2px; }
+
+/* 지도 */
+.map-card{ overflow:hidden; }
+.map-wrap{ position:relative; background:#EAEFE6; }
+.map-wrap svg{ display:block; width:100%; height:auto; }
+.map-legend{ display:flex; gap:12px; flex-wrap:wrap; padding:10px 14px; background:var(--surface); border-top:1px solid var(--line); font-size:.74rem; color:var(--ink-2); }
+.legend-i{ display:inline-flex; align-items:center; gap:6px; }
+.legend-swatch{ width:18px; height:0; border-top-width:4px; border-top-style:solid; border-radius:2px; }
+.map-ctl{ position:absolute; top:10px; right:10px; display:flex; gap:6px; }
+.map-badge{ position:absolute; left:10px; top:10px; background:rgba(255,255,255,.94); border:1px solid var(--line); border-radius:999px; padding:5px 11px; font-size:.72rem; font-weight:800; color:var(--ink-2); box-shadow:var(--shadow); }
+.route-path{ fill:none; stroke-linecap:round; stroke-linejoin:round; transition:opacity .2s, stroke-width .2s; }
+.route-path.dim{ opacity:.28; }
+.route-hit{ fill:none; stroke:transparent; stroke-width:22; cursor:pointer; }
+.route-hit:focus-visible{ stroke:rgba(27,87,176,.35); }
+.seg-info{ border-top:1px solid var(--line); padding:12px 16px 14px; background:var(--surface); }
+.seg-info h4{ font-size:.85rem; font-weight:800; display:flex; align-items:center; gap:8px; }
+.seg-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(96px,1fr)); gap:8px; margin-top:9px; }
+.seg-cell{ background:var(--surface-2); border:1px solid var(--line-2); border-radius:9px; padding:7px 9px; }
+.seg-cell .k{ font-size:.68rem; color:var(--ink-3); font-weight:700; }
+.seg-cell .v{ font-size:.86rem; font-weight:800; }
+
+/* 경로 비교 카드 */
+.rcard{ padding:14px 15px; border:2px solid var(--line); border-radius:14px; background:var(--surface); display:grid; gap:9px; cursor:pointer; transition:border-color .15s, box-shadow .15s; position:relative; }
+.rcard:hover{ border-color:#B7CFC7; }
+.rcard[data-active="true"]{ border-color:var(--brand); box-shadow:0 12px 28px -18px rgba(14,92,78,.8); }
+.rcard[data-active="true"]::before{ content:"현재 안내"; position:absolute; top:-11px; left:14px; background:var(--brand); color:#fff; font-size:.66rem; font-weight:800; padding:2px 9px; border-radius:999px; }
+.rcard .rc-h{ display:flex; align-items:center; gap:8px; }
+.rcard .rc-name{ font-weight:800; font-size:.92rem; }
+.rcard .rc-tag{ font-size:.68rem; font-weight:800; padding:2px 8px; border-radius:999px; background:var(--brand-soft); color:var(--brand); }
+.rcard .rc-tag.gray{ background:#EDF0EC; color:#5A645F; }
+.rcard .rc-tag.blue{ background:var(--blue-soft); color:var(--blue); }
+.rcard .rc-main{ display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
+.rcard .eta{ font-size:1.7rem; font-weight:900; letter-spacing:-0.03em; line-height:1.05; }
+.rcard .eta small{ font-size:.78rem; font-weight:800; color:var(--ink-3); margin-left:2px; }
+.rcard .rc-meta{ font-size:.76rem; color:var(--ink-2); display:flex; gap:10px; flex-wrap:wrap; }
+.rcard .rc-note{ font-size:.73rem; color:var(--ink-3); border-top:1px dashed var(--line); padding-top:8px; line-height:1.45; }
+.badge{ display:inline-flex; align-items:center; gap:5px; font-size:.74rem; font-weight:900; padding:4px 10px; border-radius:999px; white-space:nowrap; }
+.badge.ease{ background:var(--ease-soft); color:var(--ease); }
+.badge.warn{ background:var(--warn-soft); color:var(--warn); }
+.badge.danger{ background:var(--danger-soft); color:var(--danger); }
+.badge.ghostb{ background:#EDF0EC; color:#5A645F; }
+.dot{ width:8px; height:8px; border-radius:50%; background:currentColor; }
+
+/* 왜 이 경로인가 */
+.why{ display:grid; gap:9px; }
+.bar-row{ display:grid; grid-template-columns:70px 1fr 52px; gap:9px; align-items:center; font-size:.78rem; }
+.bar-row .bl{ color:var(--ink-2); font-weight:700; }
+.bar{ height:9px; border-radius:999px; background:#EDF1EC; overflow:hidden; }
+.bar > i{ display:block; height:100%; border-radius:999px; background:var(--brand); }
+.bar > i.warn{ background:#D08A16; }
+.bar > i.danger{ background:#C0392B; }
+.bar-row .bv{ text-align:right; font-weight:800; font-size:.75rem; color:var(--ink-2); }
+.kv{ display:flex; justify-content:space-between; gap:10px; font-size:.8rem; padding:5px 0; border-bottom:1px dashed var(--line-2); }
+.kv:last-child{ border-bottom:0; }
+.kv .k{ color:var(--ink-2); }
+.kv .v{ font-weight:800; }
+
+/* ---------- 공간 추천 ---------- */
+.filters{ display:flex; gap:8px; flex-wrap:wrap; }
+.fchip{
+  min-height:44px; padding:9px 14px; border-radius:999px; border:1.5px solid var(--line); background:var(--surface);
+  font-weight:800; font-size:.83rem; cursor:pointer; display:inline-flex; align-items:center; gap:7px;
+}
+.fchip:hover{ border-color:#B7CFC7; }
+.fchip[aria-pressed="true"]{ background:var(--brand); border-color:var(--brand); color:#fff; }
+.places-grid{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+.pcard2{ background:var(--surface); border:1px solid var(--line); border-radius:var(--r); box-shadow:var(--shadow); overflow:hidden; display:flex; flex-direction:column; }
+.pcard2 .thumb{ height:104px; position:relative; background:linear-gradient(135deg,#DFEAE2,#C9DED3); }
+.pcard2 .thumb svg{ width:100%; height:100%; display:block; }
+.pcard2 .ai-badge{
+  position:absolute; left:10px; bottom:10px; background:rgba(255,255,255,.95); border:1px solid #BFD6CC;
+  border-radius:999px; padding:4px 10px; font-size:.68rem; font-weight:900; color:var(--brand); cursor:pointer;
+  display:inline-flex; align-items:center; gap:5px; min-height:32px;
+}
+.pcard2 .ai-badge:hover{ background:#fff; }
+.pcard2 .body{ padding:12px 14px 14px; display:grid; gap:8px; flex:1; }
+.pcard2 .nm{ font-weight:800; font-size:.95rem; display:flex; align-items:center; gap:8px; }
+.pcard2 .cat{ font-size:.72rem; color:var(--ink-3); font-weight:700; }
+.spec{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; }
+.spec div{ background:var(--surface-2); border:1px solid var(--line-2); border-radius:8px; padding:6px 8px; }
+.spec .k{ font-size:.66rem; color:var(--ink-3); font-weight:700; }
+.spec .v{ font-size:.82rem; font-weight:800; }
+.spec .v.bad{ color:var(--danger); }
+.tags{ display:flex; gap:6px; flex-wrap:wrap; }
+.tag{ font-size:.68rem; font-weight:800; padding:3px 8px; border-radius:999px; background:#EDF1EC; color:#4F5B55; }
+.tag.ok{ background:var(--ease-soft); color:var(--ease); }
+.tag.no{ background:#F2F2EF; color:#8A938E; }
+.pcard2 .foot{ font-size:.7rem; color:var(--ink-3); display:flex; justify-content:space-between; gap:8px; border-top:1px dashed var(--line); padding-top:8px; }
+
+/* ---------- 이동 중 지원 ---------- */
+.support-grid{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,340px); gap:16px; align-items:start; }
+.sos-big{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.sos-btn{
+  border-radius:18px; padding:20px 18px; min-height:150px; display:flex; flex-direction:column; gap:6px; align-items:flex-start; justify-content:center;
+  border:2px solid; cursor:pointer; text-align:left; transition:transform .08s, box-shadow .15s;
+}
+.sos-btn:active{ transform:translateY(1px); }
+.sos-btn .em{ font-size:2rem; line-height:1; }
+.sos-btn .t{ font-size:1.1rem; font-weight:900; }
+.sos-btn .s{ font-size:.8rem; font-weight:600; opacity:.9; line-height:1.4; }
+.sos-119{ background:var(--danger); border-color:var(--danger); color:#fff; }
+.sos-119:hover{ background:#8E1610; }
+.sos-help{ background:#FFF5E3; border-color:#E9C68A; color:#5A3B02; }
+.sos-help:hover{ background:#FFEFD6; }
+.auto-list{ display:grid; gap:9px; }
+.auto{ display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:11px; background:var(--surface-2); border:1px solid var(--line-2); font-size:.82rem; }
+.auto .switch{ width:44px; height:26px; }
+.auto .switch::after{ width:20px; height:20px; }
+.auto[aria-pressed="true"] .switch{ background:var(--brand); }
+.auto[aria-pressed="true"] .switch::after{ transform:translateX(18px); }
+.log-list{ display:grid; gap:8px; }
+.log-i{ display:grid; grid-template-columns:58px 1fr; gap:10px; font-size:.78rem; }
+.log-i .lt{ color:var(--ink-3); font-weight:700; font-size:.72rem; padding-top:2px; }
+.log-i .ld{ background:var(--surface-2); border:1px solid var(--line-2); border-radius:9px; padding:8px 10px; }
+.contact-row{ display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px dashed var(--line-2); font-size:.82rem; }
+.contact-row:last-child{ border-bottom:0; }
+.avatar{ width:34px; height:34px; border-radius:50%; background:var(--brand-soft); color:var(--brand); display:grid; place-items:center; font-weight:900; font-size:.8rem; flex:0 0 auto; }
+
+/* ---------- SOS 도크 ---------- */
+.sos-dock{ position:fixed; right:20px; bottom:20px; z-index:40; display:flex; gap:8px; transition:opacity .15s; }
+body:has(dialog[open]) .sos-dock{ opacity:0; pointer-events:none; }
+.sos-dock .btn{ box-shadow:var(--shadow-lg); border-radius:999px; padding:0 20px; min-height:56px; font-size:.95rem; }
+
+/* ---------- 모달 ---------- */
+dialog{
+  border:0; padding:0; border-radius:20px; max-width:min(560px, calc(100vw - 28px)); width:100%;
+  box-shadow:var(--shadow-lg); background:var(--surface); color:var(--ink);
+}
+dialog::backdrop{ background:rgba(9,24,20,.55); backdrop-filter:blur(2px); }
+.dlg-h{ padding:18px 20px 12px; display:flex; align-items:flex-start; gap:12px; border-bottom:1px solid var(--line); }
+.dlg-h h3{ font-size:1.06rem; font-weight:900; }
+.dlg-h p{ font-size:.78rem; color:var(--ink-3); margin-top:2px; }
+.dlg-h .x{ margin-left:auto; background:var(--surface-2); border:1px solid var(--line); border-radius:10px; width:40px; height:40px; cursor:pointer; font-size:1.1rem; line-height:1; flex:0 0 auto; }
+.dlg-b{ padding:16px 20px; max-height:min(68vh, 560px); overflow-y:auto; }
+.dlg-f{ padding:12px 20px 18px; display:flex; gap:10px; flex-wrap:wrap; border-top:1px solid var(--line); }
+.dlg-f .btn{ flex:1 1 140px; }
+.opt-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.opt{
+  min-height:52px; padding:10px 12px; border-radius:11px; border:1.5px solid var(--line); background:var(--surface);
+  font-weight:800; font-size:.85rem; cursor:pointer; display:flex; align-items:center; gap:8px; text-align:left;
+}
+.opt[aria-pressed="true"]{ border-color:var(--brand); background:var(--brand-soft); color:var(--brand); }
+.opt[aria-pressed="true"].danger{ border-color:var(--danger); background:var(--danger-soft); color:var(--danger); }
+.field{ display:grid; gap:6px; margin-top:14px; }
+.field > label, .field > .flabel{ font-size:.8rem; font-weight:800; color:var(--ink-2); }
+.field textarea, .field input[type="text"]{
+  width:100%; border:1.5px solid var(--line); border-radius:10px; padding:10px 12px; font:inherit; font-size:.88rem; background:var(--surface);
+}
+.notice{ background:var(--warn-soft); border:1px solid #E9C68A; color:#5A3B02; border-radius:11px; padding:10px 12px; font-size:.76rem; line-height:1.5; display:flex; gap:8px; }
+.notice.brand{ background:var(--brand-soft); border-color:#B7D8CC; color:#0B4438; }
+.timeline{ display:grid; gap:10px; }
+.tl{ display:grid; grid-template-columns:26px 1fr; gap:10px; font-size:.82rem; }
+.tl .ic{ width:26px; height:26px; border-radius:50%; display:grid; place-items:center; font-size:.8rem; background:var(--brand-soft); color:var(--brand); font-weight:900; }
+.tl .tt{ font-weight:800; }
+.tl .ts{ color:var(--ink-3); font-size:.74rem; }
+.tl.done .ic{ background:var(--ease-soft); color:var(--ease); }
+.photo-demo{ border-radius:14px; overflow:hidden; border:1px solid var(--line); background:#EDF2EC; }
+.photo-demo svg{ display:block; width:100%; height:auto; }
+.detect-list{ display:grid; gap:7px; margin-top:10px; }
+.detect{ display:flex; justify-content:space-between; gap:10px; font-size:.82rem; padding:8px 11px; border-radius:9px; background:var(--surface-2); border:1px solid var(--line-2); }
+.detect b{ font-weight:800; }
+
+/* ---------- 푸터 ---------- */
+.site-foot{ max-width:1280px; margin:0 auto; padding:0 24px 60px; }
+.foot-card{ background:#E9EDE6; border:1px solid #D8DFD4; border-radius:var(--r); padding:18px 20px; display:grid; gap:10px; }
+.foot-card h4{ font-size:.85rem; font-weight:900; }
+.foot-card p, .foot-card li{ font-size:.76rem; color:#43514B; line-height:1.6; }
+.foot-card ul{ display:grid; gap:4px; padding-left:2px; }
+.foot-card li::before{ content:"· "; font-weight:900; }
+
+/* ---------- 반응형 ---------- */
+@media (max-width:1180px){
+  .route-grid{ grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+  .col-right{ grid-column:1 / -1; }
+  .rcards{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+  .places-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .support-grid{ grid-template-columns:1fr; }
+}
+@media (max-width:900px){
+  .profile-bar{ grid-template-columns:1fr; }
+  .route-grid{ grid-template-columns:1fr; }
+  .col-left, .col-right, .col-map{ grid-column:1 / -1; }
+  .col-left{ display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start; }
+  .rcards, .places-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .profiles{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
+@media (max-width:640px){
+  :root{ --r:14px; }
+  main{ padding:16px 14px 118px; }
+  .top-inner{ padding:12px 14px 0; gap:10px; }
+  .top{ position:static; }
+  .brand h1{ font-size:1.16rem; }
+  .tagline{ display:none; }
+  .tabs{ padding:0 8px; }
+  .tabs button{ padding:11px 12px 13px; font-size:.86rem; }
+  .profiles{ grid-template-columns:1fr; gap:8px; }
+  .pcard{ min-height:0; flex-direction:row; align-items:center; gap:10px; padding:12px; }
+  .pcard .pname{ font-size:.9rem; }
+  .pcard .pmeta{ display:block; font-size:.7rem; line-height:1.35; }
+  .col-left{ grid-template-columns:1fr; }
+  .rcards{ grid-template-columns:1fr; }
+  .places-grid{ grid-template-columns:1fr; }
+  .sos-big{ grid-template-columns:1fr; }
+  .sos-btn{ min-height:112px; }
+  .opt-grid{ grid-template-columns:1fr; }
+  .sos-dock{ right:12px; left:12px; bottom:12px; }
+  .sos-dock .btn{ flex:1 1 auto; }
+  .param{ grid-template-columns:68px 1fr 56px; }
+  .card-h{ padding:14px 15px 0; }
+  .card-b{ padding:12px 15px 15px; }
+  .site-foot{ padding:0 14px 40px; }
+  .dlg-b{ max-height:58vh; }
+  .map-legend{ padding:8px 11px; gap:9px; font-size:.7rem; }
+  #map text{ font-size:20px; }
+  #map text.rl{ font-size:15px; }
+}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{ animation-duration:.001ms !important; transition-duration:.001ms !important; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">본문으로 바로 가기</a>
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">길</span>
+      <div>
+        <h1>길결</h1>
+        <p class="tagline">내 몸의 결대로, 갈 수 있는 길만 · 배리어프리 휠체어 내비게이션</p>
+      </div>
+    </div>
+    <div class="top-right">
+      <span class="chip chip-ghost" title="모든 지도·경로·업소·위치는 시연용 가상 데이터입니다">🧪 가상 데이터</span>
+      <span class="chip chip-ghost">📴 오프라인 동작</span>
+      <button type="button" class="chip chip-ghost" id="btnLargeText" aria-pressed="false" data-testid="btn-large-text">🔠 큰 글씨</button>
+    </div>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="주요 화면">
+    <button type="button" role="tab" id="tab-route" aria-controls="panel-route" aria-selected="true" data-testid="tab-route">🧭 경로 탐색</button>
+    <button type="button" role="tab" id="tab-places" aria-controls="panel-places" aria-selected="false" tabindex="-1" data-testid="tab-places">☕ 갈 수 있는 곳</button>
+    <button type="button" role="tab" id="tab-support" aria-controls="panel-support" aria-selected="false" tabindex="-1" data-testid="tab-support">🚨 이동 중 지원</button>
+  </nav>
+</header>
+
+<main id="main">
+
+  <!-- ================= 경로 탐색 ================= -->
+  <section class="panel" id="panel-route" role="tabpanel" aria-labelledby="tab-route" tabindex="0">
+
+    <div class="profile-bar">
+      <div class="profiles" role="group" aria-label="신체기능 프로필 (1클릭 선택)">
+        <button type="button" class="pcard" data-profile="manual" aria-pressed="true" data-testid="profile-manual">
+          <span class="emoji" aria-hidden="true">🦽</span>
+          <span class="pname">수동 휠체어</span>
+          <span class="pmeta">경사 5° 이내 · 피로 누적 민감<br>최소 폭 80cm</span>
+        </button>
+        <button type="button" class="pcard" data-profile="electric" aria-pressed="false" data-testid="profile-electric">
+          <span class="emoji" aria-hidden="true">⚡</span>
+          <span class="pname">전동 휠체어</span>
+          <span class="pmeta">경사 8° 이내 · 최소 폭 85cm<br>배터리 소모 반영</span>
+        </button>
+        <button type="button" class="pcard" data-profile="walker" aria-pressed="false" data-testid="profile-walker">
+          <span class="emoji" aria-hidden="true">🦯</span>
+          <span class="pname">보행보조기·재활</span>
+          <span class="pmeta">경사 4° 이내 · 휴식 쉼터 우선<br>최소 폭 90cm</span>
+        </button>
+      </div>
+
+      <div class="card summary">
+        <div class="sum-h"><span aria-hidden="true">⚙️</span> 내 이동 조건 <span class="spacer"></span><span class="chip" id="profileLabel" style="background:var(--brand-soft);color:var(--brand)">수동 휠체어</span></div>
+        <div class="param">
+          <label for="slopeRange">경사 허용</label>
+          <input type="range" id="slopeRange" min="2" max="10" step="0.5" value="5" aria-describedby="slopeHint" />
+          <output id="slopeOut" for="slopeRange">5.0°</output>
+        </div>
+        <div class="param">
+          <label for="speedRange">이동 속도</label>
+          <input type="range" id="speedRange" min="30" max="100" step="5" value="55" />
+          <output id="speedOut" for="speedRange">55 m/분</output>
+        </div>
+        <p class="tiny muted" id="slopeHint">이 값을 넘는 경사는 ‘주의’가 아니라 <b>위험</b>으로 계산합니다. 언덕을 오를 때 실제로 멈추는 지점이 여기입니다.</p>
+      </div>
+    </div>
+
+    <div class="route-grid">
+      <div class="col-left">
+        <div class="card od">
+          <div class="od-line">
+            <span class="od-dot" aria-hidden="true"></span>
+            <div><div class="od-role">출발</div><div class="od-name">신진주 3단지 정문 (가상)</div></div>
+          </div>
+          <div class="od-line">
+            <span class="od-dot end" aria-hidden="true"></span>
+            <div><div class="od-role">도착</div><div class="od-name">진주시지체장애인협회 (가상)</div></div>
+          </div>
+          <div class="od-foot">
+            <span>최단 직선 <b class="num">520m</b></span>
+            <span>도착 예상 <b class="num" id="arriveAt">—</b></span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><h2>실시간 도로 상황</h2><span class="sub">최신성 반영</span></div>
+          <div class="card-b stack">
+            <button type="button" class="toggle-row" id="constToggle" aria-pressed="false" data-testid="const-toggle">
+              <span class="switch" aria-hidden="true"></span>
+              <span>
+                <span class="tlabel">주변 공사 · 임시 비탈길 발생</span><br>
+                <span class="tsub">2분 전 제보 · 공공 공사정보 API 수신</span>
+              </span>
+            </button>
+
+            <div class="alert banner-live" id="constBanner" hidden>
+              <span class="ai" aria-hidden="true">⚠️</span>
+              <span><b>맞춤 경로의 경사로 구간이 공사로 막혔습니다.</b><br>임시 비탈길(6.2°)로 우회하도록 다시 계산했고, 더 안전한 ‘공사 우회 경로’를 함께 비교했습니다.</span>
+            </div>
+
+            <button type="button" class="btn btn-warn btn-block" id="reportBtn" data-testid="report-btn">📣 장애물 · 비탈길 직접 제보</button>
+
+            <div>
+              <div class="row small strong" style="margin-bottom:8px">반영된 제보 <span class="chip ghostb" id="hzCount" style="background:#EDF0EC;color:#5A645F">1건</span></div>
+              <div class="hz-list" id="hazardList" data-testid="hazard-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><h2>최신성은 이렇게 유지합니다</h2></div>
+          <div class="card-b stack" style="gap:9px">
+            <div class="kv" style="align-items:flex-start"><span class="k" style="flex:0 0 88px">공공데이터<br><span class="tiny">매일 갱신</span></span><span class="v" style="text-align:right;font-weight:600;color:var(--ink-2)">도로점용·공사 정보, 보도 폭·경사 관리대장</span></div>
+            <div class="kv" style="align-items:flex-start"><span class="k" style="flex:0 0 88px">이용자 제보<br><span class="tiny">3건 이상 확인</span></span><span class="v" style="text-align:right;font-weight:600;color:var(--ink-2)">같은 위치 제보가 모이면 ‘확인됨’으로 승격</span></div>
+            <div class="kv" style="align-items:flex-start"><span class="k" style="flex:0 0 88px">현장 확인<br><span class="tiny">방문자</span></span><span class="v" style="text-align:right;font-weight:600;color:var(--ink-2)">입구 사진 AI 판별 + 방문자 확인으로 신뢰도 상승</span></div>
+            <p class="tiny muted">신뢰도가 낮은 정보는 경로 계산에서 가중치를 낮추고, ‘오래된 정보’임을 화면에 표시합니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-map">
+        <div class="card map-card">
+          <div class="card-h">
+            <h2 id="mapTitle">경로 지도</h2>
+            <span class="sub" id="mapSub">수동 휠체어 기준 · 가상 지도</span>
+            <span class="spacer"></span>
+            <span class="chip" id="etaChip" style="background:var(--brand-soft);color:var(--brand)">예상 16분</span>
+          </div>
+          <div class="map-wrap">
+            <div class="map-badge" id="mapBadge" data-testid="map-badge">최근 확인 2일 전</div>
+            <svg id="map" viewBox="0 0 760 520" role="img" aria-label="가상 경로 지도: 기존 일반 경로, 신체기능 맞춤 경로, 공사 우회 경로를 비교합니다" data-testid="map">
+              <defs>
+                <pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                  <rect width="8" height="8" fill="#F3D9A8"></rect>
+                  <line x1="0" y1="0" x2="0" y2="8" stroke="#D9AE63" stroke-width="3"></line>
+                </pattern>
+                <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="1" stdDeviation="1.5" flood-opacity="0.18"></feDropShadow>
+                </filter>
+              </defs>
+              <rect width="760" height="520" fill="#EDF1E8"></rect>
+              <!-- 가상 블록(건물) -->
+              <g fill="#E3E8DC" stroke="#D5DCCA" stroke-width="1">
+                <rect x="24" y="60" width="150" height="96" rx="6"></rect>
+                <rect x="24" y="178" width="96" height="120" rx="6"></rect>
+                <rect x="196" y="60" width="120" height="70" rx="6"></rect>
+                <rect x="196" y="150" width="70" height="90" rx="6"></rect>
+                <rect x="376" y="60" width="120" height="70" rx="6"></rect>
+                <rect x="560" y="52" width="170" height="86" rx="6"></rect>
+                <rect x="590" y="238" width="140" height="96" rx="6"></rect>
+                <rect x="440" y="238" width="120" height="80" rx="6"></rect>
+                <rect x="40" y="330" width="120" height="90" rx="6"></rect>
+                <rect x="196" y="410" width="140" height="80" rx="6"></rect>
+                <rect x="620" y="390" width="112" height="96" rx="6"></rect>
+              </g>
+              <!-- 공원(공사 우회 경로가 지나는 곳) -->
+              <rect x="340" y="330" width="250" height="164" rx="14" fill="#D8E9D3" stroke="#BFD8B8" stroke-width="1.5"></rect>
+              <g fill="#B7D5AE">
+                <circle cx="384" cy="368" r="15"></circle><circle cx="432" cy="404" r="18"></circle>
+                <circle cx="500" cy="360" r="14"></circle><circle cx="552" cy="430" r="17"></circle>
+                <circle cx="396" cy="452" r="12"></circle>
+              </g>
+              <text x="352" y="352" font-size="12" font-weight="800" fill="#4C6B45">가상 근린공원</text>
+              <!-- 도로 -->
+              <g stroke="#DDE3D6" stroke-width="30" stroke-linecap="round" fill="none">
+                <path d="M60,470 L60,360 L180,360 L180,240 L300,240 L300,150 L560,150 L560,120 L640,120"></path>
+                <path d="M60,470 L380,470 L380,390 L520,390 L520,120"></path>
+                <path d="M250,470 L250,320 L330,320 L330,200 L640,200 L640,120"></path>
+              </g>
+              <g stroke="#FFFFFF" stroke-width="2" stroke-dasharray="8 10" fill="none" opacity="0.75">
+                <path d="M60,470 L60,360 L180,360 L180,240 L300,240 L300,150 L560,150 L560,120 L640,120"></path>
+                <path d="M60,470 L380,470 L380,390 L520,390 L520,120"></path>
+              </g>
+              <g font-size="11" font-weight="700" fill="#8C978F">
+                <text x="74" y="500">신진주로</text>
+                <text x="470" y="228">중앙대로</text>
+                <text x="536" y="300" transform="rotate(-90 536,300)">공원로</text>
+              </g>
+              <g id="routeLayer"></g>
+              <g id="markerLayer"></g>
+            </svg>
+            <div class="map-ctl">
+              <button type="button" class="btn btn-sm" id="resetMap" aria-label="지도 선택 초기화">↺</button>
+            </div>
+          </div>
+          <div class="map-legend">
+            <span class="legend-i"><span class="legend-swatch" style="border-top-color:#8A938E"></span>기존 일반 내비</span>
+            <span class="legend-i"><span class="legend-swatch" style="border-top-color:#0E5C4E"></span>길결 맞춤</span>
+            <span class="legend-i"><span class="legend-swatch" style="border-top-color:#1B57B0"></span>공사 우회</span>
+            <span class="legend-i">🚧 공사</span>
+            <span class="legend-i">🪜 계단</span>
+            <span class="legend-i">🛋️ 쉼터</span>
+          </div>
+          <div class="seg-info" id="segInfo" data-testid="seg-info">
+            <h4>구간을 눌러 상세 정보를 보세요 <span class="chip ghostb tiny" style="background:#EDF0EC;color:#5A645F">최신성</span></h4>
+            <p class="small muted" style="margin-top:6px">경로는 6개 구간으로 나뉘어 있고, 구간마다 경사·폭·단차·최근 확인 시점이 따로 관리됩니다.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-right">
+        <div class="card">
+          <div class="card-h"><h2>경로 비교</h2><span class="sub">같은 목적지, 다른 결</span></div>
+          <div class="card-b">
+            <div class="rcards stack" id="routeCards" data-testid="route-cards"></div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px">
+          <div class="card-h"><h2>왜 이 경로인가</h2><span class="sub" id="whyProfile">수동 휠체어</span></div>
+          <div class="card-b">
+            <div class="why" id="whyBox" data-testid="why-box"></div>
+            <div style="margin-top:12px" id="whyTable"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 갈 수 있는 곳 ================= -->
+  <section class="panel" id="panel-places" role="tabpanel" aria-labelledby="tab-places" tabindex="0" hidden>
+    <div class="card" style="margin-bottom:14px">
+      <div class="card-h">
+        <h2>휠체어로 실제 갈 수 있는 곳</h2>
+        <span class="sub">입구 문턱·문 폭·경사·화장실까지 확인된 곳만</span>
+        <span class="spacer"></span>
+        <span class="chip" style="background:var(--brand-soft);color:var(--brand)" id="placeCount" data-testid="place-count">8곳</span>
+      </div>
+      <div class="card-b stack">
+        <div class="filters" role="group" aria-label="접근성 조건 필터">
+          <button type="button" class="fchip" data-filter="step" aria-pressed="false" data-testid="filter-step">🚪 문턱 없음 (0cm)</button>
+          <button type="button" class="fchip" data-filter="width" aria-pressed="false" data-testid="filter-width">↔️ 출입문 폭 90cm+</button>
+          <button type="button" class="fchip" data-filter="ramp" aria-pressed="false" data-testid="filter-ramp">📐 경사로 완만 (≤3°)</button>
+          <button type="button" class="fchip" data-filter="toilet" aria-pressed="false" data-testid="filter-toilet">🚻 장애인 화장실</button>
+          <button type="button" class="fchip" data-filter="mine" aria-pressed="true" data-testid="filter-mine">🦽 내 프로필 기준 통과</button>
+        </div>
+        <div class="row" style="gap:9px;border-top:1px dashed var(--line);padding-top:11px">
+          <span class="small strong" style="flex:0 0 auto">내 프로필</span>
+          <div class="filters" role="group" aria-label="프로필 빠른 전환">
+            <button type="button" class="fchip pchip" data-profile="manual" aria-pressed="true" data-testid="chip-manual">🦽 수동 휠체어</button>
+            <button type="button" class="fchip pchip" data-profile="electric" aria-pressed="false" data-testid="chip-electric">⚡ 전동 휠체어</button>
+            <button type="button" class="fchip pchip" data-profile="walker" aria-pressed="false" data-testid="chip-walker">🦯 보행보조기</button>
+          </div>
+        </div>
+        <p class="tiny muted" id="filterHint">‘내 프로필 기준 통과’는 현재 선택한 프로필의 최소 폭·경사 허용치를 함께 적용합니다.</p>
+      </div>
+    </div>
+
+    <div class="places-grid" id="placesGrid" data-testid="places-grid"></div>
+
+    <div class="card" style="margin-top:14px">
+      <div class="card-b">
+        <div class="notice brand">
+          <span aria-hidden="true">🤖</span>
+          <span><b>입구 사진 AI 판별(가상 데모)</b> — 공공 편의시설 데이터와 사용자가 올린 입구 사진에서 문턱 높이·문 폭·자동문 여부를 추정합니다. 추정값은 <b>참고용</b>이며, 방문 전 전화 확인을 권합니다. 판별 배지를 누르면 실제 판별 화면을 볼 수 있습니다.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 이동 중 지원 ================= -->
+  <section class="panel" id="panel-support" role="tabpanel" aria-labelledby="tab-support" tabindex="0" hidden>
+    <div class="support-grid">
+      <div class="stack">
+        <div class="card">
+          <div class="card-h"><h2>지금 도움이 필요하신가요?</h2><span class="sub">한 번 누르면 위치와 상황이 함께 전달됩니다</span></div>
+          <div class="card-b">
+            <div class="sos-big">
+              <button type="button" class="sos-btn sos-119" id="sos119" data-testid="sos-119">
+                <span class="em" aria-hidden="true">🚨</span>
+                <span class="t">긴급 상황</span>
+                <span class="s">낙상·부상·경사로 고립 — 119 우선 연결</span>
+              </button>
+              <button type="button" class="sos-btn sos-help" id="sosHelp" data-testid="sos-help">
+                <span class="em" aria-hidden="true">🛟</span>
+                <span class="t">지원 요청</span>
+                <span class="s">배터리 방전·길 막힘 — 보호자·이동지원센터</span>
+              </button>
+            </div>
+            <p class="tiny muted" style="margin-top:10px">버튼을 누르면 <b>현재 가상 위치 · 휠체어 유형 · 상황</b>이 자동으로 채워진 확인 창이 열립니다. 실제 신고·발송은 일어나지 않는 시연입니다.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><h2>이동 중 자동 감지</h2><span class="sub">말하기 어려운 순간을 대신 알아챕니다</span></div>
+          <div class="card-b">
+            <div class="auto-list">
+              <button type="button" class="auto" id="autoStop" aria-pressed="true" data-testid="auto-stop">
+                <span class="switch" aria-hidden="true"></span>
+                <span><b>장시간 정지 감지</b><br><span class="tiny muted">5분 이상 같은 자리 · 이동 없음 → 보호자 확인 알림</span></span>
+              </button>
+              <button type="button" class="auto" id="autoRoute" aria-pressed="true" data-testid="auto-route">
+                <span class="switch" aria-hidden="true"></span>
+                <span><b>경로 이탈 감지</b><br><span class="tiny muted">안내 경로에서 30m 이상 벗어남 → 지원 요청 제안</span></span>
+              </button>
+              <button type="button" class="auto" id="autoBattery" aria-pressed="false" data-testid="auto-battery">
+                <span class="switch" aria-hidden="true"></span>
+                <span><b>전동 배터리 부족</b><br><span class="tiny muted">남은 주행거리 &lt; 귀가 거리 → 충전 가능 지점 안내</span></span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><h2>현재 위치 (가상)</h2><span class="sub">응급 요청 시 함께 전달되는 정보</span></div>
+          <div class="card-b">
+            <div class="kv"><span class="k">위치</span><span class="v" id="curLoc">신진주 3단지 앞 보도 (가상)</span></div>
+            <div class="kv"><span class="k">좌표 · 정확도</span><span class="v num">35.1802, 128.1075 · ±8m</span></div>
+            <div class="kv"><span class="k">이동 수단</span><span class="v" id="curProfile">수동 휠체어</span></div>
+            <div class="kv"><span class="k">진행 중 경로</span><span class="v" id="curRoute">길결 맞춤 경로 · 690m</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="card">
+          <div class="card-h"><h2>연결 대상</h2></div>
+          <div class="card-b">
+            <div class="contact-row"><span class="avatar" aria-hidden="true">보</span><div><b>보호자</b><br><span class="tiny muted">등록된 보호자 1명 · 문자·알림</span></div><span class="spacer"></span><span class="badge ease"><span class="dot"></span>연결</span></div>
+            <div class="contact-row"><span class="avatar" aria-hidden="true">센</span><div><b>이동지원센터</b><br><span class="tiny muted">지역 이동지원센터 · 차량 지원 요청</span></div><span class="spacer"></span><span class="badge warn"><span class="dot"></span>시연</span></div>
+            <div class="contact-row"><span class="avatar" aria-hidden="true">119</span><div><b>119 구급상황관리</b><br><span class="tiny muted">긴급 시 연결 · 이 앱이 대신 신고하지 않음</span></div><span class="spacer"></span><span class="badge ghostb"><span class="dot"></span>안내</span></div>
+            <div class="notice" style="margin-top:12px"><span aria-hidden="true">🛡️</span><span>위치·상황 정보는 요청을 보내는 순간에만, 선택한 대상에게만 전달됩니다. 기록은 기기 안에 남고 서버로 올리지 않습니다.</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-h"><h2>오늘의 지원 기록</h2><span class="sub">가상 시연 로그</span></div>
+          <div class="card-b">
+            <div class="log-list" id="logList" data-testid="log-list">
+              <div class="log-i"><span class="lt num">09:12</span><span class="ld">경사로 공사 제보를 확인하고 맞춤 경로를 다시 계산했어요.</span></div>
+              <div class="log-i"><span class="lt num">09:40</span><span class="ld">보호자에게 ‘도착 예정 10분’ 알림을 보냈어요.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="sos-dock">
+    <button type="button" class="btn btn-danger" id="sosDock" data-testid="sos-dock" aria-haspopup="dialog">🚨 긴급 · 지원 요청</button>
+  </div>
+
+  <footer class="site-foot">
+    <div class="foot-card">
+      <h4>꼭 확인해 주세요</h4>
+      <ul>
+        <li>이 화면의 <b>지도·도로·공사·업소·위치·사람은 모두 가상 데이터</b>입니다. 실제 진주시 도로나 업소 정보가 아닙니다.</li>
+        <li>길결은 <b>의료 행위나 응급 서비스를 대체하지 않는 보조 도구</b>입니다. 판단이 어려울 때는 119 또는 의료기관에 직접 연락해 주세요.</li>
+        <li>이동 시간과 난이도는 사용자가 입력한 신체기능 값과 최근 확인된 구간 정보로 계산한 <b>추정치</b>입니다.</li>
+        <li>2026 마산대학교 X 연암공과대학교 AI 헬스케어 해커톤 시연용 · 단일 HTML · 외부 서버·유료 API 없음</li>
+      </ul>
+    </div>
+  </footer>
+</main>
+
+<!-- ================= 모달: 응급·지원 요청 ================= -->
+<dialog id="sosDialog" aria-labelledby="sosTitle">
+  <div class="dlg-h">
+    <div>
+      <h3 id="sosTitle">긴급 상황 · 지원 요청</h3>
+      <p id="sosSub">현재 위치와 이동 수단이 자동으로 채워집니다 (가상 시연)</p>
+    </div>
+    <button type="button" class="x" data-close aria-label="닫기">✕</button>
+  </div>
+  <div class="dlg-b">
+    <div class="kv"><span class="k">현재 위치</span><span class="v" id="sosLoc">신진주 3단지 앞 보도 (가상)</span></div>
+    <div class="kv"><span class="k">이동 수단</span><span class="v" id="sosProfile">수동 휠체어</span></div>
+    <div class="kv"><span class="k">진행 경로</span><span class="v" id="sosRoute">길결 맞춤 경로 · 690m</span></div>
+
+    <div class="field">
+      <span class="flabel">어떤 상황인가요?</span>
+      <div class="opt-grid" id="sosSituations" role="group" aria-label="상황 선택"></div>
+    </div>
+
+    <div class="field">
+      <span class="flabel">누구에게 알릴까요?</span>
+      <div class="opt-grid" id="sosTargets" role="group" aria-label="알림 대상 선택"></div>
+    </div>
+
+    <div class="field">
+      <label for="sosMemo">전달할 말 (선택)</label>
+      <textarea id="sosMemo" rows="2" placeholder="예) 경사로 중간에서 멈췄어요. 오른쪽 다리에 힘이 없습니다."></textarea>
+    </div>
+
+    <div class="notice" style="margin-top:14px"><span aria-hidden="true">ℹ️</span><span>이 버튼은 <b>실제 신고를 하지 않습니다.</b> 실제 긴급 상황에서는 119에 직접 전화해 주세요. 시연에서는 접수 과정만 보여 드립니다.</span></div>
+
+    <div id="sosResult" hidden style="margin-top:14px">
+      <div class="timeline" id="sosTimeline"></div>
+    </div>
+  </div>
+  <div class="dlg-f">
+    <button type="button" class="btn" data-close>닫기</button>
+    <button type="button" class="btn btn-danger" id="sosSend" data-testid="sos-send">요청 보내기 (시연)</button>
+  </div>
+</dialog>
+
+<!-- ================= 모달: 직접 제보 ================= -->
+<dialog id="reportDialog" aria-labelledby="reportTitle">
+  <div class="dlg-h">
+    <div>
+      <h3 id="reportTitle">장애물 · 비탈길 제보</h3>
+      <p>제보는 다음 사람의 경로를 바로 바꿉니다. 확인 전에는 ‘미확인 제보’로 표시됩니다.</p>
+    </div>
+    <button type="button" class="x" data-close aria-label="닫기">✕</button>
+  </div>
+  <div class="dlg-b">
+    <div class="field">
+      <span class="flabel">종류</span>
+      <div class="opt-grid" id="reportKinds" role="group" aria-label="제보 종류"></div>
+    </div>
+    <div class="field">
+      <span class="flabel">위치</span>
+      <div class="opt-grid" id="reportSegs" role="group" aria-label="제보 위치"></div>
+    </div>
+    <div class="field">
+      <label for="reportMemo">설명 (선택)</label>
+      <textarea id="reportMemo" rows="2" placeholder="예) 공사 자재가 보도 절반을 막고 있어요. 임시로 만든 비탈길이 미끄럽습니다."></textarea>
+    </div>
+    <div class="notice" style="margin-top:14px"><span aria-hidden="true">👥</span><span>같은 위치에 제보가 3건 이상 모이면 ‘확인됨’으로 바뀌고, 이후 모든 사용자의 경로 계산에 반영됩니다. (시연)</span></div>
+  </div>
+  <div class="dlg-f">
+    <button type="button" class="btn" data-close>취소</button>
+    <button type="button" class="btn btn-primary" id="reportSubmit" data-testid="report-submit">제보 등록</button>
+  </div>
+</dialog>
+
+<!-- ================= 모달: 입구 사진 AI 판별 ================= -->
+<dialog id="aiDialog" aria-labelledby="aiTitle">
+  <div class="dlg-h">
+    <div>
+      <h3 id="aiTitle">입구 사진 AI 판별 (가상 데모)</h3>
+      <p id="aiPlaceName">카페 「느린걸음」</p>
+    </div>
+    <button type="button" class="x" data-close aria-label="닫기">✕</button>
+  </div>
+  <div class="dlg-b">
+    <div class="photo-demo" id="aiPhoto"></div>
+    <div class="detect-list" id="aiDetect"></div>
+    <div class="notice brand" style="margin-top:12px"><span aria-hidden="true">🔎</span><span>판별은 입구 사진 한 장에서 <b>문턱 높이·문 폭·자동문 여부</b>를 추정합니다. 사진 각도에 따라 오차가 생기므로 <b>방문 전 전화 확인</b>을 안내하고, 사용자가 ‘현장 확인됨’을 누르면 신뢰도가 올라갑니다.</span></div>
+  </div>
+  <div class="dlg-f">
+    <button type="button" class="btn" data-close>닫기</button>
+    <button type="button" class="btn btn-primary" id="aiConfirm" data-testid="ai-confirm">현장에서 확인했어요 (신뢰도 +)</button>
+  </div>
+</dialog>
+
+<script>
+/* =====================================================================
+   길결 — 시연용 클라이언트 사이드 로직
+   · 서버·외부 API·CDN 없이 단일 HTML로 동작
+   · 모든 지도 좌표·구간·업소·사람은 가상 데이터
+   ===================================================================== */
+(function () {
+  'use strict';
+
+  // ---------- 신체기능 프로필 ----------
+  const PROFILES = {
+    manual:   { key:'manual',   name:'수동 휠체어',   emoji:'🦽', slope:5, speed:55, minWidth:80, stepMax:2, restEvery:5, restTime:2.5, restPriority:false },
+    electric: { key:'electric', name:'전동 휠체어',   emoji:'⚡', slope:8, speed:80, minWidth:85, stepMax:2, restEvery:0, restTime:0,   restPriority:false },
+    walker:   { key:'walker',   name:'보행보조기·재활', emoji:'🦯', slope:4, speed:45, minWidth:90, stepMax:1, restEvery:4, restTime:2,   restPriority:true  }
+  };
+
+  // ---------- 가상 경로 데이터 ----------
+  const F2_ALT = {
+    id:'F2x', name:'임시 우회 비탈길 (공사)', dist:210, slope:6.2, width:88, step:0,
+    surface:'비포장 임시로', checked:'2분 전 제보', pts:[[180,360],[248,372],[278,300],[248,228],[180,240]]
+  };
+
+  const ROUTES = {
+    legacy: {
+      id:'legacy', name:'기존 일반 내비', tag:'최단 거리', tagClass:'gray', color:'#8A938E',
+      desc:'계단·턱을 피하지 못하는 최단 거리 안내',
+      segs:[
+        { id:'L1', name:'정문 앞 보도', dist:170, slope:1.0, width:115, step:0, surface:'보도블럭', checked:'2일 전', pts:[[60,470],[250,470]] },
+        { id:'L2', name:'중앙 통로 계단 12단', dist:60, slope:0, width:95, step:17, surface:'계단', checked:'2일 전', icon:{type:'stairs', at:[262,398]}, pts:[[250,470],[250,320]] },
+        { id:'L3', name:'언덕길 급경사', dist:110, slope:8.5, width:130, step:0, surface:'아스팔트', checked:'5일 전', pts:[[250,320],[330,320],[330,200]] },
+        { id:'L4', name:'상가 앞 턱 구간', dist:120, slope:0.6, width:78, step:3, surface:'보도블럭', checked:'3일 전', pts:[[330,200],[640,200]] },
+        { id:'L5', name:'협회 앞 평지', dist:60, slope:0.8, width:140, step:0, surface:'아스팔트', checked:'2일 전', pts:[[640,200],[640,120]] }
+      ]
+    },
+    fit: {
+      id:'fit', name:'길결 맞춤 경로', tag:'내 몸 기준', tagClass:'', color:'#0E5C4E',
+      desc:'경사·폭·단차를 내 허용치에 맞춘 경로',
+      segs:[
+        { id:'F1', name:'정문 → 측면 보도', dist:210, slope:1.2, width:120, step:0, surface:'보도블럭', checked:'2일 전', pts:[[60,470],[60,360],[180,360]] },
+        { id:'F2', name:'공공 경사로 (연속 2구간)', dist:80, slope:4.6, width:95, step:0, surface:'경사로(미끄럼방지)', checked:'6일 전', icon:{type:'ramp', at:[196,300]}, pts:[[180,360],[180,240]] },
+        { id:'F3', name:'무단차 횡단보도 · 음향신호', dist:70, slope:0.3, width:200, step:0, surface:'횡단보도', checked:'1일 전', pts:[[180,240],[300,240]] },
+        { id:'F4', name:'공원 담장길 (쉼터 있음)', dist:230, slope:1.8, width:150, step:0, surface:'아스팔트', checked:'4일 전', rest:true, icon:{type:'shelter', at:[430,150]}, pts:[[300,240],[300,150],[560,150]] },
+        { id:'F5', name:'협회 앞 평지', dist:100, slope:0.8, width:140, step:0, surface:'아스팔트', checked:'2일 전', pts:[[560,150],[560,120],[640,120]] }
+      ]
+    },
+    bypass: {
+      id:'bypass', name:'공사 우회 경로', tag:'안전 우선', tagClass:'blue', color:'#1B57B0',
+      desc:'공사 구간을 피해 공원을 지나는 경로',
+      segs:[
+        { id:'B1', name:'신진주로 보도', dist:210, slope:1.2, width:120, step:0, surface:'보도블럭', checked:'2일 전', pts:[[60,470],[380,470]] },
+        { id:'B2', name:'공원 진입로', dist:150, slope:2.0, width:110, step:0, surface:'아스팔트', checked:'3일 전', pts:[[380,470],[380,390]] },
+        { id:'B3', name:'공원 산책로 (마사토)', dist:260, slope:2.4, width:130, step:0, surface:'마사토', checked:'7일 전', rest:true, icon:{type:'toilet', at:[470,392]}, pts:[[380,390],[520,390]] },
+        { id:'B4', name:'후문 연결 통로', dist:130, slope:1.0, width:100, step:0, surface:'보도블럭', checked:'5일 전', pts:[[520,390],[520,120]] },
+        { id:'B5', name:'협회 앞 평지', dist:100, slope:0.8, width:140, step:0, surface:'아스팔트', checked:'2일 전', pts:[[520,120],[640,120]] }
+      ]
+    }
+  };
+  const ROUTE_ORDER = ['legacy','fit','bypass'];
+
+  // ---------- 가상 업소·공간 ----------
+  const PLACES = [
+    { id:'p1', name:'카페 「느린걸음」', cat:'카페 · 디저트', step:0, width:96, ramp:0, toilet:false, auto:true, ai:94, checked:'3일 전', dist:180,
+      tags:['입구 자동문','테이블 높이 조절 1석'], note:'입구 앞 3m 평지, 실내 통로 110cm' },
+    { id:'p2', name:'카페 「이음」', cat:'카페 · 베이커리', step:0, width:92, ramp:2, toilet:true, auto:false, ai:91, checked:'1일 전', dist:240,
+      tags:['장애인 화장실','경사로 2°'], note:'문은 여닫이지만 손잡이 높이 낮음' },
+    { id:'p3', name:'카페 「모퉁이」', cat:'카페 · 로스터리', step:3, width:88, ramp:0, toilet:false, auto:false, ai:87, checked:'9일 전', dist:320,
+      tags:['문턱 3cm'], note:'입구에 3cm 턱, 보조 경사판 비치(요청 시)' },
+    { id:'p4', name:'진주시립도서관 1층 (가상)', cat:'공공 · 도서관', step:0, width:110, ramp:1, toilet:true, auto:true, ai:96, checked:'2일 전', dist:450,
+      tags:['장애인 화장실','엘리베이터','자동문'], note:'주차장 → 입구 무단차 연결' },
+    { id:'p5', name:'종합복지관 카페 (가상)', cat:'공공 · 카페', step:0, width:120, ramp:0, toilet:true, auto:true, ai:95, checked:'4일 전', dist:520,
+      tags:['장애인 화장실','회전 공간 150cm'], note:'테이블 간격 넓어 휠체어 회전 가능' },
+    { id:'p6', name:'온누리약국 (가상)', cat:'약국', step:2, width:80, ramp:1, toilet:false, auto:false, ai:82, checked:'12일 전', dist:150,
+      tags:['문턱 2cm'], note:'폭 80cm — 전동 휠체어는 진입 어려움' },
+    { id:'p7', name:'식당 「솥밥집」 (가상)', cat:'식당 · 한식', step:0, width:90, ramp:3, toilet:false, auto:false, ai:85, checked:'6일 전', dist:300,
+      tags:['경사로 3°','문턱 없음'], note:'경사로 폭 90cm, 손잡이 없음' },
+    { id:'p8', name:'한빛의원 1층 카페 (가상)', cat:'의원 · 카페', step:0, width:100, ramp:0, toilet:true, auto:true, ai:93, checked:'2일 전', dist:380,
+      tags:['장애인 화장실','자동문'], note:'건물 로비와 같은 높이' }
+  ];
+
+  // 처음부터 있던 다른 이용자의 제보(맞춤 경로 밖)
+  const BASE_HAZARDS = [
+    { id:'h0', kind:'턱', title:'상가 앞 턱 5cm', sub:'미확인 제보 · 기존 경로 L4', ago:'어제', seg:'L4', confirmed:false, penalty:0, blocked:false }
+  ];
+
+  const SITUATIONS = [
+    { id:'battery', label:'🔋 배터리 방전', danger:false },
+    { id:'slope',   label:'⛰️ 경사로에서 멈춤', danger:false },
+    { id:'fall',    label:'🤕 낙상 · 부상', danger:true },
+    { id:'block',   label:'🚧 길이 막힘', danger:false },
+    { id:'other',   label:'💬 기타', danger:false }
+  ];
+  const TARGETS = [
+    { id:'guardian', label:'👤 보호자' },
+    { id:'center',   label:'🚐 이동지원센터' },
+    { id:'119',      label:'🚨 119' }
+  ];
+  const REPORT_KINDS = ['🪜 턱 · 단차','⛰️ 비탈길 · 경사','🚧 공사','📦 적치물 · 주차','🛗 엘리베이터 고장'];
+
+  // ---------- 상태 ----------
+  const state = {
+    profile:'manual',
+    profiles: JSON.parse(JSON.stringify(PROFILES)),
+    route:'fit',
+    construction:false,
+    reports:[],
+    selectedSeg:null,
+    filters:{ step:false, width:false, ramp:false, toilet:false, mine:true },
+    largeText:false,
+    sos:{ situation:'battery', targets:['guardian'] }
+  };
+
+  // ---------- 계산 ----------
+  const clamp = (v,a,b) => Math.min(b, Math.max(a, v));
+  const LEVEL = { ease:{ label:'여유', cls:'ease' }, warn:{ label:'주의', cls:'warn' }, danger:{ label:'위험', cls:'danger' } };
+
+  function hazardsFor(routeId) {
+    const list = BASE_HAZARDS.concat(state.reports);
+    const segIds = ROUTES[routeId].segs.map(s => s.id);
+    return list.filter(h => segIds.includes(h.seg));
+  }
+
+  function compute(routeId) {
+    const route = ROUTES[routeId];
+    const p = state.profiles[state.profile];
+    let segs = route.segs.map(s => Object.assign({}, s));
+
+    // 최신성: 공사가 발생하면 맞춤 경로의 경사로 구간을 임시 우회로로 교체
+    if (routeId === 'fit' && state.construction) {
+      segs = segs.map(s => s.id === 'F2' ? Object.assign({}, F2_ALT) : s);
+    }
+
+    const haz = hazardsFor(routeId);
+    const dist = segs.reduce((a, s) => a + s.dist, 0);
+    const maxSlope = segs.reduce((a, s) => Math.max(a, s.slope), 0);
+    const minWidth = segs.reduce((a, s) => Math.min(a, s.width), 999);
+    const maxStep = segs.reduce((a, s) => Math.max(a, s.step), 0);
+    const surfaces = [...new Set(segs.map(s => s.surface))];
+    const restStops = segs.filter(s => s.rest).length;
+    const rough = segs.some(s => /마사토|비포장|자갈/.test(s.surface));
+
+    // 위험 요소
+    const blocked = [];
+    if (maxStep > p.stepMax) blocked.push('단차 ' + maxStep + 'cm (계단·턱)');
+    if (minWidth < p.minWidth) blocked.push('폭 ' + minWidth + 'cm < 최소 ' + p.minWidth + 'cm');
+    const over = segs.filter(s => s.slope > p.slope);
+    const maxOver = over.length ? Math.max.apply(null, over.map(s => s.slope)) : 0;
+
+    // 경사 부담(0~1 정규화) — 허용치에 가까울수록 급격히 무거워진다
+    let slopeStress = 0;
+    segs.forEach(s => { slopeStress += s.dist * Math.pow(clamp(s.slope / p.slope, 0, 2), 1.7); });
+    const normSlope = slopeStress / dist;
+
+    let score = 0;
+    const parts = {};
+    parts.slope = Math.round(Math.min(45, normSlope * 160));
+    parts.over = over.length ? Math.round(Math.min(45, 20 + (maxOver - p.slope) * 10)) : 0;
+    parts.width = minWidth < p.minWidth ? 30 : (minWidth < p.minWidth + 10 ? 10 : 0);
+    parts.surface = rough ? 12 : 0;
+    parts.dist = Math.round(Math.min(15, Math.max(0, (dist - 600) / 40)));
+    parts.rest = (p.restPriority && restStops === 0) ? 10 : 0;
+    parts.report = Math.min(15, haz.length * 5);
+    score = parts.slope + parts.over + parts.width + parts.surface + parts.dist + parts.rest + parts.report;
+    score = Math.round(clamp(score, 0, 100));
+    if (blocked.length) score = Math.max(score, 78);
+
+    const level = blocked.length || score >= 65 ? 'danger' : (score >= 35 ? 'warn' : 'ease');
+
+    // 시간: 거리/속도 × 경사 보정 + 휴식
+    const effort = dist / p.speed * (1 + 0.6 * normSlope);
+    let rests = 0;
+    if (p.restEvery) rests = Math.max(0, Math.floor(effort / p.restEvery) - restStops);
+    let minutes = Math.round(effort + rests * p.restTime);
+    minutes += haz.reduce((a, h) => a + (h.penalty || 0), 0) * 0;
+    const reportMinutes = Math.min(6, haz.length * 1.5);
+    minutes = Math.round(minutes + reportMinutes);
+    const fatigue = Math.round(clamp(effort / 16 * 55 + normSlope * 60, 0, 100));
+
+    return {
+      id: route.id, name: route.name, tag: route.tag, tagClass: route.tagClass, color: route.color, desc: route.desc,
+      segs, dist, minutes, score, level, blocked, parts, over, maxOver,
+      maxSlope, minWidth, maxStep, surfaces, restStops, rests, effort, normSlope, fatigue,
+      hazards: haz, reportMinutes
+    };
+  }
+
+  function computeAll() {
+    const out = {};
+    ROUTE_ORDER.forEach(id => { out[id] = compute(id); });
+    return out;
+  }
+
+  function bestRoute(all) {
+    const rank = { ease:0, warn:1, danger:2 };
+    return ROUTE_ORDER.slice().filter(id => !all[id].blocked.length)
+      .sort((a, b) => rank[all[a].level] - rank[all[b].level] || all[a].minutes - all[b].minutes)[0] || 'fit';
+  }
+
+  window.__gg = { state, compute, computeAll, ROUTES, PLACES, PROFILES };
+
+  // ---------- 짧은 도우미 ----------
+  const $ = (s, r) => (r || document).querySelector(s);
+  const $$ = (s, r) => Array.prototype.slice.call((r || document).querySelectorAll(s));
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, text) {
+    const n = document.createElementNS(SVGNS, tag);
+    if (attrs) Object.keys(attrs).forEach(k => n.setAttribute(k, attrs[k]));
+    if (text != null) n.textContent = text;
+    return n;
+  }
+  function pathD(pts) { return pts.map((p, i) => (i ? 'L' : 'M') + p[0] + ',' + p[1]).join(' '); }
+  function pathMid(pts) {
+    let best = pts[0], bestLen = -1;
+    for (let i = 1; i < pts.length; i++) {
+      const d = Math.hypot(pts[i][0] - pts[i-1][0], pts[i][1] - pts[i-1][1]);
+      if (d > bestLen) { bestLen = d; best = [(pts[i][0] + pts[i-1][0]) / 2, (pts[i][1] + pts[i-1][1]) / 2]; }
+    }
+    if (pts.length === 1) return pts[0];
+    return best;
+  }
+  function hhmm(min) {
+    const d = new Date(Date.now() + min * 60000);
+    return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+  }
+
+  // ---------- 프로필 ----------
+  function renderProfiles() {
+    const p = state.profiles[state.profile];
+    $$('[data-profile]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.profile === state.profile)));
+    $('#slopeRange').value = p.slope;
+    $('#speedRange').value = p.speed;
+    $('#slopeOut').textContent = p.slope.toFixed(1) + '°';
+    $('#speedOut').textContent = p.speed + ' m/분';
+    $('#profileLabel').textContent = p.emoji + ' ' + p.name;
+    $('#mapSub').textContent = p.name + ' 기준 · 가상 지도';
+    $('#whyProfile').textContent = p.name;
+    $('#curProfile').textContent = p.name;
+    $('#sosProfile').textContent = p.name;
+    $('#filterHint').textContent = '‘내 프로필 기준 통과’는 현재 프로필(' + p.name + ' · 최소 폭 ' + p.minWidth + 'cm · 경사 ' + p.slope.toFixed(1) + '° 이내)을 함께 적용합니다.';
+  }
+
+  // ---------- 경로 카드 ----------
+  function renderRoutes(all) {
+    const p = state.profiles[state.profile];
+    const best = bestRoute(all);
+    const host = $('#routeCards');
+    host.innerHTML = ROUTE_ORDER.map(id => {
+      const c = all[id];
+      const active = id === state.route;
+      const lv = LEVEL[c.level];
+      const blocked = c.blocked.length > 0;
+      let note;
+      if (blocked) note = '⛔ ' + c.blocked.join(' · ') + ' — 이 경로로는 이동할 수 없습니다.';
+      else if (c.over.length) note = '⚠️ 허용 ' + p.slope.toFixed(1) + '°를 넘는 구간 ' + c.over.length + '곳 (최대 ' + c.maxOver.toFixed(1) + '°)';
+      else if (c.surfaces.some(s => /마사토|비포장/.test(s))) note = '노면 부담: ' + c.surfaces.filter(s => /마사토|비포장/.test(s)).join(' · ') + ' 구간';
+      else note = '경사·폭 모두 허용 범위 안' + (c.restStops ? ' · 쉼터 ' + c.restStops + '곳' : '');
+      if (c.hazards.length) note += ' · 제보 ' + c.hazards.length + '건 반영';
+      if (id === 'fit' && state.construction) note += ' · 공사로 임시 비탈길(6.2°) 우회';
+      const tag = (best === id && !active) ? '<span class="rc-tag">추천</span>' : (c.tag ? '<span class="rc-tag ' + (c.tagClass || '') + '">' + c.tag + '</span>' : '');
+      return '' +
+        '<article class="rcard" data-route="' + id + '" data-active="' + active + '" data-eta="' + c.minutes + '" data-diff="' + c.level + '" data-score="' + c.score + '"' +
+        ' role="button" tabindex="0" aria-pressed="' + active + '" aria-label="' + c.name + ' ' + (blocked ? '이동 불가' : '약 ' + c.minutes + '분') + ', 난이도 ' + lv.label + '">' +
+          '<div class="rc-h"><span class="rc-name">' + c.name + '</span>' + tag +
+            '<span class="spacer"></span><span class="badge ' + lv.cls + '"><span class="dot"></span>' + lv.label + '</span></div>' +
+          '<div class="rc-main">' +
+            (blocked
+              ? '<span class="eta" data-eta-val>이동 불가</span><span class="rc-meta">우회 시 약 ' + (c.minutes + 6) + '분</span>'
+              : '<span class="eta" data-eta-val>' + c.minutes + '<small>분</small></span><span class="rc-meta">' + c.dist + 'm · 최대 ' + c.maxSlope.toFixed(1) + '° · 폭 ' + c.minWidth + 'cm</span>') +
+          '</div>' +
+          '<div class="rc-note">' + note + '</div>' +
+        '</article>';
+    }).join('');
+  }
+
+  // ---------- 왜 이 경로인가 ----------
+  function renderWhy(c) {
+    const p = state.profiles[state.profile];
+    const rough = c.surfaces.some(s => /마사토|비포장|자갈/.test(s));
+    const bars = [
+      { label:'경사 부담', v: Math.round(clamp(c.normSlope * 140, 0, 100)), cls: c.normSlope > 0.25 ? 'danger' : (c.normSlope > 0.12 ? 'warn' : '') },
+      { label:'단차·폭', v: c.maxStep > p.stepMax ? 95 : (c.minWidth < p.minWidth ? 85 : (c.minWidth < p.minWidth + 10 ? 40 : 8)), cls: c.minWidth < p.minWidth ? 'danger' : '' },
+      { label:'노면', v: rough ? 48 : 10, cls: rough ? 'warn' : '' },
+      { label:'거리', v: Math.round(clamp(c.dist / 1000 * 60, 0, 100)), cls: '' }
+    ];
+    const base = c.dist / p.speed;
+    const slopeAdd = c.effort - base;
+    const restAdd = c.rests * p.restTime;
+    $('#whyBox').innerHTML = bars.map(b =>
+      '<div class="bar-row"><span class="bl">' + b.label + '</span><span class="bar"><i class="' + b.cls + '" style="width:' + b.v + '%"></i></span><span class="bv">' + b.v + '</span></div>'
+    ).join('') + '<p class="tiny muted" style="margin-top:4px">0에 가까울수록 내 몸에 부담이 적습니다. ‘경사 부담’은 허용치 대비 비율로 계산합니다.</p>';
+
+    $('#whyTable').innerHTML =
+      '<div class="kv"><span class="k">총 거리</span><span class="v num">' + c.dist + 'm</span></div>' +
+      '<div class="kv"><span class="k">기본 이동 시간 (' + p.speed + 'm/분)</span><span class="v num">' + base.toFixed(1) + '분</span></div>' +
+      '<div class="kv"><span class="k">경사 보정</span><span class="v num">+' + slopeAdd.toFixed(1) + '분</span></div>' +
+      '<div class="kv"><span class="k">휴식 ' + c.rests + '회' + (c.restStops ? ' (쉼터 ' + c.restStops + '곳)' : '') + '</span><span class="v num">+' + restAdd.toFixed(1) + '분</span></div>' +
+      '<div class="kv"><span class="k">제보 반영</span><span class="v num">+' + c.reportMinutes.toFixed(1) + '분</span></div>' +
+      '<div class="kv"><span class="k">예상 시간</span><span class="v num" style="color:var(--brand)">' + c.minutes + '분</span></div>' +
+      '<div class="kv"><span class="k">피로도 지수 (참고)</span><span class="v num">' + c.fatigue + ' / 100</span></div>' +
+      '<div class="kv"><span class="k">난이도 점수</span><span class="v num">' + c.score + ' · ' + LEVEL[c.level].label + '</span></div>';
+  }
+
+  // ---------- 지도 ----------
+  const ICONS = { stairs:'🪜', ramp:'♿', shelter:'🛋️', toilet:'🚻', construction:'🚧', hazard:'⚠️' };
+
+  function renderMap(all) {
+    const layer = $('#routeLayer');
+    const mk = $('#markerLayer');
+    layer.innerHTML = '';
+    mk.innerHTML = '';
+    const order = ROUTE_ORDER.filter(id => id !== state.route).concat([state.route]);
+
+    // 경로선: 흰 테두리(케이싱) + 색상 본선
+    order.forEach(id => {
+      const c = all[id];
+      const active = id === state.route;
+      const g = el('g', { 'data-route': id, opacity: active ? 1 : 0.3 });
+      c.segs.forEach(seg => g.appendChild(el('path', {
+        d: pathD(seg.pts), class:'route-path', stroke:'#FFFFFF', 'stroke-width': active ? 15 : 12
+      })));
+      c.segs.forEach(seg => g.appendChild(el('path', {
+        d: pathD(seg.pts), class:'route-path', stroke: c.color,
+        'stroke-width': active ? 8.5 : 6.5, 'data-seg': seg.id
+      })));
+      layer.appendChild(g);
+    });
+
+    // 아이콘: 모든 경로의 특징 구간을 표시(비활성 경로는 흐리게)
+    ROUTE_ORDER.forEach(id => {
+      const c = all[id];
+      const active = id === state.route;
+      c.segs.forEach(seg => {
+        if (!seg.icon) return;
+        const [x, y] = seg.icon.at;
+        const g = el('g', { transform:'translate(' + x + ',' + y + ')', opacity: active ? 1 : 0.65 });
+        g.appendChild(el('circle', { r: 14, fill:'#FFFFFF', stroke:'#C9D6CD', 'stroke-width':1.5, filter:'url(#soft)' }));
+        g.appendChild(el('text', { x:0, y:5, 'text-anchor':'middle', 'font-size':15 }, ICONS[seg.icon.type] || '•'));
+        mk.appendChild(g);
+      });
+    });
+
+    if (state.construction) {
+      const g = el('g', { transform:'translate(300,300)' });
+      g.appendChild(el('circle', { r: 17, fill:'#F3D9A8', stroke:'#C79A46', 'stroke-width':2 }));
+      g.appendChild(el('text', { x:0, y:6, 'text-anchor':'middle', 'font-size':17 }, '🚧'));
+      mk.appendChild(g);
+    }
+
+    // 활성 경로에 반영된 제보
+    all[state.route].hazards.forEach(hz => {
+      const seg = all[state.route].segs.find(s => s.id === hz.seg);
+      if (!seg) return;
+      const [x, y] = pathMid(seg.pts);
+      const g = el('g', { transform:'translate(' + (x + 16) + ',' + (y - 16) + ')' });
+      g.appendChild(el('circle', { r: 13, fill:'#FBE7E4', stroke:'#D9A39C', 'stroke-width':1.5 }));
+      g.appendChild(el('text', { x:0, y:5, 'text-anchor':'middle', 'font-size':13 }, '⚠️'));
+      mk.appendChild(g);
+    });
+
+    // 출발·도착
+    const s = el('g', { transform:'translate(60,470)' });
+    s.appendChild(el('circle', { r: 13, fill:'#0E5C4E' }));
+    s.appendChild(el('circle', { r: 5, fill:'#FFFFFF' }));
+    mk.appendChild(s);
+    const e = el('g', { transform:'translate(640,120)' });
+    e.appendChild(el('circle', { r: 15, fill:'#F2C14E', stroke:'#0E5C4E', 'stroke-width':2.5 }));
+    e.appendChild(el('text', { x:0, y:5, 'text-anchor':'middle', 'font-size':14 }, '🏁'));
+    mk.appendChild(e);
+    mk.appendChild(el('text', { x:60, y:500, 'text-anchor':'middle', 'font-size':11, 'font-weight':800, fill:'#3B4A44' }, '출발'));
+    mk.appendChild(el('text', { x:640, y:96, 'text-anchor':'middle', 'font-size':11, 'font-weight':800, fill:'#3B4A44' }, '도착'));
+
+    // 활성 경로는 항상 클릭 가능(비활성 경로를 눌러도 그 구간을 선택할 수 있게 모든 구간에 히트 영역)
+    const hitG = el('g');
+    all[state.route].segs.forEach(seg => {
+      const hit = el('path', { d: pathD(seg.pts), class:'route-hit', 'data-hit': seg.id, tabindex:'0', role:'button', 'aria-label': seg.name + ' 구간 정보 보기' });
+      hitG.appendChild(hit);
+    });
+    layer.appendChild(hitG);
+    $$('#map .route-hit').forEach(h => {
+      h.addEventListener('click', () => selectSeg(h.getAttribute('data-hit')));
+      h.addEventListener('keydown', ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); selectSeg(h.getAttribute('data-hit')); } });
+    });
+    if (state.selectedSeg) highlightSeg(state.selectedSeg);
+  }
+
+  const SEG_INFO_DEFAULT = '<h4>구간을 눌러 상세 정보를 보세요 <span class="chip ghostb tiny" style="background:#EDF0EC;color:#5A645F">최신성</span></h4>' +
+    '<p class="small muted" style="margin-top:6px">경로는 5~6개 구간으로 나뉘어 있고, 구간마다 경사·폭·단차·최근 확인 시점이 따로 관리됩니다. 지도에서 선을 누르면 그 구간만 봅니다.</p>';
+  function resetSegInfo() {
+    state.selectedSeg = null;
+    $('#segInfo').innerHTML = SEG_INFO_DEFAULT;
+  }
+
+  function highlightSeg(id) {
+    $$('#map .route-path[data-seg]').forEach(p => p.style.filter = p.getAttribute('data-seg') === id ? 'drop-shadow(0 0 6px rgba(14,92,78,.55))' : '');
+  }
+
+  function selectSeg(id) {
+    state.selectedSeg = id;
+    const c = compute(state.route);
+    const seg = c.segs.find(s => s.id === id);
+    if (!seg) return;
+    const p = state.profiles[state.profile];
+    let verdict, cls;
+    if (seg.step > p.stepMax) { verdict = '통행 불가 · 단차 ' + seg.step + 'cm'; cls = 'danger'; }
+    else if (seg.width < p.minWidth) { verdict = '통행 불가 · 폭 ' + seg.width + 'cm'; cls = 'danger'; }
+    else if (seg.slope > p.slope) { verdict = '주의 이상 · 경사 ' + seg.slope.toFixed(1) + '°'; cls = 'danger'; }
+    else if (seg.slope > p.slope * 0.8 || seg.width < p.minWidth + 10) { verdict = '지나갈 수 있지만 주의'; cls = 'warn'; }
+    else { verdict = '내 기준 통과'; cls = 'ease'; }
+    $('#segInfo').innerHTML =
+      '<h4>' + seg.name + ' <span class="badge ' + cls + '"><span class="dot"></span>' + verdict + '</span></h4>' +
+      '<div class="seg-grid">' +
+        '<div class="seg-cell"><div class="k">거리</div><div class="v num">' + seg.dist + 'm</div></div>' +
+        '<div class="seg-cell"><div class="k">평균 경사</div><div class="v num">' + seg.slope.toFixed(1) + '°</div></div>' +
+        '<div class="seg-cell"><div class="k">유효 폭</div><div class="v num">' + seg.width + 'cm</div></div>' +
+        '<div class="seg-cell"><div class="k">단차</div><div class="v num">' + seg.step + 'cm</div></div>' +
+        '<div class="seg-cell"><div class="k">노면</div><div class="v">' + seg.surface + '</div></div>' +
+        '<div class="seg-cell"><div class="k">최근 확인</div><div class="v">' + seg.checked + '</div></div>' +
+      '</div>' +
+      (seg.rest ? '<p class="small" style="margin-top:9px">🛋️ 이 구간에 <b>쉼터</b>가 있어 휴식 시간을 줄여 계산했습니다.</p>' : '');
+    highlightSeg(id);
+  }
+
+  // ---------- 제보 목록 ----------
+  function renderHazards() {
+    const list = BASE_HAZARDS.concat(state.reports);
+    $('#hzCount').textContent = list.length + '건';
+    $('#hazardList').innerHTML = (state.construction
+      ? '<div class="hz"><span class="hz-ic">🚧</span><span><span class="hz-t">경사로 구간 공사 · 임시 비탈길</span><br><span class="hz-s">공사정보 API + 이용자 제보 일치 · 확인됨</span></span><span class="hz-ago">2분 전</span></div>'
+      : '') +
+      list.map(h => '<div class="hz"><span class="hz-ic">' + (h.confirmed ? '✅' : '⚠️') + '</span><span><span class="hz-t">' + h.title + '</span><br><span class="hz-s">' + h.sub + ' · ' + (h.confirmed ? '확인됨' : '미확인') + '</span></span><span class="hz-ago">' + h.ago + '</span></div>').join('') ||
+      '<p class="empty">아직 반영된 제보가 없습니다.</p>';
+  }
+
+  // ---------- 공간 카드 ----------
+  function thumbSVG(p) {
+    const doorW = clamp(Math.round(p.width / 200 * 120), 46, 130);
+    const stepH = p.step === 0 ? 0 : p.step * 3 + 3;
+    const x0 = (300 - doorW) / 2;
+    return '<svg viewBox="0 0 300 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' +
+      '<rect width="300" height="120" fill="#E7EEE6"/>' +
+      '<rect y="0" width="300" height="18" fill="#D6E2D6"/>' +
+      '<rect x="' + (x0 - 14) + '" y="18" width="' + (doorW + 28) + '" height="88" rx="4" fill="#F4F7F1"/>' +
+      '<rect x="' + x0 + '" y="26" width="' + doorW + '" height="80" fill="#CFE0D6" stroke="#9FBFB1" stroke-width="2"/>' +
+      '<rect x="' + (x0 + doorW / 2) + '" y="26" width="2" height="80" fill="#9FBFB1"/>' +
+      (p.auto ? '<circle cx="' + (x0 + doorW / 2) + '" cy="18" r="4" fill="#0E5C4E"/>' : '<rect x="' + (x0 + doorW - 20) + '" y="62" width="6" height="16" rx="3" fill="#7F8C84"/>') +
+      '<rect x="' + (x0 - 6) + '" y="' + (106 - stepH) + '" width="' + (doorW + 12) + '" height="' + (6 + stepH) + '" fill="' + (p.step ? '#E2B77C' : '#B9CFC0') + '"/>' +
+      '<rect y="106" width="300" height="14" fill="#C9D6C8"/>' +
+      '<g font-size="10" font-weight="800" fill="#2F423A">' +
+        '<text x="10" y="112" font-family="system-ui">↔ ' + p.width + 'cm</text>' +
+        '<text x="' + (232) + '" y="112" font-family="system-ui">턱 ' + p.step + 'cm</text>' +
+      '</g></svg>';
+  }
+
+  function placePasses(p) {
+    const prof = state.profiles[state.profile];
+    return p.step <= prof.stepMax && p.width >= prof.minWidth && p.ramp <= prof.slope;
+  }
+
+  function renderPlaces() {
+    const f = state.filters;
+    const list = PLACES.filter(p => {
+      if (f.step && p.step !== 0) return false;
+      if (f.width && p.width < 90) return false;
+      if (f.ramp && p.ramp > 3) return false;
+      if (f.toilet && !p.toilet) return false;
+      if (f.mine && !placePasses(p)) return false;
+      return true;
+    });
+    $('#placeCount').textContent = list.length + '곳';
+    $('#placesGrid').innerHTML = list.length ? list.map(p =>
+      '<article class="pcard2" data-place="' + p.id + '" data-step="' + p.step + '" data-width="' + p.width + '" data-ramp="' + p.ramp + '" data-toilet="' + p.toilet + '">' +
+        '<div class="thumb">' + thumbSVG(p) +
+          '<button type="button" class="ai-badge" data-ai="' + p.id + '" aria-haspopup="dialog">🤖 입구 사진 AI 판별</button>' +
+        '</div>' +
+        '<div class="body">' +
+          '<div class="nm">' + p.name + '</div>' +
+          '<div class="cat">' + p.cat + ' · 도보 ' + p.dist + 'm</div>' +
+          '<div class="spec">' +
+            '<div><div class="k">문턱</div><div class="v ' + (p.step === 0 ? '' : 'bad') + '">' + p.step + 'cm</div></div>' +
+            '<div><div class="k">문 폭</div><div class="v ' + (p.width >= 90 ? '' : 'bad') + '">' + p.width + 'cm</div></div>' +
+            '<div><div class="k">경사로</div><div class="v ' + (p.ramp <= 3 ? '' : 'bad') + '">' + p.ramp + '°</div></div>' +
+            '<div><div class="k">장애인 화장실</div><div class="v ' + (p.toilet ? '' : 'bad') + '">' + (p.toilet ? '있음' : '없음') + '</div></div>' +
+          '</div>' +
+          '<div class="tags">' + p.tags.map(t => '<span class="tag ok">' + t + '</span>').join('') + '</div>' +
+          '<p class="tiny muted">' + p.note + '</p>' +
+          '<div class="foot"><span>최근 확인 ' + p.checked + '</span><span>AI 판별 신뢰도 ' + p.ai + '%</span></div>' +
+        '</div>' +
+      '</article>').join('')
+      : '<div class="card" style="grid-column:1/-1"><div class="card-b"><p class="empty">조건에 맞는 곳이 없습니다. 필터를 하나씩 풀어 보세요.</p></div></div>';
+  }
+
+  // ---------- 전체 갱신 ----------
+  function updateAll() {
+    const all = computeAll();
+    renderProfiles();
+    renderRoutes(all);
+    renderWhy(all[state.route]);
+    renderMap(all);
+    renderHazards();
+    const c = all[state.route];
+    $('#etaChip').textContent = c.blocked.length ? '이동 불가' : '예상 ' + c.minutes + '분';
+    $('#arriveAt').textContent = c.blocked.length ? '—' : hhmm(c.minutes);
+    $('#curRoute').textContent = c.name + ' · ' + c.dist + 'm';
+    $('#sosRoute').textContent = c.name + ' · ' + c.dist + 'm';
+    $('#mapBadge').textContent = state.construction ? '공사 정보 2분 전 반영' : '최근 확인 2일 전';
+    $('#mapTitle').textContent = '경로 지도';
+    $('#placeCount').textContent = $('#placeCount').textContent; // 유지
+  }
+
+  function announce(msg) {
+    let live = $('#live');
+    if (!live) { live = document.createElement('div'); live.id = 'live'; live.className = 'sr-only'; live.setAttribute('role', 'status'); live.setAttribute('aria-live', 'polite'); document.body.appendChild(live); }
+    live.textContent = msg;
+  }
+
+  function addLog(time, text) {
+    const div = document.createElement('div');
+    div.className = 'log-i';
+    div.innerHTML = '<span class="lt num">' + time + '</span><span class="ld">' + text + '</span>';
+    const host = $('#logList');
+    host.insertBefore(div, host.firstChild);
+  }
+
+  // ---------- 탭 ----------
+  const TABS = [['tab-route','panel-route'], ['tab-places','panel-places'], ['tab-support','panel-support']];
+  function switchTab(idx) {
+    TABS.forEach((t, i) => {
+      const btn = $('#' + t[0]);
+      const panel = $('#' + t[1]);
+      const on = i === idx;
+      btn.setAttribute('aria-selected', String(on));
+      btn.tabIndex = on ? 0 : -1;
+      panel.hidden = !on;
+      if (on) { panel.focus({ preventScroll: true }); }
+    });
+  }
+  TABS.forEach((t, i) => {
+    $('#' + t[0]).addEventListener('click', () => switchTab(i));
+    $('#' + t[0]).addEventListener('keydown', ev => {
+      if (ev.key === 'ArrowRight') { ev.preventDefault(); switchTab((i + 1) % 3); $('#' + TABS[(i + 1) % 3][0]).focus(); }
+      if (ev.key === 'ArrowLeft') { ev.preventDefault(); const j = (i + 2) % 3; switchTab(j); $('#' + TABS[j][0]).focus(); }
+    });
+  });
+
+  // ---------- 프로필 ----------
+  document.addEventListener('click', ev => {
+    const btn = ev.target.closest('[data-profile]');
+    if (!btn) return;
+    state.profile = btn.dataset.profile;
+    updateAll(); resetSegInfo();
+    renderPlaces();
+    announce(PROFILES[state.profile].name + ' 프로필로 바꿨습니다. 경로와 난이도를 다시 계산했습니다.');
+  });
+  $('#slopeRange').addEventListener('input', e => {
+    state.profiles[state.profile].slope = parseFloat(e.target.value);
+    updateAll(); renderPlaces();
+  });
+  $('#speedRange').addEventListener('input', e => {
+    state.profiles[state.profile].speed = parseFloat(e.target.value);
+    updateAll();
+  });
+
+  // ---------- 경로 카드 선택 ----------
+  $('#routeCards').addEventListener('click', e => {
+    const card = e.target.closest('.rcard');
+    if (!card) return;
+    state.route = card.dataset.route;
+    updateAll(); resetSegInfo();
+    announce(ROUTES[state.route].name + '을 안내 경로로 선택했습니다.');
+  });
+  $('#routeCards').addEventListener('keydown', e => {
+    const card = e.target.closest('.rcard');
+    if (!card) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      state.route = card.dataset.route;
+      updateAll(); resetSegInfo();
+    }
+  });
+
+  // ---------- 공사 토글 ----------
+  $('#constToggle').addEventListener('click', () => {
+    state.construction = !state.construction;
+    $('#constToggle').setAttribute('aria-pressed', String(state.construction));
+    $('#constBanner').hidden = !state.construction;
+    if (state.construction) {
+      // 공사가 발생하면 가장 안전한 경로를 함께 보여 주도록 우회 경로를 추천 상태로 둔다
+      updateAll(); resetSegInfo();
+      addLog(hhmm(0), '주변 공사로 경사로 구간이 막혀 경로를 다시 계산했어요.');
+      announce('공사 정보를 반영해 예상 시간과 난이도를 다시 계산했습니다.');
+    } else {
+      updateAll(); resetSegInfo();
+      announce('공사 정보를 해제했습니다.');
+    }
+  });
+
+  // ---------- 제보 ----------
+  const reportState = { kind: REPORT_KINDS[1], seg: null };
+  function openReport() {
+    const c = compute(state.route);
+    reportState.seg = c.segs[0] ? c.segs[0].id : null;
+    $('#reportKinds').innerHTML = REPORT_KINDS.map((k, i) =>
+      '<button type="button" class="opt" data-kind="' + k + '" aria-pressed="' + (k === reportState.kind) + '">' + k + '</button>').join('');
+    $('#reportSegs').innerHTML = c.segs.map(s =>
+      '<button type="button" class="opt" data-seg-pick="' + s.id + '" aria-pressed="' + (s.id === reportState.seg) + '">' + s.name + '</button>').join('');
+    $('#reportDialog').showModal();
+  }
+  $('#reportBtn').addEventListener('click', openReport);
+  $('#reportKinds').addEventListener('click', e => {
+    const b = e.target.closest('[data-kind]'); if (!b) return;
+    reportState.kind = b.dataset.kind;
+    $$('#reportKinds .opt').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+  });
+  $('#reportSegs').addEventListener('click', e => {
+    const b = e.target.closest('[data-seg-pick]'); if (!b) return;
+    reportState.seg = b.dataset.segPick;
+    $$('#reportSegs .opt').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+  });
+  $('#reportSubmit').addEventListener('click', () => {
+    const c = compute(state.route);
+    const seg = c.segs.find(s => s.id === reportState.seg) || c.segs[0];
+    state.reports.push({
+      id:'r' + Date.now(),
+      kind: reportState.kind.replace(/^[^\s]+\s/, ''),
+      title: reportState.kind.replace(/^[^\s]+\s/, '') + ' 제보 (내 제보)',
+      sub: ROUTES[state.route].name + ' · ' + seg.name,
+      ago:'방금', seg: seg.id, confirmed:false, penalty:1.5, blocked:false
+    });
+    $('#reportDialog').close();
+    $('#reportMemo').value = '';
+    updateAll();
+    addLog(hhmm(0), '장애물 제보를 등록해 경로에 반영했어요.');
+    announce('제보를 등록했습니다. 같은 경로의 예상 시간과 난이도가 다시 계산되었습니다.');
+  });
+
+  // ---------- 응급·지원 ----------
+  let sosMode = 'help';
+  function openSos(mode) {
+    sosMode = mode;
+    const danger = mode === '119';
+    $('#sosTitle').textContent = danger ? '긴급 상황 — 119 우선 연결' : '지원 요청';
+    $('#sosSub').textContent = danger ? '위치·이동 수단·상황이 함께 전달됩니다 (가상 시연)' : '현재 위치와 이동 수단이 자동으로 채워집니다 (가상 시연)';
+    state.sos.situation = danger ? 'fall' : (state.sos.situation || 'battery');
+    state.sos.targets = danger ? ['119','guardian'] : (state.sos.targets.length ? state.sos.targets : ['guardian']);
+    $('#sosSituations').innerHTML = SITUATIONS.map(s =>
+      '<button type="button" class="opt ' + (s.danger ? 'danger' : '') + '" data-sit="' + s.id + '" aria-pressed="' + (s.id === state.sos.situation) + '">' + s.label + '</button>').join('');
+    $('#sosTargets').innerHTML = TARGETS.map(t =>
+      '<button type="button" class="opt" data-target="' + t.id + '" aria-pressed="' + state.sos.targets.includes(t.id) + '">' + t.label + '</button>').join('');
+    $('#sosResult').hidden = true;
+    $('#sosTimeline').innerHTML = '';
+    $('#sosSend').disabled = false;
+    $('#sosSend').textContent = '요청 보내기 (시연)';
+    $('#sosDialog').showModal();
+    const sb = $('#sosDialog .dlg-b');
+    if (sb) sb.scrollTop = 0;
+  }
+  $('#sos119').addEventListener('click', () => openSos('119'));
+  $('#sosHelp').addEventListener('click', () => openSos('help'));
+  $('#sosDock').addEventListener('click', () => openSos('help'));
+
+  $('#sosSituations').addEventListener('click', e => {
+    const b = e.target.closest('[data-sit]'); if (!b) return;
+    state.sos.situation = b.dataset.sit;
+    $$('#sosSituations .opt').forEach(o => o.setAttribute('aria-pressed', String(o === b)));
+  });
+  $('#sosTargets').addEventListener('click', e => {
+    const b = e.target.closest('[data-target]'); if (!b) return;
+    const id = b.dataset.target;
+    const i = state.sos.targets.indexOf(id);
+    if (i >= 0) state.sos.targets.splice(i, 1); else state.sos.targets.push(id);
+    b.setAttribute('aria-pressed', String(state.sos.targets.includes(id)));
+  });
+
+  $('#sosSend').addEventListener('click', () => {
+    if (!state.sos.targets.length) { announce('알릴 대상을 하나 이상 선택해 주세요.'); return; }
+    const sit = SITUATIONS.find(s => s.id === state.sos.situation);
+    const steps = [];
+    steps.push({ t:'위치·상황 정리', s:'신진주 3단지 앞 보도 · ' + PROFILES[state.profile].name + ' · ' + sit.label.replace(/^[^\s]+\s/, ''), ok:true });
+    if (state.sos.targets.includes('guardian')) steps.push({ t:'보호자에게 알림', s:'문자·앱 알림 발송 (가상) · 읽음 확인 대기', ok:true });
+    if (state.sos.targets.includes('center')) steps.push({ t:'이동지원센터 접수', s:'접수번호 DJ-2026-1120-4821 (시연) · 예상 도착 12분', ok:true });
+    if (state.sos.targets.includes('119')) steps.push({ t:'119 연결 안내', s:'전화 걸기 버튼을 눌러 직접 연결하세요 · 이 앱이 대신 신고하지 않습니다', ok:false });
+    $('#sosTimeline').innerHTML = steps.map((st, i) =>
+      '<div class="tl ' + (st.ok ? 'done' : '') + '"><span class="ic">' + (st.ok ? '✓' : '☎') + '</span><span><span class="tt">' + st.t + '</span><br><span class="ts">' + st.s + '</span></span></div>').join('') +
+      '<div class="notice" style="margin-top:6px"><span aria-hidden="true">🛡️</span><span>위 시연은 실제 발송·신고가 아닙니다. 실제 응급 상황에서는 <b>119에 직접 전화</b>해 주세요.</span></div>';
+    $('#sosResult').hidden = false;
+    const sodBody = $('#sosDialog .dlg-b');
+    if (sodBody) sodBody.scrollTop = sodBody.scrollHeight;
+    $('#sosSend').disabled = true;
+    $('#sosSend').textContent = '전송 완료 (시연)';
+    addLog(hhmm(0), (sosMode === '119' ? '긴급 요청' : '지원 요청') + ' — ' + sit.label.replace(/^[^\s]+\s/, '') + ' · ' + state.sos.targets.map(id => (TARGETS.find(t => t.id === id) || {}).label).join(', ') + ' (시연)');
+    announce('요청을 보냈습니다. 시연이며 실제 신고는 이루어지지 않습니다.');
+  });
+
+  // ---------- 자동 감지 토글 ----------
+  ['autoStop','autoRoute','autoBattery'].forEach(id => {
+    const b = $('#' + id);
+    b.addEventListener('click', () => {
+      const on = b.getAttribute('aria-pressed') !== 'true';
+      b.setAttribute('aria-pressed', String(on));
+      announce(b.querySelector('b').textContent + (on ? ' 켬' : ' 끔'));
+    });
+  });
+
+  // ---------- 공간 필터 ----------
+  $$('.fchip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const k = chip.dataset.filter;
+      state.filters[k] = !state.filters[k];
+      chip.setAttribute('aria-pressed', String(state.filters[k]));
+      renderPlaces();
+      announce('조건에 맞는 곳 ' + $('#placeCount').textContent + '입니다.');
+    });
+  });
+
+  // ---------- AI 판별 ----------
+  function aiPhotoSVG(p) {
+    const doorW = clamp(Math.round(p.width / 200 * 160), 60, 170);
+    const x0 = (480 - doorW) / 2;
+    return '<svg viewBox="0 0 480 260" aria-label="입구 사진 판별 예시">' +
+      '<rect width="480" height="260" fill="#DCE5DB"/>' +
+      '<rect width="480" height="46" fill="#C9D6C6"/>' +
+      '<rect x="' + (x0 - 20) + '" y="46" width="' + (doorW + 40) + '" height="180" rx="6" fill="#F2F6EF"/>' +
+      '<rect x="' + x0 + '" y="56" width="' + doorW + '" height="170" fill="#CBDCD2" stroke="#8FB2A3" stroke-width="3"/>' +
+      '<rect x="' + (x0 + doorW / 2) + '" y="56" width="3" height="170" fill="#8FB2A3"/>' +
+      '<rect x="' + (x0 - 8) + '" y="226" width="' + (doorW + 16) + '" height="10" fill="' + (p.step ? '#E0B075' : '#B5CDBD') + '"/>' +
+      '<rect y="236" width="480" height="24" fill="#BFCFBE"/>' +
+      // 치수선
+      '<g stroke="#B3261E" stroke-width="2" fill="none">' +
+        '<path d="M' + x0 + ',40 L' + x0 + ',52"/><path d="M' + (x0 + doorW) + ',40 L' + (x0 + doorW) + ',52"/>' +
+        '<path d="M' + x0 + ',44 L' + (x0 + doorW) + ',44"/>' +
+      '</g>' +
+      '<rect x="' + (x0 + doorW / 2 - 34) + '" y="28" width="68" height="18" rx="9" fill="#B3261E"/>' +
+      '<text x="' + (x0 + doorW / 2) + '" y="41" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">폭 ' + p.width + 'cm</text>' +
+      '<g stroke="#0E5C4E" stroke-width="2" fill="none"><path d="M' + (x0 - 12) + ',226 L' + (x0 - 12) + ',236"/></g>' +
+      '<rect x="14" y="206" width="104" height="18" rx="9" fill="#0E5C4E"/>' +
+      '<text x="66" y="219" text-anchor="middle" font-size="11" font-weight="800" fill="#fff">문턱 ' + p.step + 'cm</text>' +
+      '<g fill="none" stroke="#1B57B0" stroke-width="2" stroke-dasharray="5 4">' +
+        '<rect x="' + x0 + '" y="56" width="' + doorW + '" height="170"/>' +
+        '<rect x="' + (x0 - 8) + '" y="226" width="' + (doorW + 16) + '" height="10"/>' +
+      '</g>' +
+      '<text x="356" y="72" font-size="11" font-weight="800" fill="#1B57B0">감지 영역</text>' +
+      (p.auto ? '<circle cx="' + (x0 + doorW / 2) + '" cy="46" r="5" fill="#0E5C4E"/><text x="' + (x0 + doorW / 2 + 10) + '" y="50" font-size="10" font-weight="800" fill="#0E5C4E">자동문 센서</text>' : '') +
+      '</svg>';
+  }
+  function openAi(placeId) {
+    const p = PLACES.find(x => x.id === placeId) || PLACES[0];
+    $('#aiPlaceName').textContent = p.name + ' · ' + p.cat;
+    $('#aiPhoto').innerHTML = aiPhotoSVG(p);
+    const rows = [
+      ['문턱 높이', p.step + 'cm', p.ai],
+      ['유효 문 폭', p.width + 'cm', Math.max(60, p.ai - 3)],
+      ['자동문 여부', p.auto ? '자동문' : '여닫이', Math.max(58, p.ai - 6)],
+      ['실내 바닥 경사', p.ramp + '°', Math.max(55, p.ai - 18)],
+      ['장애인 화장실', p.toilet ? '있음' : '확인 안 됨', Math.max(50, p.ai - 25)]
+    ];
+    $('#aiDetect').innerHTML = rows.map(r =>
+      '<div class="detect"><span>' + r[0] + '</span><b>' + r[1] + ' · 신뢰도 ' + Math.round(r[2]) + '%</b></div>').join('') +
+      '<div class="detect" style="background:var(--brand-soft);border-color:#B7D8CC"><span>종합 판정</span><b>' + (placePasses(p) ? '내 프로필로 통과 가능' : '내 프로필 기준 미달') + '</b></div>';
+    $('#aiConfirm').dataset.place = p.id;
+    $('#aiDialog').showModal();
+  }
+  $('#placesGrid').addEventListener('click', e => {
+    const b = e.target.closest('[data-ai]');
+    if (b) { openAi(b.dataset.ai); return; }
+  });
+  $('#aiConfirm').addEventListener('click', () => {
+    const p = PLACES.find(x => x.id === $('#aiConfirm').dataset.place);
+    if (p) { p.ai = Math.min(99, p.ai + 2); p.checked = '방금'; }
+    $('#aiDialog').close();
+    renderPlaces();
+    announce('현장 확인으로 신뢰도를 올렸습니다.');
+  });
+
+  // ---------- 모달 닫기 ----------
+  $$('dialog').forEach(d => {
+    $$('[data-close], .x', d).forEach(b => b.addEventListener('click', () => d.close()));
+  });
+
+  // ---------- 큰 글씨 ----------
+  $('#btnLargeText').addEventListener('click', () => {
+    state.largeText = !state.largeText;
+    document.body.classList.toggle('large-text', state.largeText);
+    $('#btnLargeText').setAttribute('aria-pressed', String(state.largeText));
+    announce(state.largeText ? '큰 글씨 모드를 켰습니다.' : '큰 글씨 모드를 껐습니다.');
+  });
+
+  // ---------- 초기화 ----------
+  $('#resetMap').addEventListener('click', () => {
+    updateAll(); resetSegInfo();
+  });
+
+  updateAll();
+  renderPlaces();
+  // 기본 상세: 맞춤 경로의 경사로 구간을 미리 보여 준다
+  selectSeg('F2');
+})();
+</script>
+</body>
+</html>
