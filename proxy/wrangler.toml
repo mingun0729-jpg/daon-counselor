@@ -12,6 +12,11 @@ CODEF_ENV = "demo"
 ALLOWED_ORIGIN = "https://mingun0729-jpg.github.io"
 PROXY_TOKEN = ""
 
+# 다온 채팅 AI 응답 — Cloudflare Workers AI(키 불필요, 계정의 일일 무료 사용량 안에서 동작).
+# ANTHROPIC_API_KEY secret을 넣으면 Claude가 우선 쓰입니다.
+[ai]
+binding = "AI"
+
 # 아래 세 값은 절대 이 파일에 적지 말고 secret으로 넣습니다.
 #   npx wrangler secret put CODEF_CLIENT_ID
 #   npx wrangler secret put CODEF_CLIENT_SECRET

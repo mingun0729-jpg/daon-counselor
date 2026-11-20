@@ -78,7 +78,8 @@ npx wrangler deploy
 | `PROXY_TOKEN` | | 지정하면 `X-Daon-Token` 헤더가 같아야 응답. 남용 방지용 |
 | `CODEF_MOCK` | | `1`이면 CODEF를 부르지 않고 **모의 응답**. 응답에 `mock:true`가 붙고 화면에도 '모의 응답'으로 표시됩니다. 연결 화면 확인용 |
 | `CODEF_TIMEOUT_MS` | | CODEF 호출 제한시간(기본 30000) |
-| `ANTHROPIC_API_KEY` | 채팅용 | 다온 채팅의 Claude 응답용 API 키 (**secret**). 없으면 채팅은 기존 규칙 답으로만 동작 |
+| `ANTHROPIC_API_KEY` | | 다온 채팅의 Claude 응답용 API 키 (**secret**, 유료). 있으면 Claude, 없으면 Cloudflare Workers AI(`wrangler.toml`의 `[ai]` 바인딩, 키 불필요·무료 한도 내)로 답함 |
+| `AI_MODEL` | | Workers AI 모델 (기본 `@cf/google/gemma-3-12b-it`) |
 | `CLAUDE_MODEL` | | 채팅 모델 (기본 `claude-haiku-5-5`) |
 | `CHAT_RATE_PER_MIN` | | IP당 분당 채팅 질문 수 (기본 12) |
 | `CHAT_TIMEOUT_MS` | | Claude 호출 제한시간 (기본 20000) |

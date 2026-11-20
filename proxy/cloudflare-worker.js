@@ -13,7 +13,8 @@
  *   POST /api/chat            다온 채팅의 Claude 응답. {messages, facts, profile} → {ok, text}
  *
  * 채팅용 환경변수(선택 — 없으면 앱은 기존 규칙 기반 답으로 동작한다)
- *   ANTHROPIC_API_KEY    (secret) Claude API 키
+ *   ANTHROPIC_API_KEY    (secret) Claude API 키. 있으면 Claude, 없으면 Workers AI([ai] 바인딩 AI)
+ *   AI_MODEL             Workers AI 모델 (기본 @cf/google/gemma-3-12b-it)
  *   CLAUDE_MODEL         기본 claude-haiku-5-5
  *   CHAT_RATE_PER_MIN    IP당 분당 질문 수 (기본 12)
  *   CHAT_TIMEOUT_MS      Claude 호출 제한시간 (기본 20000)
@@ -718,8 +719,8 @@ function chatRateLimited(request, env) {
 }
 
 async function handleChat(env, request) {
-  if (!env.ANTHROPIC_API_KEY) {
-    throw httpError(503, 'Claude 연결이 설정되지 않았습니다(ANTHROPIC_API_KEY).', 'chat_not_configured');
+  if (!env.ANTHROPIC_API_KEY && !env.AI) {
+    throw httpError(503, 'AI 연결이 설정되지 않았습니다(ANTHROPIC_API_KEY 또는 Workers AI 바인딩).', 'chat_not_configured');
   }
   if (chatRateLimited(request, env)) {
     throw httpError(429, '잠시 후 다시 물어봐 주세요.', 'chat_rate_limited');
@@ -743,6 +744,22 @@ async function handleChat(env, request) {
   const system = CHAT_SYSTEM +
     (profile ? '\n\n[사용자 조건]\n' + profile : '') +
     (facts ? '\n\n[참고 자료]\n' + facts : '\n\n[참고 자료]\n(없음)');
+
+  if (!env.ANTHROPIC_API_KEY) {
+    /* 키가 없으면 Cloudflare Workers AI(무료 한도 내)로 답한다. */
+    let out;
+    try {
+      out = await env.AI.run(env.AI_MODEL || '@cf/google/gemma-3-12b-it', {
+        messages: [{ role: 'system', content: system }].concat(msgs),
+        max_tokens: 400
+      });
+    } catch (e) {
+      throw httpError(502, 'AI 호출이 실패했습니다. 무료 사용량을 넘었을 수 있어요.', 'chat_upstream');
+    }
+    const t = String((out && (out.response || (out.choices && out.choices[0] && out.choices[0].message && out.choices[0].message.content))) || '').trim();
+    if (!t) { throw httpError(502, 'AI가 빈 답을 돌려줬어요.', 'chat_empty'); }
+    return jsonResponse({ ok: true, text: t, engine: 'workers-ai' }, 200, env, request);
+  }
 
   const ctl = new AbortController();
   const timer = setTimeout(function () { ctl.abort(); }, Number(env.CHAT_TIMEOUT_MS) || 20000);
@@ -776,7 +793,7 @@ async function handleChat(env, request) {
   const text = (data.content || []).filter(function (c) { return c && c.type === 'text'; })
     .map(function (c) { return c.text; }).join('\n').trim();
   if (!text) { throw httpError(502, 'Claude가 빈 답을 돌려줬어요.', 'chat_empty'); }
-  return jsonResponse({ ok: true, text: text }, 200, env, request);
+  return jsonResponse({ ok: true, text: text, engine: 'claude' }, 200, env, request);
 }
 
 async function readJson(request) {
