@@ -78,6 +78,22 @@ npx wrangler deploy
 | `PROXY_TOKEN` | | 지정하면 `X-Daon-Token` 헤더가 같아야 응답. 남용 방지용 |
 | `CODEF_MOCK` | | `1`이면 CODEF를 부르지 않고 **모의 응답**. 응답에 `mock:true`가 붙고 화면에도 '모의 응답'으로 표시됩니다. 연결 화면 확인용 |
 | `CODEF_TIMEOUT_MS` | | CODEF 호출 제한시간(기본 30000) |
+| `ANTHROPIC_API_KEY` | 채팅용 | 다온 채팅의 Claude 응답용 API 키 (**secret**). 없으면 채팅은 기존 규칙 답으로만 동작 |
+| `CLAUDE_MODEL` | | 채팅 모델 (기본 `claude-haiku-5-5`) |
+| `CHAT_RATE_PER_MIN` | | IP당 분당 채팅 질문 수 (기본 12) |
+| `CHAT_TIMEOUT_MS` | | Claude 호출 제한시간 (기본 20000) |
+
+### 다온 채팅 Claude 연결 (`POST /api/chat`)
+
+```
+npx wrangler secret put ANTHROPIC_API_KEY
+npx wrangler deploy
+```
+
+- 규칙이 못 알아듣는 말(fallback)과 안내 질문(info)만 Claude로 갑니다. 화면 이동·일자리·서류·전화·알림은 앱이 직접 처리합니다.
+- 브라우저는 최근 대화 8개·안내 자료·조건 요약(장애 유형·정도·지역·협회원 여부)만 보냅니다. 성명·주민번호·주소·사진은 보내지 않습니다.
+- 키가 없거나 호출이 실패하면 화면은 기존 규칙 답으로 돌아갑니다(에러 문구를 보이지 않음).
+- 공개 주소라 호출 비용이 새지 않도록 `ALLOWED_ORIGIN`을 GitHub Pages 주소로 좁히고, 필요하면 `PROXY_TOKEN`을 쓰세요.
 
 ---
 

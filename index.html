@@ -1454,7 +1454,7 @@ body.easy .qchip{font-size:16px}
       </form>
       <input type="file" id="chatCardFile" accept="image/*" hidden>
       <input type="file" id="chatIdFile" accept="image/*" hidden>
-      <p class="micro">🎤를 누르고 말하거나 아래에 글로 적어 주세요. 음성 인식이 안 되는 브라우저에서는 글자로 하시면 돼요. ※ 시연용이며 입력한 내용은 이 브라우저에만 저장됩니다.</p>
+      <p class="micro">🎤를 누르고 말하거나 아래에 글로 적어 주세요. 음성 인식이 안 되는 브라우저에서는 글자로 하시면 돼요. ※ 시연용이며 대화는 이 브라우저에만 저장됩니다. 일반 질문은 AI(Claude)에게 전달돼 답해요. 이름·주민번호·계좌는 적지 마세요.</p>
     </section>
 
     <!-- ============ 민원 전화 (시연 통화) ============ -->
@@ -7993,7 +7993,7 @@ body.easy .qchip{font-size:16px}
     var log = $('#chatLog');
     if (!log) { return; }
     ensureChat();
-    log.innerHTML = state.chat.map(chatItemHtml).join('');
+    log.innerHTML = state.chat.filter(function (m) { return !m.pending || chatBusy; }).map(chatItemHtml).join('');
     renderBrief();
   }
   /* 새 말이 오면 대화 맨 아래로 — 화면을 처음 열 때는 맨 위(브리핑)에서 시작한다. */
@@ -8003,15 +8003,70 @@ body.easy .qchip{font-size:16px}
     if (inp && document.activeElement === inp) { return; }
     try { window.scrollTo(0, document.body.scrollHeight); } catch (e) {}
   }
-  function chatSendText(text) {
-    var t = String(text || '').replace(/\s+/g, ' ').trim();
-    if (!t) { return; }
-    chatPush('me', { kind: 'text', text: t });
-    var replies = chatReply(chatIntent(t), t);
-    replies.forEach(function (r) { chatPush('daon', r); });
+  /* ----- Claude 응답 (프록시 /api/chat) -----
+     화면 이동·카드 같은 '동작'은 chatIntent 규칙이 맡고, 규칙이 못 알아듣거나(fallback)
+     안내 질문(info)일 때만 Claude에게 묻는다. 프록시가 없거나 실패하면 기존 규칙 답으로 돌아간다.
+     보내는 것: 최근 대화 8개 + 안내 자료 + 조건 요약(유형·정도·지역·협회원 여부).
+     성명·주민번호·주소·사진은 보내지 않는다. */
+  var CLAUDE_INTENTS = { fallback: 1, info: 1 };
+  var chatBusy = false;
+  function chatFacts() {
+    var lines = INFO_TOPICS.map(function (e) { return '· ' + e.title + ': ' + e.body; });
+    lines.push('· 기관: ' + ORG.name + (ORG.tel ? ' (대표번호 ' + ORG.tel + ')' : ''));
+    return lines.join('\n');
+  }
+  function chatHistory() {
+    var out = [];
+    (state.chat || []).forEach(function (m) {
+      if (m.kind !== 'text' || !m.text || m.pending) { return; }
+      out.push({ role: m.who === 'me' ? 'user' : 'assistant', content: m.text });
+    });
+    return out.slice(-8);
+  }
+  function askClaude() {
+    return codefFetch('/api/chat', {
+      messages: chatHistory(),
+      facts: chatFacts(),
+      profile: profileLabel(profileOf())
+    }).then(function (d) {
+      var s = d && typeof d.text === 'string' ? d.text.trim() : '';
+      if (!s) { throw makeErr('빈 답', 'chat_empty'); }
+      return s;
+    });
+  }
+  function chatFinish() {
     var last = state.chat[state.chat.length - 1];
     if (a11y.voice && last && last.text) { speak(last.text); }
     announce('다온: ' + (last && last.text ? last.text : ''));
+  }
+  function chatSendText(text) {
+    var t = String(text || '').replace(/\s+/g, ' ').trim();
+    if (!t) { return; }
+    if (chatBusy) { toast('다온이 답하는 중이에요'); return; }
+    chatPush('me', { kind: 'text', text: t });
+    var intent = chatIntent(t);
+    if (!CLAUDE_INTENTS[intent] || !codef.url) {
+      chatReply(intent, t).forEach(function (r) { chatPush('daon', r); });
+      chatFinish();
+      return;
+    }
+    chatBusy = true;
+    var wait = chatPush('daon', { kind: 'text', text: '다온이 생각하고 있어요…', pending: true });
+    function done(replacement) {
+      chatBusy = false;
+      var i = state.chat.indexOf(wait);
+      if (i > -1) { state.chat.splice(i, 1); }
+      replacement.forEach(function (r) { chatPush('daon', r); });
+      chatFinish();
+    }
+    askClaude().then(function (answer) {
+      var chips = intent === 'info'
+        ? [{ t: '📞 민원 전화로 물어보기', act: 'call-scn', scn: infoFor(t).scn }]
+        : CHAT_CHIPS_MAIN;
+      done([{ kind: 'text', text: answer, chips: chips, ai: true }]);
+    }).catch(function () {
+      done(chatReply(intent, t));
+    });
   }
   function chatAct(act, el) {
     if (act === 'pick-card') { var f = $('#chatCardFile'); if (f) { f.click(); } return; }

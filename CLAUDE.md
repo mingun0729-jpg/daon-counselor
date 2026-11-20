@@ -40,6 +40,7 @@
 - 알림: `SUBS`(5종) 구독 스위치 → `state.subs`, `ALERT_FEED`(시연용 소식 11건) 중 `alertMatch()`가 조건에 맞는 것만 골라 `state.alerts`에 쌓는다. `Notification` API 권한·테스트 버튼, 앱 안 알림 센터(안읽음 배지·모두 읽음), 탭 배지(`#ntfDot`).
 - 협회원 맞춤: `state.member`(회원 여부·지역·관심 분야) + 카드의 장애 유형·정도 + 주소/`ORG`로 `profileOf()`를 만들고 `personalBriefing()`이 지원사업·긴급 공지·교육/물품 지원을 골라 **상단 브리핑 카드**(채팅 1건, 알림 화면 3건)와 알림으로 보여 준다. `briefReason()`이 왜 골랐는지 표시한다.
 - 저장: 스냅샷 `daon.state.v1`이 **v5**로 올라가 `chat`·`calls`·`alerts`·`subs`·`member`를 함께 저장한다(v4 기록도 읽는다). 사진·실제 조회값은 여전히 저장하지 않는다.
+- **Claude 응답(2026-11-20)**: `chatSendText()`가 `chatIntent`가 `fallback`·`info`일 때만 `askClaude()`→`codefFetch('/api/chat')`로 묻는다(`CLAUDE_INTENTS`). 대기 말풍선(`pending:true`)을 보였다가 답으로 바꾸고, 프록시 미설정·실패 시 기존 `chatReply` 규칙 답으로 조용히 돌아간다. 보내는 것은 최근 대화 8개·`chatFacts()`(안내 자료)·`profileLabel()`뿐 — **성명·주민번호·주소·사진은 보내지 않는다.** 시스템 프롬프트·키·모델은 `proxy/cloudflare-worker.js`의 `handleChat`에만 있다. 채팅 화면 안내문(`#view-chat` 하단 `.micro`)의 'AI에 전달' 고지를 지우지 않는다.
 - 테스트: `frontend.test.mjs` [S1]~[S12]가 의도 해석·채팅 카드·전화 연결/요약·구독 필터·협회원 매칭·Notification 분기·저장 복원을 확인한다(**270건**).
 
 ## 2. 파일 구조
