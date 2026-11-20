@@ -3157,7 +3157,9 @@ body.easy .twbox p{font-size:16px}
     var cardName = isId ? '주민등록증' : '장애인등록증';
     var fields = isId
       ? [['생년월일', birthText()], ['주소', (state.form.addr || '경상남도 진주시 ○○로 12 (예시)').slice(0, 22)], ['발급기관', '진주시 ○○동 주민센터']]
-      : [['등록번호', maskedRrn()], ['장애유형', TYPE_LABEL[state.type] || '지체장애'], ['장애정도', (SEVERITY_LABEL[state.severity] || '심한 장애').replace(/\s*\(.*\)/, '')], ['등록일', (state.card && state.card.issue && state.card.issue !== '—') ? state.card.issue : '2024. 03. 12.']];
+      : [['등록번호', maskedRrn()], ['장애유형', TYPE_LABEL[state.type] || '지체장애'], ['장애정도', (SEVERITY_LABEL[state.severity] || '심한 장애').replace(/\s*\(.*\)/, '')], ['등록일', (state.card && state.card.issue && state.card.issue !== '—')
+        ? state.card.issue
+        : ((state.card && state.card.source === 'sample') ? '2024. 03. 12.' : '—')]];
     var out = '';
     fields.forEach(function (r, i) {
       var y = 332 + i * 34;
