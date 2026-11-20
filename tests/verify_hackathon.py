@@ -94,6 +94,66 @@ def run():
         check("응급 표현에 119 안내", "119" in txt)
         check("진단하지 않는다는 고지", "판단하지 않아요" in txt)
 
+        # 채팅 — AI 답변 경로 (프록시는 가짜 응답으로 대체; 실제 호출 없음)
+        ai = {"calls": 0, "mode": "ok", "bodies": []}
+        cors = {"access-control-allow-origin": "*", "access-control-allow-headers": "*"}
+
+        def fake_chat(route):
+            req = route.request
+            if req.method == "OPTIONS":
+                route.fulfill(status=204, headers=cors)
+                return
+            ai["calls"] += 1
+            try:
+                ai["bodies"].append(req.post_data or "")
+            except Exception:
+                pass
+            if ai["mode"] == "fail":
+                route.abort()
+            elif ai["mode"] == "unsafe":
+                route.fulfill(status=200, headers=cors, content_type="application/json",
+                              body=json.dumps({"ok": True, "text": "그 약은 끊으세요."}))
+            else:
+                route.fulfill(status=200, headers=cors, content_type="application/json",
+                              body=json.dumps({"ok": True, "text": "테스트용 AI 답이에요."}))
+
+        pg.route("**/api/chat", fake_chat)
+
+        def ask_and_last(q, wait=900):
+            pg.fill("#chatInput", q)
+            pg.click("#chatSend")
+            pg.wait_for_timeout(wait)
+            return pg.locator("#chatLog .msg.daon").last.inner_text()
+
+        last = ask_and_last("오늘 하늘이 참 맑네요")
+        check("규칙에 없는 말은 AI 답으로 이어진다", "테스트용 AI 답이에요" in last, last[:40])
+        check("AI 답에 '참고용·진단 아님' 표시", "참고용" in last)
+        check("대기 말풍선이 남지 않는다", "생각하고 있어요" not in pg.inner_text("#chatLog"))
+        body = ai["bodies"][-1] if ai["bodies"] else ""
+        check("AI에 mode=health로 요청", '"mode":"health"' in body.replace(" ", ""))
+        check("AI 요청에 사람 이름이 없다", "이순자" not in body and "김영수" not in body)
+
+        before = ai["calls"]
+        last = ask_and_last("혈압약이랑 감기약 같이 먹어도 돼요?")
+        check("약 판단 질문은 AI로 보내지 않는다", ai["calls"] == before, ai["calls"] - before)
+        check("약 판단 질문에 '판단하지 않아요' + 약사·의료진", "판단하지 않아요" in last and "약사" in last)
+
+        before = ai["calls"]
+        last = ask_and_last("가슴이 답답하고 숨이 차요")
+        check("응급 표현은 AI로 보내지 않고 119 안내", ai["calls"] == before and "119" in last)
+
+        ai["mode"] = "unsafe"
+        last = ask_and_last("요즘 기분이 좋아요")
+        check("지시형 AI 답은 버리고 기존 안내로 돌아간다", "끊으세요" not in last and "알아듣지 못했어요" in last, last[:40])
+
+        ai["mode"] = "fail"
+        n_err = len(errs)
+        last = ask_and_last("창밖에 새가 보여요")
+        check("프록시가 실패해도 기존 안내로 돌아간다", "알아듣지 못했어요" in last, last[:40])
+        # 일부러 끊은 연결이 남기는 브라우저 로그(net::ERR_FAILED)만 에러 집계에서 뺀다
+        errs[n_err:] = [e for e in errs[n_err:] if "ERR_FAILED" not in e]
+        pg.unroute("**/api/chat")
+
         # 오늘의 약
         pg.click('#modeBar [data-mode="meds"]')
         pg.wait_for_timeout(400)

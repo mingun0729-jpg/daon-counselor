@@ -1258,7 +1258,7 @@ body.a11y-contrast .hacktag{background:#0E1A26; border-color:#2F5B80; color:#BBD
         <button type="submit" id="chatSend">보내기</button>
       </form>
       <input type="file" id="bagFile" accept="image/*" hidden>
-      <p class="micro">🎤를 누르고 말하거나 글로 적어 주세요. 📷는 약봉투·처방전 사진을 찍어 복약 일정에 넣어요. 음성 인식이 안 되는 브라우저에서는 글자로 하시면 돼요.</p>
+      <p class="micro">🎤를 누르고 말하거나 글로 적어 주세요. 📷는 약봉투·처방전 사진을 찍어 복약 일정에 넣어요. 음성 인식이 안 되는 브라우저에서는 글자로 하시면 돼요. 버튼·규칙으로 답하지 못하는 일반 질문만 AI에게 전달돼요(가상 데이터만 · 이름·번호는 적지 마세요).</p>
     </section>
 
     <!-- ============ 오늘의 약 ============ -->
@@ -1792,6 +1792,7 @@ body.a11y-contrast .hacktag{background:#0E1A26; border-color:#2F5B80; color:#BBD
     }
     var inner = '';
     if (m.text) { inner += '<div>' + esc(m.text).replace(/\n/g, '<br>') + '</div>'; }
+    if (m.ai) { inner += '<p class="micro" style="margin-top:6px">AI가 만든 답이에요 · 참고용이고 진단이나 처방이 아니에요</p>'; }
     if (m.card) { inner += m.card; }
     if (m.chips && m.chips.length) {
       inner += '<div class="qchips">' + m.chips.map(function (c) {
@@ -1810,7 +1811,7 @@ body.a11y-contrast .hacktag{background:#0E1A26; border-color:#2F5B80; color:#BBD
     var log = $('#chatLog');
     if (!log) { return; }
     if (!state.chat.length) { state.chat.push(greeting()); }
-    log.innerHTML = state.chat.map(msgHtml).join('');
+    log.innerHTML = state.chat.filter(function (m) { return !m.pending || chatBusy; }).map(msgHtml).join('');
     renderBrief();
     var last = state.chat[state.chat.length - 1];
     if (last && last.who === 'daon' && last.text) { announce('다온: ' + last.text); }
@@ -1824,6 +1825,8 @@ body.a11y-contrast .hacktag{background:#0E1A26; border-color:#2F5B80; color:#BBD
     var s = String(t || '');
     if (/(119|응급|쓰러|숨이|숨쉬|가슴.{0,4}(아|답답|조이|통증)|심장|말이 어눌|한쪽이|마비)/.test(s)) { return 'emergency'; }
     if (/(어지|아파|아프|통증|불편|힘들|기운이 없)/.test(s)) { return 'sick'; }
+    /* 약의 용량·중단·병용·부작용은 다온이 판단하지 않는다 — AI에게도 보내지 않고 규칙 문구로만 답한다. */
+    if (/(용량|몇 알|몇알|많이 먹|같이 먹|함께 먹|끊어|끊을|그만 먹|줄여|늘려|바꿔|부작용|무슨 약|무슨 병|진단|처방해|낫는|낫나)/.test(s)) { return 'medq'; }
     if (/(약봉투|처방전|약봉지|사진|찍|스캔|등록)/.test(s)) { return 'ocr'; }
     if (/(병원|진료|예약|보건소|주민센터|검진|언제 가)/.test(s)) { return 'appt'; }
     if (/(약|복약|먹었|먹을|알약|처방|몇 번)/.test(s)) { return 'meds'; }
@@ -1905,21 +1908,105 @@ body.a11y-contrast .hacktag{background:#0E1A26; border-color:#2F5B80; color:#BBD
         { t: '👨‍👩‍👧 보호자에게 알리기', act: 'share' }
       ] }];
     }
+    if (intent === 'medq') {
+      return [{ text: '약을 얼마나, 어떻게 먹을지, 다른 약과 같이 먹어도 되는지는 다온이 판단하지 않아요. 약사나 의료진에게 꼭 확인해 주세요.\n약봉투에 적힌 내용은 오늘의 약에서 그대로 보여 드려요.', chips: [
+        { t: '💊 오늘의 약 보기', act: 'mode', mode: 'meds' },
+        { t: '🚑 119 안내 보기', act: 'sheet', sheet: 'emerg' }
+      ] }];
+    }
     if (intent === 'intro') {
       return [{ text: '다온은 이렇게 도와드려요.\n· 오늘 먹을 약과 시간 알려주기\n· 약봉투 사진을 읽어 일정에 넣기\n· 안부 전화로 컨디션 확인하기\n· 병원·방문 돌봄 알림 챙기기\n· 보호자에게 오늘 상태 전하기', chips: CHAT_CHIPS }];
     }
     return [{ text: '제가 잘 알아듣지 못했어요. 아래에서 골라 주시거나 "오늘 먹을 약", "약봉투 등록", "병원 일정"처럼 말씀해 주세요.', chips: CHAT_CHIPS }];
   }
 
-  function chatSendText(raw) {
-    var t = String(raw || '').replace(/\s+/g, ' ').trim();
-    if (!t) { return; }
-    chatPush('me', { text: t });
-    var replies = chatReply(chatIntent(t));
-    replies.forEach(function (r) { chatPush('daon', r); });
+  /* ----- AI 답변 (프록시 /api/chat, mode:'health') -----
+     순서: 규칙이 먼저 — 응급(119)·증상·약 판단 질문·화면 이동은 모두 규칙이 답하고,
+     어디에도 안 맞는 말(fallback)일 때만 AI에게 묻는다. 프록시가 없거나 늦거나 실패하면 기존 안내 문구로 돌아간다.
+     보내는 것: 최근 대화 8개 + 오늘 복약·일정 요약(가상 데이터). 이름·보호자·사진은 보내지 않는다.
+     받은 답에 지시형·진단형 표현이 있으면 버리고 규칙 문구를 쓴다. */
+  var AI_PROXY_URL = 'https://daon-codef-proxy.mingun29.workers.dev';
+  var AI_UNSAFE = /(드세요|드십시오|복용하세요|복용해|끊으|끊어|중단|줄이|늘리|바꾸세요|바꿔|진단|처방해|병입니다|병이에요|때문이에요|때문입니다)/;
+  var chatBusy = false;
+
+  function aiFacts() {
+    var lines = ['· 오늘 복약 ' + doneDoses() + '/' + totalDoses() + '번 완료'];
+    SLOTS.forEach(function (s) {
+      slotMeds(s.key).forEach(function (m) {
+        lines.push('· ' + s.label + ' ' + m.name + ' (' + m.meal + ') ' + (isTaken(s.key, m.id) ? '완료' : '남음'));
+      });
+    });
+    (person().events || []).forEach(function (e) { lines.push('· 일정: ' + e.when + ' ' + e.what); });
+    return aiScrub(lines.join('\n'));
+  }
+  /* 인사말 등 대화 이력에 들어 있는 인물 이름·보호자 표시는 보내기 전에 '어르신'으로 바꾼다. */
+  function aiScrub(text) {
+    var s = String(text || '');
+    Object.keys(PEOPLE).forEach(function (k) {
+      var p = PEOPLE[k];
+      if (p.name) { s = s.split(p.name).join('어르신'); }
+      if (p.guardian) { s = s.split(p.guardian).join('보호자'); }
+    });
+    return s;
+  }
+  function aiHistory() {
+    var out = [];
+    state.chat.forEach(function (m) {
+      if (!m.text || m.pending) { return; }
+      out.push({ role: m.who === 'me' ? 'user' : 'assistant', content: aiScrub(m.text) });
+    });
+    return out.slice(-8);
+  }
+  function askAI() {
+    var ctl = window.AbortController ? new AbortController() : null;
+    var timer = ctl ? setTimeout(function () { ctl.abort(); }, 25000) : null;
+    return fetch(AI_PROXY_URL + '/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mode: 'health', messages: aiHistory(), facts: aiFacts(), profile: '' }),
+      signal: ctl ? ctl.signal : undefined
+    }).then(function (r) {
+      if (timer) { clearTimeout(timer); }
+      return r.json().then(function (d) {
+        var s = d && d.ok && typeof d.text === 'string' ? d.text.trim() : '';
+        if (!s || AI_UNSAFE.test(s)) { throw new Error('ai_unusable'); }
+        return s;
+      });
+    }).catch(function (e) { if (timer) { clearTimeout(timer); } throw e; });
+  }
+  function chatFinish() {
     var last = state.chat[state.chat.length - 1];
     if (last && last.text) { speak(last.text); }
     chatScrollEnd();
+  }
+  function chatSendText(raw) {
+    var t = String(raw || '').replace(/\s+/g, ' ').trim();
+    if (!t) { return; }
+    if (chatBusy) { toast('다온이 답하는 중이에요'); return; }
+    chatPush('me', { text: t });
+    var intent = chatIntent(t);
+    if (intent !== 'fallback') {
+      chatReply(intent).forEach(function (r) { chatPush('daon', r); });
+      chatFinish();
+      return;
+    }
+    chatBusy = true;
+    var wait = { who: 'daon', text: '다온이 생각하고 있어요…', pending: true };
+    state.chat.push(wait);
+    renderChat();
+    chatScrollEnd();
+    function done(list) {
+      chatBusy = false;
+      var i = state.chat.indexOf(wait);
+      if (i > -1) { state.chat.splice(i, 1); }
+      list.forEach(function (r) { chatPush('daon', r); });
+      chatFinish();
+    }
+    askAI().then(function (answer) {
+      done([{ text: answer, ai: true, chips: CHAT_CHIPS }]);
+    }).catch(function () {
+      done(chatReply('fallback'));
+    });
   }
 
   function shareToGuardian() {

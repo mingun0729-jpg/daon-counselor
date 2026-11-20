@@ -9,7 +9,9 @@ compatibility_date = "2026-11-19"
 #    (공개 주소를 남이 써서 CODEF 쿼터를 태우는 것을 막습니다)
 [vars]
 CODEF_ENV = "demo"
-ALLOWED_ORIGIN = "https://mingun0729-jpg.github.io"
+# 쉼표로 여러 개. "null"은 index.html을 파일로 직접 열 때(file://), localhost는 python -m http.server 시연용.
+# CORS는 브라우저 보호일 뿐 인증이 아니므로, 남용은 속도 제한(CHAT_RATE_PER_MIN)과 Anthropic/Cloudflare 한도로 막는다.
+ALLOWED_ORIGIN = "https://mingun0729-jpg.github.io,null,http://localhost:8000,http://127.0.0.1:8000"
 PROXY_TOKEN = ""
 
 # 다온 채팅 AI 응답 — Cloudflare Workers AI(키 불필요, 계정의 일일 무료 사용량 안에서 동작).

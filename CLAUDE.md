@@ -31,7 +31,7 @@ docs/hackathon-plan.md     # 실습 워크북 초안 (제출물 ①)
 tests/verify_hackathon.py  # Playwright 자동 검증 (375px·1280px, 콘솔 에러 0, 넘침 0)
 CLAUDE.md                  # 이 문서
 .nojekyll                  # GitHub Pages Jekyll 처리 비활성화
-proxy/                     # (main 브랜치 자산) 기관 조회용 Cloudflare Worker — 이 브랜치 데모에서는 쓰지 않음
+proxy/                     # Cloudflare Worker (main과 같은 배포본) — 기관 조회(CODEF)는 이 브랜치에서 쓰지 않고, 채팅 AI(`/api/chat`, mode:'health')만 쓴다
 preview/                   # 예전 스크린샷 (main 브랜치 것)
 ```
 
@@ -91,7 +91,7 @@ pip install playwright && playwright install chromium
 python3 tests/verify_hackathon.py                       # 로컬 파일로 검증
 python3 tests/verify_hackathon.py http://localhost:8000/ out/   # 서버·출력 폴더 지정
 ```
-이 스크립트가 확인하는 것 (41개 항목):
+이 스크립트가 확인하는 것 (51개 항목 — AI 경로 10개 포함, 프록시는 가짜 응답으로 대체해 실제 호출·비용 없음):
 - 콘솔 에러 0건, 375px·1280px **가로 넘침 없음**
 - 첫 실행 안전 안내 → 닫힘, 안전 고지 줄 표시
 - 채팅 인사·브리핑·빠른 질문, "오늘 먹을 약" 답변 + 약 목록 카드
@@ -100,6 +100,7 @@ python3 tests/verify_hackathon.py http://localhost:8000/ out/   # 서버·출력
 - 안부 전화 연결 → 답변 칩 → **정리 카드 `DAON-CALL`** 생성
 - 받을 소식 5개, 소식 끄면 해당 알림이 사라짐
 - 큰 글씨·고대비에서 넘침 없음, 안전 안내 시트 열림
+- **AI 경로**: 규칙에 없는 말 → AI 답 + '참고용' 표시 · `mode=health` · 요청에 인물 이름 없음 · **약 판단 질문·응급 표현은 AI로 보내지 않음** · 지시형 AI 답은 버리고 기존 안내 · 프록시 실패 시 기존 안내
 
 스크린샷은 기본으로 `tmp/shots-health/`(스크립트 인자로 지정)에 남는다.
 
@@ -127,7 +128,11 @@ python3 tests/verify_hackathon.py http://localhost:8000/ out/   # 서버·출력
 ## 6. 다음에 붙일 것 (우선순위)
 
 1. **약봉투 OCR 정확도** — 지금은 브라우저 Tesseract(CDN)로 글자를 읽고 정규식으로 약 이름·1일 횟수·식전/식후를 추정한다. 오탈자가 많으므로 (a) 읽은 글자를 사용자가 **직접 고치는 칸**, (b) 약 이름 사전(식약처 허가 목록) 대조가 다음 단계다.
-2. **대화에 LLM 연결** — `main` 브랜치의 `askClaude()`/`chatFacts()` 구조(프록시 `/api/chat`)를 참고. 단, 보내는 내용에서 이름·번호·사진을 빼고, **안전 답변(emergency/sick)은 규칙이 먼저** 처리해야 한다.
+2. ~~대화에 LLM 연결~~ **완료(2026-11-20)** — `chatSendText()`는 규칙이 먼저다. 응급·증상·**약 판단 질문(`medq`: 용량·중단·병용·부작용)**·화면 이동은 규칙이 답하고, 어디에도 안 맞는 말(`fallback`)만 `askAI()`가 프록시 `/api/chat`(`mode:'health'`)에 묻는다. 시스템 프롬프트(`HEALTH_SYSTEM`)는 `proxy/cloudflare-worker.js`에만 있다.
+   - 보내는 것: 최근 대화 8개 + `aiFacts()`(오늘 복약·일정). **이름·보호자 표시는 `aiScrub()`가 '어르신'/'보호자'로 바꾼다.** 사진·음성은 보내지 않는다.
+   - 받은 답에 지시형·진단형 표현(`AI_UNSAFE`)이 있거나 프록시가 실패·지연(25초)하면 버리고 기존 안내 문구로 돌아간다. AI 답에는 "AI가 만든 답이에요 · 참고용" 표시가 붙는다 — 지우지 않는다.
+   - 엔진: 키가 없으면 Cloudflare Workers AI(Llama 3.3, 무료 한도), `ANTHROPIC_API_KEY`가 있으면 Claude. **발표에서 "Claude"라고 말하지 말고 현재 엔진을 확인해서 말한다**(응답의 `engine`·`model`).
+   - 이 브랜치는 Pages에 배포되지 않으므로 Worker의 `ALLOWED_ORIGIN`에 `null`(파일로 열기)·`localhost:8000`을 넣어 두었다. 다른 주소에서 시연하면 `proxy/wrangler.toml`에 추가하고 `npx.cmd wrangler deploy`(proxy 폴더).
 3. **돌봄 기록 내보내기** — 통화 정리 카드를 텍스트/CSV로 내려 재가복지센터 기록에 붙이는 흐름.
 4. **실제 알림 예약** — 지금은 앱을 열었을 때의 알림 센터·테스트 알림만 있다. Service Worker로 시간 예약 알림을 붙이면 "약 시간에 울린다"는 핵심이 실제로 동작한다.
 
