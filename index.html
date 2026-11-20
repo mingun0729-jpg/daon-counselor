@@ -3157,7 +3157,7 @@ body.easy .twbox p{font-size:16px}
     var cardName = isId ? '주민등록증' : '장애인등록증';
     var fields = isId
       ? [['생년월일', birthText()], ['주소', (state.form.addr || '경상남도 진주시 ○○로 12 (예시)').slice(0, 22)], ['발급기관', '진주시 ○○동 주민센터']]
-      : [['등록번호', maskedRrn()], ['장애유형', TYPE_LABEL[state.type] || '지체장애'], ['장애정도', (SEVERITY_LABEL[state.severity] || '심한 장애').replace(/\s*\(.*\)/, '')], ['등록일', '2024. 03. 12.']];
+      : [['등록번호', maskedRrn()], ['장애유형', TYPE_LABEL[state.type] || '지체장애'], ['장애정도', (SEVERITY_LABEL[state.severity] || '심한 장애').replace(/\s*\(.*\)/, '')], ['등록일', (state.card && state.card.issue && state.card.issue !== '—') ? state.card.issue : '2024. 03. 12.']];
     var out = '';
     fields.forEach(function (r, i) {
       var y = 332 + i * 34;
@@ -3503,7 +3503,7 @@ body.easy .twbox p{font-size:16px}
         '<div><b>장애유형</b><span>' + esc(TYPE_LABEL[d.type] || '') + '</span></div>' +
         '<div><b>장애정도</b><span>' + esc(SEVERITY_LABEL[d.severity] || '') + '</span></div>' +
         '<div><b>등록번호</b><span class="masked">' + esc(d.reg || '******-*******') + '</span></div>' +
-        '<div><b>발급일</b><span>' + esc(d.issue || '—') + '</span></div>';
+        '<div><b>등록일</b><span>' + esc(d.issue || '—') + '</span></div>';
     return '<div class="idcard" role="img" aria-label="' + head +
       esc(TYPE_LABEL[d.type] || '') + ' ' + esc(SEVERITY_LABEL[d.severity] || '') + ' ' + esc(d.name) + '">' +
       '<div class="idcard-top"><span>' + (isId ? '대한민국 · 주민등록증' : '대한민국 · 장애인등록증') + '</span><span class="idchip" aria-hidden="true"></span></div>' +
@@ -3892,20 +3892,131 @@ body.easy .twbox p{font-size:16px}
   }
   function pad2(v) { return (Number(v) < 10 ? '0' : '') + Number(v); }
 
-  var OCR_DATE_RE = /((?:19|20)\d{2})\s*[.\-\/년]\s*(\d{1,2})\s*[.\-\/월]\s*(\d{1,2})/;
-  function ocrDateOf(s) {
-    var str = String(s || '');
-    var m = OCR_DATE_RE.exec(str);
+  /* ============================================================
+     5-C-1. 날짜 읽기
+     복지카드에는 등록일·발급일·유효기간이 함께 적히고, 날짜 표기도 카드마다 다르다.
+      2024.05.10 / 2024. 5. 10. / 2024.05.10. / 2024-05-10 / 2024/05/10 /
+      2024년 5월 10일 / 2024,05,10 / 20240510 / 24.05.10
+     사진 판독은 숫자를 글자로 잘못 읽기도 한다(O→0, l→1, S→5, B→8 등).
+     날짜 후보 글자에만 그 오인식을 되돌린다.
+     ============================================================ */
+  function ocrDateFix(s) {
+    return String(s == null ? '' : s)
+      .replace(/[０-９]/g, function (c) { return String.fromCharCode(c.charCodeAt(0) - 0xFEE0); })
+      .replace(/[Oo○〇]/g, '0')
+      .replace(/[lI|]/g, '1')
+      .replace(/[Zz]/g, '2')
+      .replace(/[Ss]/g, '5')
+      .replace(/[Bb]/g, '8');
+  }
+  function ocrYmd(y, m, d) {
+    var Y = Number(y), M = Number(m), D = Number(d);
+    if (!(Y >= 1900 && Y <= 2099)) { return ''; }
+    if (!(M >= 1 && M <= 12) || !(D >= 1 && D <= 31)) { return ''; }
+    var last = (M === 2)
+      ? ((Y % 4 === 0 && (Y % 100 !== 0 || Y % 400 === 0)) ? 29 : 28)
+      : ([31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][M - 1]);
+    if (D > last) { return ''; }
+    return Y + '.' + pad2(M) + '.' + pad2(D);
+  }
+  /* allowShort: 두 자리 연도(24.05.10)까지 읽는다. 라벨이 보이는 줄에서만 켠다. */
+  function ocrDateCore(s, allowShort) {
+    var str = ocrDateFix(s);
+    var m = /((?:19|20)\d{2})\s*[.\-\/·년월,]\s*(\d{1,2})\s*[.\-\/·월일,]\s*(\d{1,2})(?!\d)/.exec(str);
+    if (m) { var r = ocrYmd(m[1], m[2], m[3]); if (r) { return r; } }
+    m = /(?:^|[^0-9])((?:19|20)\d{2})(\d{2})(\d{2})(?![0-9])/.exec(str);
+    if (m) { var r2 = ocrYmd(m[1], m[2], m[3]); if (r2) { return r2; } }
+    if (!allowShort) { return ''; }
+    m = /(?:^|[^0-9])(\d{2})\s*[.\-\/·년월,]\s*(\d{1,2})\s*[.\-\/·월일,]\s*(\d{1,2})(?!\d)/.exec(str);
     if (m) {
-      var mm = Number(m[2]), dd = Number(m[3]);
-      if (mm >= 1 && mm <= 12 && dd >= 1 && dd <= 31) { return m[1] + '.' + pad2(mm) + '.' + pad2(dd); }
+      var y1 = Number(m[1]);
+      var r3 = ocrYmd(y1 <= 40 ? 2000 + y1 : 1900 + y1, m[2], m[3]);
+      if (r3) { return r3; }
     }
-    m = /((?:19|20)\d{2})(\d{2})(\d{2})/.exec(str);
+    /* 240510 — 주민등록번호(810716-1…)는 뒤에 '-'가 붙어 제외된다. */
+    m = /(?:^|[^0-9])(\d{2})(\d{2})(\d{2})(?![0-9]|-[0-9])/.exec(str);
     if (m) {
-      var m2 = Number(m[2]), d2 = Number(m[3]);
-      if (m2 >= 1 && m2 <= 12 && d2 >= 1 && d2 <= 31) { return m[1] + '.' + m[2] + '.' + m[3]; }
+      var y2 = Number(m[1]);
+      var r4 = ocrYmd(y2 <= 40 ? 2000 + y2 : 1900 + y2, m[2], m[3]);
+      if (r4) { return r4; }
     }
     return '';
+  }
+  function ocrDateOf(s) { return ocrDateCore(s, true); }
+  /* 날짜·기호 말고 남는 글자가 거의 없는 줄 — 다음 줄 날짜를 두 자리 연도까지 읽어도 되는지 */
+  function ocrDateish(s) {
+    var t = String(s || '').replace(/[\s0-9OolISZBs.\-\/·년월일자:()~]/g, '');
+    return t.length <= 3;
+  }
+
+  /* ============================================================
+     5-C-2. 등록일 찾기
+     카드는 라벨을 '등 록 일'(글자 사이 띄어쓰기)로 인쇄하기도 하고, 판독이
+     '등륵일·등록밀·통록일'처럼 어긋나기도 한다. 라벨을 정규화해 찾고, 날짜가
+     같은 줄에 없으면 다음 1~2줄에서 찾는다. '최초 등록일'도 등록일로 본다.
+     유효기간·발급일·생년월일·주민등록번호 줄은 등록일로 쓰지 않는다.
+     ============================================================ */
+  var OCR_REG_OTHER = /(유효\s*기간|발급\s*일|발급\s*일자|교부\s*일|생년\s*월\s*일|주민\s*등록|등록\s*번호|등록\s*기준지)/;
+
+  /* 줄에서 '등록일' 라벨 위치를 원문 좌표로 돌려준다(띄어쓰기·오인식 흡수) */
+  function ocrLabelHits(line) {
+    var src = String(line || '');
+    var norm = '';
+    var map = [];
+    for (var i = 0; i < src.length; i++) {
+      var ch = src.charAt(i);
+      if (/\s/.test(ch)) { continue; }
+      var t = ch;
+      if (/[륵녹특톡목]/.test(t)) { t = '록'; }
+      else if (/[밀입익열]/.test(t)) { t = '일'; }
+      else if (/[둥뜽]/.test(t)) { t = '등'; }
+      else if (t === '통') { t = '등'; }
+      norm += t;
+      map.push(i);
+    }
+    var hits = [];
+    var re = /(최초)?등록일자?/g;
+    var m;
+    while ((m = re.exec(norm)) !== null) {
+      var endNorm = m.index + m[0].length;
+      hits.push({
+        start: map[m.index],
+        end: endNorm < map.length ? map[endNorm] : src.length,
+        isFirst: !!m[1]
+      });
+      re.lastIndex = endNorm;
+    }
+    return hits;
+  }
+
+  function ocrRegOf(lines) {
+    var nowYear = (new Date()).getFullYear();
+    var best = null;
+    function score(c) { return (c.isFirst ? 0 : 2) + c.strength; }
+    (lines || []).forEach(function (line, i) {
+      ocrLabelHits(line).forEach(function (hit) {
+        var val = ocrDateOf(line.slice(hit.end));
+        var strength = 3;
+        if (!val) {
+          /* 라벨과 날짜가 다른 줄 — 다른 항목 라벨이 나오면 거기서 멈춘다 */
+          for (var k = 1; k <= 2 && !val; k++) {
+            var nx = lines[i + k];
+            if (!nx || OCR_REG_OTHER.test(nx)) { break; }
+            val = ocrDateCore(nx, ocrDateish(nx));
+            if (val) { strength = 2; }
+          }
+        }
+        if (!val && !OCR_REG_OTHER.test(line)) {
+          val = ocrDateOf(line);   /* 날짜가 라벨 앞에 적힌 줄 */
+          if (val) { strength = 2; }
+        }
+        if (!val) { return; }
+        if (Number(val.slice(0, 4)) > nowYear) { return; }   /* 유효기간 날짜를 등록일로 쓰지 않는다 */
+        var cand = { value: val, strength: strength, isFirst: hit.isFirst };
+        if (!best || score(cand) > score(best)) { best = cand; }
+      });
+    });
+    return best;
   }
 
   /* 주민등록번호 → 생년월일·마스킹 값 (뒷자리는 저장하지 않는다) */
@@ -4006,10 +4117,8 @@ body.easy .twbox p{font-size:16px}
   var OCR_LABEL_HEAD = /^(주민|장애|등록|발급|생년|주소|유효|성명|이름|보건)/;
   function ocrFindName(lines) {
     for (var i = 0; i < lines.length; i++) {
-      var L = lines[i];
-      var m = /(성\s*[명면]|이\s*름)\s*:?\s*/.exec(L);
-      if (!m) { continue; }
-      var rest = L.slice(m.index + m[0].length);
+      var rest = ocrRestAfter(lines[i], /(성\s*[명면]|이\s*름)\s*:?\s*/);
+      if (rest == null) { continue; }
       var cand = ocrPickName(rest);
       if (!cand && i + 1 < lines.length && !OCR_LABEL_HEAD.test(lines[i + 1])) {
         cand = ocrPickName(lines[i + 1]);
@@ -4019,11 +4128,29 @@ body.easy .twbox p{font-size:16px}
     return '';
   }
 
+  /* 라벨을 띄어 쓴 줄('성 명', '발 급 기 관')도 찾도록 공백을 지운 글자에서 라벨을 찾고,
+     원문 좌표로 되돌려 라벨 뒤의 값을 잘라 준다. 라벨이 없으면 null. */
+  function ocrRestAfter(line, re) {
+    var src = String(line || '');
+    var norm = '';
+    var map = [];
+    for (var i = 0; i < src.length; i++) {
+      var ch = src.charAt(i);
+      if (/\s/.test(ch)) { continue; }
+      norm += ch;
+      map.push(i);
+    }
+    var m = re.exec(norm);
+    if (!m) { return null; }
+    var end = m.index + m[0].length;
+    var endOrig = end < map.length ? map[end] : src.length;
+    return src.slice(endOrig).trim();
+  }
+
   function ocrRestOf(lines, re) {
     for (var i = 0; i < lines.length; i++) {
-      var m = re.exec(lines[i]);
-      if (!m) { continue; }
-      var rest = lines[i].slice(m.index + m[0].length).trim();
+      var rest = ocrRestAfter(lines[i], re);
+      if (rest == null) { continue; }
       if (rest) { return rest; }
       if (i + 1 < lines.length && !OCR_LABEL_HEAD.test(lines[i + 1])) { return lines[i + 1]; }
       return '';
@@ -4088,13 +4215,8 @@ body.easy .twbox p{font-size:16px}
     if (tp) { out.push({ field: 'type', value: tp, strength: typeRest ? 3 : 2 }); }
     var sv = ocrSeverityOf(typeSrc) || ocrSeverityOf(flat);
     if (sv) { out.push({ field: 'severity', value: sv, strength: typeRest ? 3 : 2 }); }
-    var regRest = ocrRestOf(lines, /등록\s*(?:일|일자|년월일)/);
-    var reg = regRest ? ocrDateOf(regRest) : '';
-    if (!reg) {
-      var idx = flat.search(/등록\s*일/);
-      if (idx > -1) { reg = ocrDateOf(flat.slice(idx, idx + 48)); }
-    }
-    if (reg) { out.push({ field: 'reg', value: reg, strength: regRest ? 3 : 2 }); }
+    var regHit = ocrRegOf(lines);
+    if (regHit) { out.push({ field: 'reg', value: regHit.value, strength: regHit.strength }); }
     var orgRest = ocrRestOf(lines, /발급\s*(?:기관|처)?/);
     var org = orgRest ? ocrOrgOf(orgRest) : '';
     if (!org) { org = ocrOrgOf(flat); }
@@ -8121,6 +8243,9 @@ body.easy .twbox p{font-size:16px}
       toast('이전 진행 상태를 복원했습니다 · 처음부터는 상단 ‘처음부터’');
     }
   }
+
+  /* 테스트용 — 이 파일 안의 판독 파서를 그대로 부른다(화면·저장에는 쓰지 않는다). */
+  window.__DAON_OCR__ = { parse: parseOcrText, merge: mergeOcrPasses, date: ocrDateOf, reg: ocrRegOf };
 
   init();
 })();
